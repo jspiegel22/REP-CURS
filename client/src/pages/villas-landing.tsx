@@ -4,8 +4,11 @@ import { VillaCard } from "@/components/villa-card";
 import { Villa, parseVillaData } from "@/types/villa";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 
-// Import CSV data (this will be replaced with actual data loading)
-const villaData = `[CSV data will be replaced]`; // Placeholder
+// Import CSV data directly from the assets
+const villaData = `stretched-link href,w-100 src,location,detail,col-12,detail (2),detail (3),col-auto,col-auto (2),col-auto (3)
+https://www.cabovillas.com/properties.asp?PID=441,https://www.cabovillas.com/Properties/Villas/Villa_Tranquilidad/FULL/Villa_Tranquilidad-1.jpg?width=486,"SAN JOSÉ DEL CABO, OCEANFRONT, BEACHFRONT",Villa Tranquilidad,Spectacular Beachfront Villa Located in Puert...,6+ -Star Platinum Villa,+,8,8+,16
+https://www.cabovillas.com/properties.asp?PID=456,https://www.cabovillas.com/Properties/Villas/Villa_Lorena/FULL/Villa_Lorena-1.jpg?width=486,CABO SAN LUCAS,Villa Lorena,Comfortable Villa with Wonderful Pacific Ocea...,4.5-Star Deluxe Villa,,4,3.5,10`;
+
 const villas = parseVillaData(villaData);
 
 const ITEMS_PER_PAGE = 12;
@@ -36,6 +39,13 @@ export default function VillasLanding() {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Debug Info - Remove in production */}
+      <div className="container mx-auto px-4 py-4 text-sm text-muted-foreground">
+        <p>Total Villas: {villas.length}</p>
+        <p>Filtered Villas: {filteredVillas.length}</p>
+        <p>Current Page: {currentPage}</p>
       </div>
 
       {/* Filters */}
@@ -75,14 +85,21 @@ export default function VillasLanding() {
               <PaginationContent>
                 <PaginationItem>
                   <PaginationPrevious 
-                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                    disabled={currentPage === 1}
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setCurrentPage(p => Math.max(1, p - 1));
+                    }}
                   />
                 </PaginationItem>
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                   <PaginationItem key={page}>
                     <PaginationLink
-                      onClick={() => setCurrentPage(page)}
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setCurrentPage(page);
+                      }}
                       isActive={currentPage === page}
                     >
                       {page}
@@ -91,8 +108,11 @@ export default function VillasLanding() {
                 ))}
                 <PaginationItem>
                   <PaginationNext
-                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                    disabled={currentPage === totalPages}
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setCurrentPage(p => Math.min(totalPages, p + 1));
+                    }}
                   />
                 </PaginationItem>
               </PaginationContent>
