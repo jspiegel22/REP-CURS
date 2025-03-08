@@ -6,6 +6,7 @@ import NotFound from "@/pages/not-found";
 import HomePage from "@/pages/home-page";
 import ResortsLanding from "@/pages/resorts-landing";
 import VillasLanding from "@/pages/villas-landing";
+import VillaDetail from "@/pages/villa-detail";
 import AdventuresLanding from "@/pages/adventures-landing";
 import RestaurantsLanding from "@/pages/restaurants-landing";
 import NavigationBar from "./components/navigation-bar";
@@ -18,6 +19,7 @@ function Router() {
         <Route path="/" component={HomePage} />
         <Route path="/resorts" component={ResortsLanding} />
         <Route path="/villas" component={VillasLanding} />
+        <Route path="/villas/:id" component={VillaDetail} />
         <Route path="/adventures" component={AdventuresLanding} />
         <Route path="/restaurants" component={RestaurantsLanding} />
         <Route component={NotFound} />
