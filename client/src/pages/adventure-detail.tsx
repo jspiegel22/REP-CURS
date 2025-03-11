@@ -510,7 +510,7 @@ export default function AdventureDetail() {
         </div>
       </div>
       {/* Mobile Sticky CTA */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg p-4 md:hidden transform transition-transform duration-300"
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg p-4 md:hidden transform transition-transform duration-300 z-50"
         style={{
           transform: formData.showMobileCTA ? 'translateY(0)' : 'translateY(100%)'
         }}>
