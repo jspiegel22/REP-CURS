@@ -11,6 +11,9 @@ import { useState, useEffect } from "react";
 import { Clock, Users, Calendar, Plus, Minus } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ProductFooter } from "@/components/product-footer";
+import { RewardsPanel } from "@/components/rewards-panel";
+import { SocialShare } from "@/components/social-share";
+import { WeatherModule } from "@/components/weather-module";
 
 // Import complete CSV data
 const adventureData = `group href,h-full src,ais-Highlight-nonHighlighted,text-base,text-xs-4,absolute,font-sans,flex src (2),font-sans (2),gl-font-meta,group href (2)
@@ -354,10 +357,24 @@ export default function AdventureDetail() {
                   </AccordionItem>
                 ))}
               </Accordion>
+              {/* Add Social Share */}
+              <div className="mb-8">
+                <h2 className="text-lg font-semibold mb-4">Share this Adventure</h2>
+                <SocialShare
+                  listingId={parseInt(adventure.id)}
+                  title={adventure.title}
+                  imageUrl={adventure.imageUrl}
+                />
+              </div>
             </div>
           </div>
 
-
+          {/* Sidebar */}
+          <div className="lg:col-span-1">
+            <div className="space-y-6 sticky top-8">
+              <RewardsPanel />
+            </div>
+          </div>
         </div>
       </div>
 
@@ -550,6 +567,7 @@ export default function AdventureDetail() {
           </div>
         </div>
       </div>
+      <WeatherModule />
     </div>
   );
 }
