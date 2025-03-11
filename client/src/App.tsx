@@ -11,6 +11,7 @@ import AdventuresLanding from "@/pages/adventures-landing";
 import AdventureDetail from "@/pages/adventure-detail";
 import RestaurantsLanding from "@/pages/restaurants-landing";
 import NavigationBar from "./components/navigation-bar";
+import { ChatButton } from "./components/chat-button";
 
 function Router() {
   return (
@@ -26,6 +27,7 @@ function Router() {
         <Route path="/restaurants" component={RestaurantsLanding} />
         <Route component={NotFound} />
       </Switch>
+      <ChatButton />
     </div>
   );
 }

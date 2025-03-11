@@ -18,9 +18,9 @@ export default function NavigationBar() {
                 </Button>
               </SheetTrigger>
               <SheetContent side="left" className="w-[85vw] bg-[#2F4F4F] border-r border-[#2F4F4F]/20 p-0">
-                <nav className="flex flex-col">
+                <nav className="flex flex-col h-full overflow-y-auto">
                   {/* Main Navigation Cards */}
-                  <div className="grid grid-cols-2 gap-4 p-4">
+                  <div className="grid grid-cols-2 gap-3 p-3">
                     <Link href="/resorts">
                       <a className="relative rounded-lg overflow-hidden aspect-[4/3]">
                         <img
@@ -72,30 +72,30 @@ export default function NavigationBar() {
                   </div>
 
                   {/* Featured Adventures Section */}
-                  <div className="px-4 py-6 border-t border-white/10">
-                    <h3 className="text-white/60 text-sm font-semibold mb-4">Featured Adventures</h3>
-                    <div className="grid grid-cols-2 gap-4">
+                  <div className="px-3 py-4 border-t border-white/10">
+                    <h3 className="text-white/60 text-sm font-semibold mb-3">Featured Adventures</h3>
+                    <div className="grid grid-cols-2 gap-3">
                       <Link href="/adventure/luxury-cabo-sailing">
-                        <a className="relative rounded-lg overflow-hidden aspect-[4/3]">
+                        <a className="relative rounded-lg overflow-hidden aspect-[3/2]">
                           <img
                             src="https://cdn.sanity.io/images/esqfj3od/production/834cde8965aeeee934450fb9b385ed7ecfa36c16-608x912.webp"
                             alt="Luxury Sailing"
                             className="object-cover w-full h-full"
                           />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-black/0 flex items-end p-4">
-                            <span className="text-white font-semibold">Luxury Sailing</span>
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-black/0 flex items-end p-3">
+                            <span className="text-white font-semibold text-sm">Luxury Sailing</span>
                           </div>
                         </a>
                       </Link>
                       <Link href="/adventure/whale-watching">
-                        <a className="relative rounded-lg overflow-hidden aspect-[4/3]">
+                        <a className="relative rounded-lg overflow-hidden aspect-[3/2]">
                           <img
                             src="https://cdn.sanity.io/images/esqfj3od/production/76c1e97bb2129788a3907f7809aba1b85f328cbb-608x912.webp"
                             alt="Whale Watching"
                             className="object-cover w-full h-full"
                           />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-black/0 flex items-end p-4">
-                            <span className="text-white font-semibold">Whale Watching</span>
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-black/0 flex items-end p-3">
+                            <span className="text-white font-semibold text-sm">Whale Watching</span>
                           </div>
                         </a>
                       </Link>
@@ -103,30 +103,30 @@ export default function NavigationBar() {
                   </div>
 
                   {/* Guides Section */}
-                  <div className="px-4 py-6 border-t border-white/10">
-                    <h3 className="text-white/60 text-sm font-semibold mb-4">Guides</h3>
-                    <div className="grid grid-cols-2 gap-4">
+                  <div className="px-3 py-4 border-t border-white/10">
+                    <h3 className="text-white/60 text-sm font-semibold mb-3">Guides</h3>
+                    <div className="grid grid-cols-2 gap-3">
                       <Link href="/guides/activities">
-                        <a className="relative rounded-lg overflow-hidden aspect-[4/3]">
+                        <a className="relative rounded-lg overflow-hidden aspect-[3/2]">
                           <img
                             src="https://images.unsplash.com/photo-1533760881669-80db4d7b341c?w=800"
                             alt="Activity Guide"
                             className="object-cover w-full h-full"
                           />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-black/0 flex items-end p-4">
-                            <span className="text-white font-semibold">Activity Guide</span>
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-black/0 flex items-end p-3">
+                            <span className="text-white font-semibold text-sm">Activity Guide</span>
                           </div>
                         </a>
                       </Link>
                       <Link href="/guides/local-tips">
-                        <a className="relative rounded-lg overflow-hidden aspect-[4/3]">
+                        <a className="relative rounded-lg overflow-hidden aspect-[3/2]">
                           <img
                             src="https://images.unsplash.com/photo-1563461660947-507ef49e9c47?w=800"
                             alt="Local Tips"
                             className="object-cover w-full h-full"
                           />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-black/0 flex items-end p-4">
-                            <span className="text-white font-semibold">Local Tips</span>
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-black/0 flex items-end p-3">
+                            <span className="text-white font-semibold text-sm">Local Tips</span>
                           </div>
                         </a>
                       </Link>
@@ -134,26 +134,26 @@ export default function NavigationBar() {
                   </div>
 
                   {/* Social Icons */}
-                  <div className="mt-8 px-6 py-4 border-t border-white/10">
+                  <div className="mt-auto px-6 py-4 border-t border-white/10">
                     <h3 className="text-white/60 text-sm font-semibold mb-4">Follow Us</h3>
                     <div className="flex gap-6 flex-wrap">
                       <a href="https://www.tiktok.com/@atcabo" className="text-white hover:text-white/80">
-                        <SiTiktok className="w-6 h-6" />
+                        <SiTiktok className="w-5 h-5" />
                       </a>
                       <a href="https://instagram.com/cabo" className="text-white hover:text-white/80">
-                        <SiInstagram className="w-6 h-6" />
+                        <SiInstagram className="w-5 h-5" />
                       </a>
                       <a href="https://www.youtube.com/@atCabo" className="text-white hover:text-white/80">
-                        <SiYoutube className="w-6 h-6" />
+                        <SiYoutube className="w-5 h-5" />
                       </a>
                       <a href="https://wa.me/526242446303" className="text-white hover:text-white/80">
-                        <SiWhatsapp className="w-6 h-6" />
+                        <SiWhatsapp className="w-5 h-5" />
                       </a>
                       <a href="https://www.facebook.com/cabosanlucasbaja" className="text-white hover:text-white/80">
-                        <SiFacebook className="w-6 h-6" />
+                        <SiFacebook className="w-5 h-5" />
                       </a>
                       <a href="https://www.pinterest.com/instacabo/" className="text-white hover:text-white/80">
-                        <SiPinterest className="w-6 h-6" />
+                        <SiPinterest className="w-5 h-5" />
                       </a>
                     </div>
                   </div>
