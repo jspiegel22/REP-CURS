@@ -7,7 +7,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Clock, Users, Calendar, Plus, Minus } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
@@ -58,8 +58,25 @@ export default function AdventureDetail() {
     phone: "",
     date: "",
     guests: "1",
-    message: ""
+    message: "",
+    showMobileCTA: false
   });
+
+  // Add scroll event handler
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+      const showCTA = scrollPosition > 300; // Show after scrolling 300px
+
+      setFormData(prev => ({
+        ...prev,
+        showMobileCTA: showCTA
+      }));
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -435,6 +452,64 @@ export default function AdventureDetail() {
                 </SheetContent>
               </Sheet>
             </div>
+          </div>
+        </div>
+      </div>
+      {/* Mobile Sticky CTA */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg p-4 md:hidden transform transition-transform duration-300"
+        style={{
+          transform: formData.showMobileCTA ? 'translateY(0)' : 'translateY(100%)'
+        }}>
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex-shrink-0">
+            <span className="text-lg font-bold">{adventure.currentPrice}</span>
+            {adventure.discount && (
+              <span className="ml-2 text-sm line-through text-muted-foreground">
+                {adventure.originalPrice}
+              </span>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 bg-gray-50 rounded-lg px-2 py-1">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6"
+                onClick={() => setFormData(prev => ({
+                  ...prev,
+                  guests: Math.max(1, parseInt(prev.guests) - 1).toString()
+                }))}
+              >
+                <Minus className="h-3 w-3" />
+              </Button>
+              <span className="w-8 text-center text-sm">
+                {formData.guests}
+              </span>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6"
+                onClick={() => setFormData(prev => ({
+                  ...prev,
+                  guests: Math.min(10, parseInt(prev.guests) + 1).toString()
+                }))}
+              >
+                <Plus className="h-3 w-3" />
+              </Button>
+            </div>
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button
+                  size="sm"
+                  className="bg-[#2F4F4F] hover:bg-[#2F4F4F]/90 text-white shadow-lg hover:shadow-xl transition-all"
+                >
+                  Book Now
+                </Button>
+              </SheetTrigger>
+              <SheetContent>
+                {/* Same sheet content as above */}
+              </SheetContent>
+            </Sheet>
           </div>
         </div>
       </div>
