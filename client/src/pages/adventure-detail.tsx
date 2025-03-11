@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { useState, useEffect } from "react";
 import { Clock, Users, Calendar, Plus, Minus } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ProductFooter } from "@/components/product-footer";
 
 // Import complete CSV data
 const adventureData = `group href,h-full src,ais-Highlight-nonHighlighted,text-base,text-xs-4,absolute,font-sans,flex src (2),font-sans (2),gl-font-meta,group href (2)
@@ -48,6 +49,23 @@ const reviews = [
     comment: "Best tour we've taken in Cabo. Will definitely book with them again!"
   }
 ];
+
+const socialProof = {
+  images: [
+    {
+      url: "https://images.unsplash.com/photo-1565776874372-9f4800aae553?w=800",
+      author: "@mariasol"
+    },
+    {
+      url: "https://images.unsplash.com/photo-1565776874459-a8ea3c4aa2b1?w=800",
+      author: "@jacktravel"
+    },
+    {
+      url: "https://images.unsplash.com/photo-1565776874789-c80e2475c229?w=800",
+      author: "@beachlife"
+    }
+  ]
+};
 
 export default function AdventureDetail() {
   const { slug } = useParams();
@@ -284,6 +302,25 @@ export default function AdventureDetail() {
                     <p className="text-sm text-muted-foreground">Round-trip transportation from select hotels</p>
                   </CardContent>
                 </Card>
+              </div>
+
+              {/* Social Proof Section */}
+              <div className="mb-12">
+                <h2 className="text-2xl font-semibold mb-6">Guest Photos</h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {socialProof.images.map((image, index) => (
+                    <div key={index} className="relative aspect-square overflow-hidden rounded-lg">
+                      <img
+                        src={image.url}
+                        alt={`Photo by ${image.author}`}
+                        className="object-cover w-full h-full"
+                      />
+                      <div className="absolute bottom-2 left-2 text-white text-sm bg-black/50 px-2 py-1 rounded">
+                        {image.author}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
 
               {/* Reviews Section */}
