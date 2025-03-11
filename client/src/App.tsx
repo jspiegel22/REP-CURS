@@ -12,6 +12,7 @@ import AdventureDetail from "@/pages/adventure-detail";
 import RestaurantsLanding from "@/pages/restaurants-landing";
 import NavigationBar from "./components/navigation-bar";
 import { ChatButton } from "./components/chat-button";
+import { AuthProvider } from "@/hooks/use-auth";
 
 function Router() {
   return (
@@ -35,8 +36,10 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <Router />
-      <Toaster />
+      <AuthProvider>
+        <Router />
+        <Toaster />
+      </AuthProvider>
     </QueryClientProvider>
   );
 }
