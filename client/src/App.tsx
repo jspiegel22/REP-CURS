@@ -8,6 +8,7 @@ import ResortsLanding from "@/pages/resorts-landing";
 import VillasLanding from "@/pages/villas-landing";
 import VillaDetail from "@/pages/villa-detail";
 import AdventuresLanding from "@/pages/adventures-landing";
+import AdventureDetail from "@/pages/adventure-detail";
 import RestaurantsLanding from "@/pages/restaurants-landing";
 import NavigationBar from "./components/navigation-bar";
 
@@ -21,6 +22,7 @@ function Router() {
         <Route path="/villas" component={VillasLanding} />
         <Route path="/villas/:id" component={VillaDetail} />
         <Route path="/adventures" component={AdventuresLanding} />
+        <Route path="/adventures/:id" component={AdventureDetail} />
         <Route path="/restaurants" component={RestaurantsLanding} />
         <Route component={NotFound} />
       </Switch>
