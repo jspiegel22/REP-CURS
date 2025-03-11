@@ -15,7 +15,7 @@ export function WeatherModule() {
 
   if (isLoading) {
     return (
-      <Card className="fixed bottom-20 right-6 w-[200px] bg-white/95 backdrop-blur-sm shadow-lg">
+      <Card className="fixed bottom-36 right-6 w-[200px] bg-white/95 backdrop-blur-sm shadow-lg">
         <CardContent className="p-4">
           <div className="animate-pulse flex space-x-4">
             <div className="rounded-full bg-slate-200 h-10 w-10"></div>
@@ -45,7 +45,7 @@ export function WeatherModule() {
   };
 
   return (
-    <Card className="fixed bottom-20 right-6 w-[200px] bg-white/95 backdrop-blur-sm shadow-lg">
+    <Card className="fixed bottom-36 right-6 w-[200px] bg-white/95 backdrop-blur-sm shadow-lg">
       <CardContent className="p-4">
         <div className="flex items-center gap-3">
           {getWeatherIcon(weather.condition)}
