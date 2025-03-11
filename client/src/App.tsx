@@ -22,7 +22,7 @@ function Router() {
         <Route path="/villas" component={VillasLanding} />
         <Route path="/villas/:id" component={VillaDetail} />
         <Route path="/adventures" component={AdventuresLanding} />
-        <Route path="/adventures/:id" component={AdventureDetail} />
+        <Route path="/adventure/:slug" component={AdventureDetail} />
         <Route path="/restaurants" component={RestaurantsLanding} />
         <Route component={NotFound} />
       </Switch>

@@ -10,7 +10,7 @@ interface AdventureCardProps {
 
 export function AdventureCard({ adventure }: AdventureCardProps) {
   return (
-    <Link href={`/adventures/${adventure.id}`}>
+    <Link href={`/adventure/${adventure.slug}`}>
       <Card className="cursor-pointer hover:shadow-lg transition-shadow duration-200">
         <div className="aspect-[4/3] relative overflow-hidden rounded-t-lg">
           <img
@@ -51,6 +51,12 @@ export function AdventureCard({ adventure }: AdventureCardProps) {
               </span>
             )}
           </div>
+          {adventure.rating && (
+            <div className="mt-2 text-sm">
+              <span className="text-yellow-400">{"★".repeat(Math.floor(adventure.rating))}</span>
+              <span className="ml-1 text-muted-foreground">{adventure.rating}/5</span>
+            </div>
+          )}
         </CardContent>
       </Card>
     </Link>

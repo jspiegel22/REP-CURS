@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { Clock, Users, Calendar } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 // Import complete CSV data
 const adventureData = `group href,h-full src,ais-Highlight-nonHighlighted,text-base,text-xs-4,absolute,font-sans,flex src (2),font-sans (2),gl-font-meta,group href (2)
@@ -21,11 +22,11 @@ const adventures = parseAdventureData(adventureData);
 const faqs = [
   {
     question: "What's included in the tour?",
-    answer: "Our tours include professional guides, all necessary equipment, and safety briefings. Some tours also include meals and refreshments - see the specific tour details for more information."
+    answer: "Our tours include professional guides, all necessary equipment, safety briefings, and round-trip transportation from most Cabo San Lucas hotels. Many tours also include snacks, drinks, and lunch depending on the duration."
   },
   {
     question: "What should I bring?",
-    answer: "We recommend bringing sunscreen, comfortable clothing, and a camera. Specific requirements will be provided upon booking."
+    answer: "We recommend bringing sunscreen, comfortable clothing appropriate for the activity, a camera (waterproof if applicable), and a sense of adventure! Specific requirements will be provided upon booking."
   },
   {
     question: "Is transportation included?",
@@ -35,28 +36,28 @@ const faqs = [
 
 const reviews = [
   {
-    name: "Michael S.",
-    date: "March 2025",
-    rating: 5,
-    comment: "Amazing experience! The guides were professional and made sure everyone was safe and having fun."
-  },
-  {
-    name: "Jessica R.",
+    name: "Sarah M.",
     date: "February 2025",
     rating: 5,
-    comment: "Highlight of our trip to Cabo. Would definitely recommend this adventure!"
+    comment: "Absolutely amazing experience! The guides were professional and made sure everyone was safe while having fun."
+  },
+  {
+    name: "James R.",
+    date: "January 2025",
+    rating: 5,
+    comment: "Best tour we've taken in Cabo. Will definitely book with them again!"
   }
 ];
 
 export default function AdventureDetail() {
-  const { id } = useParams();
-  const adventure = adventures.find(a => a.id === id);
+  const { slug } = useParams();
+  const adventure = adventures.find(a => a.slug === slug);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
     date: "",
-    participants: "",
+    guests: "1",
     message: ""
   });
 
@@ -73,6 +74,11 @@ export default function AdventureDetail() {
     );
   }
 
+  // Generate star rating display
+  const fullStars = Math.floor(adventure.rating || 0);
+  const hasHalfStar = (adventure.rating || 0) % 1 >= 0.5;
+  const stars = "★".repeat(fullStars) + (hasHalfStar ? "½" : "");
+
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
@@ -84,8 +90,12 @@ export default function AdventureDetail() {
         />
         <div className="absolute inset-0 bg-black/40">
           <div className="container mx-auto px-4 h-full flex items-end py-8">
-            <div className="text-white">
-              <h1 className="text-4xl font-bold mb-4">{adventure.title}</h1>
+            <div className="text-white w-full max-w-4xl">
+              <h1 className="text-4xl font-bold mb-2">{adventure.title}</h1>
+              <div className="flex items-center gap-2 mb-4">
+                <span className="text-yellow-400 text-xl">{stars}</span>
+                <span>({adventure.rating} / 5)</span>
+              </div>
               <div className="flex items-center gap-6">
                 <div className="flex items-center gap-2">
                   <Clock className="w-5 h-5" />
@@ -103,12 +113,12 @@ export default function AdventureDetail() {
 
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Main Content */}
           <div className="lg:col-span-2">
-            {/* Main Content */}
             <div className="prose max-w-none">
               <h2 className="text-2xl font-semibold mb-4">About This Adventure</h2>
               <p className="text-muted-foreground mb-8">
-                Experience an unforgettable adventure with Cabo Adventures. Our professional guides ensure your safety while providing an exciting and memorable experience.
+                Experience an unforgettable adventure with {adventure.provider}. This {adventure.duration.toLowerCase()} tour offers an exciting opportunity to explore Cabo's natural wonders. Our professional guides ensure your safety while providing an engaging and memorable experience. Perfect for {adventure.minAge.toLowerCase()} looking for adventure!
               </p>
 
               {/* What's Included Section */}
@@ -162,7 +172,7 @@ export default function AdventureDetail() {
             </div>
           </div>
 
-          {/* Booking Section */}
+          {/* Booking Section - Now in a sticky card */}
           <div className="lg:col-span-1">
             <Card className="sticky top-8">
               <CardContent className="p-6">
@@ -187,6 +197,24 @@ export default function AdventureDetail() {
                         </SheetDescription>
                       </SheetHeader>
                       <form onSubmit={handleSubmit} className="space-y-4 mt-6">
+                        <div>
+                          <Label htmlFor="guests">Number of Guests</Label>
+                          <Select 
+                            value={formData.guests}
+                            onValueChange={(value) => setFormData({...formData, guests: value})}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select number of guests" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {[1,2,3,4,5,6,7,8,9,10].map((num) => (
+                                <SelectItem key={num} value={num.toString()}>
+                                  {num} {num === 1 ? 'Guest' : 'Guests'}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
                         <div>
                           <Label htmlFor="name">Name</Label>
                           <Input 
@@ -222,15 +250,6 @@ export default function AdventureDetail() {
                             type="date"
                             value={formData.date}
                             onChange={e => setFormData({...formData, date: e.target.value})}
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="participants">Number of Participants</Label>
-                          <Input 
-                            id="participants"
-                            type="number"
-                            value={formData.participants}
-                            onChange={e => setFormData({...formData, participants: e.target.value})}
                           />
                         </div>
                         <div>
