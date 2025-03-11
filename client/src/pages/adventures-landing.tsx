@@ -1,148 +1,135 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Link } from "wouter";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import { Card, CardContent } from "@/components/ui/card";
-import { SiTripadvisor } from "react-icons/si";
+import { AdventureCard } from "@/components/adventure-card";
+import { Adventure, parseAdventureData } from "@/types/adventure";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 
-const testimonials = [
-  {
-    name: "Alex P.",
-    title: "Adventure Seeker",
-    content: "The whale watching tour was incredible! We saw so many whales and the crew was fantastic.",
-    rating: 5
-  },
-  {
-    name: "Maria S.",
-    title: "First-time Visitor",
-    content: "Our ATV desert tour was the highlight of our trip. Amazing views and professional guides.",
-    rating: 5
-  },
-  {
-    name: "John D.",
-    title: "Sports Enthusiast",
-    content: "The deep-sea fishing experience was world-class. Caught a marlin on our first try!",
-    rating: 5
-  }
-];
+// Import complete CSV data from the assets
+const adventureData = `group href,h-full src,ais-Highlight-nonHighlighted,text-base,text-xs-4,absolute,font-sans,flex src (2),font-sans (2),gl-font-meta,group href (2)
+https://www.cabo-adventures.com/en/tour/luxury-day-sailing/,https://cdn.sanity.io/images/esqfj3od/production/834cde8965aeeee934450fb9b385ed7ecfa36c16-608x912.webp?w=640&q=65&fit=clip&auto=format,4-HOUR LUXURY CABO SAILING BOAT TOUR,$104 USD,$149 USD,-30%,4 Hours,https://cdn.sanity.io/images/esqfj3od/production/7bba402f8a80a81c964f504de9e5a9cf8a7e0a3a-24x24.svg?w=48&q=65&fit=clip&auto=format,Min 8 years old,ADD TO CART,
+https://www.cabo-adventures.com/en/tour/signature-swim/,https://cdn.sanity.io/images/esqfj3od/production/bd7bfbf824efdf124cf41220ef1830bf4335a462-608x912.webp?w=640&q=65&fit=clip&auto=format,CABO DOLPHIN SWIM SIGNATURE,$146 USD,$209 USD,-30%,40 Minutes,https://cdn.sanity.io/images/esqfj3od/production/7bba402f8a80a81c964f504de9e5a9cf8a7e0a3a-24x24.svg?w=48&q=65&fit=clip&auto=format,Min. 4 years old,ADD TO CART,`;
 
-const faqs = [
-  {
-    question: "What's included in adventure packages?",
-    answer: "Our adventure packages typically include all necessary equipment, professional guides, safety briefings, and often transportation from major hotels. Some tours also include meals and refreshments."
-  },
-  {
-    question: "Do I need prior experience?",
-    answer: "Most of our adventures are suitable for beginners and include thorough instruction. Some advanced activities may require previous experience - this will be clearly noted in the tour description."
-  },
-  {
-    question: "What should I bring?",
-    answer: "Generally, you should bring sunscreen, comfortable clothing, and a sense of adventure! Specific requirements will be provided for each activity upon booking."
-  }
-];
+const adventures = parseAdventureData(adventureData);
+
+const ITEMS_PER_PAGE = 12;
 
 export default function AdventuresLanding() {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [filter, setFilter] = useState<'all' | 'water' | 'land' | 'luxury' | 'family'>('all');
+
+  const filteredAdventures = adventures.filter(adventure => {
+    if (filter === 'all') return true;
+    return adventure.category === filter;
+  });
+
+  const totalPages = Math.ceil(filteredAdventures.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const displayedAdventures = filteredAdventures.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <div className="relative h-[80vh] min-h-[600px] w-full bg-[url('https://images.unsplash.com/photo-1613490493576-7fde63acd811?ixlib=rb-4.0.3')] bg-cover bg-center">
+      <div className="relative h-[50vh] min-h-[400px] w-full bg-[url('https://images.unsplash.com/photo-1564351943427-3d61951984e9')] bg-cover bg-center">
         <div className="absolute inset-0 bg-black/40">
           <div className="container mx-auto px-4 h-full flex items-center">
             <div className="max-w-2xl text-white">
               <h1 className="text-5xl font-bold mb-6">Cabo Adventures & Experiences</h1>
-              <p className="text-xl mb-8">From whale watching to desert expeditions, discover thrilling adventures in Cabo San Lucas. Create unforgettable memories with our expert-guided tours.</p>
-              <Button size="lg" className="bg-white text-[#2F4F4F] hover:bg-[#F5F5DC]">
-                Explore Adventures
-              </Button>
+              <p className="text-xl">Discover thrilling adventures and unforgettable experiences in Cabo San Lucas.</p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Trust Badges */}
-      <div className="bg-[#F5F5DC] py-8">
-        <div className="container mx-auto px-4">
-          <div className="flex justify-center items-center">
-            <SiTripadvisor className="w-12 h-12 text-[#2F4F4F]" />
-          </div>
-        </div>
+      {/* Debug Info - Remove in production */}
+      <div className="container mx-auto px-4 py-4 text-sm text-muted-foreground">
+        <p>Total Adventures: {adventures.length}</p>
+        <p>Filtered Adventures: {filteredAdventures.length}</p>
+        <p>Current Page: {currentPage}</p>
       </div>
 
-      {/* Benefits */}
-      <div className="container mx-auto px-4 py-16">
-        <h2 className="text-3xl font-bold mb-12 text-center text-[#2F4F4F]">Experience the Best of Cabo</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="text-center">
-            <div className="mb-4 text-4xl text-[#2F4F4F]">🐋</div>
-            <h3 className="text-xl font-semibold mb-2">Marine Life</h3>
-            <p>Encounter magnificent whales, sea lions, and tropical fish in their natural habitat.</p>
-          </div>
-          <div className="text-center">
-            <div className="mb-4 text-4xl text-[#2F4F4F]">🏍️</div>
-            <h3 className="text-xl font-semibold mb-2">Desert Tours</h3>
-            <p>Explore Baja's stunning desert landscape on ATV or camel adventures.</p>
-          </div>
-          <div className="text-center">
-            <div className="mb-4 text-4xl text-[#2F4F4F]">🎣</div>
-            <h3 className="text-xl font-semibold mb-2">Sport Fishing</h3>
-            <p>World-class fishing experiences with professional crew and equipment.</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Testimonials */}
-      <div className="bg-[#F5F5DC] py-16">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold mb-12 text-center text-[#2F4F4F]">Adventure Stories</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
-              <Card key={index} className="bg-white">
-                <CardContent className="p-6">
-                  <div className="flex items-center mb-4">
-                    {"★".repeat(testimonial.rating)}
-                  </div>
-                  <p className="mb-4 italic">"{testimonial.content}"</p>
-                  <div>
-                    <p className="font-semibold">{testimonial.name}</p>
-                    <p className="text-sm text-gray-600">{testimonial.title}</p>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* FAQ Section */}
-      <div className="container mx-auto px-4 py-16">
-        <h2 className="text-3xl font-bold mb-12 text-center text-[#2F4F4F]">Frequently Asked Questions</h2>
-        <div className="max-w-3xl mx-auto">
-          <Accordion type="single" collapsible>
-            {faqs.map((faq, index) => (
-              <AccordionItem key={index} value={`item-${index}`}>
-                <AccordionTrigger>{faq.question}</AccordionTrigger>
-                <AccordionContent>{faq.answer}</AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
-        </div>
-      </div>
-
-      {/* CTA Section */}
-      <div className="bg-[#2F4F4F] text-white py-16">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-4">Ready for Adventure?</h2>
-          <p className="text-lg mb-8 max-w-2xl mx-auto">
-            Book your next thrilling experience in Cabo San Lucas today.
-          </p>
-          <Button asChild size="lg" variant="outline" className="bg-white text-[#2F4F4F] hover:bg-[#F5F5DC]">
-            <Link href="/listings/adventure">Browse Adventures</Link>
+      {/* Filters */}
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex gap-4 mb-8">
+          <Button 
+            variant={filter === 'all' ? 'default' : 'outline'}
+            onClick={() => setFilter('all')}
+          >
+            All Adventures
+          </Button>
+          <Button 
+            variant={filter === 'water' ? 'default' : 'outline'}
+            onClick={() => setFilter('water')}
+          >
+            Water Activities
+          </Button>
+          <Button 
+            variant={filter === 'land' ? 'default' : 'outline'}
+            onClick={() => setFilter('land')}
+          >
+            Land Activities
+          </Button>
+          <Button 
+            variant={filter === 'luxury' ? 'default' : 'outline'}
+            onClick={() => setFilter('luxury')}
+          >
+            Luxury Tours
+          </Button>
+          <Button 
+            variant={filter === 'family' ? 'default' : 'outline'}
+            onClick={() => setFilter('family')}
+          >
+            Family Friendly
           </Button>
         </div>
+
+        {/* Adventures Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {displayedAdventures.map((adventure) => (
+            <AdventureCard key={adventure.id} adventure={adventure} />
+          ))}
+        </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="mt-8">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious 
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setCurrentPage(p => Math.max(1, p - 1));
+                    }}
+                  />
+                </PaginationItem>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <PaginationItem key={page}>
+                    <PaginationLink
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setCurrentPage(page);
+                      }}
+                      isActive={currentPage === page}
+                    >
+                      {page}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+                <PaginationItem>
+                  <PaginationNext
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setCurrentPage(p => Math.min(totalPages, p + 1));
+                    }}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        )}
       </div>
     </div>
   );
