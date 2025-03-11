@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
-import { Clock, Users, Calendar } from "lucide-react";
+import { Clock, Users, Calendar, Plus, Minus } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 // Import complete CSV data
@@ -74,10 +74,6 @@ export default function AdventureDetail() {
     );
   }
 
-  // Generate star rating display
-  const fullStars = Math.floor(adventure.rating || 0);
-  const hasHalfStar = (adventure.rating || 0) % 1 >= 0.5;
-  const stars = "★".repeat(fullStars) + (hasHalfStar ? "½" : "");
 
   return (
     <div className="min-h-screen bg-background">
@@ -88,12 +84,15 @@ export default function AdventureDetail() {
           alt={adventure.title}
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-black/40">
+        <div className="absolute inset-0 bg-[#2F4F4F]/40"> {/* Match footer color */}
           <div className="container mx-auto px-4 h-full flex items-end py-8">
             <div className="text-white w-full max-w-4xl">
               <h1 className="text-4xl font-bold mb-2">{adventure.title}</h1>
               <div className="flex items-center gap-2 mb-4">
-                <span className="text-yellow-400 text-xl">{stars}</span>
+                <span className="text-yellow-400 text-xl" style={{ letterSpacing: '-3px' }}>
+                  {"★".repeat(Math.floor(adventure.rating || 0))}
+                  {(adventure.rating || 0) % 1 > 0 && "★"}
+                </span>
                 <span>({adventure.rating} / 5)</span>
               </div>
               <div className="flex items-center gap-6">
@@ -106,6 +105,138 @@ export default function AdventureDetail() {
                   <span>{adventure.minAge}</span>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Top Booking Section */}
+      <div className="bg-gray-50 py-6 border-b">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div>
+              <span className="text-2xl font-bold">{adventure.currentPrice}</span>
+              {adventure.discount && (
+                <span className="ml-2 text-sm line-through text-muted-foreground">
+                  {adventure.originalPrice}
+                </span>
+              )}
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 bg-white rounded-lg p-2 shadow-sm">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="hover:bg-[#2F4F4F]/10"
+                  onClick={() => setFormData(prev => ({
+                    ...prev,
+                    guests: Math.max(1, parseInt(prev.guests) - 1).toString()
+                  }))}
+                >
+                  <Minus className="h-4 w-4" />
+                </Button>
+                <span className="w-20 text-center font-medium">
+                  {formData.guests} Guest{parseInt(formData.guests) !== 1 ? 's' : ''}
+                </span>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="hover:bg-[#2F4F4F]/10"
+                  onClick={() => setFormData(prev => ({
+                    ...prev,
+                    guests: Math.min(10, parseInt(prev.guests) + 1).toString()
+                  }))}
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button
+                    size="lg"
+                    className="w-[200px] bg-[#2F4F4F] hover:bg-[#2F4F4F]/90 text-white shadow-lg hover:shadow-xl transition-all"
+                  >
+                    Book Now
+                  </Button>
+                </SheetTrigger>
+                <SheetContent>
+                  <SheetHeader>
+                    <SheetTitle>Book Your Adventure</SheetTitle>
+                    <SheetDescription>
+                      Fill out the form below and we'll get back to you shortly with availability.
+                    </SheetDescription>
+                  </SheetHeader>
+                  <form onSubmit={handleSubmit} className="space-y-4 mt-6">
+                    <div>
+                      <Label htmlFor="guests">Number of Guests</Label>
+                      <Select
+                        value={formData.guests}
+                        onValueChange={(value) => setFormData({ ...formData, guests: value })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select number of guests" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
+                            <SelectItem key={num} value={num.toString()}>
+                              {num} {num === 1 ? 'Guest' : 'Guests'}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label htmlFor="name">Name</Label>
+                      <Input
+                        id="name"
+                        value={formData.name}
+                        onChange={e => setFormData({ ...formData, name: e.target.value })}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="email">Email</Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        value={formData.email}
+                        onChange={e => setFormData({ ...formData, email: e.target.value })}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="phone">Phone</Label>
+                      <Input
+                        id="phone"
+                        type="tel"
+                        value={formData.phone}
+                        onChange={e => setFormData({ ...formData, phone: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="date">Preferred Date</Label>
+                      <Input
+                        id="date"
+                        type="date"
+                        value={formData.date}
+                        onChange={e => setFormData({ ...formData, date: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="message">Special Requests</Label>
+                      <Textarea
+                        id="message"
+                        value={formData.message}
+                        onChange={e => setFormData({ ...formData, message: e.target.value })}
+                        placeholder="Any special requirements or questions?"
+                      />
+                    </div>
+                    <Button type="submit" className="w-full">
+                      Submit Booking Request
+                    </Button>
+                  </form>
+                </SheetContent>
+              </Sheet>
             </div>
           </div>
         </div>
@@ -172,104 +303,138 @@ export default function AdventureDetail() {
             </div>
           </div>
 
-          {/* Booking Section - Now in a sticky card */}
-          <div className="lg:col-span-1">
-            <Card className="sticky top-8">
-              <CardContent className="p-6">
-                <div className="space-y-4">
-                  <div>
-                    <span className="text-2xl font-bold">{adventure.currentPrice}</span>
-                    {adventure.discount && (
-                      <span className="ml-2 text-sm line-through text-muted-foreground">
-                        {adventure.originalPrice}
-                      </span>
-                    )}
-                  </div>
-                  <Sheet>
-                    <SheetTrigger asChild>
-                      <Button className="w-full">Book Now</Button>
-                    </SheetTrigger>
-                    <SheetContent>
-                      <SheetHeader>
-                        <SheetTitle>Book Your Adventure</SheetTitle>
-                        <SheetDescription>
-                          Fill out the form below and we'll get back to you shortly with availability.
-                        </SheetDescription>
-                      </SheetHeader>
-                      <form onSubmit={handleSubmit} className="space-y-4 mt-6">
-                        <div>
-                          <Label htmlFor="guests">Number of Guests</Label>
-                          <Select 
-                            value={formData.guests}
-                            onValueChange={(value) => setFormData({...formData, guests: value})}
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select number of guests" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {[1,2,3,4,5,6,7,8,9,10].map((num) => (
-                                <SelectItem key={num} value={num.toString()}>
-                                  {num} {num === 1 ? 'Guest' : 'Guests'}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div>
-                          <Label htmlFor="name">Name</Label>
-                          <Input 
-                            id="name"
-                            value={formData.name}
-                            onChange={e => setFormData({...formData, name: e.target.value})}
-                            required
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="email">Email</Label>
-                          <Input 
-                            id="email"
-                            type="email"
-                            value={formData.email}
-                            onChange={e => setFormData({...formData, email: e.target.value})}
-                            required
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="phone">Phone</Label>
-                          <Input 
-                            id="phone"
-                            type="tel"
-                            value={formData.phone}
-                            onChange={e => setFormData({...formData, phone: e.target.value})}
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="date">Preferred Date</Label>
-                          <Input 
-                            id="date"
-                            type="date"
-                            value={formData.date}
-                            onChange={e => setFormData({...formData, date: e.target.value})}
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="message">Special Requests</Label>
-                          <Textarea 
-                            id="message"
-                            value={formData.message}
-                            onChange={e => setFormData({...formData, message: e.target.value})}
-                            placeholder="Any special requirements or questions?"
-                          />
-                        </div>
-                        <Button type="submit" className="w-full">
-                          Submit Booking Request
-                        </Button>
-                      </form>
-                    </SheetContent>
-                  </Sheet>
-                </div>
-              </CardContent>
-            </Card>
+
+        </div>
+      </div>
+
+      {/* Bottom Booking Section */}
+      <div className="bg-gray-50 py-6 mt-12 border-t">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div>
+              <span className="text-2xl font-bold">{adventure.currentPrice}</span>
+              {adventure.discount && (
+                <span className="ml-2 text-sm line-through text-muted-foreground">
+                  {adventure.originalPrice}
+                </span>
+              )}
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 bg-white rounded-lg p-2 shadow-sm">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="hover:bg-[#2F4F4F]/10"
+                  onClick={() => setFormData(prev => ({
+                    ...prev,
+                    guests: Math.max(1, parseInt(prev.guests) - 1).toString()
+                  }))}
+                >
+                  <Minus className="h-4 w-4" />
+                </Button>
+                <span className="w-20 text-center font-medium">
+                  {formData.guests} Guest{parseInt(formData.guests) !== 1 ? 's' : ''}
+                </span>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="hover:bg-[#2F4F4F]/10"
+                  onClick={() => setFormData(prev => ({
+                    ...prev,
+                    guests: Math.min(10, parseInt(prev.guests) + 1).toString()
+                  }))}
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button
+                    size="lg"
+                    className="w-[200px] bg-[#2F4F4F] hover:bg-[#2F4F4F]/90 text-white shadow-lg hover:shadow-xl transition-all"
+                  >
+                    Book Now
+                  </Button>
+                </SheetTrigger>
+                <SheetContent>
+                  <SheetHeader>
+                    <SheetTitle>Book Your Adventure</SheetTitle>
+                    <SheetDescription>
+                      Fill out the form below and we'll get back to you shortly with availability.
+                    </SheetDescription>
+                  </SheetHeader>
+                  <form onSubmit={handleSubmit} className="space-y-4 mt-6">
+                    <div>
+                      <Label htmlFor="guests">Number of Guests</Label>
+                      <Select
+                        value={formData.guests}
+                        onValueChange={(value) => setFormData({ ...formData, guests: value })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select number of guests" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
+                            <SelectItem key={num} value={num.toString()}>
+                              {num} {num === 1 ? 'Guest' : 'Guests'}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label htmlFor="name">Name</Label>
+                      <Input
+                        id="name"
+                        value={formData.name}
+                        onChange={e => setFormData({ ...formData, name: e.target.value })}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="email">Email</Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        value={formData.email}
+                        onChange={e => setFormData({ ...formData, email: e.target.value })}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="phone">Phone</Label>
+                      <Input
+                        id="phone"
+                        type="tel"
+                        value={formData.phone}
+                        onChange={e => setFormData({ ...formData, phone: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="date">Preferred Date</Label>
+                      <Input
+                        id="date"
+                        type="date"
+                        value={formData.date}
+                        onChange={e => setFormData({ ...formData, date: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="message">Special Requests</Label>
+                      <Textarea
+                        id="message"
+                        value={formData.message}
+                        onChange={e => setFormData({ ...formData, message: e.target.value })}
+                        placeholder="Any special requirements or questions?"
+                      />
+                    </div>
+                    <Button type="submit" className="w-full">
+                      Submit Booking Request
+                    </Button>
+                  </form>
+                </SheetContent>
+              </Sheet>
+            </div>
           </div>
         </div>
       </div>

@@ -26,11 +26,15 @@ export function parseAdventureData(csvData: string): Adventure[] {
     .map((line, index) => {
       const [url, imageUrl, title, currentPrice, originalPrice, discount, duration, _, minAge] = line.split(',');
 
-      // Generate a URL-friendly slug from the title
+      // Generate a simplified slug from the title
       const slug = title
         .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/(^-|-$)/g, '');
+        .replace(/(\d+[-\s]hour\s+|\d+[-\s]min\s+|cabo\s+)/gi, '') // Remove time and "cabo" prefix
+        .replace(/[^a-z0-9]+/g, '-') // Replace non-alphanumeric with hyphens
+        .replace(/(^-|-$)/g, '') // Remove leading/trailing hyphens
+        .split('-')
+        .slice(0, 3) // Take first 3 parts
+        .join('-'); // Join with hyphens
 
       // Generate a random rating between 4.4 and 4.9
       const rating = Number((Math.random() * (4.9 - 4.4) + 4.4).toFixed(1));
