@@ -3,71 +3,59 @@ import { Restaurant } from "../types/restaurant";
 export const restaurants: Restaurant[] = [
   {
     id: 1,
-    name: "Bonachón Asado de Baja Sur",
-    cuisine: "Mexican",
-    priceRange: "Expensive",
-    rating: 5,
-    reviews: 1,
-    images: ["https://resizer.otstatic.com/v2/photos/legacy/2/73781541.jpg"],
+    name: "Bagatelle Los Cabos",
+    cuisine: "International",
+    priceRange: "Very Expensive",
+    rating: 4.5,
+    reviews: 99,
+    images: ["https://resizer.otstatic.com/v2/photos/legacy/2/47401755.jpg"],
     location: "Cabo San Lucas",
     address: "Cabo San Lucas",
-    description: "The food and service are top notch here. You are greeted by a friendly and professional staff as you walk into the restaurant.",
-    features: ["Live Fire Grill", "Kids Play Area", "Happy Hour"],
-    hours: {
-      "Monday-Friday": "11:00 AM - 10:00 PM",
-      "Saturday-Sunday": "11:00 AM - 11:00 PM"
-    },
-    phone: "+52 624 XXX XXXX",
-    website: "https://www.opentable.com/r/bonachon-asado-de-baja-sur-cabo-san-lucas",
-    menu: [
-      {
-        category: "Tacos",
-        items: [
-          {
-            name: "Tacos Al Pastor",
-            price: 16,
-            description: "Specialty tacos available on Sundays"
-          }
-        ]
-      }
-    ]
-  },
-  {
-    id: 2,
-    name: "Habanero's Gastro Grill",
-    cuisine: "Mexican",
-    priceRange: "Expensive",
-    rating: 5,
-    reviews: 496,
-    images: ["https://resizer.otstatic.com/v2/photos/legacy/2/70187965.jpg"],
-    location: "San José del Cabo",
-    address: "San José del Cabo",
-    description: "Exceptional dining experience with professional service and authentic Mexican cuisine.",
-    features: ["Outdoor Seating", "Full Bar"],
-    hours: {
-      "Monday-Sunday": "12:00 PM - 10:00 PM"
-    },
-    phone: "+52 624 XXX XXXX",
-    website: "https://www.opentable.com/r/habaneros-gastro-grill-san-jose-del-cabo",
-    menu: []
-  },
-  {
-    id: 3,
-    name: "Acre Restaurant & Cocktail Bar",
-    cuisine: "Global, International",
-    priceRange: "Very Expensive",
-    rating: 5,
-    reviews: 3243,
-    images: ["https://images.unsplash.com/photo-1578474846511-04ba529f0b88"],
-    location: "San José del Cabo",
-    address: "San José del Cabo",
-    description: "Amazing dining experience with outstanding cocktails and food.",
-    features: ["Cocktail Bar", "Farm-to-Table"],
+    description: "Its all about the atmosphere and service. They provide it all. The food was delicious, and presented beautifully. We even enjoyed hooka for the table and dancing on the chairs. Its not just dining, its an event to experience.",
+    features: ["Live Entertainment", "Ocean View", "Fine Dining"],
     hours: {
       "Monday-Sunday": "5:00 PM - 11:00 PM"
     },
     phone: "+52 624 XXX XXXX",
-    website: "https://www.opentable.com/r/acre-restaurant-and-cocktail-bar-san-jose-del-cabo",
+    website: "https://www.opentable.com/r/bagetelle-los-cabos-cabo-san-lucas",
+    menu: []
+  },
+  {
+    id: 2,
+    name: "Don Manuel's - Waldorf Astoria Los Cabos Pedregal",
+    cuisine: "Fine Dining",
+    priceRange: "Moderate",
+    rating: 5,
+    reviews: 773,
+    images: ["https://resizer.otstatic.com/v2/photos/legacy/3/67415914.jpg"],
+    location: "Cabo San Lucas",
+    address: "Cabo San Lucas",
+    description: "It was amazing, very fine dining and the most beautiful hotel with excellent service",
+    features: ["Ocean View", "Hotel Restaurant", "Fine Dining"],
+    hours: {
+      "Monday-Sunday": "5:30 PM - 10:30 PM"
+    },
+    phone: "+52 624 XXX XXXX",
+    website: "https://www.opentable.com/r/don-manuels-waldorf-astoria-los-cabos-pedregal-cabo-san-lucas",
+    menu: []
+  },
+  {
+    id: 3,
+    name: "Hacienda Cocina y Cantina",
+    cuisine: "Mexican",
+    priceRange: "Very Expensive",
+    rating: 5,
+    reviews: 1981,
+    images: [],
+    location: "Cabo San Lucas",
+    address: "Cabo San Lucas",
+    description: "Our dinner at the Hacienda was awesome as we recalled from our last visit a few years ago. The service was wonderful and our dinners were prepared perfectly. The chicken mole and beef tenderloin were exceptional and the churros were amazing.",
+    features: ["Ocean View", "Mexican Cuisine", "Fine Dining"],
+    hours: {
+      "Monday-Sunday": "5:00 PM - 10:00 PM"
+    },
+    phone: "+52 624 XXX XXXX",
+    website: "https://www.opentable.com/r/hacienda-cocina-y-cantina-cabo-san-lucas",
     menu: []
   }
 ];
@@ -92,3 +80,9 @@ export const filterRestaurants = (filters: {
     return true;
   });
 };
+
+// Price range options
+export const priceRanges = ["Moderate", "Expensive", "Very Expensive"];
+
+// Cuisine types
+export const cuisineTypes = ["Mexican", "International", "Fine Dining", "Mediterranean", "Latin American", "Contemporary Mexican"];
