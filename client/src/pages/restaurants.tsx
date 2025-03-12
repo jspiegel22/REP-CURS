@@ -12,7 +12,7 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Restaurant, RestaurantFilters, RestaurantSortOptions } from "@/types/restaurant";
-import { useRouter } from "next/router";
+import { useLocation } from "wouter";
 import { restaurants, cuisineTypes, priceRanges } from "@/data/restaurants";
 
 export default function RestaurantsPage() {
@@ -22,7 +22,7 @@ export default function RestaurantsPage() {
     direction: 'desc'
   });
   const [searchQuery, setSearchQuery] = useState('');
-  const router = useRouter();
+  const [, setLocation] = useLocation();
 
   const filteredRestaurants = restaurants.filter(restaurant => {
     if (searchQuery && !restaurant.name.toLowerCase().includes(searchQuery.toLowerCase())) {
@@ -149,7 +149,7 @@ export default function RestaurantsPage() {
               <Card 
                 key={restaurant.id} 
                 className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer group"
-                onClick={() => router.push(`/restaurants/${restaurant.id}`)}
+                onClick={() => setLocation(`/restaurants/${restaurant.id}`)}
               >
                 <div className="relative h-48">
                   <img
