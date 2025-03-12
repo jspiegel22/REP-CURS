@@ -12,194 +12,8 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Restaurant, RestaurantFilters, RestaurantSortOptions } from "@/types/restaurant";
-import Link from "next/link";
 import { useRouter } from "next/router";
-
-// Mock data based on OpenTable CSV
-const mockRestaurants: Restaurant[] = [
-  {
-    id: '1',
-    name: 'Bagatelle Los Cabos',
-    rating: 'Awesome',
-    reviewCount: 99,
-    priceRange: 'Very Expensive',
-    cuisine: 'International',
-    location: 'Cabo San Lucas',
-    imageUrl: 'https://resizer.otstatic.com/v2/photos/legacy/2/47401755.jpg',
-    bookingsToday: 16,
-    description: 'Its all about the atmosphere and service. They provide it all. The food was delicious, and presented beautifully.',
-    openTableUrl: 'https://www.opentable.com/r/bagetelle-los-cabos-cabo-san-lucas',
-    availableTimeslots: ['6:30 PM', '7:00 PM', '7:30 PM', '8:00 PM']
-  },
-  {
-    id: '2',
-    name: 'El Farallon',
-    rating: 'Exceptional',
-    reviewCount: 245,
-    priceRange: 'Very Expensive',
-    cuisine: 'Seafood',
-    location: 'Cabo San Lucas',
-    imageUrl: 'https://resizer.otstatic.com/v2/photos/xlarge/1/47401803.jpg',
-    bookingsToday: 24,
-    description: 'Carved into the cliffs of The Resort at Pedregal, El Farallon offers an unparalleled dining experience with the best views in Cabo.',
-    openTableUrl: 'https://www.opentable.com/r/el-farallon-cabo-san-lucas',
-    availableTimeslots: ['5:30 PM', '6:00 PM', '8:00 PM', '8:30 PM']
-  },
-  {
-    id: '3',
-    name: 'Nobu Los Cabos',
-    rating: 'Exceptional',
-    reviewCount: 178,
-    priceRange: 'Very Expensive',
-    cuisine: 'Japanese',
-    location: 'Cabo San Lucas',
-    imageUrl: 'https://resizer.otstatic.com/v2/photos/xlarge/3/47401844.jpg',
-    bookingsToday: 19,
-    description: 'World-renowned Japanese cuisine meets breathtaking Pacific Ocean views at Nobu Los Cabos. Experience Chef Nobu Matsuhisa\'s signature dishes.',
-    openTableUrl: 'https://www.opentable.com/r/nobu-los-cabos',
-    availableTimeslots: ['6:00 PM', '7:00 PM', '7:30 PM', '9:00 PM']
-  },
-  {
-    id: '4',
-    name: 'Don Manuel\'s',
-    rating: 'Exceptional',
-    reviewCount: 156,
-    priceRange: 'Expensive',
-    cuisine: 'Mexican',
-    location: 'Cabo San Lucas',
-    imageUrl: 'https://resizer.otstatic.com/v2/photos/xlarge/2/47401890.jpg',
-    bookingsToday: 12,
-    description: 'Farm-to-table Mexican cuisine in an elegant setting at the Waldorf Astoria Los Cabos Pedregal. Ocean views and exceptional service.',
-    openTableUrl: 'https://www.opentable.com/r/don-manuels-cabo-san-lucas',
-    availableTimeslots: ['5:30 PM', '6:00 PM', '7:00 PM', '8:30 PM']
-  },
-  {
-    id: '5',
-    name: 'Sunset MonaLisa',
-    rating: 'Exceptional',
-    reviewCount: 312,
-    priceRange: 'Expensive',
-    cuisine: 'Mediterranean',
-    location: 'Cabo San Lucas',
-    imageUrl: 'https://resizer.otstatic.com/v2/photos/xlarge/1/47401922.jpg',
-    bookingsToday: 28,
-    description: 'Spectacular views of the Arch and Sea of Cortez complement the Mediterranean cuisine. Perfect for romantic dinners and special occasions.',
-    openTableUrl: 'https://www.opentable.com/r/sunset-monalisa-cabo-san-lucas',
-    availableTimeslots: ['5:00 PM', '5:30 PM', '6:00 PM', '7:30 PM']
-  },
-  {
-    id: '6',
-    name: 'Salvatore\'s Restaurant',
-    rating: 'Awesome',
-    reviewCount: 89,
-    priceRange: 'Expensive',
-    cuisine: 'Italian',
-    location: 'San José del Cabo',
-    imageUrl: 'https://resizer.otstatic.com/v2/photos/xlarge/2/47401966.jpg',
-    bookingsToday: 8,
-    description: 'Authentic Italian cuisine in the heart of San José del Cabo. Hand-made pasta and wood-fired pizzas in a romantic setting.',
-    openTableUrl: 'https://www.opentable.com/r/salvatores-san-jose-del-cabo',
-    availableTimeslots: ['6:00 PM', '6:30 PM', '7:00 PM', '8:00 PM']
-  },
-  {
-    id: '7',
-    name: 'Nicksan',
-    rating: 'Exceptional',
-    reviewCount: 167,
-    priceRange: 'Very Expensive',
-    cuisine: 'Japanese',
-    location: 'Cabo San Lucas',
-    imageUrl: 'https://resizer.otstatic.com/v2/photos/xlarge/3/47402001.jpg',
-    bookingsToday: 15,
-    description: 'Japanese cuisine with Mexican influences. Known for their innovative sushi rolls and fresh seafood dishes.',
-    openTableUrl: 'https://www.opentable.com/r/nicksan-cabo-san-lucas',
-    availableTimeslots: ['5:30 PM', '6:30 PM', '7:30 PM', '8:30 PM']
-  },
-  {
-    id: '8',
-    name: 'La Casona',
-    rating: 'Exceptional',
-    reviewCount: 134,
-    priceRange: 'Expensive',
-    cuisine: 'Steakhouse',
-    location: 'San José del Cabo',
-    imageUrl: 'https://resizer.otstatic.com/v2/photos/xlarge/1/47402045.jpg',
-    bookingsToday: 11,
-    description: 'Fine dining steakhouse featuring premium cuts and an extensive wine cellar. Elegant atmosphere with attentive service.',
-    openTableUrl: 'https://www.opentable.com/r/la-casona-san-jose-del-cabo',
-    availableTimeslots: ['6:00 PM', '7:00 PM', '8:00 PM', '9:00 PM']
-  },
-  {
-    id: '9',
-    name: 'Cocina del Mar',
-    rating: 'Exceptional',
-    reviewCount: 287,
-    priceRange: 'Very Expensive',
-    cuisine: 'Seafood',
-    location: 'Cabo San Lucas',
-    imageUrl: 'https://resizer.otstatic.com/v2/photos/xlarge/3/47402089.jpg',
-    bookingsToday: 32,
-    description: 'Perched on the cliffs of Esperanza Resort, offering fresh seafood and spectacular whale watching during season. Romantic oceanfront dining.',
-    openTableUrl: 'https://www.opentable.com/r/cocina-del-mar-cabo-san-lucas',
-    availableTimeslots: ['5:00 PM', '6:30 PM', '7:00 PM', '8:30 PM']
-  },
-  {
-    id: '10',
-    name: 'Agua by Larbi',
-    rating: 'Exceptional',
-    reviewCount: 198,
-    priceRange: 'Very Expensive',
-    cuisine: 'Mediterranean',
-    location: 'San José del Cabo',
-    imageUrl: 'https://resizer.otstatic.com/v2/photos/xlarge/2/47402112.jpg',
-    bookingsToday: 21,
-    description: 'Farm-to-table Mediterranean cuisine with Mexican influences. Stunning ocean views and fresh local ingredients create an unforgettable dining experience.',
-    openTableUrl: 'https://www.opentable.com/r/agua-by-larbi-san-jose-del-cabo',
-    availableTimeslots: ['5:30 PM', '6:00 PM', '7:30 PM', '8:00 PM']
-  },
-  {
-    id: '11',
-    name: 'Cielomar Rooftop',
-    rating: 'Exceptional',
-    reviewCount: 145,
-    priceRange: 'Expensive',
-    cuisine: 'International',
-    location: 'San José del Cabo',
-    imageUrl: 'https://resizer.otstatic.com/v2/photos/xlarge/1/47402156.jpg',
-    bookingsToday: 18,
-    description: 'Stunning rooftop venue offering panoramic views of the Sea of Cortez. International cuisine with a focus on fresh local ingredients.',
-    openTableUrl: 'https://www.opentable.com/r/cielomar-rooftop-san-jose-del-cabo',
-    availableTimeslots: ['6:00 PM', '7:00 PM', '8:00 PM', '9:00 PM']
-  },
-  {
-    id: '12',
-    name: 'Mi Casa',
-    rating: 'Awesome',
-    reviewCount: 276,
-    priceRange: 'Moderate',
-    cuisine: 'Mexican',
-    location: 'Cabo San Lucas',
-    imageUrl: 'https://resizer.otstatic.com/v2/photos/xlarge/3/47402198.jpg',
-    bookingsToday: 45,
-    description: 'Authentic Mexican cuisine in a vibrant, colorful setting. Live mariachi music and traditional recipes passed down through generations.',
-    openTableUrl: 'https://www.opentable.com/r/mi-casa-cabo-san-lucas',
-    availableTimeslots: ['5:00 PM', '6:00 PM', '7:00 PM', '8:00 PM', '9:00 PM']
-  }
-];
-
-const cuisineTypes = [
-  "All",
-  "International",
-  "Seafood",
-  "Japanese",
-  "Mexican",
-  "Mediterranean",
-  "Italian",
-  "Steakhouse"
-];
-
-const priceRanges = ["All", "Moderate", "Expensive", "Very Expensive"];
-const locations = ["All", "Cabo San Lucas", "San José del Cabo"];
+import { restaurants, cuisineTypes, priceRanges } from "@/data/restaurants";
 
 export default function RestaurantsPage() {
   const [filters, setFilters] = useState<RestaurantFilters>({});
@@ -210,7 +24,7 @@ export default function RestaurantsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const router = useRouter();
 
-  const filteredRestaurants = mockRestaurants.filter(restaurant => {
+  const filteredRestaurants = restaurants.filter(restaurant => {
     if (searchQuery && !restaurant.name.toLowerCase().includes(searchQuery.toLowerCase())) {
       return false;
     }
@@ -238,15 +52,12 @@ export default function RestaurantsPage() {
     return aValue < bValue ? 1 : -1;
   });
 
-  const filteredAndSortedRestaurants = sortedRestaurants.map((restaurant) => ({
-    ...restaurant,
-    availableTimeslots: restaurant.availableTimeslots || []
-  }));
+  const locations = ["All", "Cabo San Lucas", "San José del Cabo"];
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <div className="bg-[#2F4F4F] text-white py-16 cursor-pointer" onClick={() => router.push('/restaurants')}>
+      <div className="bg-[#2F4F4F] text-white py-16">
         <div className="container mx-auto px-4">
           <h1 className="text-4xl font-bold mb-4">Restaurants in Cabo</h1>
           <p className="text-xl text-white/90 max-w-2xl">
@@ -259,10 +70,7 @@ export default function RestaurantsPage() {
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col gap-6">
           <div className="flex items-center justify-between">
-            <h1 
-              className="text-3xl font-bold cursor-pointer hover:text-primary transition-colors"
-              onClick={() => router.push('/restaurants')}
-            >
+            <h1 className="text-3xl font-bold">
               Restaurants in Los Cabos
             </h1>
             <div className="flex items-center gap-4">
@@ -312,6 +120,7 @@ export default function RestaurantsPage() {
                 <SelectValue placeholder="Cuisine Type" />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="All">All Cuisines</SelectItem>
                 {cuisineTypes.map((cuisine) => (
                   <SelectItem key={cuisine} value={cuisine}>
                     {cuisine}
@@ -338,7 +147,7 @@ export default function RestaurantsPage() {
 
           {/* Restaurant Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredAndSortedRestaurants.map((restaurant) => (
+            {sortedRestaurants.map((restaurant) => (
               <Card key={restaurant.id} className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer group" onClick={() => router.push(`/restaurants/${restaurant.id}`)}>
                 <div className="relative h-48">
                   <img
@@ -417,4 +226,4 @@ export default function RestaurantsPage() {
       </div>
     </div>
   );
-} 
+}
