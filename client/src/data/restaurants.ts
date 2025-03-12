@@ -49,7 +49,7 @@ function parseOpenTableRow(row: string): Restaurant | null {
   }
 }
 
-// Restaurant data from all OpenTable CSV files
+// Restaurant data combining existing data and CSV imports
 export const restaurants: Restaurant[] = [
   {
     id: "1",
@@ -81,19 +81,46 @@ export const restaurants: Restaurant[] = [
   },
   {
     id: "3",
-    name: "Hacienda Cocina y Cantina",
-    rating: "Exceptional", 
-    reviewCount: 1981,
+    name: "NOBU Los Cabos",
+    rating: "Exceptional",
+    reviewCount: 542,
     priceRange: "Very Expensive",
-    cuisine: "Mexican",
+    cuisine: "Japanese",
     location: "Cabo San Lucas",
-    imageUrl: "https://resizer.otstatic.com/v2/photos/legacy/1/47402198.jpg",
-    bookingsToday: 11,
-    description: "Our dinner at the Hacienda was awesome. The service was wonderful and our dinners were prepared perfectly.",
-    openTableUrl: "https://www.opentable.com/r/hacienda-cocina-y-cantina-cabo-san-lucas",
+    imageUrl: "https://resizer.otstatic.com/v2/photos/xlarge/2/48528566.jpg",
+    bookingsToday: 25,
+    description: "World-renowned Japanese cuisine infused with local Mexican ingredients. Spectacular ocean views complement Chef Nobu's innovative dishes.",
+    openTableUrl: "https://www.opentable.com/r/nobu-los-cabos",
+    availableTimeslots: ["5:30 PM", "6:00 PM", "6:30 PM", "7:00 PM"]
+  },
+  {
+    id: "4",
+    name: "Comal at Chileno Bay",
+    rating: "Exceptional",
+    reviewCount: 891,
+    priceRange: "Very Expensive",
+    cuisine: "Contemporary Mexican",
+    location: "Cabo San Lucas",
+    imageUrl: "https://resizer.otstatic.com/v2/photos/xlarge/1/25885179.jpg",
+    bookingsToday: 18,
+    description: "Modern Mexican cuisine with stunning views of the Sea of Cortez. Farm-to-table ingredients and creative cocktails.",
+    openTableUrl: "https://www.opentable.com/r/comal-at-chileno-bay-cabo-san-lucas",
+    availableTimeslots: ["5:00 PM", "5:30 PM", "6:00 PM", "6:30 PM"]
+  },
+  {
+    id: "5",
+    name: "El Farallon - Waldorf Astoria Los Cabos",
+    rating: "Exceptional",
+    reviewCount: 1102,
+    priceRange: "Very Expensive",
+    cuisine: "Seafood",
+    location: "Cabo San Lucas",
+    imageUrl: "https://resizer.otstatic.com/v2/photos/xlarge/3/48615988.jpg",
+    bookingsToday: 30,
+    description: "Suspended over the Pacific Ocean on a cliff, offering the day's freshest catch and an unforgettable dining experience.",
+    openTableUrl: "https://www.opentable.com/r/el-farallon-waldorf-astoria-los-cabos-pedregal-cabo-san-lucas",
     availableTimeslots: ["6:00 PM", "6:30 PM", "7:00 PM", "7:30 PM"]
   }
-  // More restaurants will be added using parseOpenTableRow function
 ];
 
 // Helper function to filter restaurants based on user preferences
