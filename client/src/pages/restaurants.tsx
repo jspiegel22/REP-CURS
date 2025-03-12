@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Restaurant, RestaurantFilters, RestaurantSortOptions } from "@/types/restaurant";
 import { useRouter } from "next/router";
 import { restaurants, cuisineTypes, priceRanges } from "@/data/restaurants";
+import { Link } from "wouter";
 
 export default function RestaurantsPage() {
   const [filters, setFilters] = useState<RestaurantFilters>({});
@@ -56,8 +57,19 @@ export default function RestaurantsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Back Button */}
+      <div className="container mx-auto px-4 py-4">
+        <Button
+          variant="ghost"
+          className="text-muted-foreground"
+          onClick={() => router.push('/restaurants-landing')}
+        >
+          ← Back to Overview
+        </Button>
+      </div>
+
       {/* Hero Section */}
-      <div className="bg-[#2F4F4F] text-white py-16">
+      <div className="bg-[#2F4F4F] text-white py-16 cursor-pointer" onClick={() => router.push('/restaurants-landing')}>
         <div className="container mx-auto px-4">
           <h1 className="text-4xl font-bold mb-4">Restaurants in Cabo</h1>
           <p className="text-xl text-white/90 max-w-2xl">
@@ -70,7 +82,10 @@ export default function RestaurantsPage() {
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col gap-6">
           <div className="flex items-center justify-between">
-            <h1 className="text-3xl font-bold">
+            <h1 
+              className="text-3xl font-bold cursor-pointer hover:text-primary transition-colors"
+              onClick={() => router.push('/restaurants-landing')}
+            >
               Restaurants in Los Cabos
             </h1>
             <div className="flex items-center gap-4">

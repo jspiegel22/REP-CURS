@@ -56,7 +56,7 @@ export default function RestaurantsLanding() {
               <h1 className="text-5xl font-bold mb-6">Culinary Excellence in Cabo</h1>
               <p className="text-xl mb-8">From exclusive beachfront dining to authentic local cuisine, discover the finest restaurants and culinary experiences in Cabo San Lucas.</p>
               <Button size="lg" className="bg-white text-[#2F4F4F] hover:bg-[#F5F5DC]">
-                Explore Restaurants
+                <Link href="/restaurants">Explore Restaurants</Link>
               </Button>
             </div>
           </div>
@@ -140,7 +140,7 @@ export default function RestaurantsLanding() {
             Discover the best restaurants and make your reservation today.
           </p>
           <Button asChild size="lg" variant="outline" className="bg-white text-[#2F4F4F] hover:bg-[#F5F5DC]">
-            <Link href="/listings/restaurant">Browse Restaurants</Link>
+            <Link href="/restaurants">Browse Restaurants</Link>
           </Button>
         </div>
       </div>
