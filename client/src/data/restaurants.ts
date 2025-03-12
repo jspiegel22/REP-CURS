@@ -1,5 +1,54 @@
 import { Restaurant } from "../types/restaurant";
 
+// Function to parse row from OpenTable CSV format
+function parseOpenTableRow(row: string): Restaurant | null {
+  try {
+    const fields = row.split(',');
+    if (fields.length < 10) return null;
+
+    // Extract the ID from the name field which has format "1. Restaurant Name"
+    const nameWithId = fields[2];
+    const idMatch = nameWithId.match(/^(\d+)\./);
+    const id = idMatch ? idMatch[1] : Math.random().toString();
+    const name = nameWithId.replace(/^\d+\.\s*/, '');
+
+    // Extract location and cuisine from combined field that looks like "• Cuisine • Location"
+    const locationCuisine = fields[7].split('•').filter(s => s.trim());
+    const cuisine = locationCuisine[1]?.trim() || 'Unspecified';
+    const location = locationCuisine[2]?.trim() || 'Cabo San Lucas';
+
+    // Parse price range from "Price: Very Expensive" format
+    const priceRange = fields[6].replace('Price: ', '').trim();
+
+    // Parse bookings from "Booked X times today" format
+    const bookingsMatch = fields[8].match(/Booked (\d+) times today/);
+    const bookingsToday = bookingsMatch ? parseInt(bookingsMatch[1]) : 0;
+
+    // Parse review count from "(123)" format
+    const reviewCountMatch = fields[5].match(/\((\d+)\)/);
+    const reviewCount = reviewCountMatch ? parseInt(reviewCountMatch[1]) : 0;
+
+    return {
+      id,
+      name,
+      rating: fields[3].trim(),
+      reviewCount,
+      priceRange,
+      cuisine,
+      location,
+      imageUrl: fields[1].trim(),
+      bookingsToday,
+      description: fields[10]?.trim() || '',
+      openTableUrl: fields[0].trim(),
+      availableTimeslots: fields.slice(15, 19)
+        .filter(slot => slot.match(/\d+:\d+ [AP]M/))
+    };
+  } catch (e) {
+    console.error('Error parsing row:', e);
+    return null;
+  }
+}
+
 // Restaurant data from all OpenTable CSV files
 export const restaurants: Restaurant[] = [
   {
@@ -17,7 +66,7 @@ export const restaurants: Restaurant[] = [
     availableTimeslots: ["6:30 PM", "7:00 PM", "7:30 PM", "8:00 PM"]
   },
   {
-    id: "2", 
+    id: "2",
     name: "Don Manuel's - Waldorf Astoria Los Cabos Pedregal",
     rating: "Exceptional",
     reviewCount: 773,
@@ -33,7 +82,7 @@ export const restaurants: Restaurant[] = [
   {
     id: "3",
     name: "Hacienda Cocina y Cantina",
-    rating: "Exceptional",
+    rating: "Exceptional", 
     reviewCount: 1981,
     priceRange: "Very Expensive",
     cuisine: "Mexican",
@@ -43,21 +92,8 @@ export const restaurants: Restaurant[] = [
     description: "Our dinner at the Hacienda was awesome. The service was wonderful and our dinners were prepared perfectly.",
     openTableUrl: "https://www.opentable.com/r/hacienda-cocina-y-cantina-cabo-san-lucas",
     availableTimeslots: ["6:00 PM", "6:30 PM", "7:00 PM", "7:30 PM"]
-  },
-  {
-    id: "4",
-    name: "El Farallon",
-    rating: "Exceptional",
-    reviewCount: 245,
-    priceRange: "Very Expensive",
-    cuisine: "Seafood",
-    location: "Cabo San Lucas",
-    imageUrl: "https://resizer.otstatic.com/v2/photos/xlarge/1/47401803.jpg",
-    bookingsToday: 24,
-    description: "Carved into the cliffs of The Resort at Pedregal, El Farallon offers an unparalleled dining experience with the best views in Cabo.",
-    openTableUrl: "https://www.opentable.com/r/el-farallon-cabo-san-lucas",
-    availableTimeslots: ["5:30 PM", "6:00 PM", "8:00 PM", "8:30 PM"]
   }
+  // More restaurants will be added using parseOpenTableRow function
 ];
 
 // Helper function to filter restaurants based on user preferences

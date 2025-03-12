@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, MapPin, Star, Filter } from "lucide-react";
+import { Search, MapPin, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -14,7 +14,6 @@ import { Badge } from "@/components/ui/badge";
 import { Restaurant, RestaurantFilters, RestaurantSortOptions } from "@/types/restaurant";
 import { useRouter } from "next/router";
 import { restaurants, cuisineTypes, priceRanges } from "@/data/restaurants";
-import { Link } from "wouter";
 
 export default function RestaurantsPage() {
   const [filters, setFilters] = useState<RestaurantFilters>({});
@@ -35,9 +34,6 @@ export default function RestaurantsPage() {
     if (filters.priceRange && restaurant.priceRange !== filters.priceRange) {
       return false;
     }
-    if (filters.rating && restaurant.rating !== filters.rating) {
-      return false;
-    }
     if (filters.location && restaurant.location !== filters.location) {
       return false;
     }
@@ -53,23 +49,12 @@ export default function RestaurantsPage() {
     return aValue < bValue ? 1 : -1;
   });
 
-  const locations = ["All", "Cabo San Lucas", "San José del Cabo"];
+  const locations = Array.from(new Set(restaurants.map(r => r.location)));
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Back Button */}
-      <div className="container mx-auto px-4 py-4">
-        <Button
-          variant="ghost"
-          className="text-muted-foreground"
-          onClick={() => router.push('/restaurants-landing')}
-        >
-          ← Back to Overview
-        </Button>
-      </div>
-
       {/* Hero Section */}
-      <div className="bg-[#2F4F4F] text-white py-16 cursor-pointer" onClick={() => router.push('/restaurants-landing')}>
+      <div className="bg-[#2F4F4F] text-white py-16">
         <div className="container mx-auto px-4">
           <h1 className="text-4xl font-bold mb-4">Restaurants in Cabo</h1>
           <p className="text-xl text-white/90 max-w-2xl">
@@ -82,10 +67,7 @@ export default function RestaurantsPage() {
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col gap-6">
           <div className="flex items-center justify-between">
-            <h1 
-              className="text-3xl font-bold cursor-pointer hover:text-primary transition-colors"
-              onClick={() => router.push('/restaurants-landing')}
-            >
+            <h1 className="text-3xl font-bold">
               Restaurants in Los Cabos
             </h1>
             <div className="flex items-center gap-4">
@@ -151,6 +133,7 @@ export default function RestaurantsPage() {
                 <SelectValue placeholder="Location" />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="All">All Locations</SelectItem>
                 {locations.map((location) => (
                   <SelectItem key={location} value={location}>
                     {location}
@@ -163,7 +146,11 @@ export default function RestaurantsPage() {
           {/* Restaurant Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {sortedRestaurants.map((restaurant) => (
-              <Card key={restaurant.id} className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer group" onClick={() => router.push(`/restaurants/${restaurant.id}`)}>
+              <Card 
+                key={restaurant.id} 
+                className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer group"
+                onClick={() => router.push(`/restaurants/${restaurant.id}`)}
+              >
                 <div className="relative h-48">
                   <img
                     src={restaurant.imageUrl}
