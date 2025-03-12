@@ -57,6 +57,44 @@ export const restaurants: Restaurant[] = [
     phone: "+52 624 XXX XXXX",
     website: "https://www.opentable.com/r/hacienda-cocina-y-cantina-cabo-san-lucas",
     menu: []
+  },
+  {
+    id: 4,
+    name: "Los Tres Gallos - Cabo San Lucas",
+    cuisine: "Mexican",
+    priceRange: "Very Expensive",
+    rating: 5,
+    reviews: 998,
+    images: [],
+    location: "Cabo San Lucas",
+    address: "Cabo San Lucas",
+    description: "Wonderful setting, open air courtyard with Mexican theme. Food is authentic and delicious. The prices are appropriate for the great food served. Service was fantastic. Margaritas are also delicious and among the top in Cabo.",
+    features: ["Outdoor Dining", "Authentic Mexican", "Cocktail Bar"],
+    hours: {
+      "Monday-Sunday": "5:00 PM - 11:00 PM"
+    },
+    phone: "+52 624 XXX XXXX",
+    website: "https://www.opentable.com/r/los-tres-gallos-cabo-san-lucas",
+    menu: []
+  },
+  {
+    id: 5,
+    name: "Taboo Cabo",
+    cuisine: "Mediterranean",
+    priceRange: "Very Expensive",
+    rating: 5,
+    reviews: 772,
+    images: [],
+    location: "Cabo San Lucas",
+    address: "Cabo San Lucas",
+    description: "Service amazing, atmosphere really nice, Music nice sound levels, Staff top notch service!",
+    features: ["Live Music", "Mediterranean Cuisine", "Fine Dining"],
+    hours: {
+      "Monday-Sunday": "6:00 PM - 11:00 PM"
+    },
+    phone: "+52 624 XXX XXXX",
+    website: "https://www.opentable.com/r/taboo-cabo-cabo-san-lucas",
+    menu: []
   }
 ];
 
