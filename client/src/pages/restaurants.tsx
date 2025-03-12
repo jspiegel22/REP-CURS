@@ -22,7 +22,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormProvider } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 
 // Helper function to get badge color based on cuisine type
@@ -92,9 +92,6 @@ export default function RestaurantsPage() {
     if (filters.priceRange && restaurant.priceRange !== filters.priceRange) {
       return false;
     }
-    if (filters.location && restaurant.location !== filters.location) {
-      return false;
-    }
     return true;
   });
 
@@ -106,8 +103,6 @@ export default function RestaurantsPage() {
     }
     return aValue < bValue ? 1 : -1;
   });
-
-  const locations = Array.from(new Set(restaurants.map(r => r.location)));
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -125,16 +120,10 @@ export default function RestaurantsPage() {
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col gap-6">
           <div className="flex items-center justify-between">
-            <h1 className="text-3xl font-bold">
+            <h2 className="text-3xl font-bold">
               Restaurants in Los Cabos
-            </h1>
+            </h2>
             <div className="flex items-center gap-4">
-              <Input
-                placeholder="Search restaurants..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-64"
-              />
               <Select
                 value={`${sortOption.field}-${sortOption.direction}`}
                 onValueChange={(value) => {
@@ -183,22 +172,6 @@ export default function RestaurantsPage() {
                 ))}
               </SelectContent>
             </Select>
-            <Select
-              value={filters.location}
-              onValueChange={(value) => setFilters({ ...filters, location: value === "All" ? undefined : value })}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Location" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="All">All Locations</SelectItem>
-                {locations.map((location) => (
-                  <SelectItem key={location} value={location}>
-                    {location}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
           </div>
 
           {/* Restaurant Grid */}
@@ -224,7 +197,7 @@ export default function RestaurantsPage() {
                 <CardContent className="p-6">
                   <div className="flex justify-between items-start mb-4">
                     <div>
-                      <h3 className="text-lg font-semibold mb-1 group-hover:text-primary">
+                      <h3 className="text-lg font-semibold mb-1 group-hover:text-primary transition-colors duration-200">
                         {restaurant.name}
                       </h3>
                       <div className="flex items-center text-muted-foreground text-sm">
@@ -264,111 +237,113 @@ export default function RestaurantsPage() {
                           Request Table
                         </Button>
                       </DialogTrigger>
-                      <DialogContent className="sm:max-w-[425px]">
+                      <DialogContent className="sm:max-w-[425px]" onClick={(e) => e.stopPropagation()}>
                         <DialogHeader>
                           <DialogTitle>Request a Table at {restaurant.name}</DialogTitle>
                           <DialogDescription>
                             Fill out the form below to request a reservation. We'll get back to you shortly to confirm your booking.
                           </DialogDescription>
                         </DialogHeader>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                          <FormField
-                            control={form.control}
-                            name="date"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Date</FormLabel>
-                                <FormControl>
-                                  <Input type="date" {...field} />
-                                </FormControl>
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={form.control}
-                            name="time"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Preferred Time</FormLabel>
-                                <FormControl>
-                                  <Input type="time" {...field} />
-                                </FormControl>
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={form.control}
-                            name="partySize"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Party Size</FormLabel>
-                                <FormControl>
-                                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                    <SelectTrigger>
-                                      <SelectValue placeholder="Select party size" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      {Array.from({ length: 12 }, (_, i) => i + 1).map((num) => (
-                                        <SelectItem key={num} value={num.toString()}>
-                                          {num} {num === 1 ? 'person' : 'people'}
-                                        </SelectItem>
-                                      ))}
-                                    </SelectContent>
-                                  </Select>
-                                </FormControl>
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={form.control}
-                            name="name"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Name</FormLabel>
-                                <FormControl>
-                                  <Input {...field} />
-                                </FormControl>
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={form.control}
-                            name="email"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Email</FormLabel>
-                                <FormControl>
-                                  <Input type="email" {...field} />
-                                </FormControl>
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={form.control}
-                            name="phone"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Phone</FormLabel>
-                                <FormControl>
-                                  <Input type="tel" {...field} />
-                                </FormControl>
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={form.control}
-                            name="specialRequests"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Special Requests</FormLabel>
-                                <FormControl>
-                                  <Input {...field} />
-                                </FormControl>
-                              </FormItem>
-                            )}
-                          />
-                          <Button type="submit" className="w-full">Submit Request</Button>
-                        </form>
+                        <FormProvider {...form}>
+                          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                            <FormField
+                              control={form.control}
+                              name="date"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Date</FormLabel>
+                                  <FormControl>
+                                    <Input type="date" {...field} />
+                                  </FormControl>
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="time"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Preferred Time</FormLabel>
+                                  <FormControl>
+                                    <Input type="time" {...field} />
+                                  </FormControl>
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="partySize"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Party Size</FormLabel>
+                                  <FormControl>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                      <SelectTrigger>
+                                        <SelectValue placeholder="Select party size" />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        {Array.from({ length: 12 }, (_, i) => i + 1).map((num) => (
+                                          <SelectItem key={num} value={num.toString()}>
+                                            {num} {num === 1 ? 'person' : 'people'}
+                                          </SelectItem>
+                                        ))}
+                                      </SelectContent>
+                                    </Select>
+                                  </FormControl>
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="name"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Name</FormLabel>
+                                  <FormControl>
+                                    <Input {...field} />
+                                  </FormControl>
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="email"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Email</FormLabel>
+                                  <FormControl>
+                                    <Input type="email" {...field} />
+                                  </FormControl>
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="phone"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Phone</FormLabel>
+                                  <FormControl>
+                                    <Input type="tel" {...field} />
+                                  </FormControl>
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="specialRequests"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Special Requests</FormLabel>
+                                  <FormControl>
+                                    <Input {...field} />
+                                  </FormControl>
+                                </FormItem>
+                              )}
+                            />
+                            <Button type="submit" className="w-full">Submit Request</Button>
+                          </form>
+                        </FormProvider>
                       </DialogContent>
                     </Dialog>
                   </div>
