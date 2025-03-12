@@ -102,8 +102,8 @@ export default function NavigationBar() {
                     </div>
                   </div>
 
-                  {/* Guides Section */}
-                  <div className="px-3 py-4 border-t border-white/10">
+                  {/* Guides Section - Hidden on Mobile */}
+                  <div className="hidden md:block px-3 py-4 border-t border-white/10">
                     <h3 className="text-white/60 text-sm font-semibold mb-3">Guides</h3>
                     <div className="grid grid-cols-2 gap-3">
                       <Link href="/guides/activities">
@@ -137,22 +137,22 @@ export default function NavigationBar() {
                   <div className="mt-auto px-6 py-4 border-t border-white/10">
                     <h3 className="text-white/60 text-sm font-semibold mb-4">Follow Us</h3>
                     <div className="flex gap-6 flex-wrap">
-                      <a href="https://www.tiktok.com/@atcabo" className="text-white hover:text-white/80">
+                      <a href="https://www.tiktok.com/@atcabo" target="_blank" rel="noopener noreferrer" className="text-white hover:text-white/80">
                         <SiTiktok className="w-5 h-5" />
                       </a>
-                      <a href="https://instagram.com/cabo" className="text-white hover:text-white/80">
+                      <a href="https://instagram.com/cabo" target="_blank" rel="noopener noreferrer" className="text-white hover:text-white/80">
                         <SiInstagram className="w-5 h-5" />
                       </a>
-                      <a href="https://www.youtube.com/@atCabo" className="text-white hover:text-white/80">
+                      <a href="https://www.youtube.com/@atCabo" target="_blank" rel="noopener noreferrer" className="text-white hover:text-white/80">
                         <SiYoutube className="w-5 h-5" />
                       </a>
-                      <a href="https://wa.me/526242446303" className="text-white hover:text-white/80">
+                      <a href="https://wa.me/526242446303" target="_blank" rel="noopener noreferrer" className="text-white hover:text-white/80">
                         <SiWhatsapp className="w-5 h-5" />
                       </a>
-                      <a href="https://www.facebook.com/cabosanlucasbaja" className="text-white hover:text-white/80">
+                      <a href="https://www.facebook.com/cabosanlucasbaja" target="_blank" rel="noopener noreferrer" className="text-white hover:text-white/80">
                         <SiFacebook className="w-5 h-5" />
                       </a>
-                      <a href="https://www.pinterest.com/instacabo/" className="text-white hover:text-white/80">
+                      <a href="https://www.pinterest.com/instacabo/" target="_blank" rel="noopener noreferrer" className="text-white hover:text-white/80">
                         <SiPinterest className="w-5 h-5" />
                       </a>
                     </div>
