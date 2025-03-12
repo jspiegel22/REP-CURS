@@ -171,6 +171,120 @@ export const restaurants: Restaurant[] = [
     phone: "+52 624 XXX XXXX",
     website: "https://www.opentable.com/r/acre-restaurant-and-cocktail-bar-san-jose-del-cabo",
     menu: []
+  },
+  {
+    id: 10,
+    name: "Outpost",
+    cuisine: "Contemporary Mexican",
+    priceRange: "Expensive",
+    rating: 4.5,
+    reviews: 380,
+    images: [],
+    location: "Cabo San Lucas",
+    address: "Cabo San Lucas",
+    description: "Great food and atmosphere. Service was attentive and fun, highly recommend The Outpost!",
+    features: ["Contemporary Dining", "Cocktail Bar", "Modern Mexican"],
+    hours: {
+      "Monday-Sunday": "5:30 PM - 10:30 PM"
+    },
+    phone: "+52 624 XXX XXXX",
+    website: "https://www.opentable.com/r/outpost-cabo-san-lucas",
+    menu: []
+  },
+  {
+    id: 11,
+    name: "Palmerio at Four Seasons Cabo San Lucas at Cabo Del Sol",
+    cuisine: "Mediterranean",
+    priceRange: "Very Expensive",
+    rating: 5,
+    reviews: 21,
+    images: [],
+    location: "Cabo San Lucas",
+    address: "Cabo San Lucas",
+    description: "Gorgeous hotel, restaurant, incredible service, warm, kind, fast. The ambience is wonderful.",
+    features: ["Hotel Restaurant", "Ocean View", "Fine Dining"],
+    hours: {
+      "Monday-Sunday": "5:00 PM - 10:00 PM"
+    },
+    phone: "+52 624 XXX XXXX",
+    website: "https://www.opentable.com/r/palmerio-at-four-seasons-cabo-san-lucas-at-cabo-del-sol-cabo-san-lucas",
+    menu: []
+  },
+  {
+    id: 12,
+    name: "Casa Martín",
+    cuisine: "Mexican",
+    priceRange: "Very Expensive",
+    rating: 5,
+    reviews: 1342,
+    images: [],
+    location: "Cabo San Lucas",
+    address: "Cabo San Lucas",
+    description: "Great food with exceptional service for the price.",
+    features: ["Mexican Cuisine", "Fine Dining", "Authentic"],
+    hours: {
+      "Monday-Sunday": "5:00 PM - 10:00 PM"
+    },
+    phone: "+52 624 XXX XXXX",
+    website: "https://www.opentable.com/r/casa-martin-cabo-san-lucas",
+    menu: []
+  },
+  {
+    id: 13,
+    name: "Luna Italiana",
+    cuisine: "Italian",
+    priceRange: "Very Expensive",
+    rating: 5,
+    reviews: 133,
+    images: [],
+    location: "Cabo San Lucas",
+    address: "Cabo San Lucas",
+    description: "Wonderful everything. Great food, Service and the view is spectacular. Recommend a must while in Cabo. As a bonus Luis was there singing his wonderful variety of songs to enjoy dinner with.",
+    features: ["Live Music", "Ocean View", "Italian Cuisine"],
+    hours: {
+      "Monday-Sunday": "5:30 PM - 10:30 PM"
+    },
+    phone: "+52 624 XXX XXXX",
+    website: "https://www.opentable.com/r/luna-italiana-cabo-san-lucas",
+    menu: []
+  },
+  {
+    id: 14,
+    name: "SUR Beach Club Los Cabos",
+    cuisine: "Mediterranean",
+    priceRange: "Very Expensive",
+    rating: 5,
+    reviews: 1026,
+    images: [],
+    location: "Cabo San Lucas",
+    address: "Cabo San Lucas",
+    description: "The food presentation and flavors were amazing! Highly recommend!",
+    features: ["Beach Club", "Ocean View", "Mediterranean Cuisine"],
+    hours: {
+      "Monday-Sunday": "6:00 PM - 10:00 PM"
+    },
+    phone: "+52 624 XXX XXXX",
+    website: "https://www.opentable.com/r/sur-beach-house-los-cabos-cabo-san-lucas",
+    menu: []
+  },
+  {
+    id: 15,
+    name: "7 Seas Seafood Grille",
+    cuisine: "Mexican",
+    priceRange: "Expensive",
+    rating: 5,
+    reviews: 1515,
+    images: [],
+    location: "San José del Cabo",
+    address: "San José del Cabo",
+    description: "One of the best restaurants in Cabo. The vie is spectacular. Service attentive. Prices are on the higher end, but the food is spectacular and well worth it. I look forward to dining there every year.",
+    features: ["Ocean View", "Seafood", "Fine Dining"],
+    hours: {
+      "Monday-Sunday": "5:00 PM - 10:00 PM"
+    },
+    phone: "+52 624 XXX XXXX",
+    website: "https://www.opentable.com/r/7-seas-seafood-grille-san-jose-del-cabo",
+    menu: []
   }
 ];
 
@@ -199,4 +313,4 @@ export const filterRestaurants = (filters: {
 export const priceRanges = ["Moderate", "Expensive", "Very Expensive"];
 
 // Cuisine types
-export const cuisineTypes = ["Mexican", "International", "Fine Dining", "Mediterranean", "Latin American", "Contemporary Mexican", "Global, International"];
+export const cuisineTypes = ["Mexican", "International", "Fine Dining", "Mediterranean", "Latin American", "Contemporary Mexican", "Global, International", "Italian"];
