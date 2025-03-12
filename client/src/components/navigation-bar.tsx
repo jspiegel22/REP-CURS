@@ -3,6 +3,31 @@ import { Link } from "wouter";
 import { Menu, ShoppingCart } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { SiTiktok, SiInstagram, SiYoutube, SiWhatsapp, SiFacebook, SiPinterest } from "react-icons/si";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@/components/ui/navigation-menu";
+
+const stays = [
+  { title: "Villas", href: "/stays/villas", description: "Luxury private villas with stunning ocean views" },
+  { title: "Resorts", href: "/stays/resorts", description: "World-class resorts and hotels" },
+];
+
+const adventures = [
+  { title: "Luxury Sailing", href: "/adventures/luxury-sailing", description: "Private yacht charters and sailing experiences" },
+  { title: "Private Yachts", href: "/adventures/private-yachts", description: "Exclusive yacht rentals for special occasions" },
+  { title: "Whale Watching", href: "/adventures/whale-watching", description: "Unforgettable whale watching tours" },
+];
+
+const groupTrips = [
+  { title: "Family Trips", href: "/group-trips/family", description: "Create lasting memories with your loved ones" },
+  { title: "Bachelor/Bachelorette", href: "/group-trips/bachelor-bachelorette", description: "Unforgettable celebration packages" },
+  { title: "Luxury Concierge", href: "/group-trips/luxury-concierge", description: "Personalized VIP experiences" },
+];
 
 export default function NavigationBar() {
   return (
@@ -19,143 +44,41 @@ export default function NavigationBar() {
               </SheetTrigger>
               <SheetContent side="left" className="w-[85vw] bg-[#2F4F4F] border-r border-[#2F4F4F]/20 p-0">
                 <nav className="flex flex-col h-full overflow-y-auto">
-                  {/* Main Navigation Cards */}
-                  <div className="grid grid-cols-2 gap-3 p-3">
-                    <Link href="/resorts">
-                      <a className="relative rounded-lg overflow-hidden aspect-[4/3]">
-                        <img
-                          src="https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800"
-                          alt="Resorts"
-                          className="object-cover w-full h-full"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-black/0 flex items-end p-4">
-                          <span className="text-white font-semibold">Resorts & Hotels</span>
-                        </div>
-                      </a>
-                    </Link>
-                    <Link href="/villas">
-                      <a className="relative rounded-lg overflow-hidden aspect-[4/3]">
-                        <img
-                          src="https://images.unsplash.com/photo-1613977257363-707ba9348227?w=800"
-                          alt="Villas"
-                          className="object-cover w-full h-full"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-black/0 flex items-end p-4">
-                          <span className="text-white font-semibold">Luxury Villas</span>
-                        </div>
-                      </a>
-                    </Link>
-                    <Link href="/adventures">
-                      <a className="relative rounded-lg overflow-hidden aspect-[4/3]">
-                        <img
-                          src="https://images.unsplash.com/photo-1564351943427-3d61951984e9?w=800"
-                          alt="Adventures"
-                          className="object-cover w-full h-full"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-black/0 flex items-end p-4">
-                          <span className="text-white font-semibold">Adventures</span>
-                        </div>
-                      </a>
-                    </Link>
+                  {/* Mobile menu content */}
+                  <div className="p-4 space-y-4">
+                    <div className="space-y-2">
+                      <h3 className="text-white/60 text-sm font-semibold">Stays</h3>
+                      {stays.map((item) => (
+                        <Link key={item.href} href={item.href}>
+                          <a className="block text-white hover:text-white/80 py-2">{item.title}</a>
+                        </Link>
+                      ))}
+                    </div>
+                    <div className="space-y-2">
+                      <h3 className="text-white/60 text-sm font-semibold">Adventures</h3>
+                      {adventures.map((item) => (
+                        <Link key={item.href} href={item.href}>
+                          <a className="block text-white hover:text-white/80 py-2">{item.title}</a>
+                        </Link>
+                      ))}
+                    </div>
                     <Link href="/restaurants">
-                      <a className="relative rounded-lg overflow-hidden aspect-[4/3]">
-                        <img
-                          src="https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800"
-                          alt="Restaurants"
-                          className="object-cover w-full h-full"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-black/0 flex items-end p-4">
-                          <span className="text-white font-semibold">Restaurants</span>
-                        </div>
-                      </a>
+                      <a className="block text-white hover:text-white/80 py-2">Eats</a>
                     </Link>
-                  </div>
-
-                  {/* Featured Adventures Section */}
-                  <div className="px-3 py-4 border-t border-white/10">
-                    <h3 className="text-white/60 text-sm font-semibold mb-3">Featured Adventures</h3>
-                    <div className="grid grid-cols-2 gap-3">
-                      <Link href="/adventure/luxury-cabo-sailing">
-                        <a className="relative rounded-lg overflow-hidden aspect-[3/2]">
-                          <img
-                            src="https://cdn.sanity.io/images/esqfj3od/production/834cde8965aeeee934450fb9b385ed7ecfa36c16-608x912.webp"
-                            alt="Luxury Sailing"
-                            className="object-cover w-full h-full"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-black/0 flex items-end p-3">
-                            <span className="text-white font-semibold text-sm">Luxury Sailing</span>
-                          </div>
-                        </a>
-                      </Link>
-                      <Link href="/adventure/whale-watching">
-                        <a className="relative rounded-lg overflow-hidden aspect-[3/2]">
-                          <img
-                            src="https://cdn.sanity.io/images/esqfj3od/production/76c1e97bb2129788a3907f7809aba1b85f328cbb-608x912.webp"
-                            alt="Whale Watching"
-                            className="object-cover w-full h-full"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-black/0 flex items-end p-3">
-                            <span className="text-white font-semibold text-sm">Whale Watching</span>
-                          </div>
-                        </a>
-                      </Link>
+                    <Link href="/weddings">
+                      <a className="block text-white hover:text-white/80 py-2">Weddings</a>
+                    </Link>
+                    <div className="space-y-2">
+                      <h3 className="text-white/60 text-sm font-semibold">Group Trips</h3>
+                      {groupTrips.map((item) => (
+                        <Link key={item.href} href={item.href}>
+                          <a className="block text-white hover:text-white/80 py-2">{item.title}</a>
+                        </Link>
+                      ))}
                     </div>
-                  </div>
-
-                  {/* Guides Section - Hidden on Mobile */}
-                  <div className="hidden md:block px-3 py-4 border-t border-white/10">
-                    <h3 className="text-white/60 text-sm font-semibold mb-3">Guides</h3>
-                    <div className="grid grid-cols-2 gap-3">
-                      <Link href="/guides/activities">
-                        <a className="relative rounded-lg overflow-hidden aspect-[3/2]">
-                          <img
-                            src="https://images.unsplash.com/photo-1533760881669-80db4d7b341c?w=800"
-                            alt="Activity Guide"
-                            className="object-cover w-full h-full"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-black/0 flex items-end p-3">
-                            <span className="text-white font-semibold text-sm">Activity Guide</span>
-                          </div>
-                        </a>
-                      </Link>
-                      <Link href="/guides/local-tips">
-                        <a className="relative rounded-lg overflow-hidden aspect-[3/2]">
-                          <img
-                            src="https://images.unsplash.com/photo-1563461660947-507ef49e9c47?w=800"
-                            alt="Local Tips"
-                            className="object-cover w-full h-full"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-black/0 flex items-end p-3">
-                            <span className="text-white font-semibold text-sm">Local Tips</span>
-                          </div>
-                        </a>
-                      </Link>
-                    </div>
-                  </div>
-
-                  {/* Social Icons */}
-                  <div className="mt-auto px-6 py-4 border-t border-white/10">
-                    <h3 className="text-white/60 text-sm font-semibold mb-4">Follow Us</h3>
-                    <div className="flex gap-6 flex-wrap">
-                      <a href="https://www.tiktok.com/@atcabo" target="_blank" rel="noopener noreferrer" className="text-white hover:text-white/80">
-                        <SiTiktok className="w-5 h-5" />
-                      </a>
-                      <a href="https://instagram.com/cabo" target="_blank" rel="noopener noreferrer" className="text-white hover:text-white/80">
-                        <SiInstagram className="w-5 h-5" />
-                      </a>
-                      <a href="https://www.youtube.com/@atCabo" target="_blank" rel="noopener noreferrer" className="text-white hover:text-white/80">
-                        <SiYoutube className="w-5 h-5" />
-                      </a>
-                      <a href="https://wa.me/526242446303" target="_blank" rel="noopener noreferrer" className="text-white hover:text-white/80">
-                        <SiWhatsapp className="w-5 h-5" />
-                      </a>
-                      <a href="https://www.facebook.com/cabosanlucasbaja" target="_blank" rel="noopener noreferrer" className="text-white hover:text-white/80">
-                        <SiFacebook className="w-5 h-5" />
-                      </a>
-                      <a href="https://www.pinterest.com/instacabo/" target="_blank" rel="noopener noreferrer" className="text-white hover:text-white/80">
-                        <SiPinterest className="w-5 h-5" />
-                      </a>
-                    </div>
+                    <Link href="/transportation">
+                      <a className="block text-white hover:text-white/80 py-2">Transportation</a>
+                    </Link>
                   </div>
                 </nav>
               </SheetContent>
@@ -171,21 +94,93 @@ export default function NavigationBar() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-6 flex-1 justify-center">
-            <Button variant="ghost" asChild className="text-white hover:text-white/80">
-              <Link href="/resorts">Resorts & Hotels</Link>
-            </Button>
-            <Button variant="ghost" asChild className="text-white hover:text-white/80">
-              <Link href="/villas">Luxury Villas</Link>
-            </Button>
-            <Button variant="ghost" asChild className="text-white hover:text-white/80">
-              <Link href="/adventures">Adventures</Link>
-            </Button>
-            <Button variant="ghost" asChild className="text-white hover:text-white/80">
-              <Link href="/restaurants">Restaurants</Link>
-            </Button>
-            <Button variant="ghost" asChild className="text-white hover:text-white/80">
-              <Link href="/concierge">Luxury Concierge</Link>
-            </Button>
+            <NavigationMenu>
+              <NavigationMenuList>
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger className="text-white bg-transparent">Stays</NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <ul className="grid w-[400px] gap-3 p-4">
+                      {stays.map((item) => (
+                        <li key={item.href}>
+                          <NavigationMenuLink asChild>
+                            <Link href={item.href}>
+                              <a className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                                <div className="text-sm font-medium leading-none">{item.title}</div>
+                                <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">{item.description}</p>
+                              </a>
+                            </Link>
+                          </NavigationMenuLink>
+                        </li>
+                      ))}
+                    </ul>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger className="text-white bg-transparent">Adventures</NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <ul className="grid w-[400px] gap-3 p-4">
+                      {adventures.map((item) => (
+                        <li key={item.href}>
+                          <NavigationMenuLink asChild>
+                            <Link href={item.href}>
+                              <a className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                                <div className="text-sm font-medium leading-none">{item.title}</div>
+                                <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">{item.description}</p>
+                              </a>
+                            </Link>
+                          </NavigationMenuLink>
+                        </li>
+                      ))}
+                    </ul>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild>
+                    <Link href="/restaurants">
+                      <a className="text-white hover:text-white/80 px-4 py-2">Eats</a>
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild>
+                    <Link href="/weddings">
+                      <a className="text-white hover:text-white/80 px-4 py-2">Weddings</a>
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger className="text-white bg-transparent">Group Trips</NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <ul className="grid w-[400px] gap-3 p-4">
+                      {groupTrips.map((item) => (
+                        <li key={item.href}>
+                          <NavigationMenuLink asChild>
+                            <Link href={item.href}>
+                              <a className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                                <div className="text-sm font-medium leading-none">{item.title}</div>
+                                <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">{item.description}</p>
+                              </a>
+                            </Link>
+                          </NavigationMenuLink>
+                        </li>
+                      ))}
+                    </ul>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild>
+                    <Link href="/transportation">
+                      <a className="text-white hover:text-white/80 px-4 py-2">Transportation</a>
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+              </NavigationMenuList>
+            </NavigationMenu>
           </div>
 
           {/* Cart Button - Right */}
