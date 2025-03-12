@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, MapPin, Star } from "lucide-react";
+import { Search, MapPin, Star, CalendarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -24,6 +24,10 @@ import {
 } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormProvider } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
+import { Calendar } from "@/components/ui/calendar";
+import { PopoverContent, PopoverTrigger, Popover } from "@/components/ui/popover";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 
 // Helper function to get badge color based on cuisine type
 const getCuisineBadgeColor = (cuisine: string) => {
@@ -54,6 +58,16 @@ const formatPriceRange = (range: string) => {
   }
 };
 
+type ReservationFormData = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  date: Date;
+  time: string;
+  partySize: string;
+};
+
 export default function RestaurantsPage() {
   const [filters, setFilters] = useState<RestaurantFilters>({});
   const [sortOption, setSortOption] = useState<RestaurantSortOptions>({
@@ -64,19 +78,18 @@ export default function RestaurantsPage() {
   const [, setLocation] = useLocation();
   const [selectedRestaurant, setSelectedRestaurant] = useState<Restaurant | null>(null);
 
-  const form = useForm({
+  const form = useForm<ReservationFormData>({
     defaultValues: {
-      date: '',
-      time: '',
-      partySize: '2',
-      name: '',
+      firstName: '',
+      lastName: '',
       email: '',
       phone: '',
-      specialRequests: ''
+      time: '',
+      partySize: '2',
     }
   });
 
-  const onSubmit = (data: any) => {
+  const onSubmit = (data: ReservationFormData) => {
     console.log('Reservation request:', data);
     // Here you would typically send this to your backend
     setSelectedRestaurant(null);
@@ -188,7 +201,7 @@ export default function RestaurantsPage() {
                     alt={restaurant.name}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
-                  {(restaurant.bookingsToday ?? 0) > 20 && (
+                  {restaurant.bookingsToday > 20 && (
                     <div className="absolute top-4 right-4 bg-red-600 text-white px-3 py-1 rounded-full text-sm font-medium">
                       Popular: {restaurant.bookingsToday} bookings today
                     </div>
@@ -197,7 +210,7 @@ export default function RestaurantsPage() {
                 <CardContent className="p-6">
                   <div className="flex justify-between items-start mb-4">
                     <div>
-                      <h3 className="text-lg font-semibold mb-1 group-hover:text-primary transition-colors duration-200">
+                      <h3 className="text-lg font-semibold mb-1">
                         {restaurant.name}
                       </h3>
                       <div className="flex items-center text-muted-foreground text-sm">
@@ -246,65 +259,32 @@ export default function RestaurantsPage() {
                         </DialogHeader>
                         <FormProvider {...form}>
                           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                            <FormField
-                              control={form.control}
-                              name="date"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Date</FormLabel>
-                                  <FormControl>
-                                    <Input type="date" {...field} />
-                                  </FormControl>
-                                </FormItem>
-                              )}
-                            />
-                            <FormField
-                              control={form.control}
-                              name="time"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Preferred Time</FormLabel>
-                                  <FormControl>
-                                    <Input type="time" {...field} />
-                                  </FormControl>
-                                </FormItem>
-                              )}
-                            />
-                            <FormField
-                              control={form.control}
-                              name="partySize"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Party Size</FormLabel>
-                                  <FormControl>
-                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                      <SelectTrigger>
-                                        <SelectValue placeholder="Select party size" />
-                                      </SelectTrigger>
-                                      <SelectContent>
-                                        {Array.from({ length: 12 }, (_, i) => i + 1).map((num) => (
-                                          <SelectItem key={num} value={num.toString()}>
-                                            {num} {num === 1 ? 'person' : 'people'}
-                                          </SelectItem>
-                                        ))}
-                                      </SelectContent>
-                                    </Select>
-                                  </FormControl>
-                                </FormItem>
-                              )}
-                            />
-                            <FormField
-                              control={form.control}
-                              name="name"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Name</FormLabel>
-                                  <FormControl>
-                                    <Input {...field} />
-                                  </FormControl>
-                                </FormItem>
-                              )}
-                            />
+                            <div className="grid grid-cols-2 gap-4">
+                              <FormField
+                                control={form.control}
+                                name="firstName"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>First Name</FormLabel>
+                                    <FormControl>
+                                      <Input {...field} />
+                                    </FormControl>
+                                  </FormItem>
+                                )}
+                              />
+                              <FormField
+                                control={form.control}
+                                name="lastName"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Last Name</FormLabel>
+                                    <FormControl>
+                                      <Input {...field} />
+                                    </FormControl>
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
                             <FormField
                               control={form.control}
                               name="email"
@@ -331,13 +311,74 @@ export default function RestaurantsPage() {
                             />
                             <FormField
                               control={form.control}
-                              name="specialRequests"
+                              name="date"
                               render={({ field }) => (
                                 <FormItem>
-                                  <FormLabel>Special Requests</FormLabel>
+                                  <FormLabel>Date</FormLabel>
+                                  <Popover>
+                                    <PopoverTrigger asChild>
+                                      <FormControl>
+                                        <Button
+                                          variant="outline"
+                                          className={cn(
+                                            "w-full pl-3 text-left font-normal",
+                                            !field.value && "text-muted-foreground"
+                                          )}
+                                        >
+                                          {field.value ? (
+                                            format(field.value, "PPP")
+                                          ) : (
+                                            <span>Pick a date</span>
+                                          )}
+                                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                        </Button>
+                                      </FormControl>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-auto p-0" align="start">
+                                      <Calendar
+                                        mode="single"
+                                        selected={field.value}
+                                        onSelect={field.onChange}
+                                        disabled={(date) =>
+                                          date < new Date() || date < new Date("1900-01-01")
+                                        }
+                                        initialFocus
+                                      />
+                                    </PopoverContent>
+                                  </Popover>
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="time"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Preferred Time</FormLabel>
                                   <FormControl>
-                                    <Input {...field} />
+                                    <Input type="time" {...field} />
                                   </FormControl>
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="partySize"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Party Size</FormLabel>
+                                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Select party size" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      {Array.from({ length: 12 }, (_, i) => i + 1).map((num) => (
+                                        <SelectItem key={num} value={num.toString()}>
+                                          {num} {num === 1 ? 'person' : 'people'}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
                                 </FormItem>
                               )}
                             />
