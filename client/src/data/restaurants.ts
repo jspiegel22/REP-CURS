@@ -95,6 +95,82 @@ export const restaurants: Restaurant[] = [
     phone: "+52 624 XXX XXXX",
     website: "https://www.opentable.com/r/taboo-cabo-cabo-san-lucas",
     menu: []
+  },
+  {
+    id: 6,
+    name: "Torote Restaurant",
+    cuisine: "Mexican",
+    priceRange: "Very Expensive",
+    rating: 5,
+    reviews: 433,
+    images: [],
+    location: "Cabo San Lucas",
+    address: "Cabo San Lucas",
+    description: "Literally the best eating experience I've ever had!!!!!!! Food was absolutely phenomenal and my waiter explained the dishes with such pride. You can really taste each ingredient! That's how you know it's fresh!",
+    features: ["Garden View", "Fine Dining", "Private Dining"],
+    hours: {
+      "Monday-Sunday": "5:00 PM - 10:00 PM"
+    },
+    phone: "+52 624 XXX XXXX",
+    website: "https://www.opentable.com/r/torote-restaurant-cabo-san-lucas",
+    menu: []
+  },
+  {
+    id: 7,
+    name: "The Ledge at The Cape a Thompson Hotel",
+    cuisine: "Global, International",
+    priceRange: "Expensive",
+    rating: 5,
+    reviews: 394,
+    images: [],
+    location: "Cabo San Lucas",
+    address: "Cabo San Lucas",
+    description: "Beautiful views and great service! Juan took care of all of our needs!",
+    features: ["Ocean View", "Hotel Restaurant", "Fine Dining"],
+    hours: {
+      "Monday-Sunday": "5:30 PM - 10:00 PM"
+    },
+    phone: "+52 624 XXX XXXX",
+    website: "https://www.opentable.com/r/the-ledge-at-the-cape-a-thompson-hotel-cabo-san-lucas",
+    menu: []
+  },
+  {
+    id: 8,
+    name: "Comal Restaurant & Bar - Chileno Bay Resort & Residences",
+    cuisine: "Latin American",
+    priceRange: "Expensive",
+    rating: 5,
+    reviews: 634,
+    images: [],
+    location: "Cabo San Lucas",
+    address: "Cabo San Lucas",
+    description: "From the moment we stepped out of our car we were awed by this beautiful place. The people were beyond friendly, the food was top notch and we will definitely be back again and again.",
+    features: ["Resort Dining", "Ocean View", "Fine Dining"],
+    hours: {
+      "Monday-Sunday": "6:00 PM - 11:00 PM"
+    },
+    phone: "+52 624 XXX XXXX",
+    website: "https://www.opentable.com/r/comal-restaurant-and-bar-chileno-bay-resort-and-residences-cabo-san-lucas",
+    menu: []
+  },
+  {
+    id: 9,
+    name: "Acre Restaurant & Cocktail Bar",
+    cuisine: "Global, International",
+    priceRange: "Very Expensive",
+    rating: 5,
+    reviews: 3243,
+    images: [],
+    location: "San José del Cabo",
+    address: "San José del Cabo",
+    description: "Amazing you need to try it cocktails food etc all outstanding",
+    features: ["Farm-to-Table", "Cocktail Bar", "Outdoor Dining"],
+    hours: {
+      "Monday-Sunday": "5:00 PM - 11:00 PM"
+    },
+    phone: "+52 624 XXX XXXX",
+    website: "https://www.opentable.com/r/acre-restaurant-and-cocktail-bar-san-jose-del-cabo",
+    menu: []
   }
 ];
 
@@ -123,4 +199,4 @@ export const filterRestaurants = (filters: {
 export const priceRanges = ["Moderate", "Expensive", "Very Expensive"];
 
 // Cuisine types
-export const cuisineTypes = ["Mexican", "International", "Fine Dining", "Mediterranean", "Latin American", "Contemporary Mexican"];
+export const cuisineTypes = ["Mexican", "International", "Fine Dining", "Mediterranean", "Latin American", "Contemporary Mexican", "Global, International"];
