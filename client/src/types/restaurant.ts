@@ -14,28 +14,30 @@ export interface RestaurantHours {
 }
 
 export interface Restaurant {
-  id: number;
+  id: string;
   name: string;
+  rating: 'Exceptional' | 'Awesome' | string;
+  reviewCount: number;
+  priceRange: 'Expensive' | 'Very Expensive' | string;
   cuisine: string;
-  priceRange: string;
-  rating: number;
-  reviews: number;
-  images: string[];
   location: string;
-  address: string;
-  description: string;
-  features: string[];
-  hours: RestaurantHours;
-  phone: string;
-  website: string;
-  menu: MenuSection[];
+  imageUrl?: string;
+  bookingsToday?: number;
+  description?: string;
+  openTableUrl?: string;
+  availableTimeslots?: string[];
 }
 
 export interface RestaurantFilters {
   cuisine?: string;
   priceRange?: string;
-  features?: string[];
-  searchQuery?: string;
+  rating?: string;
+  location?: string;
+}
+
+export interface RestaurantSortOptions {
+  field: 'name' | 'rating' | 'reviewCount' | 'bookingsToday';
+  direction: 'asc' | 'desc';
 }
 
 export interface ReservationDetails {
