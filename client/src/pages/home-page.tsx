@@ -44,23 +44,6 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* Digital Guides */}
-      <div className="container mx-auto px-4 py-16">
-        <h2 className="text-3xl font-bold mb-8 text-[#2F4F4F]">Digital Travel Guides</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {guides.map((guide) => (
-            <Link key={guide.title} href={guide.link}>
-              <div className="cursor-pointer group">
-                <div className="relative overflow-hidden rounded-lg mb-4">
-                  <img src={guide.image} alt={guide.title} className="w-full aspect-[3/2] object-cover transition-transform group-hover:scale-105" />
-                </div>
-                <h3 className="text-xl font-semibold text-[#2F4F4F] group-hover:text-[#2F4F4F]/80">{guide.title}</h3>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </div>
-
       {/* Luxury Concierge */}
       <div className="bg-[#2F4F4F] text-white py-16">
         <div className="container mx-auto px-4 text-center">
@@ -105,29 +88,29 @@ export default function HomePage() {
               <ul className="space-y-2">
                 <li>Email: info@cabotravels.com</li>
                 <li>Phone: +1 (888) 123-4567</li>
-                <li>WhatsApp: +52 624 XXX XXXX</li>
+                <li>WhatsApp: +52 624 244 6303</li>
               </ul>
             </div>
           </div>
           <div className="border-t border-white/20 pt-8">
             <div className="flex justify-center space-x-6 mb-4">
-              <a href="https://tiktok.com" target="_blank" rel="noopener noreferrer" className="text-white hover:text-[#F5F5DC] transition-colors">
+              <a href="https://www.tiktok.com/@atcabo" target="_blank" rel="noopener noreferrer" className="text-white hover:text-[#F5F5DC] transition-colors">
                 <SiTiktok size={24} />
               </a>
-              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-white hover:text-[#F5F5DC] transition-colors">
+              <a href="https://instagram.com/cabo" target="_blank" rel="noopener noreferrer" className="text-white hover:text-[#F5F5DC] transition-colors">
                 <SiInstagram size={24} />
               </a>
-              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="text-white hover:text-[#F5F5DC] transition-colors">
-                <SiFacebook size={24} />
+              <a href="https://www.youtube.com/@atCabo" target="_blank" rel="noopener noreferrer" className="text-white hover:text-[#F5F5DC] transition-colors">
+                <SiYoutube size={24} />
               </a>
-              <a href="https://wa.me/526241234567" target="_blank" rel="noopener noreferrer" className="text-white hover:text-[#F5F5DC] transition-colors">
+              <a href="https://wa.me/526242446303" target="_blank" rel="noopener noreferrer" className="text-white hover:text-[#F5F5DC] transition-colors">
                 <SiWhatsapp size={24} />
               </a>
-              <a href="https://pinterest.com" target="_blank" rel="noopener noreferrer" className="text-white hover:text-[#F5F5DC] transition-colors">
-                <SiPinterest size={24} />
+              <a href="https://www.facebook.com/cabosanlucasbaja" target="_blank" rel="noopener noreferrer" className="text-white hover:text-[#F5F5DC] transition-colors">
+                <SiFacebook size={24} />
               </a>
-              <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="text-white hover:text-[#F5F5DC] transition-colors">
-                <SiYoutube size={24} />
+              <a href="https://www.pinterest.com/instacabo/" target="_blank" rel="noopener noreferrer" className="text-white hover:text-[#F5F5DC] transition-colors">
+                <SiPinterest size={24} />
               </a>
             </div>
             <p className="text-center text-sm text-gray-300">&copy; {new Date().getFullYear()} Cabo Travels. All rights reserved.</p>
