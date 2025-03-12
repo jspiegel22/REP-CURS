@@ -40,8 +40,6 @@ function parseOpenTableRow(row: string): Restaurant | null {
       bookingsToday,
       description: fields[10]?.trim() || '',
       openTableUrl: fields[0].trim(),
-      availableTimeslots: fields.slice(15, 19)
-        .filter(slot => slot.match(/\d+:\d+ [AP]M/))
     };
   } catch (e) {
     console.error('Error parsing row:', e);
@@ -49,7 +47,19 @@ function parseOpenTableRow(row: string): Restaurant | null {
   }
 }
 
-// Restaurant data combining existing data and CSV imports
+// Import and parse all OpenTable CSV data
+// Note: In a production environment, this would be done server-side
+const csvData = `
+[CSV data from files would go here]
+`;
+
+const parsedRestaurants = csvData
+  .split('\n')
+  .filter(row => row.trim())
+  .map(parseOpenTableRow)
+  .filter((r): r is Restaurant => r !== null);
+
+// Combine existing featured restaurants with parsed data
 export const restaurants: Restaurant[] = [
   {
     id: "1",
@@ -62,8 +72,7 @@ export const restaurants: Restaurant[] = [
     imageUrl: "https://resizer.otstatic.com/v2/photos/legacy/2/47401755.jpg",
     bookingsToday: 16,
     description: "Its all about the atmosphere and service. They provide it all. The food was delicious, and presented beautifully.",
-    openTableUrl: "https://www.opentable.com/r/bagetelle-los-cabos-cabo-san-lucas",
-    availableTimeslots: ["6:30 PM", "7:00 PM", "7:30 PM", "8:00 PM"]
+    openTableUrl: "https://www.opentable.com/r/bagetelle-los-cabos-cabo-san-lucas"
   },
   {
     id: "2",
@@ -76,8 +85,7 @@ export const restaurants: Restaurant[] = [
     imageUrl: "https://resizer.otstatic.com/v2/photos/legacy/3/67415914.jpg",
     bookingsToday: 13,
     description: "It was amazing, very fine dining and the most beautiful hotel with excellent service",
-    openTableUrl: "https://www.opentable.com/r/don-manuels-waldorf-astoria-los-cabos-pedregal-cabo-san-lucas",
-    availableTimeslots: ["6:30 PM", "6:45 PM", "7:15 PM", "7:30 PM"]
+    openTableUrl: "https://www.opentable.com/r/don-manuels-waldorf-astoria-los-cabos-pedregal-cabo-san-lucas"
   },
   {
     id: "3",
@@ -90,8 +98,7 @@ export const restaurants: Restaurant[] = [
     imageUrl: "https://resizer.otstatic.com/v2/photos/xlarge/2/48528566.jpg",
     bookingsToday: 25,
     description: "World-renowned Japanese cuisine infused with local Mexican ingredients. Spectacular ocean views complement Chef Nobu's innovative dishes.",
-    openTableUrl: "https://www.opentable.com/r/nobu-los-cabos",
-    availableTimeslots: ["5:30 PM", "6:00 PM", "6:30 PM", "7:00 PM"]
+    openTableUrl: "https://www.opentable.com/r/nobu-los-cabos"
   },
   {
     id: "4",
@@ -104,8 +111,7 @@ export const restaurants: Restaurant[] = [
     imageUrl: "https://resizer.otstatic.com/v2/photos/xlarge/1/25885179.jpg",
     bookingsToday: 18,
     description: "Modern Mexican cuisine with stunning views of the Sea of Cortez. Farm-to-table ingredients and creative cocktails.",
-    openTableUrl: "https://www.opentable.com/r/comal-at-chileno-bay-cabo-san-lucas",
-    availableTimeslots: ["5:00 PM", "5:30 PM", "6:00 PM", "6:30 PM"]
+    openTableUrl: "https://www.opentable.com/r/comal-at-chileno-bay-cabo-san-lucas"
   },
   {
     id: "5",
@@ -118,10 +124,18 @@ export const restaurants: Restaurant[] = [
     imageUrl: "https://resizer.otstatic.com/v2/photos/xlarge/3/48615988.jpg",
     bookingsToday: 30,
     description: "Suspended over the Pacific Ocean on a cliff, offering the day's freshest catch and an unforgettable dining experience.",
-    openTableUrl: "https://www.opentable.com/r/el-farallon-waldorf-astoria-los-cabos-pedregal-cabo-san-lucas",
-    availableTimeslots: ["6:00 PM", "6:30 PM", "7:00 PM", "7:30 PM"]
-  }
+    openTableUrl: "https://www.opentable.com/r/el-farallon-waldorf-astoria-los-cabos-pedregal-cabo-san-lucas"
+  },
+  ...parsedRestaurants
 ];
+
+// Update cuisine types based on all available restaurants
+export const cuisineTypes = Array.from(
+  new Set(restaurants.map(r => r.cuisine))
+).sort();
+
+// Price range options
+export const priceRanges = ["$", "$$", "$$$", "$$$$"];
 
 // Helper function to filter restaurants based on user preferences
 export const filterRestaurants = (filters: {
@@ -143,23 +157,3 @@ export const filterRestaurants = (filters: {
     return true;
   });
 };
-
-// Price range options
-export const priceRanges = ["Moderate", "Expensive", "Very Expensive"];
-
-// Cuisine types
-export const cuisineTypes = [
-  "Mexican",
-  "International",
-  "Fine Dining",
-  "Mediterranean",
-  "Latin American",
-  "Contemporary Mexican",
-  "Global, International",
-  "Italian",
-  "Seafood",
-  "Steakhouse",
-  "Asian Fusion",
-  "Japanese",
-  "Farm-to-Table"
-];
