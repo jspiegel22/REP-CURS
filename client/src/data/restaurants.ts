@@ -1,13 +1,5 @@
 import { Restaurant } from "../types/restaurant";
 
-// Import complete CSV data from OpenTable files
-const csvData = `BcjeJB9cJ4g- href,Y0i-tdDHWSI- src,FhfgYo4tTD0-,MLhGCA4nv6o-,XmafYPXEv24- href,XmafYPXEv24-,Vk-xtpOrXcE-,_4QF0cXfwR9Q-,gr6nnXdRSXE-,jP7I-nPDznk-,_6Po-6-slY2c-,l9bbXUdC9v0-,YFUbwTI869k-,_3JbEJDrCk58-,gr6nnXdRSXE- (2),ARuVZZIyuC4- href,ARuVZZIyuC4-
-https://www.opentable.com/r/bagetelle-los-cabos-cabo-san-lucas,https://resizer.otstatic.com/v2/photos/legacy/2/47401755.jpg,1. Bagatelle Los Cabos,Awesome,(99),Price: Very Expensive,• International • Cabo San Lucas,Booked 16 times today,"Its all about the atmosphere and service. They provide it all. The food was delicious, and presented beautifully."
-https://www.opentable.com/r/salvatore-g-cabo-san-lucas,https://resizer.otstatic.com/v2/photos/xlarge/3/47402198.jpg,2. Salvatore G,Exceptional,(542),Price: Very Expensive,• Italian • Cabo San Lucas,Booked 25 times today,"Classic Italian with a modern twist. Amazing pasta made in-house daily."
-https://www.opentable.com/r/sunset-monalisa-cabo-san-lucas,https://resizer.otstatic.com/v2/photos/xlarge/2/47401799.jpg,3. Sunset Monalisa,Exceptional,(1102),Price: Very Expensive,• Mediterranean • Cabo San Lucas,Booked 30 times today,"Breathtaking views of the Arch and Sea of Cortez. Mediterranean cuisine at its finest."
-https://www.opentable.com/r/raw-baja-cabo-san-lucas,https://resizer.otstatic.com/v2/photos/legacy/2/65518316.jpg,4. RAW BAJA,Exceptional,(22),Price: Expensive,• Seafood • Cabo San Lucas,Booked 15 times today,"Excellent fresh seafood. Great service. 10/10 would recommend"
-https://www.opentable.com/r/benno-todos-los-santos,https://resizer.otstatic.com/v2/photos/legacy/4/28647765.jpg,5. Benno at Hotel San Cristóbal,Exceptional,(139),Price: Very Expensive,• Mexican • Todos Santos,Booked 3 times today,"Lovely dinner with great ambience. Amazing food and service."`;
-
 // Function to parse row from OpenTable CSV format
 function parseOpenTableRow(row: string): Restaurant | null {
   try {
@@ -73,6 +65,9 @@ function parseOpenTableRow(row: string): Restaurant | null {
       }
     }
 
+    // Ensure image URL uses proper dimensions
+    const imageUrl = fields[1]?.trim().replace(/\?.*$/, '') + '?w=600&h=400&fit=crop';
+
     return {
       id,
       name,
@@ -81,7 +76,7 @@ function parseOpenTableRow(row: string): Restaurant | null {
       priceRange,
       cuisine,
       location,
-      imageUrl: fields[1]?.trim() || '',
+      imageUrl,
       bookingsToday,
       description,
       openTableUrl: fields[0]?.trim() || '',
@@ -106,6 +101,14 @@ function mergeRestaurants(restaurants: Restaurant[]): Restaurant[] {
   return Array.from(restaurantMap.values());
 }
 
+// Import complete CSV data from OpenTable files
+const csvData = `BcjeJB9cJ4g- href,Y0i-tdDHWSI- src,FhfgYo4tTD0-,MLhGCA4nv6o-,XmafYPXEv24- href,XmafYPXEv24-,Vk-xtpOrXcE-,_4QF0cXfwR9Q-,gr6nnXdRSXE-,jP7I-nPDznk-,_6Po-6-slY2c-,l9bbXUdC9v0-,YFUbwTI869k-,_3JbEJDrCk58-,gr6nnXdRSXE- (2),ARuVZZIyuC4- href,ARuVZZIyuC4-
+https://www.opentable.com/r/bagetelle-los-cabos-cabo-san-lucas,https://resizer.otstatic.com/v2/photos/legacy/2/47401755.jpg,1. Bagatelle Los Cabos,Awesome,(99),Price: Very Expensive,• International • Cabo San Lucas,Booked 16 times today,"Its all about the atmosphere and service. They provide it all. The food was delicious, and presented beautifully."
+https://www.opentable.com/r/salvatore-g-cabo-san-lucas,https://resizer.otstatic.com/v2/photos/xlarge/3/47402198.jpg,2. Salvatore G,Exceptional,(542),Price: Very Expensive,• Italian • Cabo San Lucas,Booked 25 times today,"Classic Italian with a modern twist. Amazing pasta made in-house daily."
+https://www.opentable.com/r/sunset-monalisa-cabo-san-lucas,https://resizer.otstatic.com/v2/photos/xlarge/2/47401799.jpg,3. Sunset Monalisa,Exceptional,(1102),Price: Very Expensive,• Mediterranean • Cabo San Lucas,Booked 30 times today,"Breathtaking views of the Arch and Sea of Cortez. Mediterranean cuisine at its finest."
+https://www.opentable.com/r/raw-baja-cabo-san-lucas,https://resizer.otstatic.com/v2/photos/legacy/2/65518316.jpg,4. RAW BAJA,Exceptional,(22),Price: Expensive,• Seafood • Cabo San Lucas,Booked 15 times today,"Excellent fresh seafood. Great service. 10/10 would recommend"
+https://www.opentable.com/r/benno-todos-los-santos,https://resizer.otstatic.com/v2/photos/legacy/4/28647765.jpg,5. Benno at Hotel San Cristóbal,Exceptional,(139),Price: Very Expensive,• Mexican • Todos Santos,Booked 3 times today,"Lovely dinner with great ambience. Amazing food and service."`;
+
 // Parse all OpenTable data and merge duplicates
 const parsedRestaurants = csvData
   .split('\n')
@@ -125,7 +128,7 @@ const featuredRestaurants: Restaurant[] = [
     priceRange: "$$$$",
     cuisine: "Japanese",
     location: "Cabo San Lucas",
-    imageUrl: "https://resizer.otstatic.com/v2/photos/xlarge/2/48528566.jpg",
+    imageUrl: "https://resizer.otstatic.com/v2/photos/xlarge/2/48528566.jpg?w=600&h=400&fit=crop",
     bookingsToday: 25,
     description: "World-renowned Japanese cuisine infused with local Mexican ingredients. Spectacular ocean views complement Chef Nobu's innovative dishes.",
     openTableUrl: "https://www.opentable.com/r/nobu-los-cabos"
@@ -138,7 +141,7 @@ const featuredRestaurants: Restaurant[] = [
     priceRange: "$$$$",
     cuisine: "Seafood",
     location: "Cabo San Lucas",
-    imageUrl: "https://resizer.otstatic.com/v2/photos/xlarge/3/48615988.jpg",
+    imageUrl: "https://resizer.otstatic.com/v2/photos/xlarge/3/48615988.jpg?w=600&h=400&fit=crop",
     bookingsToday: 30,
     description: "Suspended over the Pacific Ocean on a cliff, offering the day's freshest catch and an unforgettable dining experience.",
     openTableUrl: "https://www.opentable.com/r/el-farallon-waldorf-astoria-los-cabos-pedregal-cabo-san-lucas"
