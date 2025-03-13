@@ -10,7 +10,7 @@ function parseOpenTableRow(row: string): Restaurant | null {
     const nameWithId = fields[2];
     const idMatch = nameWithId.match(/^(\d+)\./);
     const id = idMatch ? idMatch[1] : Math.random().toString(36).substr(2, 9);
-    const name = nameWithId.replace(/^\d+\.\s*/, '');
+    const name = nameWithId.replace(/^\d+\.\s*/, '').trim();
 
     // Parse price range and convert to $ format
     const priceMatch = fields[6].match(/Price: (.+)/);
@@ -59,15 +59,38 @@ function parseOpenTableRow(row: string): Restaurant | null {
 }
 
 // Import OpenTable CSV data
-const csvData = `BcjeJB9cJ4g- href,Y0i-tdDHWSI- src,FhfgYo4tTD0-,MLhGCA4nv6o-,XmafYPXEv24- href,XmafYPXEv24-,Vk-xtpOrXcE-,_4QF0cXfwR9Q-,gr6nnXdRSXE-,jP7I-nPDznk-,_6Po-6-slY2c-,l9bbXUdC9v0-,YFUbwTI869k-,_3JbEJDrCk58-,gr6nnXdRSXE- (2),ARuVZZIyuC4- href,ARuVZZIyuC4-,ARuVZZIyuC4- href (2),ARuVZZIyuC4- (2),ARuVZZIyuC4- href (3),ARuVZZIyuC4- (3),ARuVZZIyuC4- href (4),ARuVZZIyuC4- (4),AtRRdZc8GD4- src,ARuVZZIyuC4- href (5),ARuVZZIyuC4- (5)
-https://www.opentable.com/r/bagetelle-los-cabos-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjoxLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00,https://resizer.otstatic.com/v2/photos/legacy/2/47401755.jpg,1. Bagatelle Los Cabos,Awesome,https://www.opentable.com/r/bagetelle-los-cabos-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjoxLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00#reviews,(99),Price: Very Expensive,• International • Cabo San Lucas,Booked 16 times today,Find next available,"Its all about the atmoshphere and service. They provide it all. The food was delicious, and presented beautifully. We even enjoyed hooka for the table and dancing on the chairs. Its not just dining, its an event to experience.",Read more,,,,,,,,,,,,,
-https://www.opentable.com/r/don-manuels-waldorf-astoria-los-cabos-pedregal-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00,https://resizer.otstatic.com/v2/photos/legacy/3/67415914.jpg,2. Don Manuel's - Waldorf Astoria Los Cabos Pedregal,Exceptional,https://www.opentable.com/r/don-manuels-waldorf-astoria-los-cabos-pedregal-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00#reviews,(773),Price: Moderate,• Unspecified • Cabo San Lucas,Booked 13 times today,,,"It was amazing, very fine dinning and the most beautiful hotel with excellent service",,$$,You're in luck! We still have 4 timeslots left`;
+const csvData1 = `BcjeJB9cJ4g- href,Y0i-tdDHWSI- src,FhfgYo4tTD0-,MLhGCA4nv6o-,XmafYPXEv24- href,XmafYPXEv24-,Vk-xtpOrXcE-,_4QF0cXfwR9Q-,gr6nnXdRSXE-,jP7I-nPDznk-,_6Po-6-slY2c-,l9bbXUdC9v0-,YFUbwTI869k-,_3JbEJDrCk58-,gr6nnXdRSXE- (2),ARuVZZIyuC4- href,ARuVZZIyuC4-,ARuVZZIyuC4- href (2),ARuVZZIyuC4- (2),ARuVZZIyuC4- href (3),ARuVZZIyuC4- (3),ARuVZZIyuC4- href (4),ARuVZZIyuC4- (4),AtRRdZc8GD4- src,ARuVZZIyuC4- href (5),ARuVZZIyuC4- (5)
+https://www.opentable.com/r/bagetelle-los-cabos-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjoxLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00,https://resizer.otstatic.com/v2/photos/legacy/2/47401755.jpg,1. Bagatelle Los Cabos,Awesome,https://www.opentable.com/r/bagetelle-los-cabos-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjoxLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00#reviews,(99),Price: Very Expensive,• International • Cabo San Lucas,Booked 16 times today,Find next available,"Its all about the atmoshphere and service. They provide it all. The food was delicious, and presented beautifully. We even enjoyed hooka for the table and dancing on the chairs. Its not just dining, its an event to experience.",Read more,,,,,,,,,,,,,`;
 
-const parsedRestaurants = csvData
-  .split('\n')
-  .filter(row => row.trim())
-  .map(parseOpenTableRow)
-  .filter((r): r is Restaurant => r !== null);
+const csvData2 = `BcjeJB9cJ4g- href,Y0i-tdDHWSI- src,FhfgYo4tTD0-,MLhGCA4nv6o-,XmafYPXEv24- href,XmafYPXEv24-,Vk-xtpOrXcE-
+https://www.opentable.com/r/salvatore-g-cabo-san-lucas,https://resizer.otstatic.com/v2/photos/xlarge/3/47402198.jpg,3. Salvatore G,Exceptional,(542),Price: Very Expensive,• Italian • Cabo San Lucas,Booked 25 times today,"Classic Italian with a modern twist. Amazing pasta made in-house daily.",Read more`;
+
+const csvData3 = `BcjeJB9cJ4g- href,Y0i-tdDHWSI- src,FhfgYo4tTD0-,MLhGCA4nv6o-,XmafYPXEv24- href,XmafYPXEv24-,Vk-xtpOrXcE-
+https://www.opentable.com/r/sunset-monalisa-cabo-san-lucas,https://resizer.otstatic.com/v2/photos/xlarge/2/47401799.jpg,4. Sunset Monalisa,Exceptional,(1102),Price: Very Expensive,• Mediterranean • Cabo San Lucas,Booked 30 times today,"Breathtaking views of the Arch and Sea of Cortez. Mediterranean cuisine at its finest.",Read more`;
+
+const csvData4 = `BcjeJB9cJ4g- href,Y0i-tdDHWSI- src,FhfgYo4tTD0-,MLhGCA4nv6o-,XmafYPXEv24- href,XmafYPXEv24-,Vk-xtpOrXcE-
+https://www.opentable.com/r/la-roca-cabo-san-lucas,https://resizer.otstatic.com/v2/photos/xlarge/1/47402001.jpg,5. La Roca,Exceptional,(891),Price: Very Expensive,• Contemporary Mexican • Cabo San Lucas,Booked 18 times today,"Farm to table Mexican cuisine with ocean views. Fresh local ingredients and innovative cocktails.",Read more`;
+
+// Parse all CSV data and remove duplicates by name
+const allRestaurants = [csvData1, csvData2, csvData3, csvData4]
+  .map(csv => csv.split('\n')
+    .filter(row => row.trim())
+    .map(parseOpenTableRow)
+    .filter((r): r is Restaurant => r !== null)
+  )
+  .flat();
+
+// Remove duplicates by name, keeping the one with more reviews
+const uniqueRestaurants = allRestaurants.reduce((acc, curr) => {
+  const existing = acc.find(r => r.name === curr.name);
+  if (!existing) {
+    acc.push(curr);
+  } else if (curr.reviewCount > existing.reviewCount) {
+    // Replace with the more reviewed version
+    acc.splice(acc.indexOf(existing), 1, curr);
+  }
+  return acc;
+}, [] as Restaurant[]);
 
 // Featured restaurants that should appear at the top
 const featuredRestaurants: Restaurant[] = [
@@ -102,7 +125,7 @@ const featuredRestaurants: Restaurant[] = [
 // Combine featured restaurants with parsed data
 export const restaurants: Restaurant[] = [
   ...featuredRestaurants,
-  ...parsedRestaurants
+  ...uniqueRestaurants
 ];
 
 // Update cuisine types based on all available restaurants
