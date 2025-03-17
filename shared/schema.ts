@@ -2,6 +2,7 @@ import { pgTable, text, serial, integer, boolean, timestamp, jsonb, decimal } fr
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
+// Existing tables remain unchanged
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
@@ -23,6 +24,24 @@ export const listings = pgTable("listings", {
   partnerId: integer("partner_id").references(() => users.id),
 });
 
+// Add new resorts table
+export const resorts = pgTable("resorts", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  rating: decimal("rating").notNull(),
+  reviewCount: integer("review_count").notNull(),
+  priceLevel: text("price_level").notNull(),
+  location: text("location").notNull(),
+  description: text("description").notNull(),
+  imageUrl: text("image_url").notNull(),
+  amenities: jsonb("amenities").notNull(),
+  bookingsToday: integer("bookings_today").default(0),
+  googleUrl: text("google_url"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Keep existing tables
 export const bookings = pgTable("bookings", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id),
@@ -40,7 +59,7 @@ export const rewards = pgTable("rewards", {
   description: text("description").notNull(),
   pointsRequired: integer("points_required").notNull(),
   type: text("type", { enum: ["discount", "freebie", "upgrade"] }).notNull(),
-  value: decimal("value").notNull(), // Percentage or fixed amount
+  value: decimal("value").notNull(),
   active: boolean("active").default(true),
 });
 
@@ -66,6 +85,13 @@ export const insertUserSchema = createInsertSchema(users).pick({
   password: true,
 });
 
+// Add schema for inserting new resorts
+export const insertResortSchema = createInsertSchema(resorts).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 // Other insert schemas
 export const insertListingSchema = createInsertSchema(listings);
 export const insertBookingSchema = createInsertSchema(bookings);
@@ -76,6 +102,7 @@ export const insertSocialShareSchema = createInsertSchema(socialShares);
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type Listing = typeof listings.$inferSelect;
+export type Resort = typeof resorts.$inferSelect;
 export type Booking = typeof bookings.$inferSelect;
 export type Reward = typeof rewards.$inferSelect;
 export type SocialShare = typeof socialShares.$inferSelect;
