@@ -7,14 +7,6 @@ import { z } from "zod";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import Footer from "@/components/footer";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 
 const formSchema = z.object({
@@ -51,7 +43,13 @@ export default function FamilyTripsPage() {
 
   const onSubmit = async (data: FormData) => {
     if (step === 1) {
-      setStep(2);
+      // Validate first step fields
+      const firstStepFields = ['firstName', 'lastName', 'email', 'phone'];
+      const hasErrors = firstStepFields.some(field => form.formState.errors[field]);
+
+      if (!hasErrors) {
+        setStep(2);
+      }
       return;
     }
 
@@ -105,6 +103,13 @@ export default function FamilyTripsPage() {
     },
   ];
 
+  const stats = [
+    { value: "500+", label: "Families Served" },
+    { value: "100%", label: "Safe Trips" },
+    { value: "50+", label: "Kid-Friendly Activities" },
+    { value: "24/7", label: "Support" },
+  ];
+
   const testimonials = [
     {
       name: "The Johnson Family",
@@ -118,13 +123,6 @@ export default function FamilyTripsPage() {
       rating: 5,
       image: "https://i.pravatar.cc/150?img=2",
     },
-  ];
-
-  const stats = [
-    { value: "500+", label: "Families Served" },
-    { value: "100%", label: "Safe Trips" },
-    { value: "50+", label: "Kid-Friendly Activities" },
-    { value: "24/7", label: "Support" },
   ];
 
   return (
