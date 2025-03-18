@@ -25,7 +25,7 @@ function Router() {
         <Route path="/resorts" component={ResortsLanding} />
         <Route path="/resort/:slug" component={ResortBooking} />
         <Route path="/villas" component={VillasLanding} />
-        <Route path="/villas/:id" component={VillaDetail} />
+        <Route path="/villa/:slug" component={VillaDetail} />
         <Route path="/adventures" component={AdventuresLanding} />
         <Route path="/adventure/:slug" component={AdventureDetail} />
         <Route path="/restaurants" component={RestaurantsPage} />
