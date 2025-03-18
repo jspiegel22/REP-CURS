@@ -286,6 +286,21 @@ export default function BookingTemplate({
                 </div>
               )}
 
+              {/* Features Section */}
+              {features.length > 0 && (
+                <div className="pb-6 border-b">
+                  <h2 className="text-2xl font-semibold mb-4">Features</h2>
+                  <ul className="space-y-2">
+                    {features.map((feature, index) => (
+                      <li key={index} className="flex items-center">
+                        <Star className="h-5 w-5 text-yellow-400 mr-2" fill="currentColor" />
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
               <div className="pb-6 border-b">
                 <h2 className="text-xl font-semibold mb-4">About this property</h2>
                 <div className="prose max-w-none">

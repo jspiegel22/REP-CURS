@@ -40,29 +40,33 @@ export default function HomePage() {
     <main className="bg-white">
       <HeroSection />
 
-      {/* Test Resort Links */}
+      {/* Featured Luxury Resorts */}
       <div className="container mx-auto px-4 py-8 bg-white">
-        <h2 className="text-2xl font-bold mb-4">Featured Resorts</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {featuredResorts.map((resort) => (
-            <Link 
-              key={resort.title}
-              href={`/resort/${generateSlug(resort.title)}`}
-              className="block group"
-            >
-              <div className="relative overflow-hidden rounded-lg aspect-[4/3]">
-                <img 
-                  src={resort.image} 
-                  alt={resort.title} 
-                  className="w-full h-full object-cover transition-transform group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-4">
-                  <h3 className="text-white text-xl font-semibold">{resort.title}</h3>
-                  <p className="text-white/80">{resort.location}</p>
-                </div>
-              </div>
-            </Link>
-          ))}
+        <h2 className="text-2xl font-bold mb-4">Luxury Resorts</h2>
+        <div className="relative">
+          <div className="overflow-x-auto pb-4 hide-scrollbar">
+            <div className="flex space-x-6">
+              {featuredResorts.map((resort) => (
+                <Link 
+                  key={resort.title}
+                  href={`/resort/${generateSlug(resort.title)}`}
+                  className="block group flex-none w-[300px]"
+                >
+                  <div className="relative overflow-hidden rounded-lg aspect-[4/3]">
+                    <img 
+                      src={resort.image} 
+                      alt={resort.title} 
+                      className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-4">
+                      <h3 className="text-white text-xl font-semibold">{resort.title}</h3>
+                      <p className="text-white/80">{resort.location}</p>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
