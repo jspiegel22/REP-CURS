@@ -231,10 +231,33 @@ export default function VillaBookingTemplate({
                 </div>
               </div>
 
-              {/* Description */}
+              {/* Expanded About this Villa Section */}
               <div className="pb-6 border-b">
                 <h2 className="text-xl font-semibold mb-4">About this Villa</h2>
-                <p className="text-muted-foreground">{description}</p>
+                <div className="space-y-4">
+                  <p className="text-muted-foreground">{description}</p>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                    <div>
+                      <h3 className="font-semibold mb-2">Villa Highlights</h3>
+                      <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+                        <li>Perfect for families and groups</li>
+                        <li>{maximumGuests} guest maximum capacity</li>
+                        <li>{Math.floor(maximumGuests/2)} bedrooms available</li>
+                        <li>Dedicated parking spaces</li>
+                      </ul>
+                    </div>
+                    <div>
+                      <h3 className="font-semibold mb-2">Location Benefits</h3>
+                      <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+                        <li>Prime location in {location}</li>
+                        <li>Close to local attractions</li>
+                        <li>Easy access to beaches</li>
+                        <li>Nearby restaurants and shopping</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               {/* Features Section */}
@@ -374,6 +397,21 @@ function VillaBookingFormContent({
           onSubmit={form.handleSubmit((data: any) => bookingMutation.mutate(data))}
           className="space-y-4"
         >
+          {/* Email moved to top */}
+          <FormField
+            control={form.control}
+            name="contactEmail"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input type="email" placeholder="your@email.com" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           {/* Date Selection */}
           <div className="grid grid-cols-2 gap-2">
             <FormField
@@ -521,20 +559,6 @@ function VillaBookingFormContent({
             />
           </div>
 
-          {/* Contact Email */}
-          <FormField
-            control={form.control}
-            name="contactEmail"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input type="email" placeholder="your@email.com" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
 
           {/* Special Requests */}
           <FormField
