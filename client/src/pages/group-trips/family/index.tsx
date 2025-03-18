@@ -193,64 +193,64 @@ export default function FamilyTripsPage() {
       <div id="booking-form" className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg transform transition-transform duration-300 z-50">
         <div className="container mx-auto px-4 py-4">
           <form onSubmit={form.handleSubmit(onSubmit)} className="max-w-4xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-2 md:gap-4">
               <Input
                 {...form.register("firstName")}
                 placeholder="First Name"
-                className="w-full"
+                className="w-full text-sm md:text-base"
               />
               <Input
                 {...form.register("lastName")}
                 placeholder="Last Name"
-                className="w-full"
+                className="w-full text-sm md:text-base"
               />
               <Input
                 {...form.register("email")}
                 type="email"
                 placeholder="Email Address"
-                className="w-full"
+                className="w-full text-sm md:text-base"
               />
               <Input
                 {...form.register("phone")}
                 type="tel"
                 placeholder="Phone Number"
-                className="w-full"
+                className="w-full text-sm md:text-base"
               />
               <Input
                 {...form.register("checkIn")}
                 type="date"
                 placeholder="Check-in Date"
-                className="w-full"
+                className="w-full text-sm md:text-base"
               />
               <Input
                 {...form.register("checkOut")}
                 type="date"
                 placeholder="Check-out Date"
-                className="w-full"
+                className="w-full text-sm md:text-base"
               />
               <Input
                 {...form.register("budget")}
                 type="text"
                 placeholder="Budget Range"
-                className="w-full"
+                className="w-full text-sm md:text-base"
               />
               <Input
                 {...form.register("children")}
                 type="number"
-                placeholder="Number of Children"
-                className="w-full"
+                placeholder="# of Children"
+                className="w-full text-sm md:text-base"
               />
-              <div className="md:col-span-2">
+              <div className="col-span-2">
                 <Textarea
                   {...form.register("notes")}
                   placeholder="Additional Notes (Optional)"
-                  className="w-full h-24"
+                  className="w-full h-20 text-sm md:text-base md:h-24"
                 />
               </div>
             </div>
             <Button 
               type="submit" 
-              className="w-full mt-4 bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white py-6 text-lg"
+              className="w-full mt-4 bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white py-4 md:py-6 text-base md:text-lg"
             >
               Start Planning Your Family Vacation
             </Button>
