@@ -8,6 +8,68 @@ import { insertBookingSchema } from "@shared/schema";
 export async function registerRoutes(app: Express): Promise<Server> {
   setupAuth(app);
 
+  // Villa-specific booking endpoint
+  app.post("/api/villa-bookings", async (req, res) => {
+    try {
+      // Check authentication
+      if (!req.isAuthenticated()) {
+        return res.status(401).json({ message: "Please log in to make a booking" });
+      }
+
+      // Validate request body
+      const bookingData = insertBookingSchema.safeParse(req.body);
+      if (!bookingData.success) {
+        return res.status(400).json({ 
+          message: "Invalid booking data",
+          errors: bookingData.error.errors 
+        });
+      }
+
+      try {
+        // Create booking in our database
+        const booking = await storage.createBooking({
+          ...bookingData.data,
+          userId: req.user.id,
+          status: "pending"
+        });
+
+        // Create Airtable record for villa owner
+        const airtableRecord = {
+          fields: {
+            Name: req.user.username,
+            Email: bookingData.data.contactEmail,
+            Phone: bookingData.data.contactPhone,
+            "Check In": bookingData.data.startDate,
+            "Check Out": bookingData.data.endDate,
+            "Number of Guests": bookingData.data.guests,
+            "Special Requests": bookingData.data.specialRequests || "",
+            Status: "Pending",
+          }
+        };
+
+        // Send to Make webhook for processing
+        const makeWebhookUrl = process.env.MAKE_WEBHOOK_URL;
+        if (!makeWebhookUrl) {
+          throw new Error("Make webhook URL not configured");
+        }
+
+        await fetch(makeWebhookUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(airtableRecord)
+        });
+
+        res.status(201).json(booking);
+      } catch (error) {
+        console.error("Error in villa booking process:", error);
+        throw error;
+      }
+    } catch (error) {
+      console.error("Villa booking error:", error);
+      res.status(500).json({ message: "Failed to create villa booking" });
+    }
+  });
+
   // Booking endpoint
   app.post("/api/bookings", async (req, res) => {
     try {
