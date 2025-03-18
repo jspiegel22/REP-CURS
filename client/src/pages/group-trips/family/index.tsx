@@ -1,4 +1,4 @@
-import { Calendar, Users, Heart, Sun, Map, Shield } from "lucide-react";
+import { Calendar, Users, Heart, Sun, Map, Shield, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -8,50 +8,34 @@ import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
 import Footer from "@/components/footer";
 
-// Full form schema for desktop
-const desktopFormSchema = z.object({
+// Form schema
+const formSchema = z.object({
   firstName: z.string().min(2, "Please enter your first name"),
   lastName: z.string().min(2, "Please enter your last name"),
   email: z.string().email("Please enter a valid email"),
   phone: z.string().min(10, "Please enter a valid phone number"),
   checkIn: z.string().min(1, "Please select a check-in date"),
   checkOut: z.string().min(1, "Please select a check-out date"),
-  budget: z.string().min(1, "Please enter your budget"),
-  children: z.string().min(1, "Please enter number of children"),
+  budget: z.string().min(1, "Please enter your budget").optional(),
+  children: z.string().min(1, "Please enter number of children").optional(),
   notes: z.string().optional(),
 });
 
-// Simplified mobile form schema
-const mobileFormSchema = z.object({
-  firstName: z.string().min(2, "Please enter your first name"),
-  lastName: z.string().min(2, "Please enter your last name"),
-  email: z.string().email("Please enter a valid email"),
-  phone: z.string().min(10, "Please enter a valid phone number"),
-  checkIn: z.string().min(1, "Please select a check-in date"),
-  checkOut: z.string().min(1, "Please select a check-out date"),
-});
-
-type DesktopFormData = z.infer<typeof desktopFormSchema>;
-type MobileFormData = z.infer<typeof mobileFormSchema>;
+type FormData = z.infer<typeof formSchema>;
 
 export default function FamilyTripsPage() {
   const { toast } = useToast();
-  const desktopForm = useForm<DesktopFormData>({
-    resolver: zodResolver(desktopFormSchema),
+  const form = useForm<FormData>({
+    resolver: zodResolver(formSchema),
   });
 
-  const mobileForm = useForm<MobileFormData>({
-    resolver: zodResolver(mobileFormSchema),
-  });
-
-  const onSubmit = async (data: DesktopFormData | MobileFormData) => {
+  const onSubmit = async (data: FormData) => {
     try {
       toast({
         title: "Thanks for your interest!",
         description: "We'll be in touch shortly to plan your perfect family vacation.",
       });
-      desktopForm.reset();
-      mobileForm.reset();
+      form.reset();
     } catch (error: any) {
       toast({
         title: "Something went wrong",
@@ -131,12 +115,23 @@ export default function FamilyTripsPage() {
             <p className="text-lg md:text-xl text-gray-600 mb-6 md:mb-8">
               Experience the magic of Cabo San Lucas with your loved ones. From toddler-friendly beach days to exciting teen adventures, we create the perfect balance for a memorable family vacation.
             </p>
-            {/* CTA Button - Desktop Only */}
+
+            {/* Enhanced Desktop CTA Button */}
             <Button 
-              onClick={() => document.getElementById('desktop-form')?.scrollIntoView({ behavior: 'smooth' })}
-              className="hidden md:inline-block bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white text-lg px-8 py-6 rounded-xl"
+              onClick={() => document.getElementById('booking-form')?.scrollIntoView({ behavior: 'smooth' })}
+              className="hidden md:inline-flex items-center gap-2 bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white text-xl px-10 py-8 rounded-2xl transform transition-all duration-300 hover:scale-105 hover:shadow-xl shadow-lg hover:gap-4"
             >
               Book Your Family Vacation
+              <ChevronRight className="w-6 h-6" />
+            </Button>
+
+            {/* Mobile CTA Button */}
+            <Button 
+              onClick={() => document.getElementById('booking-form')?.scrollIntoView({ behavior: 'smooth' })}
+              className="md:hidden w-full bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white text-lg py-6 rounded-xl flex items-center justify-center gap-2"
+            >
+              Book Your Family Vacation
+              <ChevronRight className="w-5 h-5" />
             </Button>
           </div>
 
@@ -206,59 +201,38 @@ export default function FamilyTripsPage() {
         </div>
       </div>
 
-      {/* Desktop Form Section */}
-      <div id="desktop-form" className="hidden md:block py-16 bg-gray-50">
+      {/* Booking Form Section */}
+      <div id="booking-form" className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <h2 className="text-3xl font-bold text-center mb-8">Plan Your Family Vacation</h2>
-            <div className="bg-white rounded-xl shadow-lg p-8">
-              <form onSubmit={desktopForm.handleSubmit(onSubmit)} className="space-y-6">
-                <div className="grid grid-cols-2 gap-6">
-                  <Input {...desktopForm.register("firstName")} placeholder="First Name" />
-                  <Input {...desktopForm.register("lastName")} placeholder="Last Name" />
-                  <Input {...desktopForm.register("email")} type="email" placeholder="Email Address" />
-                  <Input {...desktopForm.register("phone")} type="tel" placeholder="Phone Number" />
-                  <Input {...desktopForm.register("checkIn")} type="date" placeholder="Check-in Date" />
-                  <Input {...desktopForm.register("checkOut")} type="date" placeholder="Check-out Date" />
-                  <Input {...desktopForm.register("budget")} type="text" placeholder="Budget Range" />
-                  <Input {...desktopForm.register("children")} type="number" placeholder="Number of Children" />
+            <div className="bg-white rounded-xl shadow-lg p-6 md:p-8">
+              <form onSubmit={form.handleSubmit(onSubmit)}>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6">
+                  <Input {...form.register("firstName")} placeholder="First Name" className="text-sm md:text-base" />
+                  <Input {...form.register("lastName")} placeholder="Last Name" className="text-sm md:text-base" />
+                  <Input {...form.register("email")} type="email" placeholder="Email" className="text-sm md:text-base" />
+                  <Input {...form.register("phone")} type="tel" placeholder="Phone" className="text-sm md:text-base" />
+                  <Input {...form.register("checkIn")} type="date" placeholder="Check-in" className="text-sm md:text-base" />
+                  <Input {...form.register("checkOut")} type="date" placeholder="Check-out" className="text-sm md:text-base" />
+                  <Input {...form.register("budget")} type="text" placeholder="Budget Range" className="text-sm md:text-base" />
+                  <Input {...form.register("children")} type="number" placeholder="Number of Children" className="text-sm md:text-base" />
                 </div>
                 <Textarea 
-                  {...desktopForm.register("notes")} 
+                  {...form.register("notes")} 
                   placeholder="Additional Notes (Optional)"
-                  className="w-full h-32"
+                  className="w-full mt-4 h-32 text-sm md:text-base"
                 />
                 <Button 
                   type="submit" 
-                  className="w-full bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white py-6 text-lg"
+                  className="w-full mt-4 bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white py-4 md:py-6 text-base md:text-lg flex items-center justify-center gap-2"
                 >
                   Start Planning Your Family Vacation
+                  <ChevronRight className="w-5 h-5" />
                 </Button>
               </form>
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* Mobile Floating Form */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50">
-        <div className="container mx-auto px-4 py-4">
-          <form onSubmit={mobileForm.handleSubmit(onSubmit)}>
-            <div className="grid grid-cols-2 gap-2">
-              <Input {...mobileForm.register("firstName")} placeholder="First Name" className="text-sm" />
-              <Input {...mobileForm.register("lastName")} placeholder="Last Name" className="text-sm" />
-              <Input {...mobileForm.register("email")} type="email" placeholder="Email" className="text-sm" />
-              <Input {...mobileForm.register("phone")} type="tel" placeholder="Phone" className="text-sm" />
-              <Input {...mobileForm.register("checkIn")} type="date" placeholder="Check-in" className="text-sm" />
-              <Input {...mobileForm.register("checkOut")} type="date" placeholder="Check-out" className="text-sm" />
-            </div>
-            <Button 
-              type="submit" 
-              className="w-full mt-2 bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white py-4 text-base"
-            >
-              Book Now
-            </Button>
-          </form>
         </div>
       </div>
 
