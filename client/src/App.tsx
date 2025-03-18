@@ -16,6 +16,7 @@ import FamilyTripsPage from "@/pages/group-trips/family";
 import BachelorBachelorettePage from "@/pages/group-trips/bachelor-bachelorette";
 import LuxuryConcierge from "@/pages/group-trips/luxury-concierge";
 import InfluencerPage from "@/pages/group-trips/influencer";
+import WeddingsPage from "@/pages/weddings";
 import NavigationBar from "./components/navigation-bar";
 import { ChatButton } from "./components/chat-button";
 import { AuthProvider } from "@/hooks/use-auth";
@@ -38,6 +39,7 @@ function Router() {
         <Route path="/group-trips/bachelor-bachelorette" component={BachelorBachelorettePage} />
         <Route path="/group-trips/luxury-concierge" component={LuxuryConcierge} />
         <Route path="/group-trips/influencer" component={InfluencerPage} />
+        <Route path="/weddings" component={WeddingsPage} />
         <Route component={NotFound} />
       </Switch>
       <ChatButton />

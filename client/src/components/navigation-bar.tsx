@@ -69,6 +69,9 @@ export default function NavigationBar() {
                     <Link href="/weddings">
                       <a className="block text-white hover:text-white/80 py-2">Weddings</a>
                     </Link>
+                    <Link href="/group-trips/influencer">
+                      <a className="block text-white hover:text-white/80 py-2">For Influencers</a>
+                    </Link>
                     <div className="space-y-2">
                       <h3 className="text-white/60 text-sm font-semibold">Group Trips</h3>
                       {groupTrips.map((item) => (
@@ -149,6 +152,13 @@ export default function NavigationBar() {
                   <NavigationMenuLink asChild>
                     <Link href="/weddings">
                       <a className="text-white hover:text-white/80 px-4 py-2">Weddings</a>
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild>
+                    <Link href="/group-trips/influencer">
+                      <a className="text-white hover:text-white/80 px-4 py-2">For Influencers</a>
                     </Link>
                   </NavigationMenuLink>
                 </NavigationMenuItem>

@@ -7,6 +7,7 @@ import { SiTiktok, SiInstagram, SiWhatsapp, SiFacebook, SiPinterest, SiYoutube }
 import { generateSlug } from "@/lib/utils";
 import { Villa, parseVillaData } from "@/types/villa";
 import { VillaCard } from "@/components/villa-card";
+import { ChevronRight, ArrowDown } from "lucide-react";
 
 // Import villa data
 const villaData = `stretched-link href,w-100 src,location,detail,col-12,detail (2),detail (3),col-auto,col-auto (2),col-auto (3)
@@ -49,7 +50,51 @@ const guides = [
 export default function HomePage() {
   return (
     <main className="bg-white">
-      <HeroSection />
+      {/* Enhanced Hero Section */}
+      <div className="relative min-h-[90vh] bg-black">
+        {/* Background Image */}
+        <div className="absolute inset-0">
+          <img
+            src="/attached_assets/image_1742331906326.png"
+            alt="Cabo San Lucas Destination"
+            className="w-full h-full object-cover opacity-80"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/60" />
+        </div>
+
+        {/* Hero Content */}
+        <div className="relative container mx-auto px-4 h-full flex flex-col justify-center items-center text-center text-white">
+          <div className="max-w-4xl">
+            <h1 className="text-4xl md:text-7xl font-bold mb-6">
+              Your Ultimate Guide to Cabo San Lucas
+            </h1>
+            <p className="text-lg md:text-2xl mb-8 text-white/90">
+              Discover insider tips, hidden gems, and exclusive experiences in our comprehensive travel guide
+            </p>
+
+            {/* Enhanced CTA Button - Desktop */}
+            <Button 
+              className="hidden md:inline-flex items-center gap-3 bg-white hover:bg-white/90 text-black text-xl px-10 py-8 rounded-2xl transform transition-all duration-300 hover:scale-105 hover:shadow-xl shadow-lg"
+            >
+              Download ULTIMATE Cabo Guide
+              <ChevronRight className="w-6 h-6" />
+            </Button>
+
+            {/* Mobile CTA Button */}
+            <Button 
+              className="md:hidden w-full bg-white hover:bg-white/90 text-black text-lg py-6 rounded-xl flex items-center justify-center gap-2"
+            >
+              Get Your Free Guide
+              <ChevronRight className="w-5 h-5" />
+            </Button>
+
+            {/* Scroll Indicator */}
+            <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+              <ArrowDown className="w-6 h-6 text-white" />
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Featured Villas Section */}
       <div className="container mx-auto px-4 py-8 bg-white">
