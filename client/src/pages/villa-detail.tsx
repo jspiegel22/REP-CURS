@@ -3,6 +3,7 @@ import Footer from "@/components/footer";
 import { villas } from "@/data/villas";
 import VillaBookingTemplate from "@/components/templates/VillaBookingTemplate";
 import { generateSlug } from "@/lib/utils";
+import Recommendations from "@/components/recommendations"; // Fixed import path case
 
 // Reviews data
 const reviews = [
@@ -113,6 +114,13 @@ export default function VillaDetail() {
           villaId={parseInt(villa.id.replace('villa-', ''))}
           reviews={reviews}
         />
+        <div className="container mx-auto px-4">
+          <Recommendations 
+            currentItem={villa} 
+            type="villa"
+            maxItems={3} 
+          />
+        </div>
       </main>
       <Footer />
     </div>
