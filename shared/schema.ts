@@ -24,7 +24,7 @@ export const listings = pgTable("listings", {
   partnerId: integer("partner_id").references(() => users.id),
 });
 
-// Add new resorts table
+// Add new resorts table with updated fields
 export const resorts = pgTable("resorts", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
@@ -35,7 +35,10 @@ export const resorts = pgTable("resorts", {
   description: text("description").notNull(),
   imageUrl: text("image_url").notNull(),
   amenities: jsonb("amenities").notNull(),
-  bookingsToday: integer("bookings_today").default(0),
+  rooms: integer("rooms").notNull(),
+  maxGuests: integer("max_guests").notNull(),
+  isBeachfront: boolean("is_beachfront").default(false),
+  isOceanfront: boolean("is_oceanfront").default(false),
   googleUrl: text("google_url"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -115,3 +118,4 @@ export type Booking = typeof bookings.$inferSelect;
 export type Reward = typeof rewards.$inferSelect;
 export type SocialShare = typeof socialShares.$inferSelect;
 export type WeatherCache = typeof weatherCache.$inferSelect;
+export type InsertResort = z.infer<typeof insertResortSchema>;
