@@ -86,15 +86,6 @@ const bottomRowItems = [
   }
 ];
 
-const socialLinks = [
-  { icon: SiTiktok, href: "https://www.tiktok.com/@atcabo", label: "TikTok" },
-  { icon: SiInstagram, href: "https://instagram.com/cabo", label: "Instagram" },
-  { icon: SiYoutube, href: "https://www.youtube.com/@atCabo", label: "YouTube" },
-  { icon: SiWhatsapp, href: "https://wa.me/526242446303", label: "WhatsApp" },
-  { icon: SiFacebook, href: "https://www.facebook.com/cabosanlucasbaja", label: "Facebook" },
-  { icon: SiPinterest, href: "https://www.pinterest.com/instacabo/", label: "Pinterest" }
-];
-
 const stays = [
   {
     title: "Villas",
@@ -108,6 +99,12 @@ const stays = [
     description: "World-class resorts and hotels",
     image: "https://images.unsplash.com/photo-1582719508461-905c673771fd"
   },
+  {
+    title: "Real Estate",
+    href: "/real-estate",
+    description: "Find your dream property in Cabo",
+    image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c"
+  }
 ];
 
 const adventures = [
@@ -128,7 +125,7 @@ const adventures = [
     href: "/adventures/whale-watching",
     description: "Unforgettable whale watching tours",
     image: "https://images.unsplash.com/photo-1570481662006-a3a1374699e8"
-  },
+  }
 ];
 
 const groupTrips = [
@@ -149,7 +146,16 @@ const groupTrips = [
     href: "/group-trips/luxury-concierge",
     description: "Personalized VIP experiences",
     image: "https://images.unsplash.com/photo-1590073242678-70ee3fc28e8e"
-  },
+  }
+];
+
+const socialLinks = [
+  { icon: SiTiktok, href: "https://www.tiktok.com/@atcabo", label: "TikTok" },
+  { icon: SiInstagram, href: "https://instagram.com/cabo", label: "Instagram" },
+  { icon: SiYoutube, href: "https://www.youtube.com/@atCabo", label: "YouTube" },
+  { icon: SiWhatsapp, href: "https://wa.me/526242446303", label: "WhatsApp" },
+  { icon: SiFacebook, href: "https://www.facebook.com/cabosanlucasbaja", label: "Facebook" },
+  { icon: SiPinterest, href: "https://www.pinterest.com/instacabo/", label: "Pinterest" }
 ];
 
 const NavigationBar = () => {
@@ -352,25 +358,12 @@ const NavigationBar = () => {
                     <ul className="grid w-[600px] grid-cols-2 gap-3 p-4">
                       <li>
                         <NavigationMenuLink asChild>
-                          <Link href="/weddings">
+                          <Link href="/events">
                             <a className="flex gap-4 select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                              <img src="https://images.unsplash.com/photo-1546032996-6dfacbacbf3f" alt="Weddings" className="w-24 h-16 object-cover rounded" />
+                              <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87" alt="Events" className="w-24 h-16 object-cover rounded" />
                               <div>
-                                <div className="text-sm font-medium leading-none">Weddings</div>
-                                <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-1">Plan your dream destination wedding</p>
-                              </div>
-                            </a>
-                          </Link>
-                        </NavigationMenuLink>
-                      </li>
-                      <li>
-                        <NavigationMenuLink asChild>
-                          <Link href="/real-estate">
-                            <a className="flex gap-4 select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                              <img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c" alt="Real Estate" className="w-24 h-16 object-cover rounded" />
-                              <div>
-                                <div className="text-sm font-medium leading-none">Real Estate</div>
-                                <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-1">Find your dream property in Cabo</p>
+                                <div className="text-sm font-medium leading-none">Local Events</div>
+                                <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-1">Discover what's happening in Cabo</p>
                               </div>
                             </a>
                           </Link>
@@ -391,12 +384,25 @@ const NavigationBar = () => {
                       </li>
                       <li>
                         <NavigationMenuLink asChild>
-                          <Link href="/group-trips/influencer">
+                          <Link href="/weddings">
                             <a className="flex gap-4 select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                              <img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113" alt="Influencers" className="w-24 h-16 object-cover rounded" />
+                              <img src="https://images.unsplash.com/photo-1546032996-6dfacbacbf3f" alt="Weddings" className="w-24 h-16 object-cover rounded" />
                               <div>
-                                <div className="text-sm font-medium leading-none">Influencers</div>
-                                <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-1">Exclusive partnership opportunities</p>
+                                <div className="text-sm font-medium leading-none">Weddings</div>
+                                <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-1">Plan your dream destination wedding</p>
+                              </div>
+                            </a>
+                          </Link>
+                        </NavigationMenuLink>
+                      </li>
+                      <li>
+                        <NavigationMenuLink asChild>
+                          <Link href="/work-with-us">
+                            <a className="flex gap-4 select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                              <img src="https://images.unsplash.com/photo-1552664730-d307ca884978" alt="Work with Us" className="w-24 h-16 object-cover rounded" />
+                              <div>
+                                <div className="text-sm font-medium leading-none">Work with Us</div>
+                                <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-1">Join our network of partners</p>
                               </div>
                             </a>
                           </Link>

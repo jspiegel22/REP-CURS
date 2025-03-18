@@ -11,23 +11,34 @@ export default function Footer() {
             <p className="text-gray-300">Your premier destination for luxury travel experiences in Cabo San Lucas.</p>
           </div>
           <div>
-            <h3 className="text-xl font-bold mb-4">Quick Links</h3>
+            <h3 className="text-xl font-bold mb-4">Stays</h3>
             <ul className="space-y-2">
-              <li><Link href="/resorts">Resorts & Hotels</Link></li>
-              <li><Link href="/villas">Luxury Villas</Link></li>
-              <li><Link href="/adventures">Adventures</Link></li>
-              <li><Link href="/restaurants">Restaurants</Link></li>
+              <li><Link href="/villa">Luxury Villas</Link></li>
+              <li><Link href="/resort">Resorts & Hotels</Link></li>
+              <li><Link href="/real-estate">Real Estate</Link></li>
             </ul>
           </div>
           <div>
-            <h3 className="text-xl font-bold mb-4">Travel Guides</h3>
+            <h3 className="text-xl font-bold mb-4">Activities</h3>
             <ul className="space-y-2">
-              <li><Link href="/guides/bachelorette">Bachelorette</Link></li>
-              <li><Link href="/guides/weddings">Wedding Planning</Link></li>
-              <li><Link href="/guides/real-estate">Real Estate</Link></li>
-              <li><Link href="/guides/restaurants">Dining Guide</Link></li>
+              <li><Link href="/adventures">Adventures</Link></li>
+              <li><Link href="/restaurants">Restaurants</Link></li>
+              <li><Link href="/events">Local Events</Link></li>
+              <li><Link href="/group-trips/luxury-concierge">Luxury Concierge</Link></li>
             </ul>
           </div>
+          <div>
+            <h3 className="text-xl font-bold mb-4">Plan Your Trip</h3>
+            <ul className="space-y-2">
+              <li><Link href="/guides">Travel Guides</Link></li>
+              <li><Link href="/group-trips/bachelor-bachelorette">Bachelorette</Link></li>
+              <li><Link href="/weddings">Wedding Planning</Link></li>
+              <li><Link href="/group-trips/family">Family Trips</Link></li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
           <div>
             <h3 className="text-xl font-bold mb-4">Contact</h3>
             <ul className="space-y-2">
@@ -36,7 +47,15 @@ export default function Footer() {
               <li>WhatsApp: +52 624 244 6303</li>
             </ul>
           </div>
+          <div>
+            <h3 className="text-xl font-bold mb-4">Partner With Us</h3>
+            <ul className="space-y-2">
+              <li><Link href="/work-with-us">Work with Us</Link></li>
+              <li><Link href="/group-trips/influencer">For Influencers</Link></li>
+            </ul>
+          </div>
         </div>
+
         <div className="border-t border-white/20 pt-8">
           <div className="flex justify-center space-x-6 mb-4">
             <a href="https://www.tiktok.com/@atcabo" target="_blank" rel="noopener noreferrer" className="text-white hover:text-[#F5F5DC] transition-colors">
