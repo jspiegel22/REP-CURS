@@ -48,36 +48,55 @@ const guides = [
 
 export default function HomePage() {
   return (
-    <main className="bg-white">
+    <main>
       {/* Enhanced Hero Section */}
-      <div className="relative h-[50vh] min-h-[400px]">
-        <div className="absolute inset-0">
-          <img
-            src="/attached_assets/image_1742331906326.png"
-            alt="Cabo San Lucas Destination"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/70" />
-        </div>
-
-        {/* Hero Content */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="container mx-auto px-4 text-center">
+      <div className="relative min-h-[90vh] bg-white">
+        <div className="container mx-auto px-4 pt-16">
+          <div className="text-center max-w-4xl mx-auto">
             {/* Category Label */}
-            <div className="inline-block bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
-              <p className="text-white/90 text-sm md:text-base font-medium">Your Complete Cabo Travel Guide</p>
+            <div className="inline-block bg-gray-100 px-4 py-2 rounded-full mb-6">
+              <p className="text-gray-600 text-sm md:text-base font-medium">Your Complete Cabo Travel Guide</p>
             </div>
 
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 text-white">
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 text-gray-900">
               Experience Luxury in Cabo San Lucas
             </h1>
-            <p className="text-lg md:text-xl mb-8 text-white/90 max-w-2xl mx-auto">
+            <p className="text-lg md:text-xl mb-8 text-gray-600 max-w-2xl mx-auto">
               Discover insider tips, hidden gems, and exclusive experiences in our comprehensive travel guide
             </p>
 
+            {/* Social Proof */}
+            <div className="flex items-center justify-center mb-8">
+              <div className="flex -space-x-4">
+                <img
+                  className="w-10 h-10 rounded-full border-2 border-white"
+                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=64"
+                  alt="User"
+                />
+                <img
+                  className="w-10 h-10 rounded-full border-2 border-white"
+                  src="https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=64"
+                  alt="User"
+                />
+                <img
+                  className="w-10 h-10 rounded-full border-2 border-white"
+                  src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=64"
+                  alt="User"
+                />
+                <img
+                  className="w-10 h-10 rounded-full border-2 border-white"
+                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=64"
+                  alt="User"
+                />
+              </div>
+              <span className="ml-4 text-gray-600">
+                Joined by <span className="font-semibold">4,000+</span> travelers
+              </span>
+            </div>
+
             {/* Enhanced CTA Button - Desktop */}
             <Button 
-              className="hidden md:inline-flex items-center gap-3 bg-white hover:bg-white/90 text-black text-xl px-10 py-8 rounded-2xl transform transition-all duration-300 hover:scale-105 hover:shadow-xl shadow-lg"
+              className="hidden md:inline-flex items-center gap-3 bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white text-xl px-10 py-8 rounded-2xl transform transition-all duration-300 hover:scale-105 hover:shadow-xl shadow-lg"
             >
               Download ULTIMATE Cabo Guide
               <ChevronRight className="w-6 h-6" />
@@ -85,11 +104,20 @@ export default function HomePage() {
 
             {/* Mobile CTA Button */}
             <Button 
-              className="md:hidden w-full bg-white hover:bg-white/90 text-black text-lg py-6 rounded-xl flex items-center justify-center gap-2"
+              className="md:hidden w-full bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white text-lg py-6 rounded-xl flex items-center justify-center gap-2"
             >
               Get Your Free Guide
               <ChevronRight className="w-5 h-5" />
             </Button>
+
+            {/* Hero Image */}
+            <div className="relative mt-12 rounded-2xl overflow-hidden shadow-2xl">
+              <img
+                src="/attached_assets/image_1742331906326.png"
+                alt="Cabo San Lucas Destination"
+                className="w-full rounded-2xl"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -144,14 +172,14 @@ export default function HomePage() {
 
       {/* Main Categories */}
       <div className="container mx-auto px-4 py-16">
-        <h2 className="text-3xl font-bold mb-8 text-[#2F4F4F]">Explore Cabo San Lucas</h2>
+        <h2 className="text-3xl font-bold mb-8 text-gray-900">Explore Cabo San Lucas</h2>
         <CategoryGrid />
       </div>
 
       {/* Featured Adventures */}
       <div className="bg-[#F5F5DC] py-16">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold mb-8 text-[#2F4F4F]">Featured Adventures</h2>
+          <h2 className="text-3xl font-bold mb-8 text-gray-900">Featured Adventures</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {featuredAdventures.map((adventure) => (
               <div key={adventure.title} className="relative overflow-hidden rounded-lg group">
