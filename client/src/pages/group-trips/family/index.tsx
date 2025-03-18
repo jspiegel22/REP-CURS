@@ -8,7 +8,8 @@ import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
 import Footer from "@/components/footer";
 
-const leadFormSchema = z.object({
+// Full form schema for desktop
+const desktopFormSchema = z.object({
   firstName: z.string().min(2, "Please enter your first name"),
   lastName: z.string().min(2, "Please enter your last name"),
   email: z.string().email("Please enter a valid email"),
@@ -20,22 +21,37 @@ const leadFormSchema = z.object({
   notes: z.string().optional(),
 });
 
-type LeadFormData = z.infer<typeof leadFormSchema>;
+// Simplified mobile form schema
+const mobileFormSchema = z.object({
+  firstName: z.string().min(2, "Please enter your first name"),
+  lastName: z.string().min(2, "Please enter your last name"),
+  email: z.string().email("Please enter a valid email"),
+  phone: z.string().min(10, "Please enter a valid phone number"),
+  checkIn: z.string().min(1, "Please select a check-in date"),
+  checkOut: z.string().min(1, "Please select a check-out date"),
+});
+
+type DesktopFormData = z.infer<typeof desktopFormSchema>;
+type MobileFormData = z.infer<typeof mobileFormSchema>;
 
 export default function FamilyTripsPage() {
   const { toast } = useToast();
-  const form = useForm<LeadFormData>({
-    resolver: zodResolver(leadFormSchema),
+  const desktopForm = useForm<DesktopFormData>({
+    resolver: zodResolver(desktopFormSchema),
   });
 
-  const onSubmit = async (data: LeadFormData) => {
+  const mobileForm = useForm<MobileFormData>({
+    resolver: zodResolver(mobileFormSchema),
+  });
+
+  const onSubmit = async (data: DesktopFormData | MobileFormData) => {
     try {
-      // Handle form submission
       toast({
         title: "Thanks for your interest!",
         description: "We'll be in touch shortly to plan your perfect family vacation.",
       });
-      form.reset();
+      desktopForm.reset();
+      mobileForm.reset();
     } catch (error: any) {
       toast({
         title: "Something went wrong",
@@ -107,7 +123,7 @@ export default function FamilyTripsPage() {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center mb-8 md:mb-12">
             <div className="inline-block bg-[#2F4F4F]/10 px-4 py-2 rounded-full mb-4 md:mb-6">
-              <p className="text-[#2F4F4F] text-sm font-medium">Your Ultimate Family Guide to Cabo</p>
+              <p className="text-[#2F4F4F] text-xs md:text-sm font-medium">Your Ultimate Family Guide to Cabo</p>
             </div>
             <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-4 md:mb-6">
               Create Unforgettable Family Memories in Paradise
@@ -115,9 +131,10 @@ export default function FamilyTripsPage() {
             <p className="text-lg md:text-xl text-gray-600 mb-6 md:mb-8">
               Experience the magic of Cabo San Lucas with your loved ones. From toddler-friendly beach days to exciting teen adventures, we create the perfect balance for a memorable family vacation.
             </p>
+            {/* CTA Button - Desktop Only */}
             <Button 
-              onClick={() => document.getElementById('booking-form')?.scrollIntoView({ behavior: 'smooth' })}
-              className="bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white text-lg px-8 py-6 rounded-xl"
+              onClick={() => document.getElementById('desktop-form')?.scrollIntoView({ behavior: 'smooth' })}
+              className="hidden md:inline-block bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white text-lg px-8 py-6 rounded-xl"
             >
               Book Your Family Vacation
             </Button>
@@ -189,70 +206,57 @@ export default function FamilyTripsPage() {
         </div>
       </div>
 
-      {/* Sticky Booking Form */}
-      <div id="booking-form" className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg transform transition-transform duration-300 z-50">
-        <div className="container mx-auto px-4 py-4">
-          <form onSubmit={form.handleSubmit(onSubmit)} className="max-w-4xl mx-auto">
-            <div className="grid grid-cols-2 gap-2 md:gap-4">
-              <Input
-                {...form.register("firstName")}
-                placeholder="First Name"
-                className="w-full text-sm md:text-base"
-              />
-              <Input
-                {...form.register("lastName")}
-                placeholder="Last Name"
-                className="w-full text-sm md:text-base"
-              />
-              <Input
-                {...form.register("email")}
-                type="email"
-                placeholder="Email Address"
-                className="w-full text-sm md:text-base"
-              />
-              <Input
-                {...form.register("phone")}
-                type="tel"
-                placeholder="Phone Number"
-                className="w-full text-sm md:text-base"
-              />
-              <Input
-                {...form.register("checkIn")}
-                type="date"
-                placeholder="Check-in Date"
-                className="w-full text-sm md:text-base"
-              />
-              <Input
-                {...form.register("checkOut")}
-                type="date"
-                placeholder="Check-out Date"
-                className="w-full text-sm md:text-base"
-              />
-              <Input
-                {...form.register("budget")}
-                type="text"
-                placeholder="Budget Range"
-                className="w-full text-sm md:text-base"
-              />
-              <Input
-                {...form.register("children")}
-                type="number"
-                placeholder="# of Children"
-                className="w-full text-sm md:text-base"
-              />
-              <div className="col-span-2">
-                <Textarea
-                  {...form.register("notes")}
+      {/* Desktop Form Section */}
+      <div id="desktop-form" className="hidden md:block py-16 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-3xl font-bold text-center mb-8">Plan Your Family Vacation</h2>
+            <div className="bg-white rounded-xl shadow-lg p-8">
+              <form onSubmit={desktopForm.handleSubmit(onSubmit)} className="space-y-6">
+                <div className="grid grid-cols-2 gap-6">
+                  <Input {...desktopForm.register("firstName")} placeholder="First Name" />
+                  <Input {...desktopForm.register("lastName")} placeholder="Last Name" />
+                  <Input {...desktopForm.register("email")} type="email" placeholder="Email Address" />
+                  <Input {...desktopForm.register("phone")} type="tel" placeholder="Phone Number" />
+                  <Input {...desktopForm.register("checkIn")} type="date" placeholder="Check-in Date" />
+                  <Input {...desktopForm.register("checkOut")} type="date" placeholder="Check-out Date" />
+                  <Input {...desktopForm.register("budget")} type="text" placeholder="Budget Range" />
+                  <Input {...desktopForm.register("children")} type="number" placeholder="Number of Children" />
+                </div>
+                <Textarea 
+                  {...desktopForm.register("notes")} 
                   placeholder="Additional Notes (Optional)"
-                  className="w-full h-20 text-sm md:text-base md:h-24"
+                  className="w-full h-32"
                 />
-              </div>
+                <Button 
+                  type="submit" 
+                  className="w-full bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white py-6 text-lg"
+                >
+                  Start Planning Your Family Vacation
+                </Button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Floating Form */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50">
+        <div className="container mx-auto px-4 py-4">
+          <form onSubmit={mobileForm.handleSubmit(onSubmit)}>
+            <div className="grid grid-cols-2 gap-2">
+              <Input {...mobileForm.register("firstName")} placeholder="First Name" className="text-sm" />
+              <Input {...mobileForm.register("lastName")} placeholder="Last Name" className="text-sm" />
+              <Input {...mobileForm.register("email")} type="email" placeholder="Email" className="text-sm" />
+              <Input {...mobileForm.register("phone")} type="tel" placeholder="Phone" className="text-sm" />
+              <Input {...mobileForm.register("checkIn")} type="date" placeholder="Check-in" className="text-sm" />
+              <Input {...mobileForm.register("checkOut")} type="date" placeholder="Check-out" className="text-sm" />
             </div>
             <Button 
               type="submit" 
-              className="w-full mt-4 bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white py-4 md:py-6 text-base md:text-lg"
+              className="w-full mt-2 bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white py-4 text-base"
             >
-              Start Planning Your Family Vacation
+              Book Now
             </Button>
           </form>
         </div>
