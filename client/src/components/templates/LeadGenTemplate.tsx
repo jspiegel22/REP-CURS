@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, FormProvider } from "react-hook-form";
 import { z } from "zod";
-import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   FormControl,
@@ -14,28 +13,50 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
+import { Check, Calendar, Star } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
 
-// Schema for lead generation forms
+// Enhanced schema for lead generation forms
 const leadFormSchema = z.object({
   name: z.string().min(2, "Please enter your name"),
   email: z.string().email("Please enter a valid email"),
   phone: z.string().min(10, "Please enter a valid phone number"),
-  message: z.string().min(10, "Please provide more details about your inquiry"),
+  numberOfPeople: z.string().min(1, "Please indicate group size"),
+  message: z.string().min(10, "Please tell us more about your trip"),
   preferredDates: z.string().min(1, "Please indicate your preferred dates"),
 });
 
 type LeadFormData = z.infer<typeof leadFormSchema>;
+
+interface Feature {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+}
+
+interface FAQ {
+  question: string;
+  answer: string;
+}
 
 interface LeadGenTemplateProps {
   title: string;
   subtitle?: string;
   description: string;
   imageUrl: string;
-  features?: string[];
-  faqs?: Array<{ question: string; answer: string }>;
-  amenities?: string[];
-  onLeadSubmit?: (data: LeadFormData) => Promise<void>;
+  features: Feature[];
+  faqs: FAQ[];
+  benefits: string[];
+  testimonials: Array<{
+    name: string;
+    text: string;
+    rating: number;
+    image?: string;
+  }>;
+  stats?: Array<{
+    value: string;
+    label: string;
+  }>;
 }
 
 export default function LeadGenTemplate({
@@ -43,10 +64,11 @@ export default function LeadGenTemplate({
   subtitle,
   description,
   imageUrl,
-  features = [],
-  faqs = [],
-  amenities = [],
-  onLeadSubmit,
+  features,
+  faqs,
+  benefits,
+  testimonials,
+  stats
 }: LeadGenTemplateProps) {
   const { toast } = useToast();
   const form = useForm<LeadFormData>({
@@ -55,29 +77,23 @@ export default function LeadGenTemplate({
       name: "",
       email: "",
       phone: "",
+      numberOfPeople: "",
       message: "",
       preferredDates: "",
     },
   });
 
-  const handleSubmit = async (data: LeadFormData) => {
+  const onSubmit = async (data: LeadFormData) => {
     try {
-      if (onLeadSubmit) {
-        await onLeadSubmit(data);
-      } else {
-        // Default submission handler
-        await apiRequest("POST", "/api/leads", data);
-      }
-
+      // Handle form submission
       toast({
-        title: "Inquiry Sent",
-        description: "We'll get back to you shortly with more information.",
+        title: "Thanks for your interest!",
+        description: "We'll be in touch with you shortly.",
       });
-
       form.reset();
     } catch (error: any) {
       toast({
-        title: "Submission Failed",
+        title: "Something went wrong",
         description: error.message,
         variant: "destructive",
       });
@@ -97,159 +113,218 @@ export default function LeadGenTemplate({
         <div className="absolute inset-0 flex flex-col justify-center items-center text-white text-center p-6">
           <h1 className="text-4xl md:text-6xl font-bold mb-4">{title}</h1>
           {subtitle && (
-            <p className="text-xl md:text-2xl mb-6">{subtitle}</p>
+            <p className="text-xl md:text-2xl mb-6 max-w-2xl">{subtitle}</p>
+          )}
+
+          {/* Stats Section in Hero */}
+          {stats && (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-8">
+              {stats.map((stat, index) => (
+                <div key={index} className="text-center">
+                  <div className="text-3xl font-bold">{stat.value}</div>
+                  <div className="text-sm opacity-80">{stat.label}</div>
+                </div>
+              ))}
+            </div>
           )}
         </div>
       </div>
 
-      {/* Content Grid */}
+      {/* Main Content */}
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Left Column - Content */}
-          <div className="space-y-8">
+          <div className="space-y-12">
+            {/* Description */}
             <div className="prose max-w-none">
-              <p className="text-lg">{description}</p>
+              <p className="text-lg text-muted-foreground">{description}</p>
             </div>
 
-            {features.length > 0 && (
-              <div>
-                <h2 className="text-2xl font-semibold mb-4">Features</h2>
-                <ul className="space-y-2">
-                  {features.map((feature, index) => (
-                    <li key={index} className="flex items-center">
-                      <span className="mr-2">•</span>
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {amenities.length > 0 && (
-              <div>
-                <h2 className="text-2xl font-semibold mb-4">Amenities</h2>
-                <div className="grid grid-cols-2 gap-4">
-                  {amenities.map((amenity, index) => (
-                    <div key={index} className="flex items-center">
-                      <span className="mr-2">✓</span>
-                      {amenity}
-                    </div>
-                  ))}
+            {/* Features Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {features.map((feature, index) => (
+                <div key={index} className="p-6 rounded-lg border bg-card">
+                  <div className="mb-4 text-primary">
+                    {feature.icon}
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
+                  <p className="text-muted-foreground">{feature.description}</p>
                 </div>
+              ))}
+            </div>
+
+            {/* Benefits List */}
+            <div>
+              <h2 className="text-2xl font-semibold mb-6">What You'll Get</h2>
+              <div className="grid gap-4">
+                {benefits.map((benefit, index) => (
+                  <div key={index} className="flex items-center gap-3">
+                    <div className="flex-shrink-0">
+                      <Check className="h-5 w-5 text-primary" />
+                    </div>
+                    <span>{benefit}</span>
+                  </div>
+                ))}
               </div>
-            )}
+            </div>
+
+            {/* Testimonials */}
+            <div>
+              <h2 className="text-2xl font-semibold mb-6">What Others Say</h2>
+              <div className="grid gap-6">
+                {testimonials.map((testimonial, index) => (
+                  <div key={index} className="bg-card rounded-lg p-6 border">
+                    <div className="flex items-center gap-4 mb-4">
+                      {testimonial.image && (
+                        <img
+                          src={testimonial.image}
+                          alt={testimonial.name}
+                          className="w-12 h-12 rounded-full"
+                        />
+                      )}
+                      <div>
+                        <p className="font-semibold">{testimonial.name}</p>
+                        <div className="flex items-center">
+                          {[...Array(testimonial.rating)].map((_, i) => (
+                            <Star
+                              key={i}
+                              className="h-4 w-4 text-yellow-400"
+                              fill="currentColor"
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                    <p className="text-muted-foreground">{testimonial.text}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
 
           {/* Right Column - Form */}
-          <div className="bg-card p-6 rounded-lg border">
-            <h2 className="text-2xl font-semibold mb-6">Request Information</h2>
-            <FormProvider {...form}>
-              <form
-                onSubmit={form.handleSubmit(handleSubmit)}
-                className="space-y-6"
-              >
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Full Name</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+          <div>
+            <div className="sticky top-8">
+              <div className="bg-card p-6 rounded-lg border shadow-lg">
+                <h2 className="text-2xl font-semibold mb-6">Start Planning Your Trip</h2>
+                <FormProvider {...form}>
+                  <form
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    className="space-y-6"
+                  >
+                    <FormField
+                      control={form.control}
+                      name="name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Full Name</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input type="email" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Email</FormLabel>
+                          <FormControl>
+                            <Input type="email" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                <FormField
-                  control={form.control}
-                  name="phone"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Phone Number</FormLabel>
-                      <FormControl>
-                        <Input type="tel" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                    <FormField
+                      control={form.control}
+                      name="phone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Phone Number</FormLabel>
+                          <FormControl>
+                            <Input type="tel" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                <FormField
-                  control={form.control}
-                  name="preferredDates"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Preferred Dates</FormLabel>
-                      <FormControl>
-                        <Input {...field} placeholder="e.g., July 15-20, 2024" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                    <FormField
+                      control={form.control}
+                      name="numberOfPeople"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Number of People</FormLabel>
+                          <FormControl>
+                            <Input type="number" min="1" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                <FormField
-                  control={form.control}
-                  name="message"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Additional Details</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          {...field}
-                          placeholder="Please share any specific requirements or questions"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                    <FormField
+                      control={form.control}
+                      name="preferredDates"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Preferred Dates</FormLabel>
+                          <FormControl>
+                            <Input {...field} placeholder="e.g., July 15-20, 2024" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                <Button
-                  type="submit"
-                  className="w-full"
-                  disabled={form.formState.isSubmitting}
-                >
-                  {form.formState.isSubmitting && (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  )}
-                  Submit Inquiry
-                </Button>
-              </form>
-            </FormProvider>
+                    <FormField
+                      control={form.control}
+                      name="message"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Tell us about your trip</FormLabel>
+                          <FormControl>
+                            <Textarea
+                              {...field}
+                              placeholder="What are you looking for in your perfect Cabo experience?"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <Button
+                      type="submit"
+                      className="w-full bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white"
+                      disabled={form.formState.isSubmitting}
+                    >
+                      Get Started
+                    </Button>
+                  </form>
+                </FormProvider>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* FAQs Section */}
-        {faqs.length > 0 && (
-          <div className="mt-16">
-            <h2 className="text-2xl font-semibold mb-6">Frequently Asked Questions</h2>
-            <div className="grid gap-4">
-              {faqs.map((faq, index) => (
-                <div key={index} className="bg-card p-6 rounded-lg border">
-                  <h3 className="text-lg font-semibold mb-2">{faq.question}</h3>
-                  <p className="text-muted-foreground">{faq.answer}</p>
-                </div>
-              ))}
-            </div>
+        <div className="mt-16">
+          <h2 className="text-2xl font-semibold mb-6">Frequently Asked Questions</h2>
+          <div className="grid gap-4">
+            {faqs.map((faq, index) => (
+              <div key={index} className="bg-card p-6 rounded-lg border">
+                <h3 className="text-lg font-semibold mb-2">{faq.question}</h3>
+                <p className="text-muted-foreground">{faq.answer}</p>
+              </div>
+            ))}
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
