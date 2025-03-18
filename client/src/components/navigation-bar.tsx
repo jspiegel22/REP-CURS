@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import { Menu, ShoppingCart, X } from "lucide-react"; // Added X import
+import { Menu, ShoppingCart, X } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { SiTiktok, SiInstagram, SiWhatsapp, SiFacebook, SiPinterest, SiYoutube } from "react-icons/si";
 import {
@@ -47,10 +47,28 @@ const gridMenuItems = [
     image: "https://images.unsplash.com/photo-1578474846511-04ba529f0b88"
   },
   {
-    title: "WEDDINGS",
-    href: "/weddings",
-    image: "https://images.unsplash.com/photo-1546032996-6dfacbacbf3f"
+    title: "LOCAL EVENTS",
+    href: "/events",
+    image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87"
   },
+  {
+    title: "REAL ESTATE",
+    href: "/real-estate",
+    image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c"
+  },
+  {
+    title: "GUIDES",
+    href: "/guides",
+    image: "https://images.unsplash.com/photo-1516546453174-5e1098a4b4af"
+  },
+  {
+    title: "LUXURY CONCIERGE",
+    href: "/group-trips/luxury-concierge",
+    image: "https://images.unsplash.com/photo-1590073242678-70ee3fc28e8e"
+  }
+];
+
+const bottomRowItems = [
   {
     title: "INFLUENCERS",
     href: "/group-trips/influencer",
@@ -62,9 +80,9 @@ const gridMenuItems = [
     image: "https://images.unsplash.com/photo-1552664730-d307ca884978"
   },
   {
-    title: "LUXURY CONCIERGE",
-    href: "/group-trips/luxury-concierge",
-    image: "https://images.unsplash.com/photo-1590073242678-70ee3fc28e8e"
+    title: "WEDDINGS",
+    href: "/weddings",
+    image: "https://images.unsplash.com/photo-1546032996-6dfacbacbf3f"
   }
 ];
 
@@ -148,10 +166,10 @@ export default function NavigationBar() {
                 </Button>
               </SheetTrigger>
               <SheetContent side="left" className="w-[85vw] bg-white p-0">
-                {/* Larger Close Button */}
+                {/* Larger Close Button with Background */}
                 <div className="absolute right-4 top-4">
-                  <button className="text-[#2F4F4F] hover:text-[#1F3F3F]">
-                    <X className="h-8 w-8" />
+                  <button className="bg-white rounded-lg p-2 shadow-sm border">
+                    <X className="h-12 w-12 text-[#2F4F4F] hover:text-[#1F3F3F]" />
                   </button>
                 </div>
 
@@ -163,14 +181,14 @@ export default function NavigationBar() {
                       {mainMenuItems.map((item) => (
                         <Link key={item.href} href={item.href}>
                           <a className="block">
-                            <div className="relative h-20 rounded-lg overflow-hidden">
+                            <div className="relative h-32 rounded-lg overflow-hidden">
                               <img
                                 src={item.image}
                                 alt={item.title}
                                 className="w-full h-full object-cover"
                               />
                               <div className="absolute inset-0 bg-black/30 flex items-center">
-                                <span className="text-white text-lg font-semibold px-4">{item.title}</span>
+                                <span className="text-white text-xl font-semibold px-4">{item.title}</span>
                               </div>
                             </div>
                           </a>
@@ -183,7 +201,27 @@ export default function NavigationBar() {
                       {gridMenuItems.map((item) => (
                         <Link key={item.href} href={item.href}>
                           <a className="block">
-                            <div className="relative aspect-[3/2] rounded-lg overflow-hidden">
+                            <div className="relative aspect-[3/1] rounded-lg overflow-hidden">
+                              <img
+                                src={item.image}
+                                alt={item.title}
+                                className="w-full h-full object-cover"
+                              />
+                              <div className="absolute inset-0 bg-black/30 flex items-center justify-center text-center p-2">
+                                <span className="text-white text-xs font-semibold px-1">{item.title}</span>
+                              </div>
+                            </div>
+                          </a>
+                        </Link>
+                      ))}
+                    </div>
+
+                    {/* Bottom Row - 3x1 Grid */}
+                    <div className="grid grid-cols-3 gap-2 mt-2">
+                      {bottomRowItems.map((item) => (
+                        <Link key={item.href} href={item.href}>
+                          <a className="block">
+                            <div className="relative aspect-square rounded-lg overflow-hidden">
                               <img
                                 src={item.image}
                                 alt={item.title}
