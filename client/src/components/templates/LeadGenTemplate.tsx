@@ -14,7 +14,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Check, Calendar, Star } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
 
 // Enhanced schema for lead generation forms
 const leadFormSchema = z.object({
@@ -57,9 +56,10 @@ interface LeadGenTemplateProps {
     value: string;
     label: string;
   }>;
+  children?: React.ReactNode;
 }
 
-export default function LeadGenTemplate({
+export function LeadGenTemplate({
   title,
   subtitle,
   description,
@@ -68,7 +68,8 @@ export default function LeadGenTemplate({
   faqs,
   benefits,
   testimonials,
-  stats
+  stats,
+  children
 }: LeadGenTemplateProps) {
   const { toast } = useToast();
   const form = useForm<LeadFormData>({
@@ -325,6 +326,9 @@ export default function LeadGenTemplate({
             ))}
           </div>
         </div>
+
+        {/* Optional Additional Content */}
+        {children}
       </div>
     </div>
   );

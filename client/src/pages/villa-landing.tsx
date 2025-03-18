@@ -1,4 +1,4 @@
-import LeadGenTemplate from "@/components/templates/LeadGenTemplate";
+import { LeadGenTemplate } from "@/components/templates/LeadGenTemplate";
 
 export default function VillaLanding() {
   return (
