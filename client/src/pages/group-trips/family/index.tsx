@@ -1,6 +1,7 @@
 import { Calendar, Users, Heart, Sun, Map, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -8,8 +9,15 @@ import { useToast } from "@/hooks/use-toast";
 import Footer from "@/components/footer";
 
 const leadFormSchema = z.object({
-  name: z.string().min(2, "Please enter your name"),
+  firstName: z.string().min(2, "Please enter your first name"),
+  lastName: z.string().min(2, "Please enter your last name"),
   email: z.string().email("Please enter a valid email"),
+  phone: z.string().min(10, "Please enter a valid phone number"),
+  checkIn: z.string().min(1, "Please select a check-in date"),
+  checkOut: z.string().min(1, "Please select a check-out date"),
+  budget: z.string().min(1, "Please enter your budget"),
+  children: z.string().min(1, "Please enter number of children"),
+  notes: z.string().optional(),
 });
 
 type LeadFormData = z.infer<typeof leadFormSchema>;
@@ -25,7 +33,7 @@ export default function FamilyTripsPage() {
       // Handle form submission
       toast({
         title: "Thanks for your interest!",
-        description: "We'll send you our family travel guide shortly.",
+        description: "We'll be in touch shortly to plan your perfect family vacation.",
       });
       form.reset();
     } catch (error: any) {
@@ -95,65 +103,43 @@ export default function FamilyTripsPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <div className="relative pt-20 pb-40">
+      <div className="relative pt-12 md:pt-20 pb-20">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center mb-12">
-            <div className="inline-block bg-[#2F4F4F]/10 px-4 py-2 rounded-full mb-6">
+          <div className="max-w-4xl mx-auto text-center mb-8 md:mb-12">
+            <div className="inline-block bg-[#2F4F4F]/10 px-4 py-2 rounded-full mb-4 md:mb-6">
               <p className="text-[#2F4F4F] text-sm font-medium">Your Ultimate Family Guide to Cabo</p>
             </div>
-            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
+            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-4 md:mb-6">
               Create Unforgettable Family Memories in Paradise
             </h1>
-            <p className="text-xl text-gray-600 mb-8">
+            <p className="text-lg md:text-xl text-gray-600 mb-6 md:mb-8">
               Experience the magic of Cabo San Lucas with your loved ones. From toddler-friendly beach days to exciting teen adventures, we create the perfect balance for a memorable family vacation.
             </p>
+            <Button 
+              onClick={() => document.getElementById('booking-form')?.scrollIntoView({ behavior: 'smooth' })}
+              className="bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white text-lg px-8 py-6 rounded-xl"
+            >
+              Book Your Family Vacation
+            </Button>
           </div>
 
-          <div className="relative">
+          <div className="relative mt-8">
             <img
               src="https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3"
               alt="Family enjoying beach vacation"
-              className="w-full h-[500px] object-cover rounded-2xl"
+              className="w-full h-[400px] md:h-[500px] object-cover rounded-2xl"
             />
-
-            {/* Floating Form */}
-            <div className="absolute -bottom-20 left-1/2 transform -translate-x-1/2 w-full max-w-md">
-              <div className="bg-white rounded-xl shadow-xl p-6">
-                <h3 className="text-xl font-semibold mb-4">Get Your FREE 2025 Family Guide</h3>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                  <div>
-                    <Input
-                      {...form.register("name")}
-                      placeholder="Enter your name"
-                      className="w-full"
-                    />
-                  </div>
-                  <div>
-                    <Input
-                      {...form.register("email")}
-                      type="email"
-                      placeholder="Enter your email"
-                      className="w-full"
-                    />
-                  </div>
-                  <Button type="submit" className="w-full bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white">
-                    Download the Guide
-                  </Button>
-                  <p className="text-xs text-center text-gray-500">Free forever • No card required</p>
-                </form>
-              </div>
-            </div>
           </div>
         </div>
       </div>
 
       {/* Social Proof */}
-      <div className="bg-gray-50 py-20 mt-32">
+      <div className="bg-gray-50 py-16 md:py-20">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 max-w-4xl mx-auto">
             {stats.map((stat, index) => (
               <div key={index} className="text-center">
-                <div className="text-3xl font-bold text-[#2F4F4F]">{stat.value}</div>
+                <div className="text-2xl md:text-3xl font-bold text-[#2F4F4F]">{stat.value}</div>
                 <div className="text-sm text-gray-600">{stat.label}</div>
               </div>
             ))}
@@ -161,44 +147,114 @@ export default function FamilyTripsPage() {
         </div>
       </div>
 
-      {/* Feature Grid */}
-      <div className="py-20">
+      {/* Content Sections */}
+      <div className="py-16 md:py-20">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">Why Choose Our Family Package?</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            {features.map((feature, index) => (
-              <div key={index} className="p-6 rounded-xl border bg-white hover:shadow-lg transition-shadow">
-                <div className="text-[#2F4F4F] mb-4">{feature.icon}</div>
-                <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-                <p className="text-gray-600">{feature.description}</p>
-              </div>
-            ))}
+          {/* Features Grid */}
+          <div className="max-w-5xl mx-auto">
+            <h2 className="text-2xl md:text-3xl font-bold text-center mb-8 md:mb-12">Why Choose Our Family Package?</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+              {features.map((feature, index) => (
+                <div key={index} className="p-6 rounded-xl border bg-white hover:shadow-lg transition-shadow">
+                  <div className="text-[#2F4F4F] mb-4">{feature.icon}</div>
+                  <h3 className="text-lg md:text-xl font-semibold mb-2">{feature.title}</h3>
+                  <p className="text-gray-600">{feature.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Testimonials */}
+          <div className="max-w-4xl mx-auto mt-16 md:mt-20">
+            <h2 className="text-2xl md:text-3xl font-bold text-center mb-8 md:mb-12">What Families Say</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+              {testimonials.map((testimonial, index) => (
+                <div key={index} className="bg-white p-6 rounded-xl shadow-sm">
+                  <div className="flex items-center gap-4 mb-4">
+                    <img
+                      src={testimonial.image}
+                      alt={testimonial.name}
+                      className="w-12 h-12 rounded-full"
+                    />
+                    <div>
+                      <p className="font-semibold">{testimonial.name}</p>
+                      <div className="text-yellow-400">{'⭐'.repeat(testimonial.rating)}</div>
+                    </div>
+                  </div>
+                  <p className="text-gray-600">{testimonial.text}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Testimonials */}
-      <div className="bg-gray-50 py-20">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">What Families Say</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {testimonials.map((testimonial, index) => (
-              <div key={index} className="bg-white p-6 rounded-xl shadow-sm">
-                <div className="flex items-center gap-4 mb-4">
-                  <img
-                    src={testimonial.image}
-                    alt={testimonial.name}
-                    className="w-12 h-12 rounded-full"
-                  />
-                  <div>
-                    <p className="font-semibold">{testimonial.name}</p>
-                    <div className="text-yellow-400">{'⭐'.repeat(testimonial.rating)}</div>
-                  </div>
-                </div>
-                <p className="text-gray-600">{testimonial.text}</p>
+      {/* Sticky Booking Form */}
+      <div id="booking-form" className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg transform transition-transform duration-300 z-50">
+        <div className="container mx-auto px-4 py-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="max-w-4xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Input
+                {...form.register("firstName")}
+                placeholder="First Name"
+                className="w-full"
+              />
+              <Input
+                {...form.register("lastName")}
+                placeholder="Last Name"
+                className="w-full"
+              />
+              <Input
+                {...form.register("email")}
+                type="email"
+                placeholder="Email Address"
+                className="w-full"
+              />
+              <Input
+                {...form.register("phone")}
+                type="tel"
+                placeholder="Phone Number"
+                className="w-full"
+              />
+              <Input
+                {...form.register("checkIn")}
+                type="date"
+                placeholder="Check-in Date"
+                className="w-full"
+              />
+              <Input
+                {...form.register("checkOut")}
+                type="date"
+                placeholder="Check-out Date"
+                className="w-full"
+              />
+              <Input
+                {...form.register("budget")}
+                type="text"
+                placeholder="Budget Range"
+                className="w-full"
+              />
+              <Input
+                {...form.register("children")}
+                type="number"
+                placeholder="Number of Children"
+                className="w-full"
+              />
+              <div className="md:col-span-2">
+                <Textarea
+                  {...form.register("notes")}
+                  placeholder="Additional Notes (Optional)"
+                  className="w-full h-24"
+                />
               </div>
-            ))}
-          </div>
+            </div>
+            <Button 
+              type="submit" 
+              className="w-full mt-4 bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white py-6 text-lg"
+            >
+              Start Planning Your Family Vacation
+            </Button>
+          </form>
         </div>
       </div>
 
