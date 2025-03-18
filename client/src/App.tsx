@@ -5,7 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import NotFound from "@/pages/not-found";
 import HomePage from "@/pages/home-page";
 import ResortsLanding from "@/pages/resorts-landing";
-import ResortBooking from "@/pages/resort-booking";
+import ResortDetail from "@/pages/resort-detail";
 import VillasLanding from "@/pages/villas-landing";
 import VillaDetail from "@/pages/villa-detail";
 import AdventuresLanding from "@/pages/adventures-landing";
@@ -23,7 +23,7 @@ function Router() {
       <Switch>
         <Route path="/" component={HomePage} />
         <Route path="/resort" component={ResortsLanding} />
-        <Route path="/resort/:slug" component={ResortBooking} />
+        <Route path="/resort/:slug" component={ResortDetail} />
         <Route path="/villa" component={VillasLanding} />
         <Route path="/villa/:slug" component={VillaDetail} />
         <Route path="/adventures" component={AdventuresLanding} />

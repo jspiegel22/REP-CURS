@@ -2,42 +2,42 @@ import { z } from "zod";
 
 export const villaSchema = z.object({
   id: z.string(),
-  url: z.string().url(),
-  imageUrl: z.string().url(),
-  location: z.string(),
   name: z.string(),
   description: z.string(),
+  location: z.string(),
   rating: z.string(),
+  imageUrl: z.string().url(),
+  url: z.string().url(),
   bedrooms: z.number(),
   bathrooms: z.number(),
-  maxOccupancy: z.number(),
-  isBeachfront: z.boolean().optional(),
-  isOceanfront: z.boolean().optional(),
+  maxGuests: z.number(),
+  isBeachfront: z.boolean(),
+  isOceanfront: z.boolean()
 });
 
 export type Villa = z.infer<typeof villaSchema>;
 
-// Parse CSV data into Villa objects
-export function parseVillaData(csvData: string): Villa[] {
-  const lines = csvData.split('\n').slice(1); // Skip header row
-  return lines
-    .filter(line => line.trim() !== '')
-    .map((line, index) => {
-      const [url, imageUrl, location, name, description, rating, _, bedrooms, bathrooms, maxOccupancy] = line.split(',');
+export const parseVillaData = (csvData: string): Villa[] => {
+  const lines = csvData.split('\n')
+    .slice(1) // Skip header
+    .filter(line => line.trim() !== '');
 
-      return {
-        id: `villa-${index + 1}`,
-        url: url.trim(),
-        imageUrl: imageUrl.trim(),
-        location: location.trim(),
-        name: name.trim(),
-        description: description.trim(),
-        rating: rating.trim(),
-        bedrooms: Number(bedrooms) || 0,
-        bathrooms: Number(bathrooms.replace('+', '')) || 0,
-        maxOccupancy: Number(maxOccupancy) || 0,
-        isBeachfront: location.toLowerCase().includes('beachfront'),
-        isOceanfront: location.toLowerCase().includes('oceanfront'),
-      };
-    });
-}
+  return lines.map((line, index) => {
+    const [url, imageUrl, location, name, description, rating, _, bedrooms, bathrooms, maxGuests] = line.split(',');
+
+    return {
+      id: `villa-${index + 1}`,
+      name: name.trim(),
+      description: description.trim(),
+      location: location.trim(),
+      rating: rating.trim(),
+      imageUrl: imageUrl.trim(),
+      url: url.trim(),
+      bedrooms: parseInt(bedrooms) || 4,
+      bathrooms: parseFloat(bathrooms.replace('+', '')) || 4,
+      maxGuests: parseInt(maxGuests) || 10,
+      isBeachfront: location.toLowerCase().includes('beachfront'),
+      isOceanfront: location.toLowerCase().includes('oceanfront')
+    };
+  });
+};
