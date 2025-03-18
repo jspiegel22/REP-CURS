@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { Menu, ShoppingCart, X } from "lucide-react";
@@ -186,13 +187,15 @@ const moreMenuItems = [
 ];
 
 const NavigationBar = () => {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
     <nav className="bg-white border-b border-gray-200">
       <div className="container mx-auto px-4">
         <div className="h-16 flex items-center">
           {/* Mobile Menu - Left */}
           <div className="md:hidden">
-            <Sheet>
+            <Sheet open={isOpen} onOpenChange={setIsOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon" className="text-[#2F4F4F]">
                   <Menu className="h-6 w-6" />
@@ -201,7 +204,10 @@ const NavigationBar = () => {
               <SheetContent side="left" className="w-[85vw] bg-white p-0">
                 {/* Larger Close Button with Background */}
                 <div className="absolute right-4 top-4 z-50">
-                  <button className="bg-white rounded-lg p-2 shadow-md border hover:bg-gray-50">
+                  <button
+                    className="bg-white rounded-lg p-2 shadow-md border hover:bg-gray-50"
+                    onClick={() => setIsOpen(false)}
+                  >
                     <X className="h-4 w-4 text-black" />
                   </button>
                 </div>

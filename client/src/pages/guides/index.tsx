@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
-import { LeadGenTemplate } from "@/components/templates/LeadGenTemplate";
-import { Star, Compass, Map, Book, Download } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { Download } from "lucide-react";
+import Footer from "@/components/footer";
 
 // Sample guides data
 const guides = [
@@ -50,108 +50,58 @@ const guides = [
 ];
 
 export default function GuidesPage() {
-  const features = [
-    {
-      icon: <Compass className="w-8 h-8" />,
-      title: "Local Insights",
-      description: "Expert tips from Cabo insiders"
-    },
-    {
-      icon: <Map className="w-8 h-8" />,
-      title: "Custom Itineraries",
-      description: "Personalized travel planning"
-    },
-    {
-      icon: <Book className="w-8 h-8" />,
-      title: "Exclusive Content",
-      description: "Hidden gems and secret spots"
-    }
-  ];
-
   return (
-    <div className="min-h-screen bg-background">
-      <LeadGenTemplate
-        title="Cabo Travel Guides"
-        subtitle="Expert Local Knowledge"
-        description="Get insider access to the best of Cabo with our comprehensive travel guides. From hidden beaches to exclusive restaurants, we'll help you experience Cabo like a local."
-        imageUrl="https://images.unsplash.com/photo-1516546453174-5e1098a4b4af"
-        features={features}
-        benefits={[
-          "Insider restaurant recommendations",
-          "Hidden beach locations",
-          "Local cultural insights",
-          "Seasonal activity guides",
-          "Transportation tips",
-          "Safety information"
-        ]}
-        testimonials={[
-          {
-            name: "Jessica Martinez",
-            text: "The restaurant recommendations were spot-on! We discovered amazing places we would have never found on our own.",
-            rating: 5,
-            image: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce"
-          },
-          {
-            name: "David Thompson",
-            text: "The seasonal guide helped us plan the perfect time to visit for whale watching. Incredible experience!",
-            rating: 5,
-            image: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6"
-          }
-        ]}
-        faqs={[
-          {
-            question: "How often are the guides updated?",
-            answer: "Our guides are updated monthly to ensure all information is current and accurate."
-          },
-          {
-            question: "What's included in the guides?",
-            answer: "Each guide includes detailed recommendations for restaurants, activities, beaches, transportation, and seasonal events."
-          },
-          {
-            question: "Are the guides available offline?",
-            answer: "Yes, all our guides can be downloaded for offline access during your trip."
-          }
-        ]}
-        stats={[
-          { value: "150+", label: "Local Spots" },
-          { value: "50+", label: "Beach Guides" },
-          { value: "200+", label: "Restaurant Reviews" },
-          { value: "12", label: "Themed Guides" }
-        ]}
-      />
-
-      {/* Downloadable Guides Section */}
-      <section className="py-16 px-4 bg-gray-50">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-3xl font-bold mb-8">Download Our Free Guides</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {guides.map((guide) => (
-              <Card key={guide.id} className="overflow-hidden">
-                <div className="relative aspect-[4/3]">
-                  <img
-                    src={guide.image}
-                    alt={guide.title}
-                    className="absolute inset-0 w-full h-full object-cover"
-                  />
-                  <div className="absolute top-4 right-4">
-                    <span className="bg-white/90 text-[#2F4F4F] text-sm font-medium px-3 py-1 rounded-full">
-                      {guide.type}
-                    </span>
-                  </div>
-                </div>
-                <div className="p-6">
-                  <h3 className="text-xl font-semibold mb-2">{guide.title}</h3>
-                  <p className="text-gray-600 mb-4">{guide.description}</p>
-                  <Button className="w-full gap-2">
-                    <Download className="h-4 w-4" />
-                    Download Guide
-                  </Button>
-                </div>
-              </Card>
-            ))}
+    <div className="min-h-screen bg-background flex flex-col">
+      <main className="flex-1">
+        {/* Hero Section */}
+        <div className="relative h-[40vh] w-full overflow-hidden">
+          <img
+            src="https://images.unsplash.com/photo-1516546453174-5e1098a4b4af"
+            alt="Cabo Guides"
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-black/50" />
+          <div className="absolute inset-0 flex flex-col justify-center items-center text-white text-center p-6">
+            <h1 className="text-4xl md:text-6xl font-bold mb-4">Cabo Travel Guides</h1>
+            <p className="text-xl md:text-2xl mb-6 max-w-2xl">
+              Download our expert guides and experience Cabo like a local
+            </p>
           </div>
         </div>
-      </section>
+
+        {/* Guides Grid */}
+        <section className="py-16 px-4">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {guides.map((guide) => (
+                <Card key={guide.id} className="overflow-hidden">
+                  <div className="relative aspect-[4/3]">
+                    <img
+                      src={guide.image}
+                      alt={guide.title}
+                      className="absolute inset-0 w-full h-full object-cover"
+                    />
+                    <div className="absolute top-4 right-4">
+                      <span className="bg-white/90 text-[#2F4F4F] text-sm font-medium px-3 py-1 rounded-full">
+                        {guide.type}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="p-6">
+                    <h3 className="text-xl font-semibold mb-2">{guide.title}</h3>
+                    <p className="text-gray-600 mb-4">{guide.description}</p>
+                    <Button className="w-full gap-2">
+                      <Download className="h-4 w-4" />
+                      Download Guide
+                    </Button>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+      </main>
+      <Footer />
     </div>
   );
 }
