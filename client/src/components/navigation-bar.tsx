@@ -32,7 +32,10 @@ const mainMenuItems = [
     title: "ADVENTURES",
     href: "/adventures",
     image: "https://images.unsplash.com/photo-1569263979104-865ab7cd8d13"
-  },
+  }
+];
+
+const gridMenuItems = [
   {
     title: "BACHELOR/ETTE",
     href: "/group-trips/bachelor-bachelorette",
@@ -42,10 +45,7 @@ const mainMenuItems = [
     title: "RESTAURANTS",
     href: "/restaurants",
     image: "https://images.unsplash.com/photo-1578474846511-04ba529f0b88"
-  }
-];
-
-const secondaryMenuItems = [
+  },
   {
     title: "WEDDINGS",
     href: "/weddings",
@@ -152,28 +152,8 @@ export default function NavigationBar() {
                   {/* Nike-style mobile menu with image tiles */}
                   <div className="p-4">
                     {/* Main Menu Items */}
-                    <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
                       {mainMenuItems.map((item) => (
-                        <Link key={item.href} href={item.href}>
-                          <a className="block">
-                            <div className="relative h-24 rounded-lg overflow-hidden">
-                              <img
-                                src={item.image}
-                                alt={item.title}
-                                className="w-full h-full object-cover"
-                              />
-                              <div className="absolute inset-0 bg-black/30 flex items-center">
-                                <span className="text-white text-xl font-semibold px-4">{item.title}</span>
-                              </div>
-                            </div>
-                          </a>
-                        </Link>
-                      ))}
-                    </div>
-
-                    {/* Secondary Menu Items in 2x2 Grid */}
-                    <div className="grid grid-cols-2 gap-4 mt-8">
-                      {secondaryMenuItems.map((item) => (
                         <Link key={item.href} href={item.href}>
                           <a className="block">
                             <div className="relative aspect-square rounded-lg overflow-hidden">
@@ -184,6 +164,26 @@ export default function NavigationBar() {
                               />
                               <div className="absolute inset-0 bg-black/30 flex items-center justify-center text-center p-2">
                                 <span className="text-white text-lg font-semibold">{item.title}</span>
+                              </div>
+                            </div>
+                          </a>
+                        </Link>
+                      ))}
+                    </div>
+
+                    {/* Grid Menu Items */}
+                    <div className="grid grid-cols-3 gap-3 mt-4">
+                      {gridMenuItems.map((item) => (
+                        <Link key={item.href} href={item.href}>
+                          <a className="block">
+                            <div className="relative aspect-square rounded-lg overflow-hidden">
+                              <img
+                                src={item.image}
+                                alt={item.title}
+                                className="w-full h-full object-cover"
+                              />
+                              <div className="absolute inset-0 bg-black/30 flex items-center justify-center text-center p-2">
+                                <span className="text-white text-sm font-semibold">{item.title}</span>
                               </div>
                             </div>
                           </a>
