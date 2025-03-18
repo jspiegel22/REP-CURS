@@ -115,14 +115,26 @@ export default function BookingTemplate({
   // Handle scroll for floating CTA
   useEffect(() => {
     const handleScroll = () => {
-      const bookingForm = document.getElementById('booking-form');
-      if (bookingForm) {
-        const rect = bookingForm.getBoundingClientRect();
-        setShowFloatingCTA(rect.top > window.innerHeight || rect.bottom < 0);
+      const mobileForm = document.getElementById('booking-form-mobile');
+      const desktopForm = document.getElementById('booking-form');
+
+      if (mobileForm || desktopForm) {
+        const mobileRect = mobileForm?.getBoundingClientRect();
+        const desktopRect = desktopForm?.getBoundingClientRect();
+
+        const isMobileHidden = mobileRect ? 
+          (mobileRect.bottom < 0 || mobileRect.top > window.innerHeight) : true;
+        const isDesktopHidden = desktopRect ? 
+          (desktopRect.bottom < 0 || desktopRect.top > window.innerHeight) : true;
+
+        setShowFloatingCTA(window.innerWidth < 1024 ? isMobileHidden : isDesktopHidden);
       }
     };
 
     window.addEventListener('scroll', handleScroll);
+    // Initial check
+    handleScroll();
+
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
