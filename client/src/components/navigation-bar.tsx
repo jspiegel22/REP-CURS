@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { Menu, ShoppingCart } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { SiTiktok, SiInstagram, SiWhatsapp, SiFacebook, SiPinterest, SiYoutube } from "react-icons/si";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -11,57 +12,69 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 
-const mobileMenuItems = [
+const mainMenuItems = [
   {
-    title: "Villas",
+    title: "VILLAS",
     href: "/villa",
     image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811"
   },
   {
-    title: "Resorts",
+    title: "RESORTS",
     href: "/resort",
     image: "https://images.unsplash.com/photo-1582719508461-905c673771fd"
   },
   {
-    title: "Yachts",
+    title: "YACHTS",
     href: "/adventures/luxury-sailing",
     image: "https://images.unsplash.com/photo-1605281317010-fe5ffe798166"
   },
   {
-    title: "Adventures",
+    title: "ADVENTURES",
     href: "/adventures",
     image: "https://images.unsplash.com/photo-1569263979104-865ab7cd8d13"
   },
   {
-    title: "Bachelor/ette",
+    title: "BACHELOR/ETTE",
     href: "/group-trips/bachelor-bachelorette",
     image: "https://images.unsplash.com/photo-1541956064527-8ec10ac76c31"
   },
   {
-    title: "Luxury Concierge",
-    href: "/group-trips/luxury-concierge",
-    image: "https://images.unsplash.com/photo-1590073242678-70ee3fc28e8e"
-  },
-  {
-    title: "Restaurants",
+    title: "RESTAURANTS",
     href: "/restaurants",
     image: "https://images.unsplash.com/photo-1578474846511-04ba529f0b88"
-  },
+  }
+];
+
+const secondaryMenuItems = [
   {
-    title: "Weddings",
+    title: "WEDDINGS",
     href: "/weddings",
     image: "https://images.unsplash.com/photo-1546032996-6dfacbacbf3f"
   },
   {
-    title: "Influencers",
+    title: "INFLUENCERS",
     href: "/group-trips/influencer",
     image: "https://images.unsplash.com/photo-1611162617474-5b21e879e113"
   },
   {
-    title: "Work with Us",
+    title: "WORK WITH US",
     href: "/work-with-us",
     image: "https://images.unsplash.com/photo-1552664730-d307ca884978"
+  },
+  {
+    title: "LUXURY CONCIERGE",
+    href: "/group-trips/luxury-concierge",
+    image: "https://images.unsplash.com/photo-1590073242678-70ee3fc28e8e"
   }
+];
+
+const socialLinks = [
+  { icon: SiTiktok, href: "https://www.tiktok.com/@atcabo", label: "TikTok" },
+  { icon: SiInstagram, href: "https://instagram.com/cabo", label: "Instagram" },
+  { icon: SiYoutube, href: "https://www.youtube.com/@atCabo", label: "YouTube" },
+  { icon: SiWhatsapp, href: "https://wa.me/526242446303", label: "WhatsApp" },
+  { icon: SiFacebook, href: "https://www.facebook.com/cabosanlucasbaja", label: "Facebook" },
+  { icon: SiPinterest, href: "https://www.pinterest.com/instacabo/", label: "Pinterest" }
 ];
 
 const stays = [
@@ -137,23 +150,63 @@ export default function NavigationBar() {
               <SheetContent side="left" className="w-[85vw] bg-white p-0">
                 <nav className="flex flex-col h-full overflow-y-auto">
                   {/* Nike-style mobile menu with image tiles */}
-                  <div className="p-4 space-y-4">
-                    {mobileMenuItems.map((item) => (
-                      <Link key={item.href} href={item.href}>
-                        <a className="block">
-                          <div className="relative h-24 rounded-lg overflow-hidden">
-                            <img
-                              src={item.image}
-                              alt={item.title}
-                              className="w-full h-full object-cover"
-                            />
-                            <div className="absolute inset-0 bg-black/30 flex items-center">
-                              <span className="text-white text-xl font-semibold px-4">{item.title}</span>
+                  <div className="p-4">
+                    {/* Main Menu Items */}
+                    <div className="space-y-4">
+                      {mainMenuItems.map((item) => (
+                        <Link key={item.href} href={item.href}>
+                          <a className="block">
+                            <div className="relative h-24 rounded-lg overflow-hidden">
+                              <img
+                                src={item.image}
+                                alt={item.title}
+                                className="w-full h-full object-cover"
+                              />
+                              <div className="absolute inset-0 bg-black/30 flex items-center">
+                                <span className="text-white text-xl font-semibold px-4">{item.title}</span>
+                              </div>
                             </div>
-                          </div>
-                        </a>
-                      </Link>
-                    ))}
+                          </a>
+                        </Link>
+                      ))}
+                    </div>
+
+                    {/* Secondary Menu Items in 2x2 Grid */}
+                    <div className="grid grid-cols-2 gap-4 mt-8">
+                      {secondaryMenuItems.map((item) => (
+                        <Link key={item.href} href={item.href}>
+                          <a className="block">
+                            <div className="relative aspect-square rounded-lg overflow-hidden">
+                              <img
+                                src={item.image}
+                                alt={item.title}
+                                className="w-full h-full object-cover"
+                              />
+                              <div className="absolute inset-0 bg-black/30 flex items-center justify-center text-center p-2">
+                                <span className="text-white text-lg font-semibold">{item.title}</span>
+                              </div>
+                            </div>
+                          </a>
+                        </Link>
+                      ))}
+                    </div>
+
+                    {/* Social Media Links */}
+                    <div className="mt-8 pt-8 border-t border-gray-200">
+                      <div className="flex justify-center space-x-6">
+                        {socialLinks.map((social) => (
+                          <a
+                            key={social.label}
+                            href={social.href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-[#2F4F4F] hover:text-[#1F3F3F] transition-colors"
+                          >
+                            <social.icon size={24} />
+                          </a>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </nav>
               </SheetContent>
@@ -168,7 +221,7 @@ export default function NavigationBar() {
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-6 flex-1 justify-center">
+          <div className="hidden md:flex items-center gap-4 flex-1 justify-center">
             <NavigationMenu>
               <NavigationMenuList>
                 <NavigationMenuItem>
