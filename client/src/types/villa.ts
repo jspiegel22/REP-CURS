@@ -24,7 +24,7 @@ export function parseVillaData(csvData: string): Villa[] {
     .filter(line => line.trim() !== '')
     .map((line, index) => {
       const [url, imageUrl, location, name, description, rating, _, bedrooms, bathrooms, maxOccupancy] = line.split(',');
-      
+
       return {
         id: `villa-${index + 1}`,
         url: url.trim(),
@@ -34,7 +34,7 @@ export function parseVillaData(csvData: string): Villa[] {
         description: description.trim(),
         rating: rating.trim(),
         bedrooms: Number(bedrooms) || 0,
-        bathrooms: Number(bathrooms) || 0,
+        bathrooms: Number(bathrooms.replace('+', '')) || 0,
         maxOccupancy: Number(maxOccupancy) || 0,
         isBeachfront: location.toLowerCase().includes('beachfront'),
         isOceanfront: location.toLowerCase().includes('oceanfront'),
