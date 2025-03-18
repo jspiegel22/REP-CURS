@@ -156,14 +156,14 @@ export default function NavigationBar() {
                       {mainMenuItems.map((item) => (
                         <Link key={item.href} href={item.href}>
                           <a className="block">
-                            <div className="relative h-20 rounded-lg overflow-hidden">
+                            <div className="relative h-28 rounded-lg overflow-hidden">
                               <img
                                 src={item.image}
                                 alt={item.title}
                                 className="w-full h-full object-cover"
                               />
                               <div className="absolute inset-0 bg-black/30 flex items-center">
-                                <span className="text-white text-xl font-semibold px-4">{item.title}</span>
+                                <span className="text-white text-2xl font-semibold px-4">{item.title}</span>
                               </div>
                             </div>
                           </a>
@@ -171,8 +171,8 @@ export default function NavigationBar() {
                       ))}
                     </div>
 
-                    {/* Grid Menu Items - 3x2 Grid */}
-                    <div className="grid grid-cols-3 gap-3 mt-4">
+                    {/* Grid Menu Items - 2x3 Grid */}
+                    <div className="grid grid-cols-2 gap-3 mt-4">
                       {gridMenuItems.map((item) => (
                         <Link key={item.href} href={item.href}>
                           <a className="block">
@@ -183,7 +183,7 @@ export default function NavigationBar() {
                                 className="w-full h-full object-cover"
                               />
                               <div className="absolute inset-0 bg-black/30 flex items-center justify-center text-center p-2">
-                                <span className="text-white text-sm font-semibold">{item.title}</span>
+                                <span className="text-white text-base font-semibold">{item.title}</span>
                               </div>
                             </div>
                           </a>
