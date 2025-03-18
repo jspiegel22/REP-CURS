@@ -1,13 +1,12 @@
-import { useEffect, useState } from "react";
-import HeroSection from "@/components/hero-section";
-import CategoryGrid from "@/components/category-grid";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import { SiTiktok, SiInstagram, SiWhatsapp, SiFacebook, SiPinterest, SiYoutube } from "react-icons/si";
 import { generateSlug } from "@/lib/utils";
 import { Villa, parseVillaData } from "@/types/villa";
 import { VillaCard } from "@/components/villa-card";
 import { ChevronRight, ArrowDown } from "lucide-react";
+import { SiTiktok, SiInstagram, SiWhatsapp, SiFacebook, SiPinterest, SiYoutube } from "react-icons/si";
+import CategoryGrid from "@/components/category-grid";
 
 // Import villa data
 const villaData = `stretched-link href,w-100 src,location,detail,col-12,detail (2),detail (3),col-auto,col-auto (2),col-auto (3)
@@ -51,24 +50,28 @@ export default function HomePage() {
   return (
     <main className="bg-white">
       {/* Enhanced Hero Section */}
-      <div className="relative min-h-[90vh] bg-black">
-        {/* Background Image */}
+      <div className="relative h-[50vh] min-h-[400px]">
         <div className="absolute inset-0">
           <img
             src="/attached_assets/image_1742331906326.png"
             alt="Cabo San Lucas Destination"
-            className="w-full h-full object-cover opacity-80"
+            className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/60" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/70" />
         </div>
 
         {/* Hero Content */}
-        <div className="relative container mx-auto px-4 h-full flex flex-col justify-center items-center text-center text-white">
-          <div className="max-w-4xl">
-            <h1 className="text-4xl md:text-7xl font-bold mb-6">
-              Your Ultimate Guide to Cabo San Lucas
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="container mx-auto px-4 text-center">
+            {/* Category Label */}
+            <div className="inline-block bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
+              <p className="text-white/90 text-sm md:text-base font-medium">Your Complete Cabo Travel Guide</p>
+            </div>
+
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 text-white">
+              Experience Luxury in Cabo San Lucas
             </h1>
-            <p className="text-lg md:text-2xl mb-8 text-white/90">
+            <p className="text-lg md:text-xl mb-8 text-white/90 max-w-2xl mx-auto">
               Discover insider tips, hidden gems, and exclusive experiences in our comprehensive travel guide
             </p>
 
@@ -87,11 +90,6 @@ export default function HomePage() {
               Get Your Free Guide
               <ChevronRight className="w-5 h-5" />
             </Button>
-
-            {/* Scroll Indicator */}
-            <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-              <ArrowDown className="w-6 h-6 text-white" />
-            </div>
           </div>
         </div>
       </div>
