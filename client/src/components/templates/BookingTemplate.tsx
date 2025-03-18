@@ -3,7 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, FormProvider } from "react-hook-form";
 import { z } from "zod";
 import { format } from "date-fns";
-import { Calendar as CalendarIcon, Loader2, Star, MapPin, ThumbsUp, Palmtree, Dumbbell, Clock, Car, Wifi, Wind, GlassWater, Monitor, LockKeyhole, Mountain } from "lucide-react";
+import { Calendar as CalendarIcon, Loader2, Star, MapPin, ThumbsUp, Waves, Palmtree, Dumbbell, Clock, Car, Wifi, Wind, GlassWater, Monitor, LockKeyhole, Mountain } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -42,13 +42,6 @@ const bookingFormSchema = z.object({
 
 type BookingFormData = z.infer<typeof bookingFormSchema>;
 
-interface PricingOption {
-  id: string;
-  name: string;
-  price: number;
-  description: string;
-}
-
 interface Extra {
   id: string;
   name: string;
@@ -68,13 +61,13 @@ interface BookingTemplateProps {
   title: string;
   subtitle?: string;
   description: string;
-  imageUrls: string[]; // Array of image URLs for gallery
+  imageUrls: string[];
   pricePerNight: number;
   rating: number;
   reviewCount: number;
   location: string;
   maximumGuests: number;
-  features: string[];
+  features?: string[];
   extras?: Extra[];
   faqs?: Array<{ question: string; answer: string }>;
   amenities: string[];
@@ -85,7 +78,7 @@ interface BookingTemplateProps {
   };
   onBookingSubmit?: (data: BookingFormData) => Promise<void>;
   reviews?: Review[];
-  isResort: boolean; // Added to handle resort condition
+  isResort: boolean;
 }
 
 export default function BookingTemplate({
@@ -98,14 +91,14 @@ export default function BookingTemplate({
   reviewCount,
   location,
   maximumGuests,
-  features,
+  features = [],
   extras = [],
   faqs = [],
   amenities,
   host,
   onBookingSubmit,
   reviews = [],
-  isResort = false, // Added default value
+  isResort = false,
 }: BookingTemplateProps) {
   const { toast } = useToast();
   const form = useForm<BookingFormData>({
@@ -138,8 +131,7 @@ export default function BookingTemplate({
       if (onBookingSubmit) {
         await onBookingSubmit(data);
       } else {
-        const res = await apiRequest("POST", "/api/bookings", data);
-        return res.json();
+        await apiRequest("POST", "/api/bookings", data);
       }
     },
     onSuccess: () => {
@@ -170,7 +162,7 @@ export default function BookingTemplate({
   // Amenity icon mapping
   const getAmenityIcon = (amenity: string) => {
     const iconMap: { [key: string]: React.ReactNode } = {
-      "Private Beach Access": <Palmtree className="h-5 w-5" />,
+      "Private Beach Access": <Waves className="h-5 w-5" />,
       "Infinity Pool": <GlassWater className="h-5 w-5" />,
       "Full-Service Spa": <Palmtree className="h-5 w-5" />,
       "Fitness Center": <Dumbbell className="h-5 w-5" />,
@@ -201,15 +193,6 @@ export default function BookingTemplate({
               <MapPin className="h-4 w-4" />
               <span>{location}</span>
             </div>
-            <Button
-              className="bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white sm:ml-auto"
-              onClick={() => {
-                const bookingForm = document.getElementById('booking-form');
-                bookingForm?.scrollIntoView({ behavior: 'smooth' });
-              }}
-            >
-              Reserve Now
-            </Button>
           </div>
         </div>
 
@@ -256,6 +239,23 @@ export default function BookingTemplate({
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
             <div className="lg:col-span-2 space-y-8">
+              {/* Booking Form for Mobile */}
+              <div className="lg:hidden">
+                <div id="booking-form-mobile" className="bg-card rounded-xl border p-6 shadow-lg mb-8">
+                  <BookingFormContent
+                    form={form}
+                    pricePerNight={pricePerNight}
+                    rating={rating}
+                    numberOfNights={numberOfNights}
+                    basePrice={basePrice}
+                    serviceFee={serviceFee}
+                    totalPrice={totalPrice}
+                    maximumGuests={maximumGuests}
+                    bookingMutation={bookingMutation}
+                  />
+                </div>
+              </div>
+
               {!isResort && host && (
                 <div className="flex items-center justify-between pb-6 border-b">
                   <div>
@@ -342,162 +342,20 @@ export default function BookingTemplate({
               </div>
             </div>
 
-            <div className="lg:sticky lg:top-8 h-fit">
+            {/* Floating Booking Form for Desktop */}
+            <div className="hidden lg:block lg:sticky lg:top-8 h-fit">
               <div id="booking-form" className="bg-card rounded-xl border p-6 shadow-lg">
-                <div className="flex items-center justify-between mb-6">
-                  <div>
-                    <span className="text-2xl font-bold">${pricePerNight}</span>
-                    <span className="text-muted-foreground"> / night</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Star className="h-4 w-4 text-yellow-400" fill="currentColor" />
-                    <span>{rating.toFixed(1)}</span>
-                  </div>
-                </div>
-
-                <FormProvider {...form}>
-                  <form
-                    onSubmit={form.handleSubmit((data) => bookingMutation.mutate(data))}
-                    className="space-y-4"
-                  >
-                    <div className="grid grid-cols-2 gap-2">
-                      <FormField
-                        control={form.control}
-                        name="startDate"
-                        render={({ field }) => (
-                          <FormItem className="flex flex-col">
-                            <FormLabel>Check-in</FormLabel>
-                            <Popover>
-                              <PopoverTrigger asChild>
-                                <FormControl>
-                                  <Button
-                                    variant="outline"
-                                    className={cn(
-                                      "w-full pl-3 text-left font-normal",
-                                      !field.value && "text-muted-foreground"
-                                    )}
-                                  >
-                                    {field.value ? (
-                                      format(field.value, "MMM d, yyyy")
-                                    ) : (
-                                      <span>Select date</span>
-                                    )}
-                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                  </Button>
-                                </FormControl>
-                              </PopoverTrigger>
-                              <PopoverContent className="w-auto p-0" align="start">
-                                <Calendar
-                                  mode="single"
-                                  selected={field.value}
-                                  onSelect={field.onChange}
-                                  disabled={(date) =>
-                                    date < new Date() || date < new Date("1900-01-01")
-                                  }
-                                  initialFocus
-                                />
-                              </PopoverContent>
-                            </Popover>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="endDate"
-                        render={({ field }) => (
-                          <FormItem className="flex flex-col">
-                            <FormLabel>Check-out</FormLabel>
-                            <Popover>
-                              <PopoverTrigger asChild>
-                                <FormControl>
-                                  <Button
-                                    variant="outline"
-                                    className={cn(
-                                      "w-full pl-3 text-left font-normal",
-                                      !field.value && "text-muted-foreground"
-                                    )}
-                                  >
-                                    {field.value ? (
-                                      format(field.value, "MMM d, yyyy")
-                                    ) : (
-                                      <span>Select date</span>
-                                    )}
-                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                  </Button>
-                                </FormControl>
-                              </PopoverTrigger>
-                              <PopoverContent className="w-auto p-0" align="start">
-                                <Calendar
-                                  mode="single"
-                                  selected={field.value}
-                                  onSelect={field.onChange}
-                                  disabled={(date) =>
-                                    date < new Date() || date < new Date("1900-01-01")
-                                  }
-                                  initialFocus
-                                />
-                              </PopoverContent>
-                            </Popover>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-                    <FormField
-                      control={form.control}
-                      name="guests"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Guests</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="number"
-                              min="1"
-                              max={maximumGuests}
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    {numberOfNights > 0 && (
-                      <div className="space-y-2 pt-4">
-                        <div className="flex justify-between">
-                          <span>
-                            ${pricePerNight} × {numberOfNights} nights
-                          </span>
-                          <span>${basePrice}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Service fee</span>
-                          <span>${serviceFee}</span>
-                        </div>
-                        <Separator className="my-4" />
-                        <div className="flex justify-between font-semibold">
-                          <span>Total</span>
-                          <span>${totalPrice}</span>
-                        </div>
-                      </div>
-                    )}
-
-                    <Button
-                      type="submit"
-                      className="w-full bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white"
-                      size="lg"
-                      disabled={bookingMutation.isPending}
-                    >
-                      {bookingMutation.isPending && (
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      )}
-                      Reserve
-                    </Button>
-                  </form>
-                </FormProvider>
+                <BookingFormContent
+                  form={form}
+                  pricePerNight={pricePerNight}
+                  rating={rating}
+                  numberOfNights={numberOfNights}
+                  basePrice={basePrice}
+                  serviceFee={serviceFee}
+                  totalPrice={totalPrice}
+                  maximumGuests={maximumGuests}
+                  bookingMutation={bookingMutation}
+                />
               </div>
             </div>
           </div>
@@ -529,7 +387,7 @@ export default function BookingTemplate({
               </div>
               <Button
                 onClick={() => {
-                  const bookingForm = document.getElementById('booking-form');
+                  const bookingForm = document.getElementById('booking-form-mobile');
                   bookingForm?.scrollIntoView({ behavior: 'smooth' });
                 }}
                 className="bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white"
@@ -539,68 +397,189 @@ export default function BookingTemplate({
             </div>
           </div>
         )}
-
-        {/* Footer */}
-        <footer className="bg-[#2F4F4F] text-white pt-16 pb-8 mt-16">
-          <div className="container mx-auto px-4">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-              <div>
-                <h3 className="text-xl font-bold mb-4">About Us</h3>
-                <p className="text-gray-300">Your premier destination for luxury travel experiences in Cabo San Lucas.</p>
-              </div>
-              <div>
-                <h3 className="text-xl font-bold mb-4">Quick Links</h3>
-                <ul className="space-y-2">
-                  <li><Link href="/resorts">Resorts & Hotels</Link></li>
-                  <li><Link href="/villas">Luxury Villas</Link></li>
-                  <li><Link href="/adventures">Adventures</Link></li>
-                  <li><Link href="/restaurants">Restaurants</Link></li>
-                </ul>
-              </div>
-              <div>
-                <h3 className="text-xl font-bold mb-4">Travel Guides</h3>
-                <ul className="space-y-2">
-                  <li><Link href="/guides/bachelorette">Bachelorette</Link></li>
-                  <li><Link href="/guides/weddings">Wedding Planning</Link></li>
-                  <li><Link href="/guides/real-estate">Real Estate</Link></li>
-                  <li><Link href="/guides/restaurants">Dining Guide</Link></li>
-                </ul>
-              </div>
-              <div>
-                <h3 className="text-xl font-bold mb-4">Contact</h3>
-                <ul className="space-y-2">
-                  <li>Email: info@cabotravels.com</li>
-                  <li>Phone: +1 (888) 123-4567</li>
-                  <li>WhatsApp: +52 624 244 6303</li>
-                </ul>
-              </div>
-            </div>
-            <div className="border-t border-white/20 pt-8">
-              <div className="flex justify-center space-x-6 mb-4">
-                <a href="https://www.tiktok.com/@atcabo" target="_blank" rel="noopener noreferrer" className="text-white hover:text-[#F5F5DC] transition-colors">
-                  <SiTiktok size={24} />
-                </a>
-                <a href="https://instagram.com/cabo" target="_blank" rel="noopener noreferrer" className="text-white hover:text-[#F5F5DC] transition-colors">
-                  <SiInstagram size={24} />
-                </a>
-                <a href="https://www.youtube.com/@atCabo" target="_blank" rel="noopener noreferrer" className="text-white hover:text-[#F5F5DC] transition-colors">
-                  <SiYoutube size={24} />
-                </a>
-                <a href="https://wa.me/526242446303" target="_blank" rel="noopener noreferrer" className="text-white hover:text-[#F5F5DC] transition-colors">
-                  <SiWhatsapp size={24} />
-                </a>
-                <a href="https://www.facebook.com/cabosanlucasbaja" target="_blank" rel="noopener noreferrer" className="text-white hover:text-[#F5F5DC] transition-colors">
-                  <SiFacebook size={24} />
-                </a>
-                <a href="https://www.pinterest.com/instacabo/" target="_blank" rel="noopener noreferrer" className="text-white hover:text-[#F5F5DC] transition-colors">
-                  <SiPinterest size={24} />
-                </a>
-              </div>
-              <p className="text-center text-sm text-gray-300">&copy; {new Date().getFullYear()} Cabo Travels. All rights reserved.</p>
-            </div>
-          </div>
-        </footer>
       </main>
     </div>
+  );
+}
+
+// Extracted Booking Form Content Component
+function BookingFormContent({
+  form,
+  pricePerNight,
+  rating,
+  numberOfNights,
+  basePrice,
+  serviceFee,
+  totalPrice,
+  maximumGuests,
+  bookingMutation,
+}: {
+  form: any;
+  pricePerNight: number;
+  rating: number;
+  numberOfNights: number;
+  basePrice: number;
+  serviceFee: number;
+  totalPrice: number;
+  maximumGuests: number;
+  bookingMutation: any;
+}) {
+  return (
+    <>
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <span className="text-2xl font-bold">${pricePerNight}</span>
+          <span className="text-muted-foreground"> / night</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <Star className="h-4 w-4 text-yellow-400" fill="currentColor" />
+          <span>{rating.toFixed(1)}</span>
+        </div>
+      </div>
+
+      <FormProvider {...form}>
+        <form
+          onSubmit={form.handleSubmit((data: any) => bookingMutation.mutate(data))}
+          className="space-y-4"
+        >
+          <div className="grid grid-cols-2 gap-2">
+            <FormField
+              control={form.control}
+              name="startDate"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Check-in</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full pl-3 text-left font-normal",
+                            !field.value && "text-muted-foreground"
+                          )}
+                        >
+                          {field.value ? (
+                            format(field.value, "MMM d, yyyy")
+                          ) : (
+                            <span>Select date</span>
+                          )}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        disabled={(date) =>
+                          date < new Date() || date < new Date("1900-01-01")
+                        }
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="endDate"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Check-out</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full pl-3 text-left font-normal",
+                            !field.value && "text-muted-foreground"
+                          )}
+                        >
+                          {field.value ? (
+                            format(field.value, "MMM d, yyyy")
+                          ) : (
+                            <span>Select date</span>
+                          )}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        disabled={(date) =>
+                          date < new Date() || date < new Date("1900-01-01")
+                        }
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <FormField
+            control={form.control}
+            name="guests"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Guests</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    min="1"
+                    max={maximumGuests}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {numberOfNights > 0 && (
+            <div className="space-y-2 pt-4">
+              <div className="flex justify-between">
+                <span>
+                  ${pricePerNight} × {numberOfNights} nights
+                </span>
+                <span>${basePrice}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Service fee</span>
+                <span>${serviceFee}</span>
+              </div>
+              <Separator className="my-4" />
+              <div className="flex justify-between font-semibold">
+                <span>Total</span>
+                <span>${totalPrice}</span>
+              </div>
+            </div>
+          )}
+
+          <Button
+            type="submit"
+            className="w-full bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white"
+            size="lg"
+            disabled={bookingMutation.isPending}
+          >
+            {bookingMutation.isPending && (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            )}
+            Reserve
+          </Button>
+        </form>
+      </FormProvider>
+    </>
   );
 }
