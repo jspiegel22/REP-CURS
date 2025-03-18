@@ -151,19 +151,19 @@ export default function NavigationBar() {
                 <nav className="flex flex-col h-full overflow-y-auto">
                   {/* Nike-style mobile menu with image tiles */}
                   <div className="p-4">
-                    {/* Main Menu Items */}
-                    <div className="grid grid-cols-2 gap-4">
+                    {/* Main Menu Items - Full Width */}
+                    <div className="grid grid-cols-1 gap-4">
                       {mainMenuItems.map((item) => (
                         <Link key={item.href} href={item.href}>
                           <a className="block">
-                            <div className="relative aspect-square rounded-lg overflow-hidden">
+                            <div className="relative h-20 rounded-lg overflow-hidden">
                               <img
                                 src={item.image}
                                 alt={item.title}
                                 className="w-full h-full object-cover"
                               />
-                              <div className="absolute inset-0 bg-black/30 flex items-center justify-center text-center p-2">
-                                <span className="text-white text-lg font-semibold">{item.title}</span>
+                              <div className="absolute inset-0 bg-black/30 flex items-center">
+                                <span className="text-white text-xl font-semibold px-4">{item.title}</span>
                               </div>
                             </div>
                           </a>
@@ -171,7 +171,7 @@ export default function NavigationBar() {
                       ))}
                     </div>
 
-                    {/* Grid Menu Items */}
+                    {/* Grid Menu Items - 3x2 Grid */}
                     <div className="grid grid-cols-3 gap-3 mt-4">
                       {gridMenuItems.map((item) => (
                         <Link key={item.href} href={item.href}>
