@@ -58,11 +58,6 @@ interface VillaBookingTemplateProps {
     date: string;
     helpful: number;
   }>;
-  host?: {
-    name: string;
-    image: string;
-    joinedDate: string;
-  };
 }
 
 export default function VillaBookingTemplate({
@@ -79,7 +74,6 @@ export default function VillaBookingTemplate({
   amenities,
   villaId,
   reviews = [],
-  host,
 }: VillaBookingTemplateProps) {
   const { toast } = useToast();
   const { user } = useAuth();
@@ -243,26 +237,6 @@ export default function VillaBookingTemplate({
                 <p className="text-muted-foreground">{description}</p>
               </div>
 
-              {/* Host Section */}
-              {host && (
-                <div className="pb-6 border-b">
-                  <h2 className="text-xl font-semibold mb-4">Meet Your Host</h2>
-                  <div className="flex items-center gap-4">
-                    <img
-                      src={host.image}
-                      alt={host.name}
-                      className="w-16 h-16 rounded-full object-cover"
-                    />
-                    <div>
-                      <h3 className="font-semibold">{host.name}</h3>
-                      <p className="text-sm text-muted-foreground">
-                        Host since {host.joinedDate}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
-
               {/* Features Section */}
               {uniqueFeatures.length > 0 && (
                 <div className="pb-6 border-b">
@@ -270,7 +244,7 @@ export default function VillaBookingTemplate({
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {uniqueFeatures.map((feature, index) => (
                       <div key={index} className="flex items-center gap-2">
-                        <Star className="h-5 w-5 text-primary" />
+                        <Star className="h-5 w-5 text-yellow-400" fill="currentColor" />
                         <span>{feature}</span>
                       </div>
                     ))}
@@ -487,27 +461,67 @@ function VillaBookingFormContent({
             />
           </div>
 
-          {/* Guest Count */}
-          <FormField
-            control={form.control}
-            name="guests"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Guests</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    min="1"
-                    max={maximumGuests}
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          {/* Guest Count and Phone in a 2-column grid */}
+          <div className="grid grid-cols-2 gap-2">
+            <FormField
+              control={form.control}
+              name="guests"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Guests</FormLabel>
+                  <FormControl>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full pl-3 text-left font-normal",
+                        !field.value && "text-muted-foreground"
+                      )}
+                      onClick={(e) => e.preventDefault()}
+                    >
+                      <Input
+                        type="number"
+                        min="1"
+                        max={maximumGuests}
+                        className="border-0 p-0 focus-visible:ring-0"
+                        {...field}
+                      />
+                    </Button>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          {/* Contact Information */}
+            <FormField
+              control={form.control}
+              name="contactPhone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Phone</FormLabel>
+                  <FormControl>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full pl-3 text-left font-normal",
+                        !field.value && "text-muted-foreground"
+                      )}
+                      onClick={(e) => e.preventDefault()}
+                    >
+                      <Input
+                        type="tel"
+                        placeholder="+1 (555) 123-4567"
+                        className="border-0 p-0 focus-visible:ring-0"
+                        {...field}
+                      />
+                    </Button>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          {/* Contact Email */}
           <FormField
             control={form.control}
             name="contactEmail"
@@ -516,20 +530,6 @@ function VillaBookingFormContent({
                 <FormLabel>Email</FormLabel>
                 <FormControl>
                   <Input type="email" placeholder="your@email.com" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="contactPhone"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Phone</FormLabel>
-                <FormControl>
-                  <Input type="tel" placeholder="+1 (555) 123-4567" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
