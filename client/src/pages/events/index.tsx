@@ -26,13 +26,26 @@ const events: Event[] = [
     type: "food",
     location: "Marina Golden Zone"
   },
-  // Add more events...
+  {
+    id: "3",
+    title: "Surfing Competition",
+    date: addDays(new Date(), 7),
+    type: "sports",
+    location: "Costa Azul"
+  },
+  {
+    id: "4",
+    title: "Art Walk",
+    date: addDays(new Date(), 9),
+    type: "culture",
+    location: "San Jose del Cabo"
+  }
 ];
 
 export default function EventsPage() {
   const today = new Date();
   const startDate = startOfWeek(today);
-  
+
   // Generate 4 weeks of dates
   const dates = Array.from({ length: 28 }, (_, i) => addDays(startDate, i));
 
@@ -89,8 +102,7 @@ export default function EventsPage() {
                 {dayEvents.map(event => (
                   <div
                     key={event.id}
-                    className="text-xs p-1 rounded cursor-pointer hover:opacity-80 transition-opacity"
-                    style={{ backgroundColor: getEventTypeColor(event.type) }}
+                    className={`text-xs p-1 rounded cursor-pointer hover:opacity-80 transition-opacity ${getEventTypeColor(event.type)}`}
                   >
                     <div className="font-semibold text-white truncate">
                       {event.title}

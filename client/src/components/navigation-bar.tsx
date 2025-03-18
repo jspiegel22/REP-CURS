@@ -173,8 +173,8 @@ const NavigationBar = () => {
               </SheetTrigger>
               <SheetContent side="left" className="w-[85vw] bg-white p-0">
                 {/* Larger Close Button with Background */}
-                <div className="absolute right-4 top-4">
-                  <button className="bg-white rounded-lg p-2 shadow-sm border">
+                <div className="absolute right-4 top-4 z-50">
+                  <button className="bg-white rounded-lg p-2 shadow-md border hover:bg-gray-50">
                     <X className="h-12 w-12 text-black" />
                   </button>
                 </div>
