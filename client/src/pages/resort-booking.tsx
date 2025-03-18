@@ -3,12 +3,17 @@ import { useQuery } from "@tanstack/react-query";
 import BookingTemplate from "@/components/templates/BookingTemplate";
 import { Loader2 } from "lucide-react";
 import { Resort } from "@shared/schema";
+import { apiRequest } from "@/lib/queryClient";
 
 export default function ResortBooking() {
   const { slug } = useParams<{ slug: string }>();
 
-  const { data: resort, isLoading } = useQuery<Resort>({
+  const { data: resort, isLoading, error } = useQuery<Resort>({
     queryKey: ['/api/resorts', slug],
+    queryFn: async () => {
+      const response = await apiRequest("GET", `/api/resorts/${slug}`);
+      return response.json();
+    },
     enabled: !!slug
   });
 
@@ -20,8 +25,12 @@ export default function ResortBooking() {
     );
   }
 
+  if (error) {
+    return <div className="p-4 text-center">Error loading resort: {error.message}</div>;
+  }
+
   if (!resort) {
-    return <div>Resort not found</div>;
+    return <div className="p-4 text-center">Resort not found</div>;
   }
 
   return (

@@ -3,11 +3,30 @@ import CategoryGrid from "@/components/category-grid";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { SiTiktok, SiInstagram, SiWhatsapp, SiFacebook, SiPinterest, SiYoutube } from "react-icons/si";
+import { generateSlug } from "@/lib/utils";
 
 const guides = [
   { title: "Bachelorette Guide", image: "https://images.unsplash.com/photo-1541956064527-8ec10ac76c31?ixlib=rb-4.0.3", link: "/guides/bachelorette" },
   { title: "Wedding Planning", image: "https://images.unsplash.com/photo-1546032996-6dfacbacbf3f?ixlib=rb-4.0.3", link: "/guides/weddings" },
   { title: "Real Estate Investment", image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3", link: "/guides/real-estate" }
+];
+
+const featuredResorts = [
+  { 
+    title: "Casa Dorada Resort & Spa",
+    image: "https://images.unsplash.com/photo-1566438480900-0609be27a4be?ixlib=rb-4.0.3",
+    location: "Cabo San Lucas"
+  },
+  { 
+    title: "Waldorf Astoria Los Cabos Pedregal",
+    image: "https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?ixlib=rb-4.0.3",
+    location: "Pedregal"
+  },
+  { 
+    title: "Montage Los Cabos",
+    image: "https://images.unsplash.com/photo-1534190760961-74e8c1c5c3da?ixlib=rb-4.0.3",
+    location: "Los Cabos"
+  }
 ];
 
 const featuredAdventures = [
@@ -20,6 +39,32 @@ export default function HomePage() {
   return (
     <main className="bg-white">
       <HeroSection />
+
+      {/* Test Resort Links */}
+      <div className="container mx-auto px-4 py-8 bg-white">
+        <h2 className="text-2xl font-bold mb-4">Featured Resorts</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {featuredResorts.map((resort) => (
+            <Link 
+              key={resort.title}
+              href={`/resort/${generateSlug(resort.title)}`}
+              className="block group"
+            >
+              <div className="relative overflow-hidden rounded-lg aspect-[4/3]">
+                <img 
+                  src={resort.image} 
+                  alt={resort.title} 
+                  className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-4">
+                  <h3 className="text-white text-xl font-semibold">{resort.title}</h3>
+                  <p className="text-white/80">{resort.location}</p>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </div>
 
       {/* Main Categories */}
       <div className="container mx-auto px-4 py-16">
