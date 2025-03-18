@@ -13,6 +13,9 @@ import AdventureDetail from "@/pages/adventure-detail";
 import RestaurantsPage from "@/pages/restaurants";
 import RestaurantDetails from "@/pages/restaurants/[id]";
 import FamilyTripsPage from "@/pages/group-trips/family";
+import BachelorBachelorettePage from "@/pages/group-trips/bachelor-bachelorette";
+import LuxuryConcierge from "@/pages/group-trips/luxury-concierge";
+import InfluencerPage from "@/pages/group-trips/influencer";
 import NavigationBar from "./components/navigation-bar";
 import { ChatButton } from "./components/chat-button";
 import { AuthProvider } from "@/hooks/use-auth";
@@ -32,6 +35,9 @@ function Router() {
         <Route path="/restaurants" component={RestaurantsPage} />
         <Route path="/restaurants/:id" component={RestaurantDetails} />
         <Route path="/group-trips/family" component={FamilyTripsPage} />
+        <Route path="/group-trips/bachelor-bachelorette" component={BachelorBachelorettePage} />
+        <Route path="/group-trips/luxury-concierge" component={LuxuryConcierge} />
+        <Route path="/group-trips/influencer" component={InfluencerPage} />
         <Route component={NotFound} />
       </Switch>
       <ChatButton />
