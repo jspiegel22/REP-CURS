@@ -22,9 +22,9 @@ function Router() {
       <NavigationBar />
       <Switch>
         <Route path="/" component={HomePage} />
-        <Route path="/resorts" component={ResortsLanding} />
+        <Route path="/resort" component={ResortsLanding} />
         <Route path="/resort/:slug" component={ResortBooking} />
-        <Route path="/villas" component={VillasLanding} />
+        <Route path="/villa" component={VillasLanding} />
         <Route path="/villa/:slug" component={VillaDetail} />
         <Route path="/adventures" component={AdventuresLanding} />
         <Route path="/adventure/:slug" component={AdventureDetail} />

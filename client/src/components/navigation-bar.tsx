@@ -88,7 +88,7 @@ export default function NavigationBar() {
           {/* Centered Logo */}
           <div className="flex-1 flex justify-center md:justify-start">
             <Link href="/">
-              <a className="text-2xl font-bold text-white">@cabo</a>
+              <a className="text-2xl font-bold text-white hover:text-white/80">@cabo</a>
             </Link>
           </div>
 
