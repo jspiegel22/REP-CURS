@@ -90,7 +90,7 @@ export default function HomePage() {
                 />
               </div>
               <span className="ml-4 text-gray-600">
-                Joined by <span className="font-semibold">4,000+</span> travelers
+                Loved by <span className="font-semibold">201,000</span> travelers
               </span>
             </div>
 

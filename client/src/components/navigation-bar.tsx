@@ -152,7 +152,7 @@ const groupTrips = [
   },
 ];
 
-export default function NavigationBar() {
+const NavigationBar = () => {
   return (
     <nav className="bg-white border-b border-gray-200">
       <div className="container mx-auto px-4">
@@ -169,7 +169,7 @@ export default function NavigationBar() {
                 {/* Larger Close Button with Background */}
                 <div className="absolute right-4 top-4">
                   <button className="bg-white rounded-lg p-2 shadow-sm border">
-                    <X className="h-12 w-12 text-[#2F4F4F] hover:text-[#1F3F3F]" />
+                    <X className="h-12 w-12 text-black" />
                   </button>
                 </div>
 
@@ -187,7 +187,7 @@ export default function NavigationBar() {
                                 alt={item.title}
                                 className="w-full h-full object-cover"
                               />
-                              <div className="absolute inset-0 bg-black/30 flex items-center">
+                              <div className="absolute inset-0 bg-black/50 flex items-center">
                                 <span className="text-white text-xl font-semibold px-4">{item.title}</span>
                               </div>
                             </div>
@@ -207,7 +207,7 @@ export default function NavigationBar() {
                                 alt={item.title}
                                 className="w-full h-full object-cover"
                               />
-                              <div className="absolute inset-0 bg-black/30 flex items-center justify-center text-center p-2">
+                              <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-center p-2">
                                 <span className="text-white text-xs font-semibold px-1">{item.title}</span>
                               </div>
                             </div>
@@ -227,7 +227,7 @@ export default function NavigationBar() {
                                 alt={item.title}
                                 className="w-full h-full object-cover"
                               />
-                              <div className="absolute inset-0 bg-black/30 flex items-center justify-center text-center p-2">
+                              <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-center p-2">
                                 <span className="text-white text-xs font-semibold px-1">{item.title}</span>
                               </div>
                             </div>
@@ -270,7 +270,7 @@ export default function NavigationBar() {
             <NavigationMenu>
               <NavigationMenuList>
                 <NavigationMenuItem>
-                  <NavigationMenuTrigger className="text-[#2F4F4F] bg-transparent">Stays</NavigationMenuTrigger>
+                  <NavigationMenuTrigger className="text-[#2F4F4F] bg-transparent">STAYS</NavigationMenuTrigger>
                   <NavigationMenuContent>
                     <ul className="grid w-[600px] gap-3 p-4">
                       {stays.map((item) => (
@@ -293,7 +293,15 @@ export default function NavigationBar() {
                 </NavigationMenuItem>
 
                 <NavigationMenuItem>
-                  <NavigationMenuTrigger className="text-[#2F4F4F] bg-transparent">Adventures</NavigationMenuTrigger>
+                  <NavigationMenuLink asChild>
+                    <Link href="/restaurants">
+                      <a className="text-[#2F4F4F] hover:text-[#1F3F3F] px-4 py-2">EATS</a>
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger className="text-[#2F4F4F] bg-transparent">ADVENTURES</NavigationMenuTrigger>
                   <NavigationMenuContent>
                     <ul className="grid w-[600px] gap-3 p-4">
                       {adventures.map((item) => (
@@ -316,31 +324,7 @@ export default function NavigationBar() {
                 </NavigationMenuItem>
 
                 <NavigationMenuItem>
-                  <NavigationMenuLink asChild>
-                    <Link href="/restaurants">
-                      <a className="text-[#2F4F4F] hover:text-[#1F3F3F] px-4 py-2">Restaurants</a>
-                    </Link>
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
-
-                <NavigationMenuItem>
-                  <NavigationMenuLink asChild>
-                    <Link href="/weddings">
-                      <a className="text-[#2F4F4F] hover:text-[#1F3F3F] px-4 py-2">Weddings</a>
-                    </Link>
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
-
-                <NavigationMenuItem>
-                  <NavigationMenuLink asChild>
-                    <Link href="/group-trips/influencer">
-                      <a className="text-[#2F4F4F] hover:text-[#1F3F3F] px-4 py-2">Influencers</a>
-                    </Link>
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
-
-                <NavigationMenuItem>
-                  <NavigationMenuTrigger className="text-[#2F4F4F] bg-transparent">Group Trips</NavigationMenuTrigger>
+                  <NavigationMenuTrigger className="text-[#2F4F4F] bg-transparent">GROUP TRIPS</NavigationMenuTrigger>
                   <NavigationMenuContent>
                     <ul className="grid w-[600px] gap-3 p-4">
                       {groupTrips.map((item) => (
@@ -363,11 +347,63 @@ export default function NavigationBar() {
                 </NavigationMenuItem>
 
                 <NavigationMenuItem>
-                  <NavigationMenuLink asChild>
-                    <Link href="/work-with-us">
-                      <a className="text-[#2F4F4F] hover:text-[#1F3F3F] px-4 py-2">Work with Us</a>
-                    </Link>
-                  </NavigationMenuLink>
+                  <NavigationMenuTrigger className="text-[#2F4F4F] bg-transparent">MORE</NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <ul className="grid w-[600px] grid-cols-2 gap-3 p-4">
+                      <li>
+                        <NavigationMenuLink asChild>
+                          <Link href="/weddings">
+                            <a className="flex gap-4 select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                              <img src="https://images.unsplash.com/photo-1546032996-6dfacbacbf3f" alt="Weddings" className="w-24 h-16 object-cover rounded" />
+                              <div>
+                                <div className="text-sm font-medium leading-none">Weddings</div>
+                                <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-1">Plan your dream destination wedding</p>
+                              </div>
+                            </a>
+                          </Link>
+                        </NavigationMenuLink>
+                      </li>
+                      <li>
+                        <NavigationMenuLink asChild>
+                          <Link href="/real-estate">
+                            <a className="flex gap-4 select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                              <img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c" alt="Real Estate" className="w-24 h-16 object-cover rounded" />
+                              <div>
+                                <div className="text-sm font-medium leading-none">Real Estate</div>
+                                <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-1">Find your dream property in Cabo</p>
+                              </div>
+                            </a>
+                          </Link>
+                        </NavigationMenuLink>
+                      </li>
+                      <li>
+                        <NavigationMenuLink asChild>
+                          <Link href="/guides">
+                            <a className="flex gap-4 select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                              <img src="https://images.unsplash.com/photo-1516546453174-5e1098a4b4af" alt="Guides" className="w-24 h-16 object-cover rounded" />
+                              <div>
+                                <div className="text-sm font-medium leading-none">Guides</div>
+                                <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-1">Expert tips and local insights</p>
+                              </div>
+                            </a>
+                          </Link>
+                        </NavigationMenuLink>
+                      </li>
+                      <li>
+                        <NavigationMenuLink asChild>
+                          <Link href="/group-trips/influencer">
+                            <a className="flex gap-4 select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                              <img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113" alt="Influencers" className="w-24 h-16 object-cover rounded" />
+                              <div>
+                                <div className="text-sm font-medium leading-none">Influencers</div>
+                                <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-1">Exclusive partnership opportunities</p>
+                              </div>
+                            </a>
+                          </Link>
+                        </NavigationMenuLink>
+                      </li>
+                    </ul>
+                  </NavigationMenuContent>
                 </NavigationMenuItem>
               </NavigationMenuList>
             </NavigationMenu>
@@ -383,4 +419,6 @@ export default function NavigationBar() {
       </div>
     </nav>
   );
-}
+};
+
+export default NavigationBar;
