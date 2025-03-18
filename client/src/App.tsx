@@ -12,6 +12,7 @@ import AdventuresLanding from "@/pages/adventures-landing";
 import AdventureDetail from "@/pages/adventure-detail";
 import RestaurantsPage from "@/pages/restaurants";
 import RestaurantDetails from "@/pages/restaurants/[id]";
+import FamilyTripsPage from "@/pages/group-trips/family";
 import NavigationBar from "./components/navigation-bar";
 import { ChatButton } from "./components/chat-button";
 import { AuthProvider } from "@/hooks/use-auth";
@@ -30,6 +31,7 @@ function Router() {
         <Route path="/adventure/:slug" component={AdventureDetail} />
         <Route path="/restaurants" component={RestaurantsPage} />
         <Route path="/restaurants/:id" component={RestaurantDetails} />
+        <Route path="/group-trips/family" component={FamilyTripsPage} />
         <Route component={NotFound} />
       </Switch>
       <ChatButton />
