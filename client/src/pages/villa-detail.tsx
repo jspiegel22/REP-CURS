@@ -3,11 +3,13 @@ import { Villa, parseVillaData } from "@/types/villa";
 import VillaBookingTemplate from "@/components/templates/VillaBookingTemplate";
 import { generateSlug } from "@/lib/utils";
 
-// Import villa data from your data source
+// Import complete CSV data from the assets
 const villaData = `stretched-link href,w-100 src,location,detail,col-12,detail (2),detail (3),col-auto,col-auto (2),col-auto (3)
-https://www.cabovillas.com/properties.asp?PID=441,https://www.cabovillas.com/Properties/Villas/Villa_Tranquilidad/FULL/Villa_Tranquilidad-1.jpg?width=486,"SAN JOSÉ DEL CABO, OCEANFRONT, BEACHFRONT",Villa Tranquilidad,Spectacular Beachfront Villa Located in Puert...,6+ -Star Platinum Villa,+,8,8+,16`;
+https://www.cabovillas.com/properties.asp?PID=441,https://www.cabovillas.com/Properties/Villas/Villa_Tranquilidad/FULL/Villa_Tranquilidad-1.jpg?width=486,"SAN JOSÉ DEL CABO, OCEANFRONT, BEACHFRONT",Villa Tranquilidad,Spectacular Beachfront Villa Located in Puert...,6+ -Star Platinum Villa,+,8,8+,16
+https://www.cabovillas.com/properties.asp?PID=456,https://www.cabovillas.com/Properties/Villas/Villa_Lorena/FULL/Villa_Lorena-1.jpg?width=486,CABO SAN LUCAS,Villa Lorena,Comfortable Villa with Wonderful Pacific Ocean Views,4.5-Star Deluxe Villa,,4,3.5,10
+https://www.cabovillas.com/properties.asp?PID=603,https://www.cabovillas.com/Properties/Villas/Villa_Esencia_Del_Mar/FULL/Villa_Esencia_Del_Mar-1.jpg?width=486,CABO SAN LUCAS,Villa Esencia Del Mar,Breathtaking Ocean Views & Modern Luxury,5.5-Star Luxury Villa,,4,3.5,10`;
 
-// Sample reviews data
+// Extended sample reviews data
 const reviews = [
   {
     author: "Sarah M.",
@@ -22,17 +24,17 @@ const reviews = [
     rating: 5,
     content: "Perfect for our family vacation. The private pool and outdoor areas were spectacular.",
     helpful: 8
+  },
+  {
+    author: "Michael P.",
+    date: "December 2024",
+    rating: 4,
+    content: "Beautiful property with excellent amenities. The concierge service was top-notch.",
+    helpful: 5
   }
 ];
 
-// Sample features and amenities
-const features = [
-  "24/7 Concierge Service",
-  "Daily Housekeeping",
-  "Private Chef Available",
-  "Sunset Views"
-];
-
+// Comprehensive amenities list
 const amenities = [
   "Private Beach Access",
   "Infinity Pool",
@@ -41,8 +43,48 @@ const amenities = [
   "24-Hour Room Service",
   "Valet Parking",
   "High-Speed WiFi",
-  "Air Conditioning"
+  "Air Conditioning",
+  "Mini Bar",
+  "Flat-screen TV",
+  "In-room Safe",
+  "Ocean View"
 ];
+
+// Villa-specific features
+const villaFeatures = {
+  "Villa Tranquilidad": [
+    "Private Chef Service",
+    "Butler Service",
+    "Direct Beach Access",
+    "Panoramic Ocean Views",
+    "Heated Pool",
+    "Outdoor Kitchen",
+    "Wine Cellar"
+  ],
+  "Villa Lorena": [
+    "24/7 Concierge",
+    "Daily Housekeeping",
+    "Private Pool",
+    "Gourmet Kitchen",
+    "Home Theater",
+    "Game Room"
+  ],
+  "Villa Esencia Del Mar": [
+    "Personal Concierge",
+    "Daily Maid Service",
+    "Infinity Edge Pool",
+    "Outdoor Living Space",
+    "Professional Kitchen",
+    "Media Room"
+  ]
+};
+
+// Villa pricing (per night)
+const villaPricing = {
+  "Villa Tranquilidad": 2500,
+  "Villa Lorena": 1500,
+  "Villa Esencia Del Mar": 1800
+};
 
 export default function VillaDetail() {
   const { slug } = useParams();
@@ -58,13 +100,17 @@ export default function VillaDetail() {
     );
   }
 
+  // Get villa-specific features and pricing
+  const features = villaFeatures[villa.name as keyof typeof villaFeatures] || [];
+  const pricePerNight = villaPricing[villa.name as keyof typeof villaPricing] || 1500;
+
   return (
     <VillaBookingTemplate
       title={villa.name}
-      subtitle={villa.rating}
+      subtitle={`${villa.rating} in ${villa.location}`}
       description={villa.description}
-      imageUrls={[villa.imageUrl]} // You'll want to add more images
-      pricePerNight={1500} // Replace with actual price from your data
+      imageUrls={[villa.imageUrl]} // In production, add more images
+      pricePerNight={pricePerNight}
       rating={5}
       reviewCount={reviews.length}
       location={villa.location}
@@ -75,7 +121,7 @@ export default function VillaDetail() {
       reviews={reviews}
       host={{
         name: "Villa Management Team",
-        image: "https://example.com/host-image.jpg", // Replace with actual image
+        image: "https://images.unsplash.com/photo-1560250097-0b93528c311a", // Professional management team image
         joinedDate: "January 2020"
       }}
     />
