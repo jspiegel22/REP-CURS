@@ -1,15 +1,20 @@
+import { useEffect, useState } from "react";
 import HeroSection from "@/components/hero-section";
 import CategoryGrid from "@/components/category-grid";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { SiTiktok, SiInstagram, SiWhatsapp, SiFacebook, SiPinterest, SiYoutube } from "react-icons/si";
 import { generateSlug } from "@/lib/utils";
+import { Villa, parseVillaData } from "@/types/villa";
+import { VillaCard } from "@/components/villa-card";
 
-const guides = [
-  { title: "Bachelorette Guide", image: "https://images.unsplash.com/photo-1541956064527-8ec10ac76c31?ixlib=rb-4.0.3", link: "/guides/bachelorette" },
-  { title: "Wedding Planning", image: "https://images.unsplash.com/photo-1546032996-6dfacbacbf3f?ixlib=rb-4.0.3", link: "/guides/weddings" },
-  { title: "Real Estate Investment", image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3", link: "/guides/real-estate" }
-];
+// Import villa data
+const villaData = `stretched-link href,w-100 src,location,detail,col-12,detail (2),detail (3),col-auto,col-auto (2),col-auto (3)
+https://www.cabovillas.com/properties.asp?PID=441,https://www.cabovillas.com/Properties/Villas/Villa_Tranquilidad/FULL/Villa_Tranquilidad-1.jpg?width=486,"SAN JOSÉ DEL CABO, OCEANFRONT, BEACHFRONT",Villa Tranquilidad,Spectacular Beachfront Villa Located in Puert...,6+ -Star Platinum Villa,+,8,8+,16
+https://www.cabovillas.com/properties.asp?PID=456,https://www.cabovillas.com/Properties/Villas/Villa_Lorena/FULL/Villa_Lorena-1.jpg?width=486,CABO SAN LUCAS,Villa Lorena,Comfortable Villa with Wonderful Pacific Ocea...,4.5-Star Deluxe Villa,,4,3.5,10
+https://www.cabovillas.com/properties.asp?PID=603,https://www.cabovillas.com/Properties/Villas/Villa_Esencia_Del_Mar/FULL/Villa_Esencia_Del_Mar-1.jpg?width=486,CABO SAN LUCAS,Villa Esencia Del Mar,Breathtaking Ocean Views & Modern Luxury,5.5-Star Luxury Villa,,4,3.5,10`;
+
+const villas = parseVillaData(villaData);
 
 const featuredResorts = [
   { 
@@ -35,10 +40,34 @@ const featuredAdventures = [
   { title: "Sunset Sailing", image: "https://images.unsplash.com/photo-1534190760961-74e8c1c5c3da?ixlib=rb-4.0.3" }
 ];
 
+const guides = [
+  { title: "Bachelorette Guide", image: "https://images.unsplash.com/photo-1541956064527-8ec10ac76c31?ixlib=rb-4.0.3", link: "/guides/bachelorette" },
+  { title: "Wedding Planning", image: "https://images.unsplash.com/photo-1546032996-6dfacbacbf3f?ixlib=rb-4.0.3", link: "/guides/weddings" },
+  { title: "Real Estate Investment", image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3", link: "/guides/real-estate" }
+];
+
 export default function HomePage() {
   return (
     <main className="bg-white">
       <HeroSection />
+
+      {/* Featured Villas Section */}
+      <div className="container mx-auto px-4 py-8 bg-white">
+        <h2 className="text-2xl font-bold mb-4">Featured Luxury Villas</h2>
+        <div className="relative">
+          <div className="overflow-x-auto pb-4 hide-scrollbar">
+            <div className="flex space-x-6">
+              {villas.map((villa) => (
+                <VillaCard 
+                  key={villa.id} 
+                  villa={villa} 
+                  className="flex-none w-[300px]"
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Featured Luxury Resorts */}
       <div className="container mx-auto px-4 py-8 bg-white">

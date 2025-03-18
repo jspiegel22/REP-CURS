@@ -4,11 +4,12 @@ import { Link } from "wouter";
 
 interface VillaCardProps {
   villa: Villa;
+  className?: string;
 }
 
-export function VillaCard({ villa }: VillaCardProps) {
+export function VillaCard({ villa, className = "" }: VillaCardProps) {
   return (
-    <Link href={`/villas/${villa.id}`}>
+    <Link href={`/villas/${villa.id}`} className={className}>
       <Card className="cursor-pointer hover:shadow-lg transition-shadow duration-200">
         <div className="aspect-[16/9] relative overflow-hidden rounded-t-lg">
           <img
