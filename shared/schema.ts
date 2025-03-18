@@ -41,13 +41,14 @@ export const resorts = pgTable("resorts", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-// Keep existing tables
+// Update the bookings table definition with proper relations and types
 export const bookings = pgTable("bookings", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id),
+  userId: integer("user_id").references(() => users.id).notNull(),
   listingId: integer("listing_id").references(() => listings.id),
   startDate: timestamp("start_date").notNull(),
   endDate: timestamp("end_date").notNull(),
+  guests: integer("guests").notNull(),
   status: text("status", { enum: ["pending", "confirmed", "cancelled"] }).notNull(),
   formData: jsonb("form_data"),
   pointsEarned: integer("points_earned"),
@@ -92,9 +93,16 @@ export const insertResortSchema = createInsertSchema(resorts).omit({
   updatedAt: true,
 });
 
+// Update insert schema
+export const insertBookingSchema = createInsertSchema(bookings).omit({
+  id: true,
+  pointsEarned: true,
+}).extend({
+  guests: z.string().transform(val => parseInt(val, 10)), // Transform string to number
+});
+
 // Other insert schemas
 export const insertListingSchema = createInsertSchema(listings);
-export const insertBookingSchema = createInsertSchema(bookings);
 export const insertRewardSchema = createInsertSchema(rewards);
 export const insertSocialShareSchema = createInsertSchema(socialShares);
 

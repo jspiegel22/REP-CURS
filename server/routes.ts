@@ -3,17 +3,56 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth } from "./auth";
 import { z } from "zod";
-import { insertListingSchema, insertBookingSchema } from "@shared/schema";
-
-function generateSlug(name: string): string {
-  return name
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/(^-|-$)/g, '');
-}
+import { insertBookingSchema } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   setupAuth(app);
+
+  // Booking endpoint
+  app.post("/api/bookings", async (req, res) => {
+    try {
+      // Check authentication
+      if (!req.isAuthenticated()) {
+        return res.status(401).json({ message: "Please log in to make a booking" });
+      }
+
+      // Validate request body
+      const bookingData = insertBookingSchema.safeParse(req.body);
+      if (!bookingData.success) {
+        return res.status(400).json({ 
+          message: "Invalid booking data",
+          errors: bookingData.error.errors 
+        });
+      }
+
+      // Create booking
+      const booking = await storage.createBooking({
+        ...bookingData.data,
+        userId: req.user.id,
+        status: "pending"
+      });
+
+      res.status(201).json(booking);
+    } catch (error) {
+      console.error("Booking creation error:", error);
+      res.status(500).json({ message: "Failed to create booking" });
+    }
+  });
+
+  // Get user's bookings
+  app.get("/api/bookings", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Please log in to view bookings" });
+    }
+
+    try {
+      const bookings = await storage.getUserBookings(req.user.id);
+      res.json(bookings);
+    } catch (error) {
+      console.error("Error fetching bookings:", error);
+      res.status(500).json({ message: "Failed to fetch bookings" });
+    }
+  });
 
   // Weather endpoint
   app.get("/api/weather", async (req, res) => {
@@ -70,33 +109,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.status(201).json(listing);
   });
 
-  // Bookings endpoints
-  app.post("/api/bookings", async (req, res) => {
-    if (!req.isAuthenticated()) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
-
-    const result = insertBookingSchema.safeParse(req.body);
-    if (!result.success) {
-      return res.status(400).json({ message: "Invalid booking data" });
-    }
-
-    const booking = await storage.createBooking({
-      ...result.data,
-      userId: req.user.id,
-      status: "pending",
-    });
-    res.status(201).json(booking);
-  });
-
-  app.get("/api/bookings", async (req, res) => {
-    if (!req.isAuthenticated()) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
-
-    const bookings = await storage.getUserBookings(req.user.id);
-    res.json(bookings);
-  });
 
   // Social Share endpoint
   app.post("/api/social-share", async (req, res) => {
@@ -140,6 +152,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+
+  function generateSlug(name: string): string {
+    return name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
+  }
 
   const httpServer = createServer(app);
   return httpServer;

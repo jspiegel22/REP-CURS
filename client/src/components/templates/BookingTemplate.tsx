@@ -4,31 +4,23 @@ import { useForm, FormProvider } from "react-hook-form";
 import { z } from "zod";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon, Loader2, Star, MapPin, ThumbsUp, Waves, Palmtree, Dumbbell, Clock, Car, Wifi, Wind, GlassWater, Monitor, LockKeyhole, Mountain } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { queryClient, apiRequest } from "@/lib/queryClient";
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { useEffect, useState } from "react";
 import { SiTiktok, SiInstagram, SiWhatsapp, SiFacebook, SiPinterest, SiYoutube } from "react-icons/si";
 import { Link } from "wouter";
 
-// Schema for booking form
+
+// Update booking form schema to match backend expectations
 const bookingFormSchema = z.object({
   startDate: z.date({
     required_error: "Check-in date is required",
@@ -37,7 +29,8 @@ const bookingFormSchema = z.object({
     required_error: "Check-out date is required",
   }),
   guests: z.string().min(1, "Number of guests is required"),
-  extras: z.array(z.string()).optional(),
+  listingId: z.number().optional(),
+  formData: z.any().optional(),
 });
 
 type BookingFormData = z.infer<typeof bookingFormSchema>;
@@ -79,6 +72,7 @@ interface BookingTemplateProps {
   onBookingSubmit?: (data: BookingFormData) => Promise<void>;
   reviews?: Review[];
   isResort: boolean;
+  listingId?: number;
 }
 
 export default function BookingTemplate({
@@ -99,20 +93,21 @@ export default function BookingTemplate({
   onBookingSubmit,
   reviews = [],
   isResort = false,
+  listingId,
 }: BookingTemplateProps) {
   const { toast } = useToast();
+  const { user } = useAuth(); // Add auth context
+
   const form = useForm<BookingFormData>({
     resolver: zodResolver(bookingFormSchema),
     defaultValues: {
       guests: "1",
-      extras: [],
+      listingId: listingId, // Set listingId in default values
     },
   });
 
-  // Add state for floating CTA
   const [showFloatingCTA, setShowFloatingCTA] = useState(false);
 
-  // Handle scroll for floating CTA
   useEffect(() => {
     const handleScroll = () => {
       const mobileForm = document.getElementById('booking-form-mobile');
@@ -132,7 +127,6 @@ export default function BookingTemplate({
     };
 
     window.addEventListener('scroll', handleScroll);
-    // Initial check
     handleScroll();
 
     return () => window.removeEventListener('scroll', handleScroll);
@@ -140,10 +134,24 @@ export default function BookingTemplate({
 
   const bookingMutation = useMutation({
     mutationFn: async (data: BookingFormData) => {
+      if (!user) {
+        throw new Error("Please log in to make a booking");
+      }
+
       if (onBookingSubmit) {
         await onBookingSubmit(data);
       } else {
-        await apiRequest("POST", "/api/bookings", data);
+        try {
+          const response = await apiRequest("POST", "/api/bookings", data);
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || "Failed to create booking");
+          }
+          return response.json();
+        } catch (error) {
+          console.error("Booking error:", error);
+          throw error;
+        }
       }
     },
     onSuccess: () => {
@@ -152,6 +160,7 @@ export default function BookingTemplate({
         description: "Your reservation has been successfully processed.",
       });
       form.reset();
+      queryClient.invalidateQueries({ queryKey: ["/api/bookings"] });
     },
     onError: (error: Error) => {
       toast({
@@ -168,10 +177,9 @@ export default function BookingTemplate({
     ? Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))
     : 0;
   const basePrice = numberOfNights * pricePerNight;
-  const serviceFee = Math.round(basePrice * 0.12); // 12% service fee
+  const serviceFee = Math.round(basePrice * 0.12); 
   const totalPrice = basePrice + serviceFee;
 
-  // Amenity icon mapping
   const getAmenityIcon = (amenity: string) => {
     const iconMap: { [key: string]: React.ReactNode } = {
       "Private Beach Access": <Waves className="h-5 w-5" />,
@@ -189,6 +197,15 @@ export default function BookingTemplate({
     };
     return iconMap[amenity] || <Star className="h-5 w-5" />;
   };
+
+  // Filter out features that overlap with amenities
+  const uniqueFeatures = features.filter(
+    feature => !amenities.some(amenity => 
+      amenity.toLowerCase().includes(feature.toLowerCase()) ||
+      feature.toLowerCase().includes(amenity.toLowerCase())
+    )
+  );
+
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -251,7 +268,6 @@ export default function BookingTemplate({
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
             <div className="lg:col-span-2 space-y-8">
-              {/* Booking Form for Mobile */}
               <div className="lg:hidden">
                 <div id="booking-form-mobile" className="bg-card rounded-xl border p-6 shadow-lg mb-8">
                   <BookingFormContent
@@ -286,12 +302,11 @@ export default function BookingTemplate({
                 </div>
               )}
 
-              {/* Features Section */}
-              {features.length > 0 && (
+              {uniqueFeatures.length > 0 && (
                 <div className="pb-6 border-b">
-                  <h2 className="text-2xl font-semibold mb-4">Features</h2>
+                  <h2 className="text-xl font-semibold mb-4">Special Features</h2>
                   <ul className="space-y-2">
-                    {features.map((feature, index) => (
+                    {uniqueFeatures.map((feature, index) => (
                       <li key={index} className="flex items-center">
                         <Star className="h-5 w-5 text-yellow-400 mr-2" fill="currentColor" />
                         {feature}
@@ -334,7 +349,6 @@ export default function BookingTemplate({
                 </div>
               </div>
 
-              {/* Reviews Section */}
               <div className="pb-6 border-b">
                 <h2 className="text-xl font-semibold mb-4">Guest Reviews</h2>
                 <div className="grid gap-6">
@@ -369,7 +383,6 @@ export default function BookingTemplate({
               </div>
             </div>
 
-            {/* Floating Booking Form for Desktop */}
             <div className="hidden lg:block lg:sticky lg:top-8 h-fit">
               <div id="booking-form" className="bg-card rounded-xl border p-6 shadow-lg">
                 <BookingFormContent
@@ -404,7 +417,6 @@ export default function BookingTemplate({
           )}
         </div>
 
-        {/* Floating CTA for mobile */}
         {showFloatingCTA && (
           <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t shadow-lg lg:hidden z-50">
             <div className="flex items-center justify-between max-w-lg mx-auto">
@@ -426,7 +438,6 @@ export default function BookingTemplate({
         )}
       </main>
 
-      {/* Footer */}
       <footer className="bg-[#2F4F4F] text-white pt-16 pb-8 mt-16">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
@@ -490,7 +501,6 @@ export default function BookingTemplate({
   );
 }
 
-// Extracted Booking Form Content Component
 function BookingFormContent({
   form,
   pricePerNight,

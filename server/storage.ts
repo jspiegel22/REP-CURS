@@ -71,12 +71,33 @@ export class DatabaseStorage implements IStorage {
 
   // Booking Management
   async createBooking(booking: Omit<Booking, "id">): Promise<Booking> {
-    const [newBooking] = await db.insert(bookings).values(booking).returning();
-    return newBooking;
+    try {
+      const [newBooking] = await db
+        .insert(bookings)
+        .values({
+          ...booking,
+          startDate: new Date(booking.startDate),
+          endDate: new Date(booking.endDate),
+        })
+        .returning();
+      return newBooking;
+    } catch (error) {
+      console.error("Error creating booking:", error);
+      throw new Error("Failed to create booking");
+    }
   }
 
   async getUserBookings(userId: number): Promise<Booking[]> {
-    return db.select().from(bookings).where(eq(bookings.userId, userId));
+    try {
+      return await db
+        .select()
+        .from(bookings)
+        .where(eq(bookings.userId, userId))
+        .orderBy(bookings.startDate);
+    } catch (error) {
+      console.error("Error fetching user bookings:", error);
+      throw new Error("Failed to fetch bookings");
+    }
   }
 
   // Weather Cache Management
