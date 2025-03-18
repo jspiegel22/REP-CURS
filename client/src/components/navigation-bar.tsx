@@ -27,6 +27,7 @@ const groupTrips = [
   { title: "Family Trips", href: "/group-trips/family", description: "Create lasting memories with your loved ones" },
   { title: "Bachelor/Bachelorette", href: "/group-trips/bachelor-bachelorette", description: "Unforgettable celebration packages" },
   { title: "Luxury Concierge", href: "/group-trips/luxury-concierge", description: "Personalized VIP experiences" },
+  { title: "Influencer Partnerships", href: "/group-trips/influencer", description: "Exclusive partnerships for content creators" },
 ];
 
 export default function NavigationBar() {

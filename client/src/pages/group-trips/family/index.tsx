@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
 import Footer from "@/components/footer";
+import { ClientGallery } from "@/components/client-gallery";
 
 // Form schema
 const formSchema = z.object({
@@ -22,6 +23,49 @@ const formSchema = z.object({
 });
 
 type FormData = z.infer<typeof formSchema>;
+
+const galleryImages = [
+  {
+    src: "https://images.unsplash.com/photo-1602002418816-5c0aeef426aa",
+    alt: "Family enjoying beach vacation",
+    caption: "The Martinez family's unforgettable week in Cabo"
+  },
+  {
+    src: "https://images.unsplash.com/photo-1517673132405-a56a62b18caf",
+    alt: "Kids playing on the beach",
+    caption: "Creating memories that last a lifetime"
+  },
+  {
+    src: "https://images.unsplash.com/photo-1565538394668-0c2720bb5c9e",
+    alt: "Family dinner by the ocean",
+    caption: "Magical sunset dinners with the whole family"
+  },
+  {
+    src: "https://images.unsplash.com/photo-1517457373958-b7bdd4587205",
+    alt: "Pool activities",
+    caption: "Fun pool activities for all ages"
+  },
+  {
+    src: "https://images.unsplash.com/photo-1563911302283-d2bc129e7570",
+    alt: "Beach activities",
+    caption: "Beach adventures with the little ones"
+  },
+  {
+    src: "https://images.unsplash.com/photo-1565538810643-b5bdb714032a",
+    alt: "Family exploration",
+    caption: "Exploring Cabo's hidden gems together"
+  },
+  {
+    src: "https://images.unsplash.com/photo-1517457373958-b7bdd4587205",
+    alt: "Resort activities",
+    caption: "Endless activities for the whole family"
+  },
+  {
+    src: "https://images.unsplash.com/photo-1565538810643-b5bdb714032a",
+    alt: "Sunset family moment",
+    caption: "Cherished moments under the Cabo sun"
+  }
+];
 
 export default function FamilyTripsPage() {
   const { toast } = useToast();
@@ -201,6 +245,13 @@ export default function FamilyTripsPage() {
           </div>
         </div>
       </div>
+
+      {/* Client Gallery */}
+      <ClientGallery 
+        title="Family Memories in Cabo"
+        subtitle="Real moments from our happy families"
+        images={galleryImages}
+      />
 
       {/* Booking Form Section - Updated for better mobile layout */}
       <div id="booking-form" className="py-12 md:py-16 bg-gray-50">
