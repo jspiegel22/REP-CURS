@@ -117,11 +117,7 @@ export default function ResortBooking() {
         "In-room Safe",
         "Ocean View"
       ]}
-      host={{
-        name: "Waldorf Astoria Team",
-        image: "/images/waldorf-host.jpg",
-        joinedDate: "2018"
-      }}
+      isResort={true}
       reviews={sampleReviews}
       faqs={[
         {

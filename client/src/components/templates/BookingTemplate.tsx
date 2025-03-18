@@ -3,11 +3,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, FormProvider } from "react-hook-form";
 import { z } from "zod";
 import { format } from "date-fns";
-import { Calendar as CalendarIcon, Loader2, Star, MapPin, ThumbsUp } from "lucide-react";
+import { Calendar as CalendarIcon, Loader2, Star, MapPin, ThumbsUp, Palmtree, Dumbbell, Clock, Car, Wifi, Wind, GlassWater, Monitor, LockKeyhole, Mountain } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import NavigationBar from "@/components/navigation-bar";
 import {
   FormControl,
   FormField,
@@ -86,6 +85,7 @@ interface BookingTemplateProps {
   };
   onBookingSubmit?: (data: BookingFormData) => Promise<void>;
   reviews?: Review[];
+  isResort: boolean; // Added to handle resort condition
 }
 
 export default function BookingTemplate({
@@ -105,6 +105,7 @@ export default function BookingTemplate({
   host,
   onBookingSubmit,
   reviews = [],
+  isResort = false, // Added default value
 }: BookingTemplateProps) {
   const { toast } = useToast();
   const form = useForm<BookingFormData>({
@@ -166,10 +167,27 @@ export default function BookingTemplate({
   const serviceFee = Math.round(basePrice * 0.12); // 12% service fee
   const totalPrice = basePrice + serviceFee;
 
+  // Amenity icon mapping
+  const getAmenityIcon = (amenity: string) => {
+    const iconMap: { [key: string]: React.ReactNode } = {
+      "Private Beach Access": <Palmtree className="h-5 w-5" />,
+      "Infinity Pool": <GlassWater className="h-5 w-5" />,
+      "Full-Service Spa": <Palmtree className="h-5 w-5" />,
+      "Fitness Center": <Dumbbell className="h-5 w-5" />,
+      "24-Hour Room Service": <Clock className="h-5 w-5" />,
+      "Valet Parking": <Car className="h-5 w-5" />,
+      "High-Speed WiFi": <Wifi className="h-5 w-5" />,
+      "Air Conditioning": <Wind className="h-5 w-5" />,
+      "Mini Bar": <GlassWater className="h-5 w-5" />,
+      "Flat-screen TV": <Monitor className="h-5 w-5" />,
+      "In-room Safe": <LockKeyhole className="h-5 w-5" />,
+      "Ocean View": <Mountain className="h-5 w-5" />,
+    };
+    return iconMap[amenity] || <Star className="h-5 w-5" />;
+  };
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <NavigationBar />
-
       <main className="flex-1">
         <div className="max-w-7xl mx-auto px-4 pt-8 pb-6">
           <h1 className="text-3xl font-semibold mb-2">{title}</h1>
@@ -238,7 +256,7 @@ export default function BookingTemplate({
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
             <div className="lg:col-span-2 space-y-8">
-              {host && (
+              {!isResort && host && (
                 <div className="flex items-center justify-between pb-6 border-b">
                   <div>
                     <h2 className="text-xl font-semibold">
@@ -256,22 +274,23 @@ export default function BookingTemplate({
                 </div>
               )}
 
-              <div className="grid grid-cols-2 gap-4 pb-6 border-b">
-                {features.map((feature, index) => (
-                  <div key={index} className="flex items-center gap-2">
-                    <div className="p-2 rounded-lg bg-muted">
-                      <Star className="h-5 w-5 text-yellow-400" fill="currentColor" />
-                    </div>
-                    <span>{feature}</span>
-                  </div>
-                ))}
-              </div>
-
               <div className="pb-6 border-b">
                 <h2 className="text-xl font-semibold mb-4">About this property</h2>
-                <p className="text-muted-foreground whitespace-pre-line">
-                  {description}
-                </p>
+                <div className="prose max-w-none">
+                  <p className="text-muted-foreground whitespace-pre-line">
+                    {description}
+                  </p>
+                  <p className="mt-4 text-muted-foreground">
+                    Experience the pinnacle of luxury at one of Cabo San Lucas's most prestigious resorts.
+                    Our world-class amenities and unparalleled service ensure an unforgettable stay,
+                    whether you're seeking a romantic getaway, family vacation, or special celebration.
+                  </p>
+                  <p className="mt-4 text-muted-foreground">
+                    Each room is thoughtfully designed to provide maximum comfort and stunning views,
+                    complemented by modern conveniences and luxurious furnishings. Our attentive staff
+                    is available 24/7 to ensure your every need is met with the highest level of service.
+                  </p>
+                </div>
               </div>
 
               <div className="pb-6 border-b">
@@ -279,7 +298,9 @@ export default function BookingTemplate({
                 <div className="grid grid-cols-2 gap-4">
                   {amenities.map((amenity, index) => (
                     <div key={index} className="flex items-center gap-2">
-                      <Star className="h-5 w-5 text-yellow-400" fill="currentColor" />
+                      <div className="text-[#2F4F4F]">
+                        {getAmenityIcon(amenity)}
+                      </div>
                       <span>{amenity}</span>
                     </div>
                   ))}
