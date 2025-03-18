@@ -13,8 +13,8 @@ import {
 } from "@/components/ui/navigation-menu";
 
 const stays = [
-  { title: "Villas", href: "/stays/villas", description: "Luxury private villas with stunning ocean views" },
-  { title: "Resorts", href: "/stays/resorts", description: "World-class resorts and hotels" },
+  { title: "Villas", href: "/villa", description: "Luxury private villas with stunning ocean views" },
+  { title: "Resorts", href: "/resort", description: "World-class resorts and hotels" },
 ];
 
 const adventures = [
