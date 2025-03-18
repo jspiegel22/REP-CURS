@@ -163,14 +163,14 @@ export default function NavigationBar() {
                       {mainMenuItems.map((item) => (
                         <Link key={item.href} href={item.href}>
                           <a className="block">
-                            <div className="relative h-24 rounded-lg overflow-hidden">
+                            <div className="relative h-20 rounded-lg overflow-hidden">
                               <img
                                 src={item.image}
                                 alt={item.title}
                                 className="w-full h-full object-cover"
                               />
                               <div className="absolute inset-0 bg-black/30 flex items-center">
-                                <span className="text-white text-xl font-semibold px-4">{item.title}</span>
+                                <span className="text-white text-lg font-semibold px-4">{item.title}</span>
                               </div>
                             </div>
                           </a>
@@ -183,7 +183,7 @@ export default function NavigationBar() {
                       {gridMenuItems.map((item) => (
                         <Link key={item.href} href={item.href}>
                           <a className="block">
-                            <div className="relative aspect-square rounded-lg overflow-hidden">
+                            <div className="relative aspect-[3/2] rounded-lg overflow-hidden">
                               <img
                                 src={item.image}
                                 alt={item.title}
@@ -199,7 +199,7 @@ export default function NavigationBar() {
                     </div>
 
                     {/* Social Media Links */}
-                    <div className="mt-4 pt-4 border-t border-gray-200">
+                    <div className="mt-3 pt-3 border-t border-gray-200">
                       <div className="flex justify-center space-x-6">
                         {socialLinks.map((social) => (
                           <a
