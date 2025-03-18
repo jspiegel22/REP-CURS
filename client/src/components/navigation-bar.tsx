@@ -11,18 +11,71 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 
+const mobileMenuItems = [
+  {
+    title: "Villas",
+    href: "/villa",
+    image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811"
+  },
+  {
+    title: "Resorts",
+    href: "/resort",
+    image: "https://images.unsplash.com/photo-1582719508461-905c673771fd"
+  },
+  {
+    title: "Yachts",
+    href: "/adventures/luxury-sailing",
+    image: "https://images.unsplash.com/photo-1605281317010-fe5ffe798166"
+  },
+  {
+    title: "Adventures",
+    href: "/adventures",
+    image: "https://images.unsplash.com/photo-1569263979104-865ab7cd8d13"
+  },
+  {
+    title: "Bachelor/ette",
+    href: "/group-trips/bachelor-bachelorette",
+    image: "https://images.unsplash.com/photo-1541956064527-8ec10ac76c31"
+  },
+  {
+    title: "Luxury Concierge",
+    href: "/group-trips/luxury-concierge",
+    image: "https://images.unsplash.com/photo-1590073242678-70ee3fc28e8e"
+  },
+  {
+    title: "Restaurants",
+    href: "/restaurants",
+    image: "https://images.unsplash.com/photo-1578474846511-04ba529f0b88"
+  },
+  {
+    title: "Weddings",
+    href: "/weddings",
+    image: "https://images.unsplash.com/photo-1546032996-6dfacbacbf3f"
+  },
+  {
+    title: "Influencers",
+    href: "/group-trips/influencer",
+    image: "https://images.unsplash.com/photo-1611162617474-5b21e879e113"
+  },
+  {
+    title: "Work with Us",
+    href: "/work-with-us",
+    image: "https://images.unsplash.com/photo-1552664730-d307ca884978"
+  }
+];
+
 const stays = [
   { 
     title: "Villas", 
     href: "/villa", 
     description: "Luxury private villas with stunning ocean views",
-    image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=150"
+    image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811"
   },
   { 
     title: "Resorts", 
     href: "/resort", 
     description: "World-class resorts and hotels",
-    image: "https://images.unsplash.com/photo-1582719508461-905c673771fd?w=150"
+    image: "https://images.unsplash.com/photo-1582719508461-905c673771fd"
   },
 ];
 
@@ -31,19 +84,19 @@ const adventures = [
     title: "Luxury Sailing", 
     href: "/adventures/luxury-sailing", 
     description: "Private yacht charters and sailing experiences",
-    image: "https://images.unsplash.com/photo-1605281317010-fe5ffe798166?w=150"
+    image: "https://images.unsplash.com/photo-1605281317010-fe5ffe798166"
   },
   { 
     title: "Private Yachts", 
     href: "/adventures/private-yachts", 
     description: "Exclusive yacht rentals for special occasions",
-    image: "https://images.unsplash.com/photo-1569263979104-865ab7cd8d13?w=150"
+    image: "https://images.unsplash.com/photo-1569263979104-865ab7cd8d13"
   },
   { 
     title: "Whale Watching", 
     href: "/adventures/whale-watching", 
     description: "Unforgettable whale watching tours",
-    image: "https://images.unsplash.com/photo-1570481662006-a3a1374699e8?w=150"
+    image: "https://images.unsplash.com/photo-1570481662006-a3a1374699e8"
   },
 ];
 
@@ -52,19 +105,19 @@ const groupTrips = [
     title: "Family Trips", 
     href: "/group-trips/family", 
     description: "Create lasting memories with your loved ones",
-    image: "https://images.unsplash.com/photo-1602002418816-5c0aeef426aa?w=150"
+    image: "https://images.unsplash.com/photo-1602002418816-5c0aeef426aa"
   },
   { 
     title: "Bachelor/Bachelorette", 
     href: "/group-trips/bachelor-bachelorette", 
     description: "Unforgettable celebration packages",
-    image: "https://images.unsplash.com/photo-1541956064527-8ec10ac76c31?w=150"
+    image: "https://images.unsplash.com/photo-1541956064527-8ec10ac76c31"
   },
   { 
     title: "Luxury Concierge", 
     href: "/group-trips/luxury-concierge", 
     description: "Personalized VIP experiences",
-    image: "https://images.unsplash.com/photo-1590073242678-70ee3fc28e8e?w=150"
+    image: "https://images.unsplash.com/photo-1590073242678-70ee3fc28e8e"
   },
 ];
 
@@ -85,76 +138,22 @@ export default function NavigationBar() {
                 <nav className="flex flex-col h-full overflow-y-auto">
                   {/* Nike-style mobile menu with image tiles */}
                   <div className="p-4 space-y-4">
-                    {/* Stays Section */}
-                    <div className="space-y-4">
-                      <div className="relative h-24 rounded-lg overflow-hidden">
-                        <img
-                          src="https://images.unsplash.com/photo-1613490493576-7fde63acd811"
-                          alt="Stays"
-                          className="w-full h-full object-cover"
-                        />
-                        <div className="absolute inset-0 bg-black/30 flex items-center">
-                          <span className="text-white text-xl font-semibold px-4">Stays</span>
-                        </div>
-                      </div>
-                      {stays.map((item) => (
-                        <Link key={item.href} href={item.href}>
-                          <a className="block text-[#2F4F4F] hover:text-[#1F3F3F] py-2">{item.title}</a>
-                        </Link>
-                      ))}
-                    </div>
-
-                    {/* Adventures Section */}
-                    <div className="space-y-4">
-                      <div className="relative h-24 rounded-lg overflow-hidden">
-                        <img
-                          src="https://images.unsplash.com/photo-1605281317010-fe5ffe798166"
-                          alt="Adventures"
-                          className="w-full h-full object-cover"
-                        />
-                        <div className="absolute inset-0 bg-black/30 flex items-center">
-                          <span className="text-white text-xl font-semibold px-4">Adventures</span>
-                        </div>
-                      </div>
-                      {adventures.map((item) => (
-                        <Link key={item.href} href={item.href}>
-                          <a className="block text-[#2F4F4F] hover:text-[#1F3F3F] py-2">{item.title}</a>
-                        </Link>
-                      ))}
-                    </div>
-
-                    {/* Group Trips Section */}
-                    <div className="space-y-4">
-                      <div className="relative h-24 rounded-lg overflow-hidden">
-                        <img
-                          src="https://images.unsplash.com/photo-1541956064527-8ec10ac76c31"
-                          alt="Group Trips"
-                          className="w-full h-full object-cover"
-                        />
-                        <div className="absolute inset-0 bg-black/30 flex items-center">
-                          <span className="text-white text-xl font-semibold px-4">Group Trips</span>
-                        </div>
-                      </div>
-                      {groupTrips.map((item) => (
-                        <Link key={item.href} href={item.href}>
-                          <a className="block text-[#2F4F4F] hover:text-[#1F3F3F] py-2">{item.title}</a>
-                        </Link>
-                      ))}
-                    </div>
-
-                    {/* Other Links */}
-                    <Link href="/restaurants">
-                      <a className="block text-[#2F4F4F] hover:text-[#1F3F3F] py-2">Restaurants</a>
-                    </Link>
-                    <Link href="/weddings">
-                      <a className="block text-[#2F4F4F] hover:text-[#1F3F3F] py-2">Weddings</a>
-                    </Link>
-                    <Link href="/work-with-us">
-                      <a className="block text-[#2F4F4F] hover:text-[#1F3F3F] py-2">Work with Us</a>
-                    </Link>
-                    <Link href="/group-trips/influencer">
-                      <a className="block text-[#2F4F4F] hover:text-[#1F3F3F] py-2">Influencers</a>
-                    </Link>
+                    {mobileMenuItems.map((item) => (
+                      <Link key={item.href} href={item.href}>
+                        <a className="block">
+                          <div className="relative h-24 rounded-lg overflow-hidden">
+                            <img
+                              src={item.image}
+                              alt={item.title}
+                              className="w-full h-full object-cover"
+                            />
+                            <div className="absolute inset-0 bg-black/30 flex items-center">
+                              <span className="text-white text-xl font-semibold px-4">{item.title}</span>
+                            </div>
+                          </div>
+                        </a>
+                      </Link>
+                    ))}
                   </div>
                 </nav>
               </SheetContent>
