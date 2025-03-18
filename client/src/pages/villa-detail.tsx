@@ -1,6 +1,7 @@
 import { useParams } from "wouter";
-import { Villa } from "@/types/villa";
+import { Villa, parseVillaData } from "@/types/villa";
 import VillaBookingTemplate from "@/components/templates/VillaBookingTemplate";
+import { generateSlug } from "@/lib/utils";
 
 // Import villa data from your data source
 const villaData = `stretched-link href,w-100 src,location,detail,col-12,detail (2),detail (3),col-auto,col-auto (2),col-auto (3)
@@ -9,14 +10,14 @@ https://www.cabovillas.com/properties.asp?PID=441,https://www.cabovillas.com/Pro
 // Sample reviews data
 const reviews = [
   {
-    name: "Sarah M.",
+    author: "Sarah M.",
     date: "February 2025",
     rating: 5,
     content: "Absolutely stunning villa with incredible ocean views. The staff was amazing and attentive to every detail.",
     helpful: 12
   },
   {
-    name: "James R.",
+    author: "James R.",
     date: "January 2025",
     rating: 5,
     content: "Perfect for our family vacation. The private pool and outdoor areas were spectacular.",
@@ -44,8 +45,9 @@ const amenities = [
 ];
 
 export default function VillaDetail() {
-  const { id } = useParams();
-  const villa = parseVillaData(villaData)[0]; // For now, using the first villa
+  const { slug } = useParams();
+  const villas = parseVillaData(villaData);
+  const villa = villas.find(v => generateSlug(v.name) === slug);
 
   if (!villa) {
     return (

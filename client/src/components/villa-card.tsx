@@ -1,6 +1,7 @@
 import { Villa } from "@/types/villa";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "wouter";
+import { generateSlug } from "@/lib/utils";
 
 interface VillaCardProps {
   villa: Villa;
@@ -9,7 +10,10 @@ interface VillaCardProps {
 
 export function VillaCard({ villa, className = "" }: VillaCardProps) {
   return (
-    <Link href={`/villas/${villa.id}`} className={className}>
+    <Link 
+      href={`/villa/${generateSlug(villa.name)}`}
+      className={className}
+    >
       <Card className="cursor-pointer hover:shadow-lg transition-shadow duration-200">
         <div className="aspect-[16/9] relative overflow-hidden rounded-t-lg">
           <img
