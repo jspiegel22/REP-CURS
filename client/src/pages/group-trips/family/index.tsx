@@ -4,7 +4,6 @@ import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import Footer from "@/components/footer";
 import { Textarea } from "@/components/ui/textarea";
@@ -24,7 +23,6 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 export default function FamilyTripsPage() {
-  const [step, setStep] = useState(1);
   const { toast } = useToast();
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -42,17 +40,6 @@ export default function FamilyTripsPage() {
   });
 
   const onSubmit = async (data: FormData) => {
-    if (step === 1) {
-      // Validate first step fields
-      const firstStepFields = ['firstName', 'lastName', 'email', 'phone'];
-      const hasErrors = firstStepFields.some(field => form.formState.errors[field]);
-
-      if (!hasErrors) {
-        setStep(2);
-      }
-      return;
-    }
-
     try {
       // Handle form submission
       toast({
@@ -60,7 +47,6 @@ export default function FamilyTripsPage() {
         description: "We'll be in touch shortly to plan your perfect family vacation.",
       });
       form.reset();
-      setStep(1);
     } catch (error: any) {
       toast({
         title: "Something went wrong",
@@ -164,133 +150,74 @@ export default function FamilyTripsPage() {
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t shadow-2xl z-50">
         <div className="container mx-auto px-4 py-4">
           <div className="max-w-lg mx-auto">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-semibold">Book Your Family Vacation</h3>
-              <div className="flex gap-2">
-                <div className={`h-2 w-8 rounded ${step === 1 ? 'bg-[#2F4F4F]' : 'bg-gray-200'}`} />
-                <div className={`h-2 w-8 rounded ${step === 2 ? 'bg-[#2F4F4F]' : 'bg-gray-200'}`} />
+            <h3 className="text-xl font-semibold mb-4">Book Your Family Vacation</h3>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
+              <div className="grid grid-cols-2 gap-3">
+                <Input
+                  {...form.register("firstName")}
+                  placeholder="First Name"
+                  className="h-10"
+                />
+                <Input
+                  {...form.register("lastName")}
+                  placeholder="Last Name"
+                  className="h-10"
+                />
               </div>
-            </div>
-
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              {step === 1 ? (
-                <>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Input
-                        {...form.register("firstName")}
-                        placeholder="First Name"
-                        className="h-12"
-                      />
-                      {form.formState.errors.firstName && (
-                        <p className="text-sm text-red-500 mt-1">{form.formState.errors.firstName.message}</p>
-                      )}
-                    </div>
-                    <div>
-                      <Input
-                        {...form.register("lastName")}
-                        placeholder="Last Name"
-                        className="h-12"
-                      />
-                      {form.formState.errors.lastName && (
-                        <p className="text-sm text-red-500 mt-1">{form.formState.errors.lastName.message}</p>
-                      )}
-                    </div>
-                  </div>
-                  <div>
-                    <Input
-                      {...form.register("email")}
-                      type="email"
-                      placeholder="Email Address"
-                      className="h-12"
-                    />
-                    {form.formState.errors.email && (
-                      <p className="text-sm text-red-500 mt-1">{form.formState.errors.email.message}</p>
-                    )}
-                  </div>
-                  <div>
-                    <Input
-                      {...form.register("phone")}
-                      type="tel"
-                      placeholder="Phone Number"
-                      className="h-12"
-                    />
-                    {form.formState.errors.phone && (
-                      <p className="text-sm text-red-500 mt-1">{form.formState.errors.phone.message}</p>
-                    )}
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Input
-                        {...form.register("checkInDate")}
-                        type="date"
-                        placeholder="Check-in Date"
-                        className="h-12"
-                      />
-                      {form.formState.errors.checkInDate && (
-                        <p className="text-sm text-red-500 mt-1">{form.formState.errors.checkInDate.message}</p>
-                      )}
-                    </div>
-                    <div>
-                      <Input
-                        {...form.register("checkOutDate")}
-                        type="date"
-                        placeholder="Check-out Date"
-                        className="h-12"
-                      />
-                      {form.formState.errors.checkOutDate && (
-                        <p className="text-sm text-red-500 mt-1">{form.formState.errors.checkOutDate.message}</p>
-                      )}
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Input
-                        {...form.register("budget")}
-                        type="number"
-                        placeholder="Budget (USD)"
-                        className="h-12"
-                      />
-                      {form.formState.errors.budget && (
-                        <p className="text-sm text-red-500 mt-1">{form.formState.errors.budget.message}</p>
-                      )}
-                    </div>
-                    <div>
-                      <Input
-                        {...form.register("numberOfChildren")}
-                        type="number"
-                        placeholder="Number of Children"
-                        className="h-12"
-                      />
-                      {form.formState.errors.numberOfChildren && (
-                        <p className="text-sm text-red-500 mt-1">{form.formState.errors.numberOfChildren.message}</p>
-                      )}
-                    </div>
-                  </div>
-                  <div>
-                    <Textarea
-                      {...form.register("additionalNotes")}
-                      placeholder="Any special requirements or preferences?"
-                      className="min-h-[100px]"
-                    />
-                    {form.formState.errors.additionalNotes && (
-                      <p className="text-sm text-red-500 mt-1">{form.formState.errors.additionalNotes.message}</p>
-                    )}
-                  </div>
-                </>
-              )}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <Input
+                  {...form.register("email")}
+                  type="email"
+                  placeholder="Email Address"
+                  className="h-10"
+                />
+                <Input
+                  {...form.register("phone")}
+                  type="tel"
+                  placeholder="Phone Number"
+                  className="h-10"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <Input
+                  {...form.register("checkInDate")}
+                  type="date"
+                  placeholder="Check-in Date"
+                  className="h-10"
+                />
+                <Input
+                  {...form.register("checkOutDate")}
+                  type="date"
+                  placeholder="Check-out Date"
+                  className="h-10"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <Input
+                  {...form.register("budget")}
+                  type="number"
+                  placeholder="Budget (USD)"
+                  className="h-10"
+                />
+                <Input
+                  {...form.register("numberOfChildren")}
+                  type="number"
+                  placeholder="Number of Children"
+                  className="h-10"
+                />
+              </div>
+              <Textarea
+                {...form.register("additionalNotes")}
+                placeholder="Any special requirements or preferences?"
+                className="min-h-[60px]"
+              />
               <Button 
                 type="submit" 
-                className="w-full bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white h-12 text-lg"
+                className="w-full bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white h-10 text-base"
               >
-                {step === 1 ? "Continue" : "Book Now"}
+                Book Now
               </Button>
-              {step === 1 && (
-                <p className="text-xs text-center text-gray-500">Free consultation • No card required</p>
-              )}
+              <p className="text-xs text-center text-gray-500">Free consultation • No card required</p>
             </form>
           </div>
         </div>
