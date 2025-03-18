@@ -191,10 +191,8 @@ export default function VillaBookingTemplate({
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      {/* Rest of the template remains similar to BookingTemplate, 
-          but with villa-specific form fields added to BookingFormContent */}
       <main className="flex-1">
-        {/* ... Header section ... */}
+        {/* Header section */}
         <div className="max-w-7xl mx-auto px-4 pt-8 pb-6">
           <h1 className="text-3xl font-semibold mb-2">{title}</h1>
           <div className="flex flex-col sm:flex-row sm:items-center gap-4 text-sm">
@@ -210,11 +208,16 @@ export default function VillaBookingTemplate({
           </div>
         </div>
 
-        {/* ... Image Gallery section ... */}
-        {/* ... Main content area ... */}
-        {/* ... Footer ... */}
+        {/* Image Gallery */}
+        <div className="w-full aspect-video relative overflow-hidden mb-8">
+          <img
+            src={imageUrls[0]}
+            alt={title}
+            className="w-full h-full object-cover"
+          />
+        </div>
 
-        {/* Villa-specific Booking Form */}
+        {/* Main content area */}
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
             <div className="lg:col-span-2 space-y-8">
@@ -234,7 +237,85 @@ export default function VillaBookingTemplate({
                 </div>
               </div>
 
-              {/* ... Rest of content sections ... */}
+              {/* Description */}
+              <div className="pb-6 border-b">
+                <h2 className="text-xl font-semibold mb-4">About this Villa</h2>
+                <p className="text-muted-foreground">{description}</p>
+              </div>
+
+              {/* Host Section */}
+              {host && (
+                <div className="pb-6 border-b">
+                  <h2 className="text-xl font-semibold mb-4">Meet Your Host</h2>
+                  <div className="flex items-center gap-4">
+                    <img
+                      src={host.image}
+                      alt={host.name}
+                      className="w-16 h-16 rounded-full object-cover"
+                    />
+                    <div>
+                      <h3 className="font-semibold">{host.name}</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Host since {host.joinedDate}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Features Section */}
+              {uniqueFeatures.length > 0 && (
+                <div className="pb-6 border-b">
+                  <h2 className="text-xl font-semibold mb-4">Special Features</h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {uniqueFeatures.map((feature, index) => (
+                      <div key={index} className="flex items-center gap-2">
+                        <Star className="h-5 w-5 text-primary" />
+                        <span>{feature}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Amenities Section */}
+              <div className="pb-6 border-b">
+                <h2 className="text-xl font-semibold mb-4">What this place offers</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {amenities.map((amenity, index) => (
+                    <div key={index} className="flex items-center gap-2">
+                      {getAmenityIcon(amenity)}
+                      <span>{amenity}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Reviews Section */}
+              <div className="pb-6 border-b">
+                <h2 className="text-xl font-semibold mb-4">Guest Reviews</h2>
+                <div className="space-y-6">
+                  {reviews.map((review, index) => (
+                    <div key={index} className="border-b pb-6 last:border-0 last:pb-0">
+                      <div className="flex justify-between items-start mb-2">
+                        <div>
+                          <p className="font-semibold">{review.author}</p>
+                          <p className="text-sm text-muted-foreground">{review.date}</p>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Star className="h-4 w-4 text-yellow-400" fill="currentColor" />
+                          <span>{review.rating}</span>
+                        </div>
+                      </div>
+                      <p className="mb-2">{review.content}</p>
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <ThumbsUp className="h-4 w-4" />
+                        <span>Helpful ({review.helpful})</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
 
             <div className="hidden lg:block lg:sticky lg:top-8 h-fit">
@@ -276,13 +357,10 @@ export default function VillaBookingTemplate({
           </div>
         )}
       </main>
-
-      {/* ... Footer section ... */}
     </div>
   );
 }
 
-// Villa-specific booking form content
 function VillaBookingFormContent({
   form,
   pricePerNight,
