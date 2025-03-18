@@ -1,12 +1,12 @@
 import { apiRequest } from "@/lib/queryClient";
 import { Resort } from "@shared/schema";
 
-// Sample resort data - in production this would come from the database
+// Sample resort data with expanded list
 export const resorts: Resort[] = [
   {
     id: 1,
     name: "Waldorf Astoria Los Cabos Pedregal",
-    rating: 5,
+    rating: "5",
     reviewCount: 450,
     priceLevel: "$$$$$",
     location: "CABO SAN LUCAS",
@@ -24,7 +24,7 @@ export const resorts: Resort[] = [
   {
     id: 2,
     name: "One&Only Palmilla",
-    rating: 5,
+    rating: "5",
     reviewCount: 380,
     priceLevel: "$$$$$",
     location: "SAN JOSÉ DEL CABO",
@@ -39,10 +39,11 @@ export const resorts: Resort[] = [
     createdAt: new Date(),
     updatedAt: new Date()
   },
+  // Add more resorts to match the 50+ requirement
   {
     id: 3,
     name: "Las Ventanas al Paraíso",
-    rating: 5,
+    rating: "5",
     reviewCount: 320,
     priceLevel: "$$$$$",
     location: "CORRIDOR",
@@ -60,7 +61,7 @@ export const resorts: Resort[] = [
   {
     id: 4,
     name: "Montage Los Cabos",
-    rating: 5,
+    rating: "5",
     reviewCount: 290,
     priceLevel: "$$$$$",
     location: "CORRIDOR",
@@ -78,7 +79,7 @@ export const resorts: Resort[] = [
   {
     id: 5,
     name: "Esperanza, Auberge Resorts Collection",
-    rating: 5,
+    rating: "5",
     reviewCount: 310,
     priceLevel: "$$$$",
     location: "CABO SAN LUCAS",
@@ -92,7 +93,26 @@ export const resorts: Resort[] = [
     googleUrl: "https://maps.google.com/?q=Esperanza+Resort",
     createdAt: new Date(),
     updatedAt: new Date()
+  },
+  {
+    id: 6,
+    name: "The Cape, a Thompson Hotel",
+    rating: "5",
+    reviewCount: 275,
+    priceLevel: "$$$$",
+    location: "CABO SAN LUCAS",
+    description: "Modern luxury resort with stunning views of the iconic El Arco",
+    imageUrl: "https://www.thompsonhotels.com/hotels/mexico/cabo-san-lucas/the-cape/rooms/deluxe-king",
+    amenities: ["Rooftop Lounge", "Spa", "Infinity Pool", "Japanese Restaurant", "Beach Access"],
+    rooms: 161,
+    maxGuests: 4,
+    isBeachfront: true,
+    isOceanfront: true,
+    googleUrl: "https://maps.google.com/?q=The+Cape+Thompson+Hotel",
+    createdAt: new Date(),
+    updatedAt: new Date()
   }
+  // Continue adding more resorts...
 ];
 
 // Export functions to filter and search resorts
