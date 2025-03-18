@@ -12,19 +12,21 @@ export default function VillasLanding() {
   const [searchQuery, setSearchQuery] = useState("");
   const [locationFilter, setLocationFilter] = useState<string>("all");
   const [bedroomFilter, setBedroomFilter] = useState<string>("all");
-  const [priceRange, setPriceRange] = useState<string>("all");
+  const [guestFilter, setGuestFilter] = useState<string>("all");
 
-  const locations = Array.from(new Set(villas.map(villa => villa.location.split(',')[0].trim())));
+  const locations = ["CORRIDOR", "CABO SAN LUCAS", "SAN JOSE DEL CABO"];
   const bedroomOptions = Array.from(new Set(villas.map(villa => villa.bedrooms))).sort((a, b) => a - b);
+  const guestOptions = Array.from(new Set(villas.map(villa => villa.maxGuests))).sort((a, b) => a - b);
 
   const filteredVillas = villas.filter(villa => {
     const matchesSearch = villa.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          villa.location.toLowerCase().includes(searchQuery.toLowerCase());
 
-    const matchesLocation = locationFilter === "all" || villa.location.includes(locationFilter);
+    const matchesLocation = locationFilter === "all" || villa.location === locationFilter;
     const matchesBedrooms = bedroomFilter === "all" || villa.bedrooms === parseInt(bedroomFilter);
+    const matchesGuests = guestFilter === "all" || villa.maxGuests === parseInt(guestFilter);
 
-    return matchesSearch && matchesLocation && matchesBedrooms;
+    return matchesSearch && matchesLocation && matchesBedrooms && matchesGuests;
   });
 
   return (
@@ -68,7 +70,7 @@ export default function VillasLanding() {
               >
                 <option value="all">All Locations</option>
                 {locations.map(loc => (
-                  <option key={loc} value={loc}>{loc}</option>
+                  <option key={loc} value={loc}>{loc.replace(/_/g, ' ')}</option>
                 ))}
               </select>
 
@@ -80,6 +82,17 @@ export default function VillasLanding() {
                 <option value="all">All Bedrooms</option>
                 {bedroomOptions.map(num => (
                   <option key={num} value={num}>{num} Bedrooms</option>
+                ))}
+              </select>
+
+              <select
+                className="border rounded-md px-3 py-2"
+                value={guestFilter}
+                onChange={(e) => setGuestFilter(e.target.value)}
+              >
+                <option value="all">All Guest Capacities</option>
+                {guestOptions.map(num => (
+                  <option key={num} value={num}>Up to {num} Guests</option>
                 ))}
               </select>
             </div>

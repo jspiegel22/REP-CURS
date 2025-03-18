@@ -1,5 +1,38 @@
 import { Villa } from '@/types/villa';
 
+// Normalize location function
+function normalizeLocation(location: string): string {
+  const loc = location.toUpperCase();
+  if (loc.includes('CORRIDOR')) return 'CORRIDOR';
+  if (loc.includes('SAN JOSÉ DEL CABO') || loc.includes('SAN JOSE DEL CABO')) return 'SAN JOSE DEL CABO';
+  return 'CABO SAN LUCAS';
+}
+
+export function parseVillaData(data: string): Villa[] {
+  const lines = data.split('\n')
+    .slice(1) // Skip header
+    .filter(line => line.trim() !== '');
+
+  return lines.map((line, index) => {
+    const [url, imageUrl, location, name, description, rating, _, bedrooms, bathrooms, maxGuests] = line.split(',');
+
+    return {
+      id: `villa-${index + 1}`,
+      name: name.trim(),
+      description: description.trim(),
+      location: normalizeLocation(location.trim()),
+      rating: rating.trim(),
+      imageUrl: imageUrl.trim(),
+      url: url.trim(),
+      bedrooms: parseInt(bedrooms) || 4,
+      bathrooms: parseFloat(bathrooms.replace('+', '')) || 4,
+      maxGuests: parseInt(maxGuests) || 10,
+      isBeachfront: location.toLowerCase().includes('beachfront'),
+      isOceanfront: location.toLowerCase().includes('oceanfront')
+    };
+  });
+}
+
 // Complete CSV data from CABO VILLAS LIST.csv
 const villaData = `stretched-link href,w-100 src,location,detail,col-12,detail (2),detail (3),col-auto,col-auto (2),col-auto (3)
 https://www.cabovillas.com/properties.asp?PID=441,https://www.cabovillas.com/Properties/Villas/Villa_Tranquilidad/FULL/Villa_Tranquilidad-1.jpg,"SAN JOSÉ DEL CABO, OCEANFRONT, BEACHFRONT",Villa Tranquilidad,Spectacular Beachfront Villa Located in Puert...,6+ -Star Platinum Villa,+,8,8+,16
@@ -30,31 +63,6 @@ https://www.cabovillas.com/properties.asp?PID=541,https://www.cabovillas.com/Pro
 https://www.cabovillas.com/properties.asp?PID=519,https://www.cabovillas.com/Properties/Villas/Villa_Mar_Azul/FULL/Villa_Mar_Azul-1.jpg,CABO SAN LUCAS,Villa Mar Azul,Views of The Bay & The Marina from this Priva...,4-Star Deluxe Villa,,3,3.5,8
 https://www.cabovillas.com/properties.asp?PID=574,https://www.cabovillas.com/Properties/Villas/Villa_Colorado/FULL/Villa_Colorado-1.jpg,CABO SAN LUCAS,Villa Colorado,Walk to the Marina from this Impeccable Villa,4-Star Deluxe Villa,,3,2.5,7
 https://www.cabovillas.com/properties.asp?PID=640,https://www.cabovillas.com/Properties/Villas/Villa_Perdiz/FULL/Villa_Perdiz-1.jpg,CORRIDOR,Villa Perdiz,Ocean Views on 7th Hole at The Cove,6-Star Premier Villa,,4,4,8`;
-
-export function parseVillaData(data: string): Villa[] {
-  const lines = data.split('\n')
-    .slice(1) // Skip header
-    .filter(line => line.trim() !== '');
-
-  return lines.map((line, index) => {
-    const [url, imageUrl, location, name, description, rating, _, bedrooms, bathrooms, maxGuests] = line.split(',');
-
-    return {
-      id: `villa-${index + 1}`,
-      name: name.trim(),
-      description: description.trim(),
-      location: location.trim(),
-      rating: rating.trim(),
-      imageUrl: imageUrl.trim(),
-      url: url.trim(),
-      bedrooms: parseInt(bedrooms) || 4,
-      bathrooms: parseFloat(bathrooms.replace('+', '')) || 4,
-      maxGuests: parseInt(maxGuests) || 10,
-      isBeachfront: location.toLowerCase().includes('beachfront'),
-      isOceanfront: location.toLowerCase().includes('oceanfront')
-    };
-  });
-}
 
 // Export the parsed villa data for use throughout the application
 export const villas = parseVillaData(villaData);
