@@ -3,37 +3,32 @@ import BookingTemplate from "@/components/templates/BookingTemplate";
 export default function ResortBooking() {
   return (
     <BookingTemplate
-      title="Waldorf Astoria Los Cabos"
+      title="Waldorf Astoria Los Cabos Pedregal"
       subtitle="Luxury Beachfront Resort"
-      description="Experience unparalleled luxury at the Waldorf Astoria Los Cabos. Nestled on the pristine beaches of Cabo San Lucas, our resort offers world-class amenities, stunning ocean views, and exceptional service."
-      imageUrl="/resort-hero.jpg"
-      pricingOptions={[
-        {
-          id: "deluxe",
-          name: "Deluxe Ocean View Room",
-          price: 799,
-          description: "Spacious room with private balcony and ocean views"
-        },
-        {
-          id: "suite",
-          name: "Luxury Suite",
-          price: 1299,
-          description: "One-bedroom suite with separate living area and panoramic views"
-        },
-        {
-          id: "villa",
-          name: "Beachfront Villa",
-          price: 2499,
-          description: "Two-bedroom villa steps from the beach with private pool"
-        }
+      description={`Experience unparalleled luxury at the Waldorf Astoria Los Cabos Pedregal. Nestled on the pristine beaches of Cabo San Lucas, our resort offers world-class amenities, stunning ocean views, and exceptional service.
+
+Set against a backdrop of majestic mountains and overlooking the Pacific Ocean, this five-star resort redefines luxury with its sophisticated accommodations, award-winning spa, and exquisite dining options.
+
+Each room features a private terrace with breathtaking ocean views, while the resort's infinity pools seem to merge with the horizon, creating an unforgettable visual experience.`}
+      imageUrls={[
+        "/images/waldorf-main.jpg",
+        "/images/waldorf-pool.jpg",
+        "/images/waldorf-room.jpg",
+        "/images/waldorf-spa.jpg",
+        "/images/waldorf-dining.jpg"
       ]}
+      pricePerNight={799}
+      rating={4.8}
+      reviewCount={1820}
+      location="Camino Del Mar 1, Pedregal, Cabo San Lucas"
+      maximumGuests={4}
       features={[
-        "Direct Beach Access",
-        "Multiple Swimming Pools",
-        "World-class Spa",
-        "Fine Dining Restaurants",
-        "24-hour Room Service",
-        "Fitness Center"
+        "Oceanfront Location",
+        "Private Terrace",
+        "Infinity Pool Access",
+        "24/7 Concierge",
+        "Spa Access",
+        "Fine Dining"
       ]}
       extras={[
         {
@@ -56,15 +51,24 @@ export default function ResortBooking() {
         }
       ]}
       amenities={[
-        "Ocean View",
-        "Private Balcony",
-        "King Bed",
-        "Luxury Bath",
+        "Private Beach Access",
+        "Infinity Pool",
+        "Full-Service Spa",
+        "Fitness Center",
+        "24-Hour Room Service",
+        "Valet Parking",
+        "High-Speed WiFi",
+        "Air Conditioning",
         "Mini Bar",
-        "Wi-Fi",
-        "Room Service",
-        "Concierge"
+        "Flat-screen TV",
+        "In-room Safe",
+        "Ocean View"
       ]}
+      host={{
+        name: "Waldorf Astoria Team",
+        image: "/images/waldorf-host.jpg",
+        joinedDate: "2018"
+      }}
       faqs={[
         {
           question: "What time is check-in/check-out?",
@@ -72,11 +76,15 @@ export default function ResortBooking() {
         },
         {
           question: "Is breakfast included?",
-          answer: "Breakfast is not included in the standard room rate but can be added as an extra during booking."
+          answer: "Breakfast is not included in the standard room rate but can be added as an extra during booking or arranged through our concierge."
         },
         {
           question: "Do you offer airport transfers?",
           answer: "Yes, we offer luxury airport transfers that can be added during booking or arranged through our concierge."
+        },
+        {
+          question: "What is your cancellation policy?",
+          answer: "Free cancellation up to 48 hours before check-in. After that, the first night is non-refundable."
         }
       ]}
     />
