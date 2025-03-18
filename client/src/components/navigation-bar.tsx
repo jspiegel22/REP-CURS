@@ -175,7 +175,7 @@ const NavigationBar = () => {
                 {/* Larger Close Button with Background */}
                 <div className="absolute right-4 top-4 z-50">
                   <button className="bg-white rounded-lg p-2 shadow-md border hover:bg-gray-50">
-                    <X className="h-8 w-8 text-black" />
+                    <X className="h-4 w-4 text-black" />
                   </button>
                 </div>
 
