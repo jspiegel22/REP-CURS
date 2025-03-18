@@ -1,6 +1,6 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, FormProvider } from "react-hook-form";
 import { z } from "zod";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon, Loader2, Star, MapPin } from "lucide-react";
@@ -8,7 +8,6 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
-  Form,
   FormControl,
   FormField,
   FormItem,
@@ -269,7 +268,7 @@ export default function BookingTemplate({
                 </div>
               </div>
 
-              <Form {...form}>
+              <FormProvider {...form}>
                 <form
                   onSubmit={form.handleSubmit((data) => bookingMutation.mutate(data))}
                   className="space-y-4"
@@ -412,7 +411,7 @@ export default function BookingTemplate({
                     Reserve
                   </Button>
                 </form>
-              </Form>
+              </FormProvider>
             </div>
           </div>
         </div>

@@ -1,8 +1,8 @@
 import { IStorage } from "./types";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
-import { users, listings, bookings, rewards, socialShares, weatherCache } from "@shared/schema";
-import type { User, InsertUser, Listing, Booking, Reward, SocialShare, WeatherCache } from "@shared/schema";
+import { users, listings, bookings, rewards, socialShares, weatherCache, resorts } from "@shared/schema";
+import type { User, InsertUser, Listing, Booking, Reward, SocialShare, WeatherCache, Resort } from "@shared/schema";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
 
@@ -21,6 +21,18 @@ export class DatabaseStorage implements IStorage {
       },
       createTableIfMissing: true,
     });
+  }
+
+  // Resort Management
+  async getResorts(): Promise<Resort[]> {
+    return db.select().from(resorts);
+  }
+
+  async getResortBySlug(slug: string): Promise<Resort | undefined> {
+    const allResorts = await this.getResorts();
+    return allResorts.find(resort => 
+      resort.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') === slug
+    );
   }
 
   // User Management

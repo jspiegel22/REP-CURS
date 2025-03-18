@@ -1,11 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, FormProvider } from "react-hook-form";
 import { z } from "zod";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
-  Form,
   FormControl,
   FormField,
   FormItem,
@@ -69,12 +68,12 @@ export default function LeadGenTemplate({
         // Default submission handler
         await apiRequest("POST", "/api/leads", data);
       }
-      
+
       toast({
         title: "Inquiry Sent",
         description: "We'll get back to you shortly with more information.",
       });
-      
+
       form.reset();
     } catch (error: any) {
       toast({
@@ -144,7 +143,7 @@ export default function LeadGenTemplate({
           {/* Right Column - Form */}
           <div className="bg-card p-6 rounded-lg border">
             <h2 className="text-2xl font-semibold mb-6">Request Information</h2>
-            <Form {...form}>
+            <FormProvider {...form}>
               <form
                 onSubmit={form.handleSubmit(handleSubmit)}
                 className="space-y-6"
@@ -233,7 +232,7 @@ export default function LeadGenTemplate({
                   Submit Inquiry
                 </Button>
               </form>
-            </Form>
+            </FormProvider>
           </div>
         </div>
 

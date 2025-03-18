@@ -1,26 +1,45 @@
+import { useParams } from "wouter";
+import { useQuery } from "@tanstack/react-query";
 import BookingTemplate from "@/components/templates/BookingTemplate";
+import { Loader2 } from "lucide-react";
+import { Resort } from "@shared/schema";
 
 export default function ResortBooking() {
+  const { slug } = useParams<{ slug: string }>();
+
+  const { data: resort, isLoading } = useQuery<Resort>({
+    queryKey: ['/api/resorts', slug],
+    enabled: !!slug
+  });
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
+  if (!resort) {
+    return <div>Resort not found</div>;
+  }
+
   return (
     <BookingTemplate
-      title="Waldorf Astoria Los Cabos Pedregal"
+      title={resort.name}
       subtitle="Luxury Beachfront Resort"
-      description={`Experience unparalleled luxury at the Waldorf Astoria Los Cabos Pedregal. Nestled on the pristine beaches of Cabo San Lucas, our resort offers world-class amenities, stunning ocean views, and exceptional service.
-
-Set against a backdrop of majestic mountains and overlooking the Pacific Ocean, this five-star resort redefines luxury with its sophisticated accommodations, award-winning spa, and exquisite dining options.
-
-Each room features a private terrace with breathtaking ocean views, while the resort's infinity pools seem to merge with the horizon, creating an unforgettable visual experience.`}
+      description={resort.description}
       imageUrls={[
-        "/images/waldorf-main.jpg",
+        resort.imageUrl,
         "/images/waldorf-pool.jpg",
         "/images/waldorf-room.jpg",
         "/images/waldorf-spa.jpg",
         "/images/waldorf-dining.jpg"
       ]}
-      pricePerNight={799}
-      rating={4.8}
-      reviewCount={1820}
-      location="Camino Del Mar 1, Pedregal, Cabo San Lucas"
+      pricePerNight={resort.pricePerNight || 799}
+      rating={Number(resort.rating)}
+      reviewCount={resort.reviewCount}
+      location={resort.location}
       maximumGuests={4}
       features={[
         "Oceanfront Location",
@@ -50,20 +69,7 @@ Each room features a private terrace with breathtaking ocean views, while the re
           description: "Round-trip luxury transportation from SJD airport"
         }
       ]}
-      amenities={[
-        "Private Beach Access",
-        "Infinity Pool",
-        "Full-Service Spa",
-        "Fitness Center",
-        "24-Hour Room Service",
-        "Valet Parking",
-        "High-Speed WiFi",
-        "Air Conditioning",
-        "Mini Bar",
-        "Flat-screen TV",
-        "In-room Safe",
-        "Ocean View"
-      ]}
+      amenities={resort.amenities}
       host={{
         name: "Waldorf Astoria Team",
         image: "/images/waldorf-host.jpg",

@@ -5,6 +5,13 @@ import { setupAuth } from "./auth";
 import { z } from "zod";
 import { insertListingSchema, insertBookingSchema } from "@shared/schema";
 
+function generateSlug(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
   setupAuth(app);
 
@@ -113,6 +120,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to record share" });
     }
   });
+
+  // Add the new endpoint here
+  app.get("/api/resorts/:slug", async (req, res) => {
+    try {
+      const resorts = await storage.getResorts();
+      const resort = resorts.find(
+        r => generateSlug(r.name) === req.params.slug
+      );
+
+      if (!resort) {
+        return res.status(404).json({ message: "Resort not found" });
+      }
+
+      res.json(resort);
+    } catch (error) {
+      console.error("Error fetching resort:", error);
+      res.status(500).json({ message: "Failed to fetch resort" });
+    }
+  });
+
 
   const httpServer = createServer(app);
   return httpServer;
