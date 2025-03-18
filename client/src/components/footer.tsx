@@ -71,6 +71,7 @@ export default function Footer() {
           </div>
         </div>
 
+        {/* Copyright */}
         <div className="border-t border-white/10 mt-8 pt-8 text-center text-sm text-white/70">
           <p>&copy; {new Date().getFullYear()} @cabo. All rights reserved.</p>
         </div>

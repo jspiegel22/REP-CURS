@@ -1,31 +1,11 @@
 import { apiRequest } from "@/lib/queryClient";
 import { Resort } from "@shared/schema";
 
-export interface Resort {
-  id: number;
-  name: string;
-  rating: number;
-  reviewCount: number;
-  priceLevel: string;
-  location: string;
-  description: string;
-  imageUrl: string;
-  amenities: string[];
-  bookingsToday: number;
-  googleUrl: string;
-  rooms: number;
-  maxGuests: number;
-  isBeachfront: boolean;
-  isOceanfront: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
 // Sample resort data - in production this would come from the database
 export const resorts: Resort[] = [
   {
     id: 1,
-    name: "Waldorf Astoria Los Cabos",
+    name: "Waldorf Astoria Los Cabos Pedregal",
     rating: 5,
     reviewCount: 450,
     priceLevel: "$$$$$",
@@ -67,13 +47,49 @@ export const resorts: Resort[] = [
     priceLevel: "$$$$$",
     location: "CORRIDOR",
     description: "A Rosewood Resort offering the ultimate in luxury and sophistication",
-    imageUrl: "https://www.rosewoodhotels.com/en/las-ventanas-los-cabos/overview/image-gallery",
+    imageUrl: "https://www.rosewoodhotels.com/en/las-ventanas-los-cabos/overview/gallery/exterior.jpg",
     amenities: ["Spa", "Pool", "Beach Access", "Multiple Restaurants", "Butler Service"],
     rooms: 84,
     maxGuests: 4,
     isBeachfront: true,
     isOceanfront: true,
     googleUrl: "https://maps.google.com/?q=Las+Ventanas+al+Paraiso",
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    id: 4,
+    name: "Montage Los Cabos",
+    rating: 5,
+    reviewCount: 290,
+    priceLevel: "$$$$$",
+    location: "CORRIDOR",
+    description: "Modern luxury resort on Santa Maria Bay with exceptional diving and snorkeling",
+    imageUrl: "https://www.montagehotels.com/loscabos/wp-content/uploads/sites/39/2019/01/MLB_Aerial_007.jpg",
+    amenities: ["Spa", "Pool", "Beach Access", "Multiple Restaurants", "Kids Club"],
+    rooms: 122,
+    maxGuests: 4,
+    isBeachfront: true,
+    isOceanfront: true,
+    googleUrl: "https://maps.google.com/?q=Montage+Los+Cabos",
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    id: 5,
+    name: "Esperanza, Auberge Resorts Collection",
+    rating: 5,
+    reviewCount: 310,
+    priceLevel: "$$$$",
+    location: "CABO SAN LUCAS",
+    description: "Intimate oceanfront resort with dramatic coastal views and world-class spa",
+    imageUrl: "https://aubergeresorts.com/esperanza/wp-content/uploads/sites/4/2019/01/Aerial-View.jpg",
+    amenities: ["Spa", "Infinity Pools", "Private Beach", "Fine Dining", "Yoga Classes"],
+    rooms: 59,
+    maxGuests: 4,
+    isBeachfront: true,
+    isOceanfront: true,
+    googleUrl: "https://maps.google.com/?q=Esperanza+Resort",
     createdAt: new Date(),
     updatedAt: new Date()
   }
