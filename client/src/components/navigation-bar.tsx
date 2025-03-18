@@ -158,6 +158,33 @@ const socialLinks = [
   { icon: SiPinterest, href: "https://www.pinterest.com/instacabo/", label: "Pinterest" }
 ];
 
+const moreMenuItems = [
+  {
+    title: "Local Events",
+    href: "/events",
+    description: "Discover what's happening in Cabo",
+    image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87"
+  },
+  {
+    title: "Real Estate",
+    href: "/real-estate",
+    description: "Find your dream property in Cabo",
+    image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c"
+  },
+  {
+    title: "Travel Guides",
+    href: "/guides",
+    description: "Expert tips and local insights",
+    image: "https://images.unsplash.com/photo-1516546453174-5e1098a4b4af"
+  },
+  {
+    title: "Weddings",
+    href: "/weddings",
+    description: "Plan your dream destination wedding",
+    image: "https://images.unsplash.com/photo-1546032996-6dfacbacbf3f"
+  }
+];
+
 const NavigationBar = () => {
   return (
     <nav className="bg-white border-b border-gray-200">
@@ -356,58 +383,21 @@ const NavigationBar = () => {
                   <NavigationMenuTrigger className="text-[#2F4F4F] bg-transparent">MORE</NavigationMenuTrigger>
                   <NavigationMenuContent>
                     <ul className="grid w-[600px] grid-cols-2 gap-3 p-4">
-                      <li>
-                        <NavigationMenuLink asChild>
-                          <Link href="/events">
-                            <a className="flex gap-4 select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                              <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87" alt="Events" className="w-24 h-16 object-cover rounded" />
-                              <div>
-                                <div className="text-sm font-medium leading-none">Local Events</div>
-                                <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-1">Discover what's happening in Cabo</p>
-                              </div>
-                            </a>
-                          </Link>
-                        </NavigationMenuLink>
-                      </li>
-                      <li>
-                        <NavigationMenuLink asChild>
-                          <Link href="/guides">
-                            <a className="flex gap-4 select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                              <img src="https://images.unsplash.com/photo-1516546453174-5e1098a4b4af" alt="Guides" className="w-24 h-16 object-cover rounded" />
-                              <div>
-                                <div className="text-sm font-medium leading-none">Guides</div>
-                                <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-1">Expert tips and local insights</p>
-                              </div>
-                            </a>
-                          </Link>
-                        </NavigationMenuLink>
-                      </li>
-                      <li>
-                        <NavigationMenuLink asChild>
-                          <Link href="/real-estate">
-                            <a className="flex gap-4 select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                              <img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c" alt="Real Estate" className="w-24 h-16 object-cover rounded" />
-                              <div>
-                                <div className="text-sm font-medium leading-none">Real Estate</div>
-                                <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-1">Find your dream property in Cabo</p>
-                              </div>
-                            </a>
-                          </Link>
-                        </NavigationMenuLink>
-                      </li>
-                      <li>
-                        <NavigationMenuLink asChild>
-                          <Link href="/weddings">
-                            <a className="flex gap-4 select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                              <img src="https://images.unsplash.com/photo-1546032996-6dfacbacbf3f" alt="Weddings" className="w-24 h-16 object-cover rounded" />
-                              <div>
-                                <div className="text-sm font-medium leading-none">Weddings</div>
-                                <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-1">Plan your dream destination wedding</p>
-                              </div>
-                            </a>
-                          </Link>
-                        </NavigationMenuLink>
-                      </li>
+                      {moreMenuItems.map((item) => (
+                        <li key={item.href}>
+                          <NavigationMenuLink asChild>
+                            <Link href={item.href}>
+                              <a className="flex gap-4 select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                                <img src={item.image} alt={item.title} className="w-24 h-16 object-cover rounded" />
+                                <div>
+                                  <div className="text-sm font-medium leading-none">{item.title}</div>
+                                  <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-1">{item.description}</p>
+                                </div>
+                              </a>
+                            </Link>
+                          </NavigationMenuLink>
+                        </li>
+                      ))}
                     </ul>
                   </NavigationMenuContent>
                 </NavigationMenuItem>
