@@ -175,7 +175,7 @@ const NavigationBar = () => {
                 {/* Larger Close Button with Background */}
                 <div className="absolute right-4 top-4 z-50">
                   <button className="bg-white rounded-lg p-2 shadow-md border hover:bg-gray-50">
-                    <X className="h-12 w-12 text-black" />
+                    <X className="h-8 w-8 text-black" />
                   </button>
                 </div>
 
@@ -384,12 +384,12 @@ const NavigationBar = () => {
                       </li>
                       <li>
                         <NavigationMenuLink asChild>
-                          <Link href="/weddings">
+                          <Link href="/real-estate">
                             <a className="flex gap-4 select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                              <img src="https://images.unsplash.com/photo-1546032996-6dfacbacbf3f" alt="Weddings" className="w-24 h-16 object-cover rounded" />
+                              <img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c" alt="Real Estate" className="w-24 h-16 object-cover rounded" />
                               <div>
-                                <div className="text-sm font-medium leading-none">Weddings</div>
-                                <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-1">Plan your dream destination wedding</p>
+                                <div className="text-sm font-medium leading-none">Real Estate</div>
+                                <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-1">Find your dream property in Cabo</p>
                               </div>
                             </a>
                           </Link>
@@ -397,12 +397,12 @@ const NavigationBar = () => {
                       </li>
                       <li>
                         <NavigationMenuLink asChild>
-                          <Link href="/work-with-us">
+                          <Link href="/weddings">
                             <a className="flex gap-4 select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                              <img src="https://images.unsplash.com/photo-1552664730-d307ca884978" alt="Work with Us" className="w-24 h-16 object-cover rounded" />
+                              <img src="https://images.unsplash.com/photo-1546032996-6dfacbacbf3f" alt="Weddings" className="w-24 h-16 object-cover rounded" />
                               <div>
-                                <div className="text-sm font-medium leading-none">Work with Us</div>
-                                <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-1">Join our network of partners</p>
+                                <div className="text-sm font-medium leading-none">Weddings</div>
+                                <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-1">Plan your dream destination wedding</p>
                               </div>
                             </a>
                           </Link>
