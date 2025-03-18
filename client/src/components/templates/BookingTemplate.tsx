@@ -3,7 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, FormProvider } from "react-hook-form";
 import { z } from "zod";
 import { format } from "date-fns";
-import { Calendar as CalendarIcon, Loader2, Star, MapPin } from "lucide-react";
+import { Calendar as CalendarIcon, Loader2, Star, MapPin, ThumbsUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -24,6 +24,7 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import { useEffect, useState } from "react";
 
 // Schema for booking form
 const bookingFormSchema = z.object({
@@ -53,6 +54,14 @@ interface Extra {
   description: string;
 }
 
+interface Review {
+  author: string;
+  rating: number;
+  content: string;
+  date: string;
+  helpful: number;
+}
+
 interface BookingTemplateProps {
   title: string;
   subtitle?: string;
@@ -73,6 +82,7 @@ interface BookingTemplateProps {
     joinedDate: string;
   };
   onBookingSubmit?: (data: BookingFormData) => Promise<void>;
+  reviews?: Review[];
 }
 
 export default function BookingTemplate({
@@ -91,6 +101,7 @@ export default function BookingTemplate({
   amenities,
   host,
   onBookingSubmit,
+  reviews = [],
 }: BookingTemplateProps) {
   const { toast } = useToast();
   const form = useForm<BookingFormData>({
@@ -100,6 +111,23 @@ export default function BookingTemplate({
       extras: [],
     },
   });
+
+  // Add state for floating CTA
+  const [showFloatingCTA, setShowFloatingCTA] = useState(false);
+
+  // Handle scroll for floating CTA
+  useEffect(() => {
+    const handleScroll = () => {
+      const bookingForm = document.getElementById('booking-form');
+      if (bookingForm) {
+        const rect = bookingForm.getBoundingClientRect();
+        setShowFloatingCTA(rect.top > window.innerHeight || rect.bottom < 0);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const bookingMutation = useMutation({
     mutationFn: async (data: BookingFormData) => {
@@ -127,7 +155,6 @@ export default function BookingTemplate({
     },
   });
 
-  // Calculate number of nights and total price
   const startDate = form.watch("startDate");
   const endDate = form.watch("endDate");
   const numberOfNights = startDate && endDate
@@ -139,12 +166,11 @@ export default function BookingTemplate({
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
       <div className="max-w-7xl mx-auto px-4 pt-8 pb-6">
         <h1 className="text-3xl font-semibold mb-2">{title}</h1>
         <div className="flex items-center gap-4 text-sm">
           <div className="flex items-center gap-1">
-            <Star className="h-4 w-4" />
+            <Star className="h-4 w-4 text-yellow-400" />
             <span>{rating.toFixed(1)}</span>
             <span className="text-muted-foreground">({reviewCount} reviews)</span>
           </div>
@@ -155,7 +181,6 @@ export default function BookingTemplate({
         </div>
       </div>
 
-      {/* Image Gallery */}
       <div className="max-w-7xl mx-auto px-4 mb-8">
         <div className="grid grid-cols-4 gap-2 aspect-[16/9]">
           <div className="col-span-2 row-span-2 relative rounded-l-xl overflow-hidden">
@@ -196,12 +221,9 @@ export default function BookingTemplate({
         </div>
       </div>
 
-      {/* Main Content and Booking Form */}
       <div className="max-w-7xl mx-auto px-4">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-          {/* Left Column - Content */}
           <div className="lg:col-span-2 space-y-8">
-            {/* Host Information */}
             {host && (
               <div className="flex items-center justify-between pb-6 border-b">
                 <div>
@@ -220,19 +242,17 @@ export default function BookingTemplate({
               </div>
             )}
 
-            {/* Features */}
             <div className="grid grid-cols-2 gap-4 pb-6 border-b">
               {features.map((feature, index) => (
                 <div key={index} className="flex items-center gap-2">
                   <div className="p-2 rounded-lg bg-muted">
-                    <Star className="h-5 w-5" />
+                    <Star className="h-5 w-5 text-yellow-400" />
                   </div>
                   <span>{feature}</span>
                 </div>
               ))}
             </div>
 
-            {/* Description */}
             <div className="pb-6 border-b">
               <h2 className="text-xl font-semibold mb-4">About this property</h2>
               <p className="text-muted-foreground whitespace-pre-line">
@@ -240,30 +260,62 @@ export default function BookingTemplate({
               </p>
             </div>
 
-            {/* Amenities */}
             <div className="pb-6 border-b">
               <h2 className="text-xl font-semibold mb-4">What this place offers</h2>
               <div className="grid grid-cols-2 gap-4">
                 {amenities.map((amenity, index) => (
                   <div key={index} className="flex items-center gap-2">
-                    <Star className="h-5 w-5" />
+                    <Star className="h-5 w-5 text-yellow-400" />
                     <span>{amenity}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Reviews Section */}
+            <div className="pb-6 border-b">
+              <h2 className="text-xl font-semibold mb-4">Guest Reviews</h2>
+              <div className="grid gap-6">
+                {reviews.map((review, index) => (
+                  <div key={index} className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <span className="font-medium">{review.author}</span>
+                        <div className="flex items-center gap-1 mt-1">
+                          {Array.from({ length: 5 }).map((_, i) => (
+                            <Star
+                              key={i}
+                              className={cn(
+                                "h-4 w-4",
+                                i < review.rating ? "text-yellow-400" : "text-gray-200"
+                              )}
+                              fill={i < review.rating ? "currentColor" : "none"}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                      <span className="text-sm text-muted-foreground">{review.date}</span>
+                    </div>
+                    <p className="text-muted-foreground">{review.content}</p>
+                    <div className="flex items-center gap-2 text-sm">
+                      <ThumbsUp className="h-4 w-4" />
+                      <span>{review.helpful} found this helpful</span>
+                    </div>
                   </div>
                 ))}
               </div>
             </div>
           </div>
 
-          {/* Right Column - Booking Form */}
           <div className="lg:sticky lg:top-8 h-fit">
-            <div className="bg-card rounded-xl border p-6 shadow-lg">
+            <div id="booking-form" className="bg-card rounded-xl border p-6 shadow-lg">
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <span className="text-2xl font-bold">${pricePerNight}</span>
                   <span className="text-muted-foreground"> / night</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <Star className="h-4 w-4" />
+                  <Star className="h-4 w-4 text-yellow-400" fill="currentColor" />
                   <span>{rating.toFixed(1)}</span>
                 </div>
               </div>
@@ -378,7 +430,6 @@ export default function BookingTemplate({
                     )}
                   />
 
-                  {/* Price Breakdown */}
                   {numberOfNights > 0 && (
                     <div className="space-y-2 pt-4">
                       <div className="flex justify-between">
@@ -401,7 +452,7 @@ export default function BookingTemplate({
 
                   <Button
                     type="submit"
-                    className="w-full"
+                    className="w-full bg-green-700 hover:bg-green-800"
                     size="lg"
                     disabled={bookingMutation.isPending}
                   >
@@ -416,7 +467,6 @@ export default function BookingTemplate({
           </div>
         </div>
 
-        {/* FAQs Section */}
         {faqs.length > 0 && (
           <div className="mt-16">
             <h2 className="text-2xl font-semibold mb-6">
@@ -433,6 +483,27 @@ export default function BookingTemplate({
           </div>
         )}
       </div>
+
+      {/* Floating CTA for mobile */}
+      {showFloatingCTA && (
+        <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t shadow-lg lg:hidden z-50">
+          <div className="flex items-center justify-between max-w-lg mx-auto">
+            <div>
+              <span className="text-xl font-bold">${pricePerNight}</span>
+              <span className="text-muted-foreground"> / night</span>
+            </div>
+            <Button
+              onClick={() => {
+                const bookingForm = document.getElementById('booking-form');
+                bookingForm?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="bg-green-700 hover:bg-green-800"
+            >
+              Reserve Now
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

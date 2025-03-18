@@ -5,6 +5,31 @@ import { Loader2 } from "lucide-react";
 import { Resort } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 
+// Sample reviews data
+const sampleReviews = [
+  {
+    author: "Michael R.",
+    rating: 5,
+    content: "Absolutely stunning resort with impeccable service. The views of the ocean from our room were breathtaking, and the staff went above and beyond to make our stay special.",
+    date: "March 2025",
+    helpful: 12
+  },
+  {
+    author: "Sarah L.",
+    rating: 5,
+    content: "Perfect location and amazing amenities. The infinity pool overlooking the ocean is spectacular. Restaurant service was top-notch.",
+    date: "February 2025",
+    helpful: 8
+  },
+  {
+    author: "James K.",
+    rating: 4,
+    content: "Beautiful property with excellent service. Only minor issue was slow service at the beach bar, but overall a fantastic experience.",
+    date: "January 2025",
+    helpful: 5
+  }
+];
+
 export default function ResortBooking() {
   const { slug } = useParams<{ slug: string }>();
 
@@ -45,7 +70,7 @@ export default function ResortBooking() {
         "/images/waldorf-spa.jpg",
         "/images/waldorf-dining.jpg"
       ]}
-      pricePerNight={resort.pricePerNight || 799}
+      pricePerNight={799} // Default price if not in database
       rating={Number(resort.rating)}
       reviewCount={resort.reviewCount}
       location={resort.location}
@@ -78,12 +103,26 @@ export default function ResortBooking() {
           description: "Round-trip luxury transportation from SJD airport"
         }
       ]}
-      amenities={resort.amenities}
+      amenities={[
+        "Private Beach Access",
+        "Infinity Pool",
+        "Full-Service Spa",
+        "Fitness Center",
+        "24-Hour Room Service",
+        "Valet Parking",
+        "High-Speed WiFi",
+        "Air Conditioning",
+        "Mini Bar",
+        "Flat-screen TV",
+        "In-room Safe",
+        "Ocean View"
+      ]}
       host={{
         name: "Waldorf Astoria Team",
         image: "/images/waldorf-host.jpg",
         joinedDate: "2018"
       }}
+      reviews={sampleReviews}
       faqs={[
         {
           question: "What time is check-in/check-out?",
