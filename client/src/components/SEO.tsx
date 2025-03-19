@@ -85,8 +85,8 @@ export default function SEO({
   );
 }
 
-// Helper function to generate villa schema
-export function generateVillaSchema(villa: any) {
+// Schema Generator Functions
+function generateVillaSchema(villa: any) {
   return {
     '@context': 'https://schema.org',
     '@type': 'Accommodation',
@@ -120,8 +120,7 @@ export function generateVillaSchema(villa: any) {
   };
 }
 
-// Helper function to generate guide schema
-export function generateGuideSchema(guide: any) {
+function generateGuideSchema(guide: any) {
   return {
     '@context': 'https://schema.org',
     '@type': 'Article',
@@ -146,8 +145,7 @@ export function generateGuideSchema(guide: any) {
   };
 }
 
-// Helper function to generate adventure schema
-export function generateAdventureSchema(adventure: any) {
+function generateAdventureSchema(adventure: any) {
   return {
     '@context': 'https://schema.org',
     '@type': 'TouristAttraction',
@@ -177,8 +175,7 @@ export function generateAdventureSchema(adventure: any) {
   };
 }
 
-// Helper function to generate restaurant schema
-export function generateRestaurantSchema(restaurant: any) {
+function generateRestaurantSchema(restaurant: any) {
   return {
     '@context': 'https://schema.org',
     '@type': 'Restaurant',
@@ -214,3 +211,40 @@ export function generateRestaurantSchema(restaurant: any) {
     }
   };
 }
+
+function generateResortSchema(resort: any) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'LodgingBusiness',
+    name: resort.name,
+    description: resort.description,
+    image: resort.imageUrl,
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: resort.location,
+      addressRegion: 'Baja California Sur',
+      addressCountry: 'MX'
+    },
+    priceRange: resort.priceLevel,
+    amenityFeature: resort.amenities?.map((amenity: string) => ({
+      '@type': 'LocationFeatureSpecification',
+      name: amenity,
+      value: true
+    })) || [],
+    numberOfRooms: resort.rooms,
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: resort.rating,
+      reviewCount: resort.reviewCount
+    }
+  };
+}
+
+// Export all schema generators
+export {
+  generateVillaSchema,
+  generateGuideSchema,
+  generateAdventureSchema,
+  generateRestaurantSchema,
+  generateResortSchema,
+};
