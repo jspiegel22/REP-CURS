@@ -35,9 +35,14 @@ const reviews = [
 
 export default function VillaDetail() {
   const { slug } = useParams();
+  console.log("Current slug:", slug); // Debug log
 
   // Find villa by slug
-  const villa = sampleVillas.find(v => generateVillaSlug(v.name) === slug);
+  const villa = sampleVillas.find(v => {
+    const villaSlug = generateVillaSlug(v.name);
+    console.log(`Comparing: ${villaSlug} with ${slug}`); // Debug log
+    return villaSlug === slug;
+  });
 
   if (!villa) {
     return (
@@ -79,13 +84,13 @@ export default function VillaDetail() {
       <SEO
         title={`${villa.name} - Luxury Villa in ${villa.location} | Cabo Adventures`}
         description={`Experience ${villa.name}, a stunning ${villa.bedrooms}-bedroom villa in ${villa.location}. ${villa.description} Book your stay today!`}
-        canonicalUrl={`https://cabo-adventures.com/villa/${generateVillaSlug(villa.name)}`}
+        canonicalUrl={`https://cabo-adventures.com/villas/${generateVillaSlug(villa.name)}`}
         schema={generateVillaSchema(villa)}
         openGraph={{
           title: `${villa.name} - Luxury Villa in ${villa.location}`,
           description: villa.description,
           image: villa.imageUrl,
-          url: `https://cabo-adventures.com/villa/${generateVillaSlug(villa.name)}`
+          url: `https://cabo-adventures.com/villas/${generateVillaSlug(villa.name)}`
         }}
         keywords={[
           'Cabo San Lucas villas',

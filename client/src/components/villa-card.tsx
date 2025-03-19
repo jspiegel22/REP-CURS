@@ -1,4 +1,4 @@
-import { Villa } from "@/types/villa";
+import { Villa } from "@shared/schema";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "wouter";
 import { generateVillaSlug } from "@/lib/utils";
@@ -12,7 +12,7 @@ interface VillaCardProps {
 export function VillaCard({ villa, className = "" }: VillaCardProps) {
   return (
     <Link 
-      href={`/villa/${generateVillaSlug(villa.name)}`}
+      href={`/villas/${generateVillaSlug(villa.name)}`}
       className={`block transition-transform hover:scale-[1.02] ${className}`}
     >
       <Card className="cursor-pointer hover:shadow-lg transition-shadow duration-200">
