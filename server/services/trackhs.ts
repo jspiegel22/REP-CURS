@@ -2,11 +2,9 @@ import axios from 'axios';
 import { db } from '../db';
 import { villas } from '@shared/schema';
 
-const TRACKHS_API_BASE_URL = 'https://api.trackhs.com/api/v3';
-
 // Initialize axios instance with base configuration
 const trackHsApi = axios.create({
-  baseURL: TRACKHS_API_BASE_URL,
+  baseURL: 'https://api.trackhs.com/api/v3',
   headers: {
     'Content-Type': 'application/json',
     'X-API-KEY': process.env.TRACKHS_API_KEY,
@@ -84,18 +82,18 @@ export async function fetchVillas() {
         // Transform TrackHS villa data to match our schema
         const villaRecord = {
           name: villaData.name,
-          description: villaData.description,
+          description: villaData.description || "Luxury villa in Cabo San Lucas",
           bedrooms: villaData.bedrooms,
           bathrooms: villaData.bathrooms,
           maxGuests: villaData.maxOccupancy,
-          amenities: villaData.amenities,
+          amenities: villaData.amenities || [],
           imageUrl: villaData.images[0]?.url || '',
           imageUrls: villaData.images.map(img => img.url),
-          pricePerNight: String(villaData.rates.defaultNightly), // Convert to string for decimal type
-          location: villaData.location.city,
-          address: villaData.location.address,
-          latitude: String(villaData.location.latitude), // Convert to string for decimal type
-          longitude: String(villaData.location.longitude), // Convert to string for decimal type
+          pricePerNight: String(villaData.rates?.defaultNightly || 1000), // Convert to string for decimal type
+          location: villaData.location?.city || "Cabo San Lucas",
+          address: villaData.location?.address || "",
+          latitude: String(villaData.location?.latitude || 0), // Convert to string for decimal type
+          longitude: String(villaData.location?.longitude || 0), // Convert to string for decimal type
           trackHsId: villaData.id,
           lastSyncedAt: new Date(),
         };
@@ -108,6 +106,8 @@ export async function fetchVillas() {
             target: villas.trackHsId,
             set: villaRecord,
           });
+
+        console.log(`Successfully processed villa: ${villaData.id}`);
 
       } catch (error) {
         console.error(`Error processing villa ${villaData.id}:`, error);
