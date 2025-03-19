@@ -131,7 +131,7 @@ export default function HomePage() {
                   />
                 </div>
                 <span className="ml-4 text-gray-600">
-                  Trusted by <span className="font-semibold">201,000</span> travelers
+                  Trusted by <span className="font-semibold">227,000+</span> travelers
                 </span>
               </div>
 
