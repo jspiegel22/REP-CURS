@@ -46,7 +46,7 @@ export async function fetchVillas() {
       try {
         console.log(`Fetching page ${page}...`);
         // Fetch villa data from TrackHS with pagination
-        const response = await trackHsApi.get('/properties', {
+        const response = await trackHsApi.get('/inventory/villas', {
           params: {
             page,
             limit: 100, // Get maximum number of items per page
