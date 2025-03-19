@@ -31,12 +31,12 @@ function Router() {
       <NavigationBar />
       <Switch>
         <Route path="/" component={HomePage} />
-        <Route path="/resort" component={ResortsLanding} />
-        <Route path="/resort/:slug" component={ResortDetail} />
-        <Route path="/villa" component={VillasLanding} />
-        <Route path="/villa/:slug" component={VillaDetail} />
+        <Route path="/resorts" component={ResortsLanding} />
+        <Route path="/resorts/:slug" component={ResortDetail} />
+        <Route path="/villas" component={VillasLanding} />
+        <Route path="/villas/:slug" component={VillaDetail} />
         <Route path="/adventures" component={AdventuresLanding} />
-        <Route path="/adventure/:slug" component={AdventureDetail} />
+        <Route path="/adventures/:slug" component={AdventureDetail} />
         <Route path="/restaurants" component={RestaurantsPage} />
         <Route path="/restaurants/:id" component={RestaurantDetails} />
         <Route path="/group-trips/family" component={FamilyTripsPage} />

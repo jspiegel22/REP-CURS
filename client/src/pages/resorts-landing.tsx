@@ -144,7 +144,7 @@ export default function ResortsLanding() {
             {filteredResorts.map((resort) => (
               <Link
                 key={resort.id}
-                href={`/resort/${generateSlug(resort.name)}`}
+                href={`/resorts/${generateSlug(resort.name)}`}
                 className="block transition-transform hover:scale-[1.02]"
               >
                 <Card className="h-full">

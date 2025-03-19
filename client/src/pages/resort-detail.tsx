@@ -7,6 +7,9 @@ import Footer from "@/components/footer";
 import { Star, MapPin } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Link } from "wouter";
+import SEO from "@/components/SEO";
+import { resorts } from "@/data/resorts";
 
 // Sample amenities - ideally these would come from the database
 const amenities = [
@@ -23,49 +26,23 @@ const amenities = [
 ];
 
 export default function ResortDetail() {
-  const { slug } = useParams();
-  
-  const { data: resorts, isLoading } = useQuery<Resort[]>({
-    queryKey: ['/api/resorts'],
-    queryFn: async () => {
-      const response = await apiRequest("GET", "/api/resorts");
-      return response.json();
-    }
-  });
-
-  const resort = resorts?.find(r => generateSlug(r.name) === slug);
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-background flex flex-col">
-        <main className="flex-1">
-          <div className="container mx-auto px-4 py-16">
-            <div className="animate-pulse">
-              <div className="h-[400px] bg-muted rounded-lg mb-8" />
-              <div className="h-8 bg-muted rounded w-1/3 mb-4" />
-              <div className="h-4 bg-muted rounded w-2/3 mb-8" />
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="space-y-4">
-                  <div className="h-4 bg-muted rounded w-full" />
-                  <div className="h-4 bg-muted rounded w-5/6" />
-                  <div className="h-4 bg-muted rounded w-4/6" />
-                </div>
-              </div>
-            </div>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
+  const { slug } = useParams<{ slug: string }>();
+  const resort = resorts.find(r => generateSlug(r.name) === slug);
 
   if (!resort) {
     return (
       <div className="min-h-screen bg-background flex flex-col">
+        <SEO 
+          title="Resort Not Found - Cabo Adventures"
+          description="Sorry, we couldn't find the resort you're looking for. Explore our other luxury resorts in Cabo San Lucas."
+        />
         <main className="flex-1">
           <div className="container mx-auto px-4 py-16 text-center">
             <h1 className="text-2xl font-bold mb-4">Resort Not Found</h1>
             <p>Sorry, we couldn't find the resort you're looking for.</p>
+            <Link href="/resorts">
+              <Button className="mt-4">View All Resorts</Button>
+            </Link>
           </div>
         </main>
         <Footer />
@@ -75,6 +52,44 @@ export default function ResortDetail() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      <SEO
+        title={`${resort.name} - Luxury Resort in ${resort.location} | Cabo Adventures`}
+        description={resort.description}
+        canonicalUrl={`https://cabo-adventures.com/resorts/${generateSlug(resort.name)}`}
+        schema={{
+          '@context': 'https://schema.org',
+          '@type': 'LodgingBusiness',
+          name: resort.name,
+          description: resort.description,
+          image: resort.imageUrl,
+          address: {
+            '@type': 'PostalAddress',
+            addressLocality: resort.location,
+            addressRegion: 'Baja California Sur',
+            addressCountry: 'MX'
+          },
+          priceRange: resort.priceLevel,
+          aggregateRating: {
+            '@type': 'AggregateRating',
+            ratingValue: resort.rating,
+            reviewCount: resort.reviewCount
+          }
+        }}
+        openGraph={{
+          title: `${resort.name} - Luxury Resort in ${resort.location}`,
+          description: resort.description,
+          image: resort.imageUrl,
+          url: `https://cabo-adventures.com/resorts/${generateSlug(resort.name)}`
+        }}
+        keywords={[
+          'Cabo San Lucas resorts',
+          resort.name,
+          resort.location,
+          'luxury resort',
+          'beach resort',
+          'Mexico resort'
+        ]}
+      />
       <main className="flex-1">
         {/* Hero Image */}
         <div className="relative h-[50vh] min-h-[400px]">
@@ -113,7 +128,7 @@ export default function ResortDetail() {
               {/* Amenities */}
               <h2 className="text-2xl font-semibold mb-4">Amenities</h2>
               <div className="grid grid-cols-2 gap-4 mb-8">
-                {amenities.map((amenity) => (
+                {resort.amenities.map((amenity) => (
                   <div key={amenity} className="flex items-center">
                     <span className="mr-2">✓</span>
                     {amenity}
@@ -126,8 +141,8 @@ export default function ResortDetail() {
             <div>
               <Card>
                 <CardContent className="p-6">
-                  <div className="text-2xl font-bold mb-4">${resort.priceLevel}</div>
-                  <Button className="w-full mb-4">Check Availability</Button>
+                  <div className="text-2xl font-bold mb-4">{resort.priceLevel}</div>
+                  <Button className="w-full mb-4">Book Now</Button>
                   <p className="text-sm text-muted-foreground">
                     Contact us for special rates and availability. Our concierge team is ready to assist you with your booking.
                   </p>
