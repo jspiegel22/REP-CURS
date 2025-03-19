@@ -5,20 +5,7 @@ import { ImageGallery } from "@/components/ImageGallery";
 import SEO, { generateVillaSchema } from "@/components/SEO";
 import { useQuery } from "@tanstack/react-query";
 import type { Villa } from "@shared/schema";
-
-// Villa amenities mapping
-const defaultAmenities = [
-  "Private Pool",
-  "Ocean View",
-  "WiFi",
-  "Air Conditioning",
-  "Full Kitchen",
-  "Daily Housekeeping",
-  "Concierge Service",
-  "Parking",
-  "Security System",
-  "Outdoor Space"
-];
+import { sampleVillas } from "@/data/sample-villas";
 
 // Reviews data (can be moved to API later)
 const reviews = [
@@ -46,29 +33,10 @@ const reviews = [
 ];
 
 export default function VillaDetail() {
-  const { trackHsId } = useParams();
-  const { data: villa, isLoading } = useQuery<Villa>({
-    queryKey: ["/api/villas", trackHsId],
-    enabled: !!trackHsId,
-  });
+  const { id } = useParams();
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-background flex flex-col">
-        <main className="flex-1">
-          <div className="container mx-auto px-4 py-16">
-            <div className="animate-pulse space-y-4">
-              <div className="h-8 bg-muted rounded w-1/3"></div>
-              <div className="h-96 bg-muted rounded"></div>
-              <div className="h-4 bg-muted rounded w-2/3"></div>
-              <div className="h-4 bg-muted rounded w-1/2"></div>
-            </div>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
+  // Use sample data for now
+  const villa = sampleVillas.find(v => v.id === parseInt(id as string));
 
   if (!villa) {
     return (
@@ -88,6 +56,20 @@ export default function VillaDetail() {
     );
   }
 
+  // Default amenities list
+  const defaultAmenities = [
+    "Private Pool",
+    "Ocean View",
+    "WiFi",
+    "Air Conditioning",
+    "Full Kitchen",
+    "Daily Housekeeping",
+    "Concierge Service",
+    "Parking",
+    "Security System",
+    "Outdoor Space"
+  ];
+
   // Combine villa's amenities with default ones if needed
   const combinedAmenities = Array.from(new Set([...defaultAmenities, ...(villa.amenities as string[])]));
 
@@ -96,13 +78,13 @@ export default function VillaDetail() {
       <SEO
         title={`${villa.name} - Luxury Villa in ${villa.location} | Cabo Adventures`}
         description={`Experience ${villa.name}, a stunning ${villa.bedrooms}-bedroom villa in ${villa.location}. ${villa.description} Book your stay today!`}
-        canonicalUrl={`https://cabo-adventures.com/villa/${villa.trackHsId}`}
+        canonicalUrl={`https://cabo-adventures.com/villa/${villa.id}`}
         schema={generateVillaSchema(villa)}
         openGraph={{
           title: `${villa.name} - Luxury Villa in ${villa.location}`,
           description: villa.description,
           image: villa.imageUrl,
-          url: `https://cabo-adventures.com/villa/${villa.trackHsId}`
+          url: `https://cabo-adventures.com/villa/${villa.id}`
         }}
         keywords={[
           'Cabo San Lucas villas',
@@ -148,7 +130,7 @@ export default function VillaDetail() {
               'Ocean Views'
             ]}
             amenities={combinedAmenities}
-            villaId={villa.trackHsId}
+            villaId={villa.id.toString()}
             reviews={reviews}
           />
         </div>

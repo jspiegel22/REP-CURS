@@ -12,7 +12,7 @@ interface VillaCardProps {
 export function VillaCard({ villa, className = "" }: VillaCardProps) {
   return (
     <Link 
-      href={`/villa/${villa.trackHsId}`}
+      href={`/villa/${villa.id}`}
       className={`block transition-transform hover:scale-[1.02] ${className}`}
     >
       <Card className="cursor-pointer hover:shadow-lg transition-shadow duration-200">
