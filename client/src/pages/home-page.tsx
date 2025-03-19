@@ -8,6 +8,8 @@ import { ChevronRight, ArrowDown } from "lucide-react";
 import { SiTiktok, SiInstagram, SiWhatsapp, SiFacebook, SiPinterest, SiYoutube } from "react-icons/si";
 import CategoryGrid from "@/components/category-grid";
 import SEO from "@/components/SEO";
+import { sampleBlogs } from "@/data/sample-blogs";
+import { format } from "date-fns";
 
 // Import villa data
 const villaData = `stretched-link href,w-100 src,location,detail,col-12,detail (2),detail (3),col-auto,col-auto (2),col-auto (3)
@@ -246,6 +248,48 @@ export default function HomePage() {
             </Button>
           </div>
         </div>
+
+        {/* Latest Blog Posts */}
+        <div className="py-16 bg-white">
+          <div className="container mx-auto px-4">
+            <h2 className="text-3xl font-bold mb-2 text-gray-900">Latest from Our Blog</h2>
+            <p className="text-lg text-gray-600 mb-8">Stories, tips, and guides for your next Cabo adventure</p>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {sampleBlogs.map((blog) => (
+                <Link key={blog.id} href={`/blog/${blog.slug}`}>
+                  <a className="group block">
+                    <div className="relative aspect-[16/9] rounded-lg overflow-hidden mb-4">
+                      <img
+                        src={blog.imageUrl}
+                        alt={blog.title}
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        loading="lazy"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-3 text-sm text-gray-600">
+                        <span>{format(new Date(blog.date), 'MMM d, yyyy')}</span>
+                        <span>•</span>
+                        <span>{blog.readTime}</span>
+                      </div>
+                      <h3 className="text-xl font-semibold group-hover:text-[#2F4F4F] transition-colors">
+                        {blog.title}
+                      </h3>
+                      <p className="text-gray-600 line-clamp-2">{blog.excerpt}</p>
+                      <div className="pt-2 flex items-center gap-2 text-sm">
+                        <span className="text-[#2F4F4F] font-medium">{blog.author}</span>
+                        <span>in</span>
+                        <span className="text-[#2F4F4F] font-medium">{blog.category}</span>
+                      </div>
+                    </div>
+                  </a>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+
 
         {/* Footer */}
         <footer className="bg-[#2F4F4F] text-white pt-16 pb-8">
