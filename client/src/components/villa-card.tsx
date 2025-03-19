@@ -2,6 +2,7 @@ import { Villa } from "@/types/villa";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "wouter";
 import { generateSlug } from "@/lib/utils";
+import { MapPin, Star } from "lucide-react";
 
 interface VillaCardProps {
   villa: Villa;
@@ -12,7 +13,7 @@ export function VillaCard({ villa, className = "" }: VillaCardProps) {
   return (
     <Link 
       href={`/villa/${generateSlug(villa.name)}`}
-      className={className}
+      className={`block transition-transform hover:scale-[1.02] ${className}`}
     >
       <Card className="cursor-pointer hover:shadow-lg transition-shadow duration-200">
         <div className="aspect-[16/9] relative overflow-hidden rounded-t-lg">
@@ -31,11 +32,17 @@ export function VillaCard({ villa, className = "" }: VillaCardProps) {
           <h3 className="text-lg font-semibold mb-1">{villa.name}</h3>
           <p className="text-sm text-muted-foreground mb-2">{villa.location}</p>
           <div className="flex items-center gap-4 text-sm">
-            <span>{villa.rating}</span>
-            <span>•</span>
-            <span>{villa.bedrooms} BR</span>
-            <span>•</span>
-            <span>Up to {villa.maxOccupancy} guests</span>
+            <div className="flex items-center">
+              <Star className="h-4 w-4 text-yellow-400 mr-1" fill="currentColor" />
+              <span>{villa.rating}</span>
+            </div>
+            <div className="flex items-center">
+              <MapPin className="h-4 w-4 mr-1" />
+              <span>{villa.location}</span>
+            </div>
+          </div>
+          <div className="mt-2 text-sm text-muted-foreground">
+            {villa.bedrooms} BR • Up to {villa.maxGuests} guests
           </div>
         </CardContent>
       </Card>

@@ -3,12 +3,6 @@ import Footer from "@/components/footer";
 import { villas } from "@/data/villas";
 import VillaBookingTemplate from "@/components/templates/VillaBookingTemplate";
 import { generateSlug } from "@/lib/utils";
-import { useRouter } from 'next/router';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Star, MapPin, DollarSign, Users, Home, BedDouble, Bath, Ruler } from 'lucide-react';
-import { Badge } from "@/components/ui/badge";
-import SEO, { generateVillaSchema } from "@/components/SEO";
 
 // Reviews data
 const reviews = [
@@ -80,7 +74,6 @@ const villaPricing = {
 };
 
 export default function VillaDetail() {
-  const router = useRouter();
   const { slug } = useParams();
   const villa = villas.find(v => generateSlug(v.name) === slug);
 
@@ -103,39 +96,25 @@ export default function VillaDetail() {
   const pricePerNight = villaPricing[villa.name as keyof typeof villaPricing] || 1500;
 
   return (
-    <>
-      <SEO
-        title={`${villa.name} - Luxury Villa in ${villa.location} | Cabo Adventures`}
-        description={`Experience ${villa.name}, a stunning ${villa.bedrooms}-bedroom villa in ${villa.location}. ${villa.description} Book your stay today!`}
-        canonicalUrl={`https://cabo-adventures.com/villas/${villa.id}`}
-        schema={generateVillaSchema(villa)}
-        openGraph={{
-          title: `${villa.name} - Luxury Villa in ${villa.location}`,
-          description: villa.description,
-          image: villa.imageUrl,
-          url: `https://cabo-adventures.com/villas/${villa.id}`
-        }}
-      />
-      <div className="min-h-screen bg-background flex flex-col">
-        <main className="flex-1">
-          <VillaBookingTemplate
-            title={villa.name}
-            subtitle={`${villa.rating} in ${villa.location}`}
-            description={villa.description}
-            imageUrls={[villa.imageUrl]}
-            pricePerNight={pricePerNight}
-            rating={5}
-            reviewCount={reviews.length}
-            location={villa.location}
-            maximumGuests={villa.maxGuests}
-            features={features}
-            amenities={amenities}
-            villaId={parseInt(villa.id.replace('villa-', ''))}
-            reviews={reviews}
-          />
-        </main>
-        <Footer />
-      </div>
-    </>
+    <div className="min-h-screen bg-background flex flex-col">
+      <main className="flex-1">
+        <VillaBookingTemplate
+          title={villa.name}
+          subtitle={`${villa.rating} in ${villa.location}`}
+          description={villa.description}
+          imageUrls={[villa.imageUrl]}
+          pricePerNight={pricePerNight}
+          rating={5}
+          reviewCount={reviews.length}
+          location={villa.location}
+          maximumGuests={villa.maxGuests}
+          features={features}
+          amenities={amenities}
+          villaId={parseInt(villa.id.replace('villa-', ''))}
+          reviews={reviews}
+        />
+      </main>
+      <Footer />
+    </div>
   );
 }
