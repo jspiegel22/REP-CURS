@@ -6,6 +6,7 @@ import SEO, { generateVillaSchema } from "@/components/SEO";
 import { useQuery } from "@tanstack/react-query";
 import type { Villa } from "@shared/schema";
 import { sampleVillas } from "@/data/sample-villas";
+import { generateVillaSlug } from "@/lib/utils";
 
 // Reviews data (can be moved to API later)
 const reviews = [
@@ -33,10 +34,10 @@ const reviews = [
 ];
 
 export default function VillaDetail() {
-  const { id } = useParams();
+  const { slug } = useParams();
 
-  // Use sample data for now
-  const villa = sampleVillas.find(v => v.id === parseInt(id as string));
+  // Find villa by slug
+  const villa = sampleVillas.find(v => generateVillaSlug(v.name) === slug);
 
   if (!villa) {
     return (
@@ -78,13 +79,13 @@ export default function VillaDetail() {
       <SEO
         title={`${villa.name} - Luxury Villa in ${villa.location} | Cabo Adventures`}
         description={`Experience ${villa.name}, a stunning ${villa.bedrooms}-bedroom villa in ${villa.location}. ${villa.description} Book your stay today!`}
-        canonicalUrl={`https://cabo-adventures.com/villa/${villa.id}`}
+        canonicalUrl={`https://cabo-adventures.com/villa/${generateVillaSlug(villa.name)}`}
         schema={generateVillaSchema(villa)}
         openGraph={{
           title: `${villa.name} - Luxury Villa in ${villa.location}`,
           description: villa.description,
           image: villa.imageUrl,
-          url: `https://cabo-adventures.com/villa/${villa.id}`
+          url: `https://cabo-adventures.com/villa/${generateVillaSlug(villa.name)}`
         }}
         keywords={[
           'Cabo San Lucas villas',

@@ -1,7 +1,7 @@
 import { Villa } from "@/types/villa";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "wouter";
-import { generateSlug } from "@/lib/utils";
+import { generateVillaSlug } from "@/lib/utils";
 import { MapPin, Star } from "lucide-react";
 
 interface VillaCardProps {
@@ -12,7 +12,7 @@ interface VillaCardProps {
 export function VillaCard({ villa, className = "" }: VillaCardProps) {
   return (
     <Link 
-      href={`/villa/${villa.id}`}
+      href={`/villa/${generateVillaSlug(villa.name)}`}
       className={`block transition-transform hover:scale-[1.02] ${className}`}
     >
       <Card className="cursor-pointer hover:shadow-lg transition-shadow duration-200">
