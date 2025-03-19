@@ -4,14 +4,38 @@ import { storage } from "./storage";
 import { setupAuth } from "./auth";
 import { z } from "zod";
 import { insertBookingSchema } from "@shared/schema";
+import { generateSlug } from "@/lib/utils";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   setupAuth(app);
 
+  // Add villa routes
+  app.get("/api/villas", async (req, res) => {
+    try {
+      const villas = await storage.getVillas();
+      res.json(villas);
+    } catch (error) {
+      console.error("Error fetching villas:", error);
+      res.status(500).json({ message: "Failed to fetch villas" });
+    }
+  });
+
+  app.get("/api/villas/:trackHsId", async (req, res) => {
+    try {
+      const villa = await storage.getVillaByTrackHsId(req.params.trackHsId);
+      if (!villa) {
+        return res.status(404).json({ message: "Villa not found" });
+      }
+      res.json(villa);
+    } catch (error) {
+      console.error("Error fetching villa:", error);
+      res.status(500).json({ message: "Failed to fetch villa" });
+    }
+  });
+
   // Villa-specific booking endpoint
   app.post("/api/villa-bookings", async (req, res) => {
     try {
-      // Check authentication
       if (!req.isAuthenticated()) {
         return res.status(401).json({ message: "Please log in to make a booking" });
       }
@@ -30,7 +54,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const booking = await storage.createBooking({
           ...bookingData.data,
           userId: req.user.id,
-          status: "pending"
+          status: "pending",
+          pointsEarned: 100 // Default points for villa bookings
         });
 
         // Create Airtable record for villa owner
@@ -195,7 +220,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Add the new endpoint here
+  // Resorts endpoint (from original code)
   app.get("/api/resorts/:slug", async (req, res) => {
     try {
       const resorts = await storage.getResorts();
@@ -213,14 +238,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to fetch resort" });
     }
   });
-
-
-  function generateSlug(name: string): string {
-    return name
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)/g, '');
-  }
 
   const httpServer = createServer(app);
   return httpServer;

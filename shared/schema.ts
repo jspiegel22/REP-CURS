@@ -119,3 +119,35 @@ export type Reward = typeof rewards.$inferSelect;
 export type SocialShare = typeof socialShares.$inferSelect;
 export type WeatherCache = typeof weatherCache.$inferSelect;
 export type InsertResort = z.infer<typeof insertResortSchema>;
+
+// Add villas table definition after existing tables
+export const villas = pgTable("villas", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  bedrooms: integer("bedrooms").notNull(),
+  bathrooms: integer("bathrooms").notNull(),
+  maxGuests: integer("max_guests").notNull(),
+  amenities: jsonb("amenities").notNull().default([]),
+  imageUrl: text("image_url").notNull(),
+  imageUrls: jsonb("image_urls").notNull().default([]),
+  pricePerNight: decimal("price_per_night").notNull(),
+  location: text("location").notNull(),
+  address: text("address").notNull(),
+  latitude: decimal("latitude"),
+  longitude: decimal("longitude"),
+  trackHsId: text("trackhs_id").unique(),
+  lastSyncedAt: timestamp("last_synced_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Add villa schema and types
+export const insertVillaSchema = createInsertSchema(villas).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type Villa = typeof villas.$inferSelect;
+export type InsertVilla = z.infer<typeof insertVillaSchema>;

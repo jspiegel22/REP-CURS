@@ -3,6 +3,7 @@ import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
+import { scheduleVillaSync } from "./services/trackhs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -43,6 +44,10 @@ app.use((req, res, next) => {
 
 (async () => {
   const server = await registerRoutes(app);
+
+  // Start villa sync scheduler after routes are registered
+  // Sync every hour (60 minutes)
+  scheduleVillaSync(60);
 
   // Handle API routes first
   app.use("/api/*", (req, res) => {
