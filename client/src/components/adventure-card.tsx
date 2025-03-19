@@ -1,4 +1,4 @@
-import { Adventure } from "@shared/schema";
+import { Adventure } from "@/types/adventure";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "wouter";
 import { Badge } from "@/components/ui/badge";
@@ -23,16 +23,13 @@ export function AdventureCard({ adventure }: AdventureCardProps) {
               Save {adventure.discount}
             </div>
           )}
-          <div className="absolute bottom-2 left-2 flex gap-2">
-            {adventure.category && (
+          {adventure.category && (
+            <div className="absolute bottom-2 left-2">
               <Badge variant="secondary" className="capitalize">
                 {adventure.category}
               </Badge>
-            )}
-            <Badge variant="default" className="capitalize">
-              {adventure.provider}
-            </Badge>
-          </div>
+            </div>
+          )}
         </div>
         <CardContent className="p-4">
           <h3 className="text-lg font-semibold mb-2 line-clamp-2">{adventure.title}</h3>
@@ -41,16 +38,14 @@ export function AdventureCard({ adventure }: AdventureCardProps) {
               <Clock className="w-4 h-4" />
               <span>{adventure.duration}</span>
             </div>
-            {adventure.minAge && (
-              <div className="flex items-center gap-1">
-                <Users className="w-4 h-4" />
-                <span>Min. {adventure.minAge}</span>
-              </div>
-            )}
+            <div className="flex items-center gap-1">
+              <Users className="w-4 h-4" />
+              <span>Min. {adventure.minAge}</span>
+            </div>
           </div>
           <div className="flex items-baseline gap-2">
             <span className="text-lg font-bold">{adventure.currentPrice}</span>
-            {adventure.originalPrice && adventure.originalPrice !== adventure.currentPrice && (
+            {adventure.originalPrice !== adventure.currentPrice && (
               <span className="text-sm text-muted-foreground line-through">
                 {adventure.originalPrice}
               </span>
@@ -59,7 +54,7 @@ export function AdventureCard({ adventure }: AdventureCardProps) {
           {adventure.rating && (
             <div className="mt-2 text-sm">
               <span className="text-yellow-400">{"★".repeat(Math.floor(adventure.rating))}</span>
-              <span className="ml-1 text-muted-foreground">{adventure.rating.toFixed(1)}/5</span>
+              <span className="ml-1 text-muted-foreground">{adventure.rating}/5</span>
             </div>
           )}
         </CardContent>

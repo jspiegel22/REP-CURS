@@ -25,6 +25,11 @@ const mainMenuItems = [
     image: "https://images.unsplash.com/photo-1582719508461-905c673771fd"
   },
   {
+    title: "YACHTS",
+    href: "/adventures/luxury-sailing",
+    image: "https://images.unsplash.com/photo-1605281317010-fe5ffe798166"
+  },
+  {
     title: "ADVENTURES",
     href: "/adventures",
     image: "https://images.unsplash.com/photo-1569263979104-865ab7cd8d13"
@@ -106,45 +111,28 @@ const stays = [
 const adventures = [
   {
     title: "Luxury Sailing",
-    href: "/adventures",
+    href: "/adventures/luxury-sailing",
     description: "Private yacht charters and sailing experiences",
-    image: "https://images.unsplash.com/photo-1605281317010-fe5ffe798166",
-    category: "yacht"
+    image: "https://images.unsplash.com/photo-1605281317010-fe5ffe798166"
   },
   {
     title: "Private Yachts",
-    href: "/adventures",
+    href: "/adventures/private-yachts",
     description: "Exclusive yacht rentals for special occasions",
-    image: "https://images.unsplash.com/photo-1569263979104-865ab7cd8d13",
-    category: "yacht"
+    image: "https://images.unsplash.com/photo-1569263979104-865ab7cd8d13"
   },
   {
     title: "Whale Watching",
-    href: "/adventures",
+    href: "/adventures/whale-watching",
     description: "Unforgettable whale watching tours",
-    image: "https://images.unsplash.com/photo-1570481662006-a3a1374699e8",
-    category: "adventure"
-  },
-  {
-    title: "Snorkeling",
-    href: "/adventures",
-    description: "Explore the vibrant underwater world",
-    image: "https://images.unsplash.com/photo-1570481662006-a3a1374699e8",
-    category: "adventure"
-  },
-  {
-    title: "ATV Tours",
-    href: "/adventures",
-    description: "Thrilling off-road adventures",
-    image: "https://images.unsplash.com/photo-1570481662006-a3a1374699e8",
-    category: "adventure"
+    image: "https://images.unsplash.com/photo-1570481662006-a3a1374699e8"
   }
 ];
 
 const groupTrips = [
   {
     title: "Family Trips",
-    href: "/family-trips",
+    href: "/group-trips/family",
     description: "Create lasting memories with your loved ones",
     image: "https://images.unsplash.com/photo-1602002418816-5c0aeef426aa"
   },

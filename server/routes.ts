@@ -195,39 +195,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Add new adventures endpoints after existing endpoints
-  app.get("/api/adventures", async (req, res) => {
-    try {
-      const [adventures] = await db
-        .select()
-        .from(adventuresTable)
-        .orderBy(adventuresTable.title);
-
-      res.json(adventures || []);
-    } catch (error) {
-      console.error("Error fetching adventures:", error);
-      res.status(500).json({ message: "Failed to fetch adventures" });
-    }
-  });
-
-  app.get("/api/adventures/:slug", async (req, res) => {
-    try {
-      const [adventure] = await db
-        .select()
-        .from(adventuresTable)
-        .where(eq(adventuresTable.slug, req.params.slug));
-
-      if (!adventure) {
-        return res.status(404).json({ message: "Adventure not found" });
-      }
-
-      res.json(adventure);
-    } catch (error) {
-      console.error("Error fetching adventure:", error);
-      res.status(500).json({ message: "Failed to fetch adventure" });
-    }
-  });
-
+  // Add the new endpoint here
   app.get("/api/resorts/:slug", async (req, res) => {
     try {
       const resorts = await storage.getResorts();
@@ -245,6 +213,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to fetch resort" });
     }
   });
+
 
   function generateSlug(name: string): string {
     return name
