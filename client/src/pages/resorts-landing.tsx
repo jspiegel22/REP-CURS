@@ -7,18 +7,29 @@ import { generateSlug } from "@/lib/utils";
 import Footer from "@/components/footer";
 import { resorts } from "@/data/resorts";
 import SEO from "@/components/SEO";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import ResortInquiryForm from "@/components/resort-inquiry-form";
 
 export default function ResortsLanding() {
   const [searchQuery, setSearchQuery] = useState("");
   const [locationFilter, setLocationFilter] = useState<string>("all");
   const [priceFilter, setPriceFilter] = useState<string>("all");
+  const [selectedResort, setSelectedResort] = useState<string>("");
 
   const locations = Array.from(new Set(resorts.map(resort => resort.location)));
   const priceLevels = Array.from(new Set(resorts.map(resort => resort.priceLevel)));
 
   const filteredResorts = resorts.filter(resort => {
     const matchesSearch = resort.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         resort.location.toLowerCase().includes(searchQuery.toLowerCase());
+                        resort.location.toLowerCase().includes(searchQuery.toLowerCase());
 
     const matchesLocation = locationFilter === "all" || resort.location === locationFilter;
     const matchesPriceLevel = priceFilter === "all" || resort.priceLevel === priceFilter;
@@ -31,7 +42,7 @@ export default function ResortsLanding() {
       <SEO
         title="Luxury Resorts in Cabo San Lucas | Cabo Adventures"
         description="Discover world-class resorts in Cabo San Lucas. From beachfront luxury to cliff-side retreats, find your perfect stay with exclusive amenities and stunning views."
-        canonicalUrl="https://cabo-adventures.com/resort"
+        canonicalUrl="https://cabo-adventures.com/resorts"
         schema={{
           '@context': 'https://schema.org',
           '@type': 'CollectionPage',
@@ -66,7 +77,7 @@ export default function ResortsLanding() {
           title: "Luxury Resorts in Cabo San Lucas",
           description: "Experience world-class hospitality at our carefully curated selection of premium resorts in Cabo San Lucas.",
           image: "https://images.unsplash.com/photo-1582719508461-905c673771fd",
-          url: "https://cabo-adventures.com/resort"
+          url: "https://cabo-adventures.com/resorts"
         }}
         keywords={[
           'Cabo San Lucas resorts',
@@ -142,50 +153,66 @@ export default function ResortsLanding() {
           {/* Resort Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredResorts.map((resort) => (
-              <Link
-                key={resort.id}
-                href={`/resorts/${generateSlug(resort.name)}`}
-                className="block transition-transform hover:scale-[1.02]"
-              >
-                <Card className="h-full">
-                  <div className="aspect-[16/9] relative overflow-hidden rounded-t-lg">
-                    <img
-                      src={resort.imageUrl}
-                      alt={resort.name}
-                      className="absolute inset-0 w-full h-full object-cover"
-                    />
-                    {(resort.isBeachfront || resort.isOceanfront) && (
-                      <div className="absolute top-2 right-2 bg-primary/90 text-primary-foreground px-2 py-1 rounded-full text-xs">
-                        {resort.isBeachfront ? 'Beachfront' : 'Oceanfront'}
-                      </div>
-                    )}
+              <Card key={resort.id} className="overflow-hidden">
+                <div className="aspect-[16/9] relative">
+                  <img
+                    src={resort.imageUrl}
+                    alt={resort.name}
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                  {(resort.isBeachfront || resort.isOceanfront) && (
+                    <div className="absolute top-2 right-2 bg-primary/90 text-primary-foreground px-2 py-1 rounded-full text-xs">
+                      {resort.isBeachfront ? 'Beachfront' : 'Oceanfront'}
+                    </div>
+                  )}
+                </div>
+                <CardContent className="p-6">
+                  <h3 className="text-xl font-semibold mb-2">{resort.name}</h3>
+                  <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
+                    <div className="flex items-center">
+                      <Star className="h-4 w-4 text-yellow-400 mr-1" fill="currentColor" />
+                      <span>{resort.rating} ({resort.reviewCount} reviews)</span>
+                    </div>
+                    <div className="flex items-center">
+                      <MapPin className="h-4 w-4 mr-1" />
+                      <span>{resort.location}</span>
+                    </div>
                   </div>
-                  <CardContent className="p-6">
-                    <h3 className="text-xl font-semibold mb-2">{resort.name}</h3>
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
-                      <div className="flex items-center">
-                        <Star className="h-4 w-4 text-yellow-400 mr-1" fill="currentColor" />
-                        <span>{resort.rating} ({resort.reviewCount} reviews)</span>
-                      </div>
-                      <div className="flex items-center">
-                        <MapPin className="h-4 w-4 mr-1" />
-                        <span>{resort.location}</span>
-                      </div>
+                  <p className="line-clamp-2 text-muted-foreground mb-4">
+                    {resort.description}
+                  </p>
+                  <div className="flex items-center justify-between">
+                    <span className="text-lg font-semibold">{resort.priceLevel}</span>
+                    <div className="space-x-2">
+                      <Link href={`/resorts/${generateSlug(resort.name)}`}>
+                        <Button variant="outline">View Details</Button>
+                      </Link>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button
+                            onClick={() => setSelectedResort(resort.name)}
+                          >
+                            Inquire Now
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[425px]">
+                          <DialogHeader>
+                            <DialogTitle>Inquire about {resort.name}</DialogTitle>
+                            <DialogDescription>
+                              Fill out this form and our team will get back to you with availability and rates.
+                            </DialogDescription>
+                          </DialogHeader>
+                          <ResortInquiryForm resortName={resort.name} />
+                        </DialogContent>
+                      </Dialog>
                     </div>
-                    <p className="line-clamp-2 text-muted-foreground">
-                      {resort.description}
-                    </p>
-                    <div className="mt-4 text-sm text-muted-foreground">
-                      <span className="font-semibold">{resort.priceLevel}</span> • {resort.rooms} Rooms • Up to {resort.maxGuests} guests/room
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
+                  </div>
+                </CardContent>
+              </Card>
             ))}
           </div>
         </div>
       </main>
-
       <Footer />
     </div>
   );
