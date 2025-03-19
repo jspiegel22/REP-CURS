@@ -1,86 +1,127 @@
-import React from 'react';
-import { useImages } from '@/hooks/useImages';
-import { Skeleton } from '@/components/ui/skeleton';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 
 interface ImageGalleryProps {
-  category?: string;
-  tags?: string[];
-  limit?: number;
-  columns?: 1 | 2 | 3 | 4;
-  showLoadMore?: boolean;
-  onImageClick?: (image: any) => void;
+  images: string[];
+  title?: string;
+  showThumbnails?: boolean;
+  onImageClick?: (image: string) => void;
 }
 
 export function ImageGallery({
-  category,
-  tags,
-  limit = 12,
-  columns = 3,
-  showLoadMore = false,
+  images,
+  title,
+  showThumbnails = true,
   onImageClick,
 }: ImageGalleryProps) {
-  const { images, isLoading, error, refreshImages } = useImages({
-    category,
-    tags,
-    limit,
-  });
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  if (error) {
-    return (
-      <div className="text-center py-8">
-        <p className="text-red-500 mb-4">Failed to load images</p>
-        <Button onClick={refreshImages}>Try Again</Button>
-      </div>
-    );
-  }
+  const nextImage = () => {
+    setCurrentIndex((prev) => (prev + 1) % images.length);
+  };
 
-  const gridCols = {
-    1: 'grid-cols-1',
-    2: 'grid-cols-1 md:grid-cols-2',
-    3: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3',
-    4: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
+  const previousImage = () => {
+    setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
+  };
+
+  const handleImageClick = (index: number) => {
+    if (onImageClick) {
+      onImageClick(images[index]);
+    } else {
+      setCurrentIndex(index);
+      setIsModalOpen(true);
+    }
   };
 
   return (
-    <div className="space-y-6">
-      <div className={`grid ${gridCols[columns]} gap-4`}>
-        {isLoading ? (
-          Array.from({ length: limit }).map((_, i) => (
-            <div key={i} className="aspect-square">
-              <Skeleton className="w-full h-full rounded-lg" />
-            </div>
-          ))
-        ) : (
-          images.map((image) => (
-            <div
-              key={image.id}
-              className="group relative aspect-square overflow-hidden rounded-lg cursor-pointer"
-              onClick={() => onImageClick?.(image)}
-            >
-              <img
-                src={image.thumbnailLink}
-                alt={image.name}
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-opacity duration-300 flex items-center justify-center">
-                <div className="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-center p-4">
-                  <h3 className="font-medium">{image.name}</h3>
-                  {image.category && (
-                    <p className="text-sm text-gray-200">{image.category}</p>
-                  )}
-                </div>
-              </div>
-            </div>
-          ))
-        )}
+    <div className="space-y-4">
+      {/* Main Image Display */}
+      <div className="relative aspect-[16/9] overflow-hidden rounded-lg">
+        <img
+          src={images[currentIndex]}
+          alt={title || `Image ${currentIndex + 1}`}
+          className="w-full h-full object-cover cursor-pointer"
+          onClick={() => handleImageClick(currentIndex)}
+        />
+
+        {/* Navigation Arrows */}
+        <div className="absolute inset-0 flex items-center justify-between p-4">
+          <Button
+            variant="outline"
+            size="icon"
+            className="bg-white/80 hover:bg-white"
+            onClick={(e) => {
+              e.stopPropagation();
+              previousImage();
+            }}
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            className="bg-white/80 hover:bg-white"
+            onClick={(e) => {
+              e.stopPropagation();
+              nextImage();
+            }}
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
+
+        {/* Image Counter */}
+        <div className="absolute bottom-4 right-4 bg-black/50 text-white px-3 py-1 rounded-full text-sm">
+          {currentIndex + 1} / {images.length}
+        </div>
       </div>
 
-      {showLoadMore && !isLoading && images.length >= limit && (
-        <div className="text-center">
-          <Button onClick={refreshImages}>Load More</Button>
+      {/* Thumbnails */}
+      {showThumbnails && (
+        <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2 overflow-x-auto hide-scrollbar">
+          {images.map((image, index) => (
+            <div
+              key={index}
+              className={`relative aspect-square rounded-lg overflow-hidden cursor-pointer transition-all duration-200 ${
+                index === currentIndex ? 'ring-2 ring-primary' : ''
+              }`}
+              onClick={() => setCurrentIndex(index)}
+            >
+              <img
+                src={image}
+                alt={`Thumbnail ${index + 1}`}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Fullscreen Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center">
+          <div className="relative w-full h-full flex items-center justify-center">
+            <Button
+              variant="outline"
+              size="icon"
+              className="absolute top-4 right-4 bg-white/10 hover:bg-white/20"
+              onClick={() => setIsModalOpen(false)}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+            <img
+              src={images[currentIndex]}
+              alt={title || `Image ${currentIndex + 1}`}
+              className="max-h-[90vh] max-w-[90vw] object-contain"
+            />
+            <div className="absolute bottom-4 right-4 bg-white/10 text-white px-3 py-1 rounded-full">
+              {currentIndex + 1} / {images.length}
+            </div>
+          </div>
         </div>
       )}
     </div>
   );
-} 
+}

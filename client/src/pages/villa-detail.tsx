@@ -1,6 +1,7 @@
 import { useParams } from "wouter";
 import Footer from "@/components/footer";
 import VillaBookingTemplate from "@/components/templates/VillaBookingTemplate";
+import { ImageGallery } from "@/components/ImageGallery";
 import SEO, { generateVillaSchema } from "@/components/SEO";
 import { useQuery } from "@tanstack/react-query";
 import type { Villa } from "@shared/schema";
@@ -113,28 +114,44 @@ export default function VillaDetail() {
         ]}
       />
       <main className="flex-1">
-        <VillaBookingTemplate
-          title={villa.name}
-          subtitle={`Luxury ${villa.bedrooms} Bedroom Villa in ${villa.location}`}
-          description={villa.description}
-          imageUrls={villa.imageUrls as string[]}
-          pricePerNight={parseFloat(villa.pricePerNight)}
-          rating={5}
-          reviewCount={reviews.length}
-          location={villa.location}
-          maximumGuests={villa.maxGuests}
-          features={[
-            `${villa.bedrooms} Bedrooms`,
-            `${villa.bathrooms} Bathrooms`,
-            `Max ${villa.maxGuests} Guests`,
-            'Daily Housekeeping',
-            'Concierge Service',
-            'Ocean Views'
-          ]}
-          amenities={combinedAmenities}
-          villaId={villa.trackHsId}
-          reviews={reviews}
-        />
+        <div className="container mx-auto px-4 py-8">
+          <h1 className="text-4xl font-bold mb-6">{villa.name}</h1>
+          <p className="text-xl text-muted-foreground mb-8">
+            {`Luxury ${villa.bedrooms} Bedroom Villa in ${villa.location}`}
+          </p>
+
+          {/* Image Gallery */}
+          <div className="mb-12">
+            <ImageGallery 
+              images={villa.imageUrls as string[]} 
+              title={villa.name}
+              showThumbnails={true}
+            />
+          </div>
+
+          <VillaBookingTemplate
+            title={villa.name}
+            subtitle={`Luxury ${villa.bedrooms} Bedroom Villa in ${villa.location}`}
+            description={villa.description}
+            imageUrls={villa.imageUrls as string[]}
+            pricePerNight={parseFloat(villa.pricePerNight)}
+            rating={5}
+            reviewCount={reviews.length}
+            location={villa.location}
+            maximumGuests={villa.maxGuests}
+            features={[
+              `${villa.bedrooms} Bedrooms`,
+              `${villa.bathrooms} Bathrooms`,
+              `Max ${villa.maxGuests} Guests`,
+              'Daily Housekeeping',
+              'Concierge Service',
+              'Ocean Views'
+            ]}
+            amenities={combinedAmenities}
+            villaId={villa.trackHsId}
+            reviews={reviews}
+          />
+        </div>
       </main>
       <Footer />
     </div>

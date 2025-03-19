@@ -13,7 +13,11 @@ export const sampleVillas: Villa[] = [
     imageUrl: "https://www.cabovillas.com/Properties/Villas/Villa_Tranquilidad/FULL/Villa_Tranquilidad-1.jpg",
     imageUrls: [
       "https://www.cabovillas.com/Properties/Villas/Villa_Tranquilidad/FULL/Villa_Tranquilidad-1.jpg",
-      "https://www.cabovillas.com/Properties/Villas/Villa_Tranquilidad/FULL/Villa_Tranquilidad-2.jpg"
+      "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&auto=format",
+      "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&auto=format",
+      "https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=800&auto=format",
+      "https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?w=800&auto=format",
+      "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=800&auto=format"
     ],
     pricePerNight: "2500",
     location: "San José del Cabo",
@@ -36,7 +40,10 @@ export const sampleVillas: Villa[] = [
     imageUrl: "https://www.cabovillas.com/Properties/Villas/Villa_Lorena/FULL/Villa_Lorena-1.jpg",
     imageUrls: [
       "https://www.cabovillas.com/Properties/Villas/Villa_Lorena/FULL/Villa_Lorena-1.jpg",
-      "https://www.cabovillas.com/Properties/Villas/Villa_Lorena/FULL/Villa_Lorena-2.jpg"
+      "https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?w=800&auto=format",
+      "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=800&auto=format",
+      "https://images.unsplash.com/photo-1613977257592-4871e5fcd7c4?w=800&auto=format",
+      "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?w=800&auto=format"
     ],
     pricePerNight: "1500",
     location: "Cabo San Lucas",
@@ -59,7 +66,10 @@ export const sampleVillas: Villa[] = [
     imageUrl: "https://www.cabovillas.com/Properties/Villas/Villa_Esencia_Del_Mar/FULL/Villa_Esencia_Del_Mar-1.jpg",
     imageUrls: [
       "https://www.cabovillas.com/Properties/Villas/Villa_Esencia_Del_Mar/FULL/Villa_Esencia_Del_Mar-1.jpg",
-      "https://www.cabovillas.com/Properties/Villas/Villa_Esencia_Del_Mar/FULL/Villa_Esencia_Del_Mar-2.jpg"
+      "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=800&auto=format",
+      "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=800&auto=format",
+      "https://images.unsplash.com/photo-1565183928294-7063f23ce0f8?w=800&auto=format",
+      "https://images.unsplash.com/photo-1540518614846-7eded433c457?w=800&auto=format"
     ],
     pricePerNight: "1800",
     location: "Cabo San Lucas",
@@ -82,7 +92,10 @@ export const sampleVillas: Villa[] = [
     imageUrl: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&auto=format",
     imageUrls: [
       "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&auto=format",
-      "https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?w=800&auto=format"
+      "https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?w=800&auto=format",
+      "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?w=800&auto=format",
+      "https://images.unsplash.com/photo-1515263487990-61b07816b324?w=800&auto=format",
+      "https://images.unsplash.com/photo-1484154218962-a197022b5858?w=800&auto=format"
     ],
     pricePerNight: "2200",
     location: "San José del Cabo",
@@ -105,7 +118,10 @@ export const sampleVillas: Villa[] = [
     imageUrl: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&auto=format",
     imageUrls: [
       "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&auto=format",
-      "https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=800&auto=format"
+      "https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=800&auto=format",
+      "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800&auto=format",
+      "https://images.unsplash.com/photo-1560448204-603b3fc33ddc?w=800&auto=format",
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&auto=format"
     ],
     pricePerNight: "3000",
     location: "Cabo San Lucas",
