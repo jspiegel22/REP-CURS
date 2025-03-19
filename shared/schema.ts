@@ -44,17 +44,49 @@ export const resorts = pgTable("resorts", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-// Update the bookings table definition with proper relations and types
+// Enhanced bookings table
 export const bookings = pgTable("bookings", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id).notNull(),
-  listingId: integer("listing_id").references(() => listings.id),
+  firstName: text("first_name").notNull(),
+  lastName: text("last_name").notNull(),
+  email: text("email").notNull(),
+  phone: text("phone").notNull(),
+  bookingType: text("booking_type", {
+    enum: ["villa", "resort", "adventure", "restaurant", "event"]
+  }).notNull(),
   startDate: timestamp("start_date").notNull(),
   endDate: timestamp("end_date").notNull(),
   guests: integer("guests").notNull(),
-  status: text("status", { enum: ["pending", "confirmed", "cancelled"] }).notNull(),
+  status: text("status", {
+    enum: ["pending", "confirmed", "cancelled", "completed"]
+  }).notNull().default("pending"),
+  totalAmount: decimal("total_amount"),
+  listingId: integer("listing_id").references(() => listings.id),
   formData: jsonb("form_data"),
-  pointsEarned: integer("points_earned"),
+  specialRequests: text("special_requests"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// New leads table for form submissions
+export const leads = pgTable("leads", {
+  id: serial("id").primaryKey(),
+  firstName: text("first_name").notNull(),
+  lastName: text("last_name").notNull(),
+  email: text("email").notNull(),
+  phone: text("phone").notNull(),
+  interestType: text("interest_type", {
+    enum: ["villa", "resort", "adventure", "wedding", "group_trip", "influencer", "concierge"]
+  }).notNull(),
+  source: text("source").notNull(),
+  status: text("status", {
+    enum: ["new", "contacted", "qualified", "converted", "lost"]
+  }).notNull().default("new"),
+  formData: jsonb("form_data"),
+  notes: text("notes"),
+  assignedTo: text("assigned_to"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const rewards = pgTable("rewards", {
@@ -99,15 +131,25 @@ export const insertResortSchema = createInsertSchema(resorts).omit({
 // Update insert schema
 export const insertBookingSchema = createInsertSchema(bookings).omit({
   id: true,
-  pointsEarned: true,
+  createdAt: true,
+  updatedAt: true,
 }).extend({
-  guests: z.string().transform(val => parseInt(val, 10)), // Transform string to number
+  guests: z.string().transform(val => parseInt(val, 10)),
+  startDate: z.string().min(1, "Start date is required"),
+  endDate: z.string().min(1, "End date is required"),
+
 });
 
 // Other insert schemas
 export const insertListingSchema = createInsertSchema(listings);
 export const insertRewardSchema = createInsertSchema(rewards);
 export const insertSocialShareSchema = createInsertSchema(socialShares);
+
+export const insertLeadSchema = createInsertSchema(leads).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
 
 // Types for TypeScript
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -151,3 +193,5 @@ export const insertVillaSchema = createInsertSchema(villas).omit({
 
 export type Villa = typeof villas.$inferSelect;
 export type InsertVilla = z.infer<typeof insertVillaSchema>;
+export type Lead = typeof leads.$inferSelect;
+export type InsertLead = z.infer<typeof insertLeadSchema>;
