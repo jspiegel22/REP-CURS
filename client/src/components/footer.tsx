@@ -13,8 +13,8 @@ export default function Footer() {
           <div>
             <h3 className="text-xl font-bold mb-4">Stays</h3>
             <ul className="space-y-2">
-              <li><Link href="/villa">Luxury Villas</Link></li>
-              <li><Link href="/resort">Resorts & Hotels</Link></li>
+              <li><Link href="/villas">Luxury Villas</Link></li>
+              <li><Link href="/resorts">Resorts & Hotels</Link></li>
               <li><Link href="/real-estate">Real Estate</Link></li>
             </ul>
           </div>

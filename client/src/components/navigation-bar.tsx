@@ -144,15 +144,6 @@ const groupTrips = [
   }
 ];
 
-const socialLinks = [
-  { icon: SiTiktok, href: "https://www.tiktok.com/@atcabo", label: "TikTok" },
-  { icon: SiInstagram, href: "https://instagram.com/cabo", label: "Instagram" },
-  { icon: SiYoutube, href: "https://www.youtube.com/@atCabo", label: "YouTube" },
-  { icon: SiWhatsapp, href: "https://wa.me/526242446303", label: "WhatsApp" },
-  { icon: SiFacebook, href: "https://www.facebook.com/cabosanlucasbaja", label: "Facebook" },
-  { icon: SiPinterest, href: "https://www.pinterest.com/instacabo/", label: "Pinterest" }
-];
-
 const moreMenuItems = [
   {
     title: "Real Estate",
@@ -178,6 +169,15 @@ const moreMenuItems = [
     description: "Plan your dream destination wedding",
     image: "https://images.unsplash.com/photo-1546032996-6dfacbacbf3f"
   }
+];
+
+const socialLinks = [
+  { icon: SiTiktok, href: "https://www.tiktok.com/@atcabo", label: "TikTok" },
+  { icon: SiInstagram, href: "https://instagram.com/cabo", label: "Instagram" },
+  { icon: SiYoutube, href: "https://www.youtube.com/@atCabo", label: "YouTube" },
+  { icon: SiWhatsapp, href: "https://wa.me/526242446303", label: "WhatsApp" },
+  { icon: SiFacebook, href: "https://www.facebook.com/cabosanlucasbaja", label: "Facebook" },
+  { icon: SiPinterest, href: "https://www.pinterest.com/instacabo/", label: "Pinterest" }
 ];
 
 const NavigationBar = () => {
