@@ -54,15 +54,15 @@ export default function HomePage() {
         <div className="container mx-auto px-4 pt-16">
           <div className="text-center max-w-4xl mx-auto">
             {/* Category Label */}
-            <div className="inline-block bg-gray-100 px-4 py-2 rounded-full mb-6">
-              <p className="text-gray-600 text-sm md:text-base font-medium">Your Complete Cabo Travel Guide</p>
+            <div className="inline-block bg-[#2F4F4F]/10 px-4 py-2 rounded-full mb-6">
+              <p className="text-[#2F4F4F] text-sm md:text-base font-medium">Your Complete Cabo Travel Guide</p>
             </div>
 
             <h1 className="text-4xl md:text-6xl font-bold mb-6 text-gray-900">
-              Experience Luxury in Cabo San Lucas
+              Discover the Magic of Cabo San Lucas
             </h1>
             <p className="text-lg md:text-xl mb-8 text-gray-600 max-w-2xl mx-auto">
-              Discover insider tips, hidden gems, and exclusive experiences in our comprehensive travel guide
+              From luxury villas to thrilling adventures, experience the best of Cabo with our curated travel guide
             </p>
 
             {/* Social Proof */}
@@ -90,7 +90,7 @@ export default function HomePage() {
                 />
               </div>
               <span className="ml-4 text-gray-600">
-                Loved by <span className="font-semibold">201,000</span> travelers
+                Trusted by <span className="font-semibold">201,000</span> travelers
               </span>
             </div>
 
@@ -98,7 +98,7 @@ export default function HomePage() {
             <Button 
               className="hidden md:inline-flex items-center gap-3 bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white text-xl px-10 py-8 rounded-2xl transform transition-all duration-300 hover:scale-105 hover:shadow-xl shadow-lg"
             >
-              Download ULTIMATE Cabo Guide
+              Get Your Free Cabo Guide
               <ChevronRight className="w-6 h-6" />
             </Button>
 
