@@ -5,6 +5,7 @@ import { users, listings, bookings, rewards, socialShares, weatherCache, resorts
 import type { User, InsertUser, Listing, Booking, Reward, SocialShare, WeatherCache, Resort, Villa } from "@shared/schema";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
+import { generateResortSlug } from "../client/src/lib/utils";
 
 const PostgresSessionStore = connectPg(session);
 
@@ -40,9 +41,7 @@ export class DatabaseStorage implements IStorage {
 
   async getResortBySlug(slug: string): Promise<Resort | undefined> {
     const allResorts = await this.getResorts();
-    return allResorts.find(resort => 
-      resort.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') === slug
-    );
+    return allResorts.find(resort => generateResortSlug(resort.name) === slug);
   }
 
   // User Management

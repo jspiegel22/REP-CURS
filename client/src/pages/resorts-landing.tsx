@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Star, MapPin, Search } from "lucide-react";
 import { Link } from "wouter";
-import { generateSlug } from "@/lib/utils";
+import { generateSlug, generateResortSlug } from "@/lib/utils"; //Import generateResortSlug
 import Footer from "@/components/footer";
 import { resorts } from "@/data/resorts";
 import SEO from "@/components/SEO";
@@ -155,7 +155,7 @@ export default function ResortsLanding() {
             {filteredResorts.map((resort) => (
               <Link
                 key={resort.id}
-                href={`/resorts/${generateSlug(resort.name)}`}
+                href={`/resorts/${generateResortSlug(resort.name)}`}
                 className="block group"
               >
                 <Card className="overflow-hidden transition-transform hover:scale-[1.02] h-full">
