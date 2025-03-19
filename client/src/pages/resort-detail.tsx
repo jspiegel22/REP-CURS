@@ -48,7 +48,7 @@ const amenities = [
 
 // Resort-specific features
 const resortFeatures = {
-  "Waldorf Astoria Los Cabos": [
+  "Waldorf Astoria Los Cabos Pedregal": [
     "Private Chef Service",
     "Butler Service",
     "Direct Beach Access",
@@ -120,13 +120,13 @@ export default function ResortDetail() {
           description={resort.description}
           imageUrls={[resort.imageUrl]}
           priceLevel={resort.priceLevel}
-          rating={5}
-          reviewCount={reviews.length}
+          rating={Number(resort.rating)}
+          reviewCount={resort.reviewCount}
           location={resort.location}
-          maximumGuests={resort.maxGuests}
+          maximumGuests={4}
           features={features}
           amenities={amenities}
-          resortId={parseInt(resort.id.replace('resort-', ''))}
+          resortId={resort.id}
           reviews={reviews}
         />
       </main>
