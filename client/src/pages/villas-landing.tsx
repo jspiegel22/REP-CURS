@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { VillaCard } from "@/components/villa-card";
 import Footer from "@/components/footer";
 import type { Villa } from "@shared/schema";
+import { sampleVillas } from "@/data/sample-villas";
 
 export default function VillasLanding() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -13,10 +13,8 @@ export default function VillasLanding() {
   const [bedroomFilter, setBedroomFilter] = useState<string>("all");
   const [guestFilter, setGuestFilter] = useState<string>("all");
 
-  // Fetch villas from API
-  const { data: villas = [], isLoading } = useQuery<Villa[]>({
-    queryKey: ["/api/villas"],
-  });
+  // Use sample data instead of API call temporarily
+  const villas = sampleVillas;
 
   const locations = Array.from(new Set(villas.map(villa => villa.location))).sort();
   const bedroomOptions = Array.from(new Set(villas.map(villa => villa.bedrooms))).sort((a, b) => a - b);
@@ -32,14 +30,6 @@ export default function VillasLanding() {
 
     return matchesSearch && matchesLocation && matchesBedrooms && matchesGuests;
   });
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
