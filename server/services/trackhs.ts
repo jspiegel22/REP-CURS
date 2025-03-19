@@ -9,8 +9,24 @@ const trackHsApi = axios.create({
     'Content-Type': 'application/json',
     'X-API-KEY': process.env.TRACKHS_API_KEY,
     'X-API-SECRET': process.env.TRACKHS_API_SECRET,
+    'Authorization': `Bearer ${process.env.TRACKHS_API_KEY}`
   },
 });
+
+// Add response interceptor for better error logging
+trackHsApi.interceptors.response.use(
+  response => response,
+  error => {
+    console.error('TrackHS API Error:', {
+      status: error.response?.status,
+      statusText: error.response?.statusText,
+      data: error.response?.data,
+      headers: error.response?.headers,
+      config: error.config
+    });
+    throw error;
+  }
+);
 
 export interface TrackHSVilla {
   id: string;
@@ -45,18 +61,24 @@ export async function fetchVillas() {
     while (hasMore) {
       try {
         console.log(`Fetching page ${page}...`);
-        // Fetch villa data from TrackHS with pagination
-        const response = await trackHsApi.get('/inventory/villas', {
+        // Try the /units endpoint directly
+        const response = await trackHsApi.get('/units', {
           params: {
             page,
-            limit: 100, // Get maximum number of items per page
-            type: 'villa'
+            limit: 100,
+            status: 'active',
+            include: 'amenities,images,rates,location'
           }
         });
 
         console.log('API Response:', response.data);
 
-        const villasData = response.data.properties || [];
+        if (!response.data) {
+          console.error('No data received from API');
+          break;
+        }
+
+        const villasData = response.data.villas || response.data.data || [];
         console.log(`Retrieved ${villasData.length} villas from page ${page}`);
 
         if (villasData.length === 0) {
@@ -89,11 +111,11 @@ export async function fetchVillas() {
           amenities: villaData.amenities || [],
           imageUrl: villaData.images[0]?.url || '',
           imageUrls: villaData.images.map(img => img.url),
-          pricePerNight: String(villaData.rates?.defaultNightly || 1000), // Convert to string for decimal type
+          pricePerNight: String(villaData.rates?.defaultNightly || 1000),
           location: villaData.location?.city || "Cabo San Lucas",
           address: villaData.location?.address || "",
-          latitude: String(villaData.location?.latitude || 0), // Convert to string for decimal type
-          longitude: String(villaData.location?.longitude || 0), // Convert to string for decimal type
+          latitude: String(villaData.location?.latitude || 0),
+          longitude: String(villaData.location?.longitude || 0),
           trackHsId: villaData.id,
           lastSyncedAt: new Date(),
         };
