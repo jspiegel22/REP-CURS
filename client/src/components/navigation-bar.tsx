@@ -16,18 +16,13 @@ import {
 const mainMenuItems = [
   {
     title: "VILLAS",
-    href: "/villa",
+    href: "/villas",
     image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811"
   },
   {
     title: "RESORTS",
-    href: "/resort",
+    href: "/resorts",
     image: "https://images.unsplash.com/photo-1582719508461-905c673771fd"
-  },
-  {
-    title: "YACHTS",
-    href: "/adventures/luxury-sailing",
-    image: "https://images.unsplash.com/photo-1605281317010-fe5ffe798166"
   },
   {
     title: "ADVENTURES",
@@ -90,13 +85,13 @@ const bottomRowItems = [
 const stays = [
   {
     title: "Villas",
-    href: "/villa",
+    href: "/villas",
     description: "Luxury private villas with stunning ocean views",
     image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811"
   },
   {
     title: "Resorts",
-    href: "/resort",
+    href: "/resorts",
     description: "World-class resorts and hotels",
     image: "https://images.unsplash.com/photo-1582719508461-905c673771fd"
   },
@@ -111,28 +106,45 @@ const stays = [
 const adventures = [
   {
     title: "Luxury Sailing",
-    href: "/adventures/luxury-sailing",
+    href: "/yachts",
     description: "Private yacht charters and sailing experiences",
-    image: "https://images.unsplash.com/photo-1605281317010-fe5ffe798166"
+    image: "https://images.unsplash.com/photo-1605281317010-fe5ffe798166",
+    category: "yacht"
   },
   {
     title: "Private Yachts",
-    href: "/adventures/private-yachts",
+    href: "/yachts",
     description: "Exclusive yacht rentals for special occasions",
-    image: "https://images.unsplash.com/photo-1569263979104-865ab7cd8d13"
+    image: "https://images.unsplash.com/photo-1569263979104-865ab7cd8d13",
+    category: "yacht"
   },
   {
     title: "Whale Watching",
-    href: "/adventures/whale-watching",
+    href: "/adventures",
     description: "Unforgettable whale watching tours",
-    image: "https://images.unsplash.com/photo-1570481662006-a3a1374699e8"
+    image: "https://images.unsplash.com/photo-1570481662006-a3a1374699e8",
+    category: "adventure"
+  },
+  {
+    title: "Snorkeling",
+    href: "/adventures",
+    description: "Explore the vibrant underwater world",
+    image: "https://images.unsplash.com/photo-1570481662006-a3a1374699e8",
+    category: "adventure"
+  },
+  {
+    title: "ATV Tours",
+    href: "/adventures",
+    description: "Thrilling off-road adventures",
+    image: "https://images.unsplash.com/photo-1570481662006-a3a1374699e8",
+    category: "adventure"
   }
 ];
 
 const groupTrips = [
   {
     title: "Family Trips",
-    href: "/group-trips/family",
+    href: "/family-trips",
     description: "Create lasting memories with your loved ones",
     image: "https://images.unsplash.com/photo-1602002418816-5c0aeef426aa"
   },

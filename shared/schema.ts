@@ -44,11 +44,38 @@ export const resorts = pgTable("resorts", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-// Update the bookings table definition with proper relations and types
+// Add new adventures table
+export const adventures = pgTable("adventures", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  slug: text("slug").notNull().unique(),
+  description: text("description"),
+  imageUrl: text("image_url").notNull(),
+  provider: text("provider", { enum: ["Cabo Adventures", "Papillon Yachts"] }).notNull(),
+  duration: text("duration").notNull(),
+  currentPrice: text("current_price").notNull(),
+  originalPrice: text("original_price"),
+  discount: text("discount"),
+  minAge: text("min_age"),
+  bookingType: text("booking_type", { enum: ["direct", "form"] }).notNull().default("form"),
+  maxGuests: integer("max_guests"),
+  category: text("category", {
+    enum: ["water", "land", "luxury", "family"]
+  }),
+  rating: decimal("rating"),
+  availableDates: jsonb("available_dates"),
+  included: jsonb("included"),
+  requirements: jsonb("requirements"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Update bookings table to reference adventures
 export const bookings = pgTable("bookings", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id).notNull(),
   listingId: integer("listing_id").references(() => listings.id),
+  adventureId: integer("adventure_id").references(() => adventures.id),
   startDate: timestamp("start_date").notNull(),
   endDate: timestamp("end_date").notNull(),
   guests: integer("guests").notNull(),
@@ -96,6 +123,13 @@ export const insertResortSchema = createInsertSchema(resorts).omit({
   updatedAt: true,
 });
 
+// Add schema for inserting new adventures
+export const insertAdventureSchema = createInsertSchema(adventures).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 // Update insert schema
 export const insertBookingSchema = createInsertSchema(bookings).omit({
   id: true,
@@ -119,3 +153,5 @@ export type Reward = typeof rewards.$inferSelect;
 export type SocialShare = typeof socialShares.$inferSelect;
 export type WeatherCache = typeof weatherCache.$inferSelect;
 export type InsertResort = z.infer<typeof insertResortSchema>;
+export type Adventure = typeof adventures.$inferSelect;
+export type InsertAdventure = z.infer<typeof insertAdventureSchema>;
