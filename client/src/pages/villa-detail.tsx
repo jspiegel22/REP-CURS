@@ -7,9 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import type { Villa } from "@shared/schema";
 import { sampleVillas } from "@/data/sample-villas";
 import { generateVillaSlug } from "@/lib/utils";
-import { Star } from "lucide-react"; // Assuming this is needed for the star icon
-import Button from "@/components/Button"; // Assuming a Button component exists
-
+import { Star } from "lucide-react";
 
 // Reviews data (can be moved to API later)
 const reviews = [
@@ -106,84 +104,89 @@ export default function VillaDetail() {
       />
       <main className="flex-1">
         <div className="container mx-auto px-4 py-8">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Main Content */}
-            <div className="lg:col-span-2">
-              <h1 className="text-4xl font-bold mb-6">{villa.name}</h1>
-              <p className="text-xl text-muted-foreground mb-8">
-                {`Luxury ${villa.bedrooms} Bedroom Villa in ${villa.location}`}
-              </p>
-
-              {/* Image Gallery */}
-              <div className="mb-12">
-                <ImageGallery 
-                  images={villa.imageUrls as string[]} 
-                  title={villa.name}
-                  showThumbnails={true}
-                />
+          {/* Title and Rating */}
+          <div className="mb-6">
+            <h1 className="text-4xl font-bold mb-2">{villa.name}</h1>
+            <div className="flex items-center gap-2 text-lg">
+              <div className="flex items-center">
+                <Star className="h-5 w-5 text-yellow-400" fill="currentColor" />
+                <span className="ml-1">5.0</span>
               </div>
+              <span className="text-muted-foreground">·</span>
+              <span className="text-muted-foreground">{reviews.length} reviews</span>
+              <span className="text-muted-foreground">·</span>
+              <span className="text-muted-foreground">{villa.location}</span>
+            </div>
+          </div>
 
-              {/* Villa Details and Reviews */}
-              <div className="space-y-8">
-                <div>
-                  <h2 className="text-2xl font-semibold mb-4">About this Villa</h2>
-                  <p className="text-muted-foreground">{villa.description}</p>
-                </div>
+          {/* Image Gallery */}
+          <div className="mb-8">
+            <ImageGallery 
+              images={villa.imageUrls as string[]} 
+              title={villa.name}
+              showThumbnails={true}
+            />
+          </div>
 
-                <div>
-                  <h2 className="text-2xl font-semibold mb-4">Amenities</h2>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    {combinedAmenities.map((amenity, index) => (
-                      <div key={index} className="flex items-center gap-2">
-                        <Star className="h-4 w-4 text-yellow-400" />
-                        <span>{amenity}</span>
-                      </div>
-                    ))}
+          {/* Booking Form */}
+          <div className="mb-12">
+            <VillaBookingTemplate
+              title={villa.name}
+              subtitle={`Luxury ${villa.bedrooms} Bedroom Villa in ${villa.location}`}
+              description={villa.description}
+              imageUrls={villa.imageUrls as string[]}
+              pricePerNight={parseFloat(villa.pricePerNight)}
+              rating={5}
+              reviewCount={reviews.length}
+              location={villa.location}
+              maximumGuests={villa.maxGuests}
+              features={[
+                `${villa.bedrooms} Bedrooms`,
+                `${villa.bathrooms} Bathrooms`,
+                `Max ${villa.maxGuests} Guests`,
+                'Daily Housekeeping',
+                'Concierge Service',
+                'Ocean Views'
+              ]}
+              amenities={combinedAmenities}
+              villaId={villa.id.toString()}
+              reviews={reviews}
+            />
+          </div>
+
+          {/* Villa Details */}
+          <div className="space-y-12">
+            <div>
+              <h2 className="text-2xl font-semibold mb-4">About this Villa</h2>
+              <p className="text-muted-foreground">{villa.description}</p>
+            </div>
+
+            <div>
+              <h2 className="text-2xl font-semibold mb-4">Amenities</h2>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {combinedAmenities.map((amenity, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <Star className="h-4 w-4 text-yellow-400" />
+                    <span>{amenity}</span>
                   </div>
-                </div>
-
-                <div>
-                  <h2 className="text-2xl font-semibold mb-4">Reviews</h2>
-                  <div className="space-y-6">
-                    {reviews.map((review, index) => (
-                      <div key={index} className="border-b pb-6">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="font-semibold">{review.author}</span>
-                          <span className="text-muted-foreground">·</span>
-                          <span className="text-muted-foreground">{review.date}</span>
-                        </div>
-                        <p className="text-muted-foreground">{review.content}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
 
-            {/* Booking Sidebar */}
-            <div className="lg:sticky lg:top-8 h-fit">
-              <VillaBookingTemplate
-                title={villa.name}
-                subtitle={`Luxury ${villa.bedrooms} Bedroom Villa in ${villa.location}`}
-                description={villa.description}
-                imageUrls={villa.imageUrls as string[]}
-                pricePerNight={parseFloat(villa.pricePerNight)}
-                rating={5}
-                reviewCount={reviews.length}
-                location={villa.location}
-                maximumGuests={villa.maxGuests}
-                features={[
-                  `${villa.bedrooms} Bedrooms`,
-                  `${villa.bathrooms} Bathrooms`,
-                  `Max ${villa.maxGuests} Guests`,
-                  'Daily Housekeeping',
-                  'Concierge Service',
-                  'Ocean Views'
-                ]}
-                amenities={combinedAmenities}
-                villaId={villa.id.toString()}
-                reviews={reviews}
-              />
+            <div>
+              <h2 className="text-2xl font-semibold mb-4">Reviews</h2>
+              <div className="space-y-6">
+                {reviews.map((review, index) => (
+                  <div key={index} className="border-b pb-6">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="font-semibold">{review.author}</span>
+                      <span className="text-muted-foreground">·</span>
+                      <span className="text-muted-foreground">{review.date}</span>
+                    </div>
+                    <p className="text-muted-foreground">{review.content}</p>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
