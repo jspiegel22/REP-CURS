@@ -3,9 +3,8 @@ import { sampleBlogs } from "@/data/sample-blogs";
 import { format } from "date-fns";
 import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
-import { VillaCard } from "@/components/villa-card";
 import { Link } from "wouter";
-import { ChevronRight, Share2 } from "lucide-react";
+import { Share2 } from "lucide-react";
 import {
   FaTwitter,
   FaFacebookF,
@@ -103,15 +102,15 @@ export default function BlogPost() {
       />
 
       <main className="min-h-screen bg-white">
-        {/* Hero Section */}
-        <div className="w-full h-[50vh] md:h-[60vh] relative">
+        {/* Hero Section - Reduced height */}
+        <div className="w-full h-[40vh] relative">
           <img
             src={blog.imageUrl}
             alt={blog.title}
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
-            <div className="container mx-auto px-4 pb-8 md:pb-12">
+            <div className="container mx-auto px-4 pb-8">
               <div className="max-w-3xl">
                 <div className="text-white/80 mb-4">
                   {format(new Date(blog.date), 'MMMM d, yyyy')} • {blog.readTime}
@@ -137,104 +136,61 @@ export default function BlogPost() {
 
         {/* Content Section */}
         <div className="container mx-auto px-4 py-12">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-            {/* Main Content */}
-            <div className="lg:col-span-2">
-              <div className="prose prose-lg max-w-none">
-                <p className="text-xl text-gray-600 mb-8">{blog.excerpt}</p>
+          <div className="max-w-3xl mx-auto">
+            <div className="prose prose-lg max-w-none">
+              {/* Social Share Buttons - Moved up */}
+              <div className="mb-8 flex items-center gap-4">
+                <Share2 className="h-5 w-5 text-gray-600" />
+                <div className="flex gap-4">
+                  {shareLinks.map((link) => (
+                    <a
+                      key={link.label}
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-gray-600 hover:text-[#2F4F4F] transition-colors"
+                      aria-label={link.label}
+                    >
+                      <link.icon size={20} />
+                    </a>
+                  ))}
+                </div>
+              </div>
 
-                {/* Blog Content */}
-                <div className="mt-8" dangerouslySetInnerHTML={{ __html: blog.content }} />
+              <p className="text-xl text-gray-600 mb-8">{blog.excerpt}</p>
 
-                {/* Category-specific CTA */}
-                {blog.category && (
-                  <div className="my-12 bg-gray-50 p-8 rounded-xl">
-                    <div className="flex flex-col md:flex-row gap-8 items-center">
-                      <div className="flex-1">
-                        <h3 className="text-2xl font-bold mb-4">{blog.category} Guide</h3>
-                        <p className="text-gray-600 mb-4">
-                          Get our exclusive guide for {blog.category.toLowerCase()} in Cabo San Lucas.
-                        </p>
-                        <Button className="w-full md:w-auto">
-                          Download Free Guide
-                        </Button>
-                      </div>
-                      <div className="w-full md:w-1/3">
-                        <img
-                          src={blog.imageUrl}
-                          alt={`${blog.category} Guide`}
-                          className="rounded-lg"
-                        />
-                      </div>
+              {/* Blog Content */}
+              <div className="mt-8" dangerouslySetInnerHTML={{ __html: blog.content }} />
+
+              {/* Category-specific CTA - Made more prominent */}
+              {blog.category && (
+                <div className="my-12 bg-[#2F4F4F] text-white p-8 rounded-xl shadow-lg">
+                  <div className="flex flex-col md:flex-row gap-8 items-center">
+                    <div className="flex-1">
+                      <h3 className="text-3xl font-bold mb-4">Download Your Free {blog.category} Guide</h3>
+                      <p className="text-white/90 text-lg mb-6">
+                        Get our exclusive insider's guide for {blog.category.toLowerCase()} in Cabo San Lucas.
+                        Unlock local secrets and expert tips!
+                      </p>
+                      <Button className="w-full md:w-auto bg-white text-[#2F4F4F] hover:bg-white/90">
+                        Download Free Guide
+                      </Button>
                     </div>
-                  </div>
-                )}
-
-                {/* Social Share Buttons */}
-                <div className="border-t border-b py-6 my-8">
-                  <div className="flex items-center gap-4">
-                    <Share2 className="h-5 w-5 text-gray-600" />
-                    <div className="flex gap-4">
-                      {shareLinks.map((link) => (
-                        <a
-                          key={link.label}
-                          href={link.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-gray-600 hover:text-[#2F4F4F] transition-colors"
-                          aria-label={link.label}
-                        >
-                          <link.icon size={20} />
-                        </a>
-                      ))}
+                    <div className="w-full md:w-1/3">
+                      <img
+                        src={blog.imageUrl}
+                        alt={`${blog.category} Guide`}
+                        className="rounded-lg shadow-md"
+                      />
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
-
-            {/* Sidebar */}
-            <div className="space-y-8">
-              <div className="bg-gray-50 p-6 rounded-xl">
-                <h3 className="text-xl font-semibold mb-4">About the Author</h3>
-                <div className="flex items-center gap-4 mb-4">
-                  <img
-                    src="https://images.unsplash.com/photo-1494790108377-be9c29b29330"
-                    alt="Isabella"
-                    className="w-16 h-16 rounded-full"
-                  />
-                  <div>
-                    <div className="font-medium">Isabella</div>
-                    <div className="text-sm text-gray-600">Travel Expert & Local Guide</div>
-                  </div>
-                </div>
-                <p className="text-gray-600">
-                  With over a decade of experience in Cabo San Lucas, Isabella brings insider knowledge
-                  and a passion for helping travelers discover the true magic of this destination.
-                </p>
-              </div>
-
-              <div>
-                <h3 className="text-xl font-semibold mb-4">Featured Adventure</h3>
-                <div className="relative aspect-video rounded-lg overflow-hidden">
-                  <img
-                    src="https://images.unsplash.com/photo-1605281317010-fe5ffe798166"
-                    alt="Luxury Yacht Tour"
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-black/40 flex items-end p-4">
-                    <div className="text-white">
-                      <h4 className="font-semibold mb-1">Luxury Yacht Tour</h4>
-                      <p className="text-sm">Experience Cabo from the sea</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              )}
             </div>
           </div>
 
           {/* Related Posts */}
-          <div className="mt-16">
+          <div className="mt-16 max-w-6xl mx-auto">
             <h2 className="text-2xl font-bold mb-8">More Articles</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {relatedBlogs.map((relatedBlog) => (
