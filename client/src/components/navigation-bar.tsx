@@ -16,12 +16,12 @@ import {
 const mainMenuItems = [
   {
     title: "VILLAS",
-    href: "/villas",
+    href: "/villa",
     image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811"
   },
   {
     title: "RESORTS",
-    href: "/resorts",
+    href: "/resort",
     image: "https://images.unsplash.com/photo-1582719508461-905c673771fd"
   },
   {
@@ -85,13 +85,13 @@ const bottomRowItems = [
 const stays = [
   {
     title: "Villas",
-    href: "/villas",
+    href: "/villa",
     description: "Luxury private villas with stunning ocean views",
     image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811"
   },
   {
     title: "Resorts",
-    href: "/resorts",
+    href: "/resort",
     description: "World-class resorts and hotels",
     image: "https://images.unsplash.com/photo-1582719508461-905c673771fd"
   },
@@ -106,14 +106,14 @@ const stays = [
 const adventures = [
   {
     title: "Luxury Sailing",
-    href: "/yachts",
+    href: "/adventures",
     description: "Private yacht charters and sailing experiences",
     image: "https://images.unsplash.com/photo-1605281317010-fe5ffe798166",
     category: "yacht"
   },
   {
     title: "Private Yachts",
-    href: "/yachts",
+    href: "/adventures",
     description: "Exclusive yacht rentals for special occasions",
     image: "https://images.unsplash.com/photo-1569263979104-865ab7cd8d13",
     category: "yacht"

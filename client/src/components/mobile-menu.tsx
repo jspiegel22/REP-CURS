@@ -1,12 +1,12 @@
 const menuItems = [
   {
     title: "VILLAS",
-    href: "/villas",
+    href: "/villa",
     image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811"
   },
   {
     title: "RESORTS",
-    href: "/resorts",
+    href: "/resort",
     image: "https://images.unsplash.com/photo-1582719508461-905c673771fd"
   },
   {
@@ -64,4 +64,4 @@ const menuItems = [
     href: "/weddings",
     image: "https://images.unsplash.com/photo-1546032996-6dfacbacbf3f"
   }
-]; 
+];

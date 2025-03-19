@@ -14,7 +14,7 @@ export default function AdventuresLanding() {
 
   const { data: adventures = [], isLoading } = useQuery<Adventure[]>({
     queryKey: ["/api/adventures"],
-    queryFn: getQueryFn(),
+    queryFn: getQueryFn({ on401: "returnNull" }),
   });
 
   const filteredAdventures = adventures.filter(adventure => {
