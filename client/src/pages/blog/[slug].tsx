@@ -7,11 +7,11 @@ import { VillaCard } from "@/components/villa-card";
 import { Link } from "wouter";
 import { ChevronRight, Share2 } from "lucide-react";
 import {
-  SiTwitter,
-  SiFacebook,
-  SiLinkedin,
-  SiWhatsapp,
-} from "react-icons/si";
+  FaTwitter,
+  FaFacebookF,
+  FaLinkedinIn,
+  FaWhatsapp,
+} from "react-icons/fa";
 import Footer from "@/components/footer";
 
 export default function BlogPost() {
@@ -23,7 +23,7 @@ export default function BlogPost() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-4">Blog Post Not Found</h1>
-          <Link href="/blog">
+          <Link href="/blog" className="inline-block">
             <Button variant="outline">Back to Blog</Button>
           </Link>
         </div>
@@ -36,22 +36,22 @@ export default function BlogPost() {
 
   const shareLinks = [
     {
-      icon: SiTwitter,
+      icon: FaTwitter,
       url: `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`,
       label: "Share on Twitter",
     },
     {
-      icon: SiFacebook,
+      icon: FaFacebookF,
       url: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`,
       label: "Share on Facebook",
     },
     {
-      icon: SiLinkedin,
+      icon: FaLinkedinIn,
       url: `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent(blog.title)}`,
       label: "Share on LinkedIn",
     },
     {
-      icon: SiWhatsapp,
+      icon: FaWhatsapp,
       url: `https://wa.me/?text=${encodeURIComponent(shareText + " " + shareUrl)}`,
       label: "Share on WhatsApp",
     },
@@ -142,21 +142,33 @@ export default function BlogPost() {
             <div className="lg:col-span-2">
               <div className="prose prose-lg max-w-none">
                 <p className="text-xl text-gray-600 mb-8">{blog.excerpt}</p>
-                
-                {/* Sample blog content - replace with actual content */}
-                <h2>Discovering Hidden Gems</h2>
-                <p>
-                  Cabo San Lucas is home to some of the most breathtaking beaches in the world.
-                  From secluded coves to expansive stretches of golden sand, each beach has its
-                  own unique character and charm.
-                </p>
 
-                <h2>Best Time to Visit</h2>
-                <p>
-                  The best time to visit these hidden beaches is during the early morning hours
-                  when the temperatures are mild and the crowds are thin. This is also when
-                  you'll catch the most spectacular sunrises over the Sea of Cortez.
-                </p>
+                {/* Blog Content */}
+                <div className="mt-8" dangerouslySetInnerHTML={{ __html: blog.content }} />
+
+                {/* Category-specific CTA */}
+                {blog.category && (
+                  <div className="my-12 bg-gray-50 p-8 rounded-xl">
+                    <div className="flex flex-col md:flex-row gap-8 items-center">
+                      <div className="flex-1">
+                        <h3 className="text-2xl font-bold mb-4">{blog.category} Guide</h3>
+                        <p className="text-gray-600 mb-4">
+                          Get our exclusive guide for {blog.category.toLowerCase()} in Cabo San Lucas.
+                        </p>
+                        <Button className="w-full md:w-auto">
+                          Download Free Guide
+                        </Button>
+                      </div>
+                      <div className="w-full md:w-1/3">
+                        <img
+                          src={blog.imageUrl}
+                          alt={`${blog.category} Guide`}
+                          className="rounded-lg"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {/* Social Share Buttons */}
                 <div className="border-t border-b py-6 my-8">
@@ -226,23 +238,21 @@ export default function BlogPost() {
             <h2 className="text-2xl font-bold mb-8">More Articles</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {relatedBlogs.map((relatedBlog) => (
-                <Link key={relatedBlog.id} href={`/blog/${relatedBlog.slug}`}>
-                  <a className="group block">
-                    <div className="relative aspect-[16/9] rounded-lg overflow-hidden mb-4">
-                      <img
-                        src={relatedBlog.imageUrl}
-                        alt={relatedBlog.title}
-                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                        loading="lazy"
-                      />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-semibold group-hover:text-[#2F4F4F] transition-colors">
-                        {relatedBlog.title}
-                      </h3>
-                      <p className="text-gray-600 mt-2 line-clamp-2">{relatedBlog.excerpt}</p>
-                    </div>
-                  </a>
+                <Link key={relatedBlog.id} href={`/blog/${relatedBlog.slug}`} className="group block">
+                  <div className="relative aspect-[16/9] rounded-lg overflow-hidden mb-4">
+                    <img
+                      src={relatedBlog.imageUrl}
+                      alt={relatedBlog.title}
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      loading="lazy"
+                    />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-semibold group-hover:text-[#2F4F4F] transition-colors">
+                      {relatedBlog.title}
+                    </h3>
+                    <p className="text-gray-600 mt-2 line-clamp-2">{relatedBlog.excerpt}</p>
+                  </div>
                 </Link>
               ))}
             </div>

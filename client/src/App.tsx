@@ -11,6 +11,8 @@ import VillasLanding from "@/pages/villas-landing";
 import VillaDetail from "@/pages/villa-detail";
 import AdventuresLanding from "@/pages/adventures-landing";
 import AdventureDetail from "@/pages/adventure-detail";
+import BlogIndex from "@/pages/blog";
+import BlogDetail from "@/pages/blog/[slug]";
 import RestaurantsPage from "@/pages/restaurants";
 import RestaurantDetails from "@/pages/restaurants/[id]";
 import FamilyTripsPage from "@/pages/group-trips/family";
@@ -31,6 +33,8 @@ function Router() {
       <NavigationBar />
       <Switch>
         <Route path="/" component={HomePage} />
+        <Route path="/blog" component={BlogIndex} />
+        <Route path="/blog/:slug" component={BlogDetail} />
         <Route path="/resorts" component={ResortsLanding} />
         <Route path="/resorts/:slug" component={ResortDetail} />
         <Route path="/villas" component={VillasLanding} />
