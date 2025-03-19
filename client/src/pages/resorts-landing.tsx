@@ -6,6 +6,7 @@ import { Link } from "wouter";
 import { generateSlug } from "@/lib/utils";
 import Footer from "@/components/footer";
 import { resorts } from "@/data/resorts";
+import SEO from "@/components/SEO";
 
 export default function ResortsLanding() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -27,6 +28,56 @@ export default function ResortsLanding() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      <SEO
+        title="Luxury Resorts in Cabo San Lucas | Cabo Adventures"
+        description="Discover world-class resorts in Cabo San Lucas. From beachfront luxury to cliff-side retreats, find your perfect stay with exclusive amenities and stunning views."
+        canonicalUrl="https://cabo-adventures.com/resort"
+        schema={{
+          '@context': 'https://schema.org',
+          '@type': 'CollectionPage',
+          name: 'Cabo San Lucas Luxury Resorts',
+          description: 'Collection of premium resorts in Cabo San Lucas',
+          publisher: {
+            '@type': 'Organization',
+            name: 'Cabo Adventures',
+            url: 'https://cabo-adventures.com'
+          },
+          mainEntity: {
+            '@type': 'ItemList',
+            itemListElement: resorts.map((resort, index) => ({
+              '@type': 'ListItem',
+              position: index + 1,
+              item: {
+                '@type': 'LodgingBusiness',
+                name: resort.name,
+                description: resort.description,
+                image: resort.imageUrl,
+                priceRange: resort.priceLevel,
+                aggregateRating: {
+                  '@type': 'AggregateRating',
+                  ratingValue: resort.rating,
+                  reviewCount: resort.reviewCount
+                }
+              }
+            }))
+          }
+        }}
+        openGraph={{
+          title: "Luxury Resorts in Cabo San Lucas",
+          description: "Experience world-class hospitality at our carefully curated selection of premium resorts in Cabo San Lucas.",
+          image: "https://images.unsplash.com/photo-1582719508461-905c673771fd",
+          url: "https://cabo-adventures.com/resort"
+        }}
+        keywords={[
+          'Cabo San Lucas resorts',
+          'luxury hotels',
+          'beachfront resorts',
+          'all-inclusive resorts',
+          'Cabo accommodation',
+          'luxury stays',
+          'Mexico resorts'
+        ]}
+      />
       <main className="flex-1">
         {/* Hero Section */}
         <div className="relative h-[50vh] min-h-[400px] w-full bg-[url('https://images.unsplash.com/photo-1582719508461-905c673771fd')] bg-cover bg-center">

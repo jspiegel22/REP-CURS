@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { AdventureCard } from "@/components/adventure-card";
 import { Adventure, parseAdventureData } from "@/types/adventure";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+import SEO, { generateAdventureSchema } from "@/components/SEO";
 
 // Import complete CSV data from the assets
 const adventureData = `group href,h-full src,ais-Highlight-nonHighlighted,text-base,text-xs-4,absolute,font-sans,flex src (2),font-sans (2),gl-font-meta,group href (2)
@@ -36,109 +37,151 @@ export default function AdventuresLanding() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <div className="relative h-[50vh] min-h-[400px] w-full bg-[url('https://images.unsplash.com/photo-1564351943427-3d61951984e9')] bg-cover bg-center">
-        <div className="absolute inset-0 bg-black/40">
-          <div className="container mx-auto px-4 h-full flex items-center">
-            <div className="max-w-2xl text-white">
-              <h1 className="text-5xl font-bold mb-6">Cabo Adventures & Experiences</h1>
-              <p className="text-xl">Discover thrilling adventures and unforgettable experiences in Cabo San Lucas.</p>
+      <SEO
+        title="Cabo Adventures & Experiences | Thrilling Activities in Cabo San Lucas"
+        description="Experience unforgettable adventures in Cabo San Lucas. From luxury yacht tours to desert safaris, discover exciting activities for all ages and interests."
+        canonicalUrl="https://cabo-adventures.com/adventures"
+        schema={{
+          '@context': 'https://schema.org',
+          '@type': 'CollectionPage',
+          name: 'Cabo San Lucas Adventures',
+          description: 'Collection of premium adventures and experiences',
+          publisher: {
+            '@type': 'Organization',
+            name: 'Cabo Adventures',
+            url: 'https://cabo-adventures.com'
+          },
+          mainEntity: {
+            '@type': 'ItemList',
+            itemListElement: adventures.map((adventure, index) => ({
+              '@type': 'ListItem',
+              position: index + 1,
+              item: generateAdventureSchema(adventure)
+            }))
+          }
+        }}
+        openGraph={{
+          title: "Exciting Adventures in Cabo San Lucas",
+          description: "Discover thrilling adventures and unforgettable experiences in Cabo San Lucas. Book your next adventure today!",
+          image: "https://images.unsplash.com/photo-1564351943427-3d61951984e9",
+          url: "https://cabo-adventures.com/adventures"
+        }}
+        keywords={[
+          'Cabo San Lucas activities',
+          'adventure tours',
+          'yacht tours',
+          'water sports',
+          'desert safari',
+          'whale watching',
+          'snorkeling',
+          'luxury experiences'
+        ]}
+      />
+      <main>
+        {/* Hero Section */}
+        <div className="relative h-[50vh] min-h-[400px] w-full bg-[url('https://images.unsplash.com/photo-1564351943427-3d61951984e9')] bg-cover bg-center">
+          <div className="absolute inset-0 bg-black/40">
+            <div className="container mx-auto px-4 h-full flex items-center">
+              <div className="max-w-2xl text-white">
+                <h1 className="text-5xl font-bold mb-6">Cabo Adventures & Experiences</h1>
+                <p className="text-xl">Discover thrilling adventures and unforgettable experiences in Cabo San Lucas.</p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Debug Info - Remove in production */}
-      <div className="container mx-auto px-4 py-4 text-sm text-muted-foreground">
-        <p>Total Adventures: {adventures.length}</p>
-        <p>Filtered Adventures: {filteredAdventures.length}</p>
-        <p>Current Page: {currentPage}</p>
-      </div>
-
-      {/* Filters */}
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex gap-4 mb-8">
-          <Button 
-            variant={filter === 'all' ? 'default' : 'outline'}
-            onClick={() => setFilter('all')}
-          >
-            All Adventures
-          </Button>
-          <Button 
-            variant={filter === 'water' ? 'default' : 'outline'}
-            onClick={() => setFilter('water')}
-          >
-            Water Activities
-          </Button>
-          <Button 
-            variant={filter === 'land' ? 'default' : 'outline'}
-            onClick={() => setFilter('land')}
-          >
-            Land Activities
-          </Button>
-          <Button 
-            variant={filter === 'luxury' ? 'default' : 'outline'}
-            onClick={() => setFilter('luxury')}
-          >
-            Luxury Tours
-          </Button>
-          <Button 
-            variant={filter === 'family' ? 'default' : 'outline'}
-            onClick={() => setFilter('family')}
-          >
-            Family Friendly
-          </Button>
+        {/* Debug Info - Remove in production */}
+        <div className="container mx-auto px-4 py-4 text-sm text-muted-foreground">
+          <p>Total Adventures: {adventures.length}</p>
+          <p>Filtered Adventures: {filteredAdventures.length}</p>
+          <p>Current Page: {currentPage}</p>
         </div>
 
-        {/* Adventures Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {displayedAdventures.map((adventure) => (
-            <AdventureCard key={adventure.id} adventure={adventure} />
-          ))}
-        </div>
+        {/* Filters */}
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex gap-4 mb-8">
+            <Button
+              variant={filter === 'all' ? 'default' : 'outline'}
+              onClick={() => setFilter('all')}
+            >
+              All Adventures
+            </Button>
+            <Button
+              variant={filter === 'water' ? 'default' : 'outline'}
+              onClick={() => setFilter('water')}
+            >
+              Water Activities
+            </Button>
+            <Button
+              variant={filter === 'land' ? 'default' : 'outline'}
+              onClick={() => setFilter('land')}
+            >
+              Land Activities
+            </Button>
+            <Button
+              variant={filter === 'luxury' ? 'default' : 'outline'}
+              onClick={() => setFilter('luxury')}
+            >
+              Luxury Tours
+            </Button>
+            <Button
+              variant={filter === 'family' ? 'default' : 'outline'}
+              onClick={() => setFilter('family')}
+            >
+              Family Friendly
+            </Button>
+          </div>
 
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="mt-8">
-            <Pagination>
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious 
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setCurrentPage(p => Math.max(1, p - 1));
-                    }}
-                  />
-                </PaginationItem>
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                  <PaginationItem key={page}>
-                    <PaginationLink
+          {/* Adventures Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {displayedAdventures.map((adventure) => (
+              <AdventureCard key={adventure.id} adventure={adventure} />
+            ))}
+          </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="mt-8">
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
                       href="#"
                       onClick={(e) => {
                         e.preventDefault();
-                        setCurrentPage(page);
+                        setCurrentPage(p => Math.max(1, p - 1));
                       }}
-                      isActive={currentPage === page}
-                    >
-                      {page}
-                    </PaginationLink>
+                    />
                   </PaginationItem>
-                ))}
-                <PaginationItem>
-                  <PaginationNext
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setCurrentPage(p => Math.min(totalPages, p + 1));
-                    }}
-                  />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
-          </div>
-        )}
-      </div>
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                    <PaginationItem key={page}>
+                      <PaginationLink
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setCurrentPage(page);
+                        }}
+                        isActive={currentPage === page}
+                      >
+                        {page}
+                      </PaginationLink>
+                    </PaginationItem>
+                  ))}
+                  <PaginationItem>
+                    <PaginationNext
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setCurrentPage(p => Math.min(totalPages, p + 1));
+                      }}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
+          )}
+        </div>
+      </main>
     </div>
   );
 }

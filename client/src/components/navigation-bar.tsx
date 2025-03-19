@@ -99,12 +99,6 @@ const stays = [
     href: "/resort",
     description: "World-class resorts and hotels",
     image: "https://images.unsplash.com/photo-1582719508461-905c673771fd"
-  },
-  {
-    title: "Real Estate",
-    href: "/real-estate",
-    description: "Find your dream property in Cabo",
-    image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c"
   }
 ];
 
@@ -161,16 +155,16 @@ const socialLinks = [
 
 const moreMenuItems = [
   {
-    title: "Local Events",
-    href: "/events",
-    description: "Discover what's happening in Cabo",
-    image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87"
-  },
-  {
     title: "Real Estate",
     href: "/real-estate",
     description: "Find your dream property in Cabo",
     image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c"
+  },
+  {
+    title: "Local Events",
+    href: "/events",
+    description: "Discover what's happening in Cabo",
+    image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87"
   },
   {
     title: "Travel Guides",
