@@ -22,17 +22,17 @@ export default function Footer() {
             <h3 className="text-xl font-bold mb-4">Activities</h3>
             <ul className="space-y-2">
               <li><Link href="/adventures">Adventures</Link></li>
+              <li><Link href="/adventures/luxury-sailing">Luxury Yachts</Link></li>
               <li><Link href="/restaurants">Restaurants</Link></li>
               <li><Link href="/events">Local Events</Link></li>
-              <li><Link href="/group-trips/luxury-concierge">Luxury Concierge</Link></li>
             </ul>
           </div>
           <div>
             <h3 className="text-xl font-bold mb-4">Plan Your Trip</h3>
             <ul className="space-y-2">
               <li><Link href="/guides">Travel Guides</Link></li>
-              <li><Link href="/group-trips/bachelor-bachelorette">Bachelorette</Link></li>
-              <li><Link href="/weddings">Wedding Planning</Link></li>
+              <li><Link href="/group-trips/bachelor-bachelorette">Bachelor/ette</Link></li>
+              <li><Link href="/group-trips/luxury-concierge">Luxury Concierge</Link></li>
               <li><Link href="/group-trips/family">Family Trips</Link></li>
             </ul>
           </div>
@@ -52,6 +52,7 @@ export default function Footer() {
             <ul className="space-y-2">
               <li><Link href="/work-with-us">Work with Us</Link></li>
               <li><Link href="/group-trips/influencer">For Influencers</Link></li>
+              <li><Link href="/weddings">Wedding Planning</Link></li>
             </ul>
           </div>
         </div>
