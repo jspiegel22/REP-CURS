@@ -115,5 +115,120 @@ export const sampleVillas: Villa[] = [
     lastSyncedAt: new Date(),
     createdAt: new Date(),
     updatedAt: new Date()
+  },
+  {
+    id: 6,
+    trackHsId: "villa-006",
+    name: "Bagatelle Los Cabos",
+    description: "Its all about the atmosphere and service. They provide it all. The food was delicious, and presented beautifully.",
+    bedrooms: 6,
+    bathrooms: 6,
+    maxGuests: 14,
+    amenities: ["Private Pool", "Ocean View", "Fine Dining", "Beach Access", "Concierge Service"],
+    imageUrl: "https://resizer.otstatic.com/v2/photos/legacy/2/47401755.jpg",
+    imageUrls: [
+      "https://resizer.otstatic.com/v2/photos/legacy/2/47401755.jpg",
+      "https://resizer.otstatic.com/v2/photos/legacy/2/47401756.jpg"
+    ],
+    pricePerNight: "3500",
+    location: "Cabo San Lucas",
+    address: "Medano Beach",
+    latitude: "22.89",
+    longitude: "-109.91",
+    lastSyncedAt: new Date(),
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    id: 7,
+    trackHsId: "villa-007",
+    name: "Salvatore G Villa",
+    description: "Classic Italian villa with a modern twist. Amazing views and luxury amenities made in-house daily.",
+    bedrooms: 5,
+    bathrooms: 5,
+    maxGuests: 12,
+    amenities: ["Infinity Pool", "Italian Kitchen", "Wine Cellar", "Ocean View", "Private Chef"],
+    imageUrl: "https://resizer.otstatic.com/v2/photos/xlarge/3/47402198.jpg",
+    imageUrls: [
+      "https://resizer.otstatic.com/v2/photos/xlarge/3/47402198.jpg",
+      "https://resizer.otstatic.com/v2/photos/xlarge/3/47402199.jpg"
+    ],
+    pricePerNight: "2800",
+    location: "Cabo San Lucas",
+    address: "Pedregal",
+    latitude: "22.88",
+    longitude: "-109.90",
+    lastSyncedAt: new Date(),
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    id: 8,
+    trackHsId: "villa-008",
+    name: "Sunset Monalisa Villa",
+    description: "Breathtaking views of the Arch and Sea of Cortez. Mediterranean-style luxury villa with world-class amenities.",
+    bedrooms: 7,
+    bathrooms: 7,
+    maxGuests: 16,
+    amenities: ["Infinity Pool", "Mediterranean Kitchen", "Private Beach", "Spa Services", "Butler Service"],
+    imageUrl: "https://resizer.otstatic.com/v2/photos/xlarge/2/47401799.jpg",
+    imageUrls: [
+      "https://resizer.otstatic.com/v2/photos/xlarge/2/47401799.jpg",
+      "https://resizer.otstatic.com/v2/photos/xlarge/2/47401800.jpg"
+    ],
+    pricePerNight: "4000",
+    location: "Cabo San Lucas",
+    address: "Tourist Corridor",
+    latitude: "22.87",
+    longitude: "-109.89",
+    lastSyncedAt: new Date(),
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    id: 9,
+    trackHsId: "villa-009",
+    name: "Raw Baja Villa",
+    description: "Excellent fresh seafood and spectacular ocean views. Great service in a modern luxury setting.",
+    bedrooms: 4,
+    bathrooms: 4,
+    maxGuests: 10,
+    amenities: ["Infinity Pool", "Seafood Kitchen", "Beach Access", "Water Sports", "Concierge"],
+    imageUrl: "https://resizer.otstatic.com/v2/photos/legacy/2/65518316.jpg",
+    imageUrls: [
+      "https://resizer.otstatic.com/v2/photos/legacy/2/65518316.jpg",
+      "https://resizer.otstatic.com/v2/photos/legacy/2/65518317.jpg"
+    ],
+    pricePerNight: "2200",
+    location: "Cabo San Lucas",
+    address: "Marina",
+    latitude: "22.88",
+    longitude: "-109.90",
+    lastSyncedAt: new Date(),
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    id: 10,
+    trackHsId: "villa-010",
+    name: "Benno Todos Santos Villa",
+    description: "Lovely villa with great ambience in the heart of Todos Santos. Amazing food and service.",
+    bedrooms: 5,
+    bathrooms: 5,
+    maxGuests: 12,
+    amenities: ["Private Pool", "Mexican Kitchen", "Garden", "Art Studio", "Yoga Deck"],
+    imageUrl: "https://resizer.otstatic.com/v2/photos/legacy/4/28647765.jpg",
+    imageUrls: [
+      "https://resizer.otstatic.com/v2/photos/legacy/4/28647765.jpg",
+      "https://resizer.otstatic.com/v2/photos/legacy/4/28647766.jpg"
+    ],
+    pricePerNight: "1800",
+    location: "Todos Santos",
+    address: "Hotel San Cristóbal",
+    latitude: "23.44",
+    longitude: "-110.22",
+    lastSyncedAt: new Date(),
+    createdAt: new Date(),
+    updatedAt: new Date()
   }
 ];
