@@ -40,15 +40,41 @@ export interface TrackHSVilla {
 export async function fetchVillas() {
   try {
     console.log('Fetching villas from TrackHS API...');
+    const allVillas: TrackHSVilla[] = [];
+    let page = 1;
+    let hasMore = true;
 
-    // Fetch villa data from TrackHS
-    const response = await trackHsApi.get('/units');
-    const villasData: TrackHSVilla[] = response.data.units;
+    while (hasMore) {
+      try {
+        // Fetch villa data from TrackHS with pagination
+        const response = await trackHsApi.get('/units', {
+          params: {
+            page,
+            limit: 100 // Get maximum number of items per page
+          }
+        });
 
-    console.log(`Retrieved ${villasData.length} villas from TrackHS`);
+        const villasData = response.data.units || [];
+        console.log(`Retrieved ${villasData.length} villas from page ${page}`);
+
+        if (villasData.length === 0) {
+          hasMore = false;
+          break;
+        }
+
+        allVillas.push(...villasData);
+        page++;
+      } catch (error) {
+        console.error(`Error fetching page ${page}:`, error);
+        hasMore = false;
+        break;
+      }
+    }
+
+    console.log(`Total villas fetched: ${allVillas.length}`);
 
     // Process and store each villa
-    for (const villaData of villasData) {
+    for (const villaData of allVillas) {
       try {
         // Transform TrackHS villa data to match our schema
         const villaRecord = {
@@ -69,7 +95,7 @@ export async function fetchVillas() {
           lastSyncedAt: new Date(),
         };
 
-        // Upsert villa data - create if doesn't exist, update if exists
+        // Upsert villa data
         await db
           .insert(villas)
           .values(villaRecord)

@@ -1,12 +1,11 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card"; 
 import { Input } from "@/components/ui/input";
-import { Star, MapPin, Search } from "lucide-react";
-import { Link } from "wouter";
-import { generateSlug } from "@/lib/utils";
+import { Search } from "lucide-react";
+import { VillaCard } from "@/components/villa-card";
 import Footer from "@/components/footer";
-import { villas } from "@/data/villas";
+import type { Villa } from "@shared/schema";
 
 export default function VillasLanding() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -14,13 +13,18 @@ export default function VillasLanding() {
   const [bedroomFilter, setBedroomFilter] = useState<string>("all");
   const [guestFilter, setGuestFilter] = useState<string>("all");
 
-  const locations = ["CORRIDOR", "CABO SAN LUCAS", "SAN JOSE DEL CABO"];
+  // Fetch villas from API
+  const { data: villas = [], isLoading } = useQuery<Villa[]>({
+    queryKey: ["/api/villas"],
+  });
+
+  const locations = Array.from(new Set(villas.map(villa => villa.location))).sort();
   const bedroomOptions = Array.from(new Set(villas.map(villa => villa.bedrooms))).sort((a, b) => a - b);
   const guestOptions = Array.from(new Set(villas.map(villa => villa.maxGuests))).sort((a, b) => a - b);
 
   const filteredVillas = villas.filter(villa => {
     const matchesSearch = villa.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         villa.location.toLowerCase().includes(searchQuery.toLowerCase());
+                       villa.location.toLowerCase().includes(searchQuery.toLowerCase());
 
     const matchesLocation = locationFilter === "all" || villa.location === locationFilter;
     const matchesBedrooms = bedroomFilter === "all" || villa.bedrooms === parseInt(bedroomFilter);
@@ -28,6 +32,14 @@ export default function VillasLanding() {
 
     return matchesSearch && matchesLocation && matchesBedrooms && matchesGuests;
   });
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -70,7 +82,7 @@ export default function VillasLanding() {
               >
                 <option value="all">All Locations</option>
                 {locations.map(loc => (
-                  <option key={loc} value={loc}>{loc.replace(/_/g, ' ')}</option>
+                  <option key={loc} value={loc}>{loc}</option>
                 ))}
               </select>
 
@@ -106,45 +118,10 @@ export default function VillasLanding() {
           {/* Villa Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredVillas.map((villa) => (
-              <Link
-                key={villa.id}
-                href={`/villa/${generateSlug(villa.name)}`}
-                className="block transition-transform hover:scale-[1.02]"
-              >
-                <Card className="h-full">
-                  <div className="aspect-[16/9] relative overflow-hidden rounded-t-lg">
-                    <img
-                      src={villa.imageUrl}
-                      alt={villa.name}
-                      className="absolute inset-0 w-full h-full object-cover"
-                    />
-                    {(villa.isBeachfront || villa.isOceanfront) && (
-                      <div className="absolute top-2 right-2 bg-primary/90 text-primary-foreground px-2 py-1 rounded-full text-xs">
-                        {villa.isBeachfront ? 'Beachfront' : 'Oceanfront'}
-                      </div>
-                    )}
-                  </div>
-                  <CardContent className="p-6">
-                    <h3 className="text-xl font-semibold mb-2">{villa.name}</h3>
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
-                      <div className="flex items-center">
-                        <Star className="h-4 w-4 text-yellow-400 mr-1" fill="currentColor" />
-                        <span>{villa.rating}</span>
-                      </div>
-                      <div className="flex items-center">
-                        <MapPin className="h-4 w-4 mr-1" />
-                        <span>{villa.location}</span>
-                      </div>
-                    </div>
-                    <p className="line-clamp-2 text-muted-foreground">
-                      {villa.description}
-                    </p>
-                    <div className="mt-4 text-sm text-muted-foreground">
-                      {villa.bedrooms} BR • {villa.bathrooms} BA • Up to {villa.maxGuests} guests
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
+              <VillaCard
+                key={villa.trackHsId}
+                villa={villa}
+              />
             ))}
           </div>
         </div>

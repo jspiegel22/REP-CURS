@@ -12,7 +12,7 @@ interface VillaCardProps {
 export function VillaCard({ villa, className = "" }: VillaCardProps) {
   return (
     <Link 
-      href={`/villa/${generateSlug(villa.name)}`}
+      href={`/villa/${villa.trackHsId}`}
       className={`block transition-transform hover:scale-[1.02] ${className}`}
     >
       <Card className="cursor-pointer hover:shadow-lg transition-shadow duration-200">
@@ -22,11 +22,6 @@ export function VillaCard({ villa, className = "" }: VillaCardProps) {
             alt={villa.name}
             className="object-cover w-full h-full"
           />
-          {(villa.isBeachfront || villa.isOceanfront) && (
-            <div className="absolute top-2 right-2 bg-primary/90 text-primary-foreground px-2 py-1 rounded-full text-xs">
-              {villa.isBeachfront ? 'Beachfront' : 'Oceanfront'}
-            </div>
-          )}
         </div>
         <CardContent className="p-4">
           <h3 className="text-lg font-semibold mb-1">{villa.name}</h3>
@@ -34,7 +29,7 @@ export function VillaCard({ villa, className = "" }: VillaCardProps) {
           <div className="flex items-center gap-4 text-sm">
             <div className="flex items-center">
               <Star className="h-4 w-4 text-yellow-400 mr-1" fill="currentColor" />
-              <span>{villa.rating}</span>
+              <span>4.5</span>
             </div>
             <div className="flex items-center">
               <MapPin className="h-4 w-4 mr-1" />
@@ -43,6 +38,9 @@ export function VillaCard({ villa, className = "" }: VillaCardProps) {
           </div>
           <div className="mt-2 text-sm text-muted-foreground">
             {villa.bedrooms} BR • Up to {villa.maxGuests} guests
+          </div>
+          <div className="mt-2 text-sm font-semibold">
+            ${villa.pricePerNight} per night
           </div>
         </CardContent>
       </Card>
