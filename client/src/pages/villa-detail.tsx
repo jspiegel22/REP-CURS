@@ -3,6 +3,7 @@ import Footer from "@/components/footer";
 import { villas } from "@/data/villas";
 import VillaBookingTemplate from "@/components/templates/VillaBookingTemplate";
 import { generateSlug } from "@/lib/utils";
+import SEO, { generateVillaSchema } from "@/components/SEO";
 
 // Reviews data
 const reviews = [
@@ -80,6 +81,10 @@ export default function VillaDetail() {
   if (!villa) {
     return (
       <div className="min-h-screen bg-background flex flex-col">
+        <SEO 
+          title="Villa Not Found - Cabo Adventures"
+          description="Sorry, we couldn't find the villa you're looking for. Explore our other luxury villas in Cabo San Lucas."
+        />
         <main className="flex-1">
           <div className="container mx-auto px-4 py-16 text-center">
             <h1 className="text-2xl font-bold mb-4">Villa Not Found</h1>
@@ -91,12 +96,31 @@ export default function VillaDetail() {
     );
   }
 
-  // Get villa-specific features and pricing
   const features = villaFeatures[villa.name as keyof typeof villaFeatures] || [];
   const pricePerNight = villaPricing[villa.name as keyof typeof villaPricing] || 1500;
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      <SEO
+        title={`${villa.name} - Luxury Villa in ${villa.location} | Cabo Adventures`}
+        description={`Experience ${villa.name}, a stunning ${villa.bedrooms}-bedroom villa in ${villa.location}. ${villa.description} Book your stay today!`}
+        canonicalUrl={`https://cabo-adventures.com/villa/${generateSlug(villa.name)}`}
+        schema={generateVillaSchema(villa)}
+        openGraph={{
+          title: `${villa.name} - Luxury Villa in ${villa.location}`,
+          description: villa.description,
+          image: villa.imageUrl,
+          url: `https://cabo-adventures.com/villa/${generateSlug(villa.name)}`
+        }}
+        keywords={[
+          'Cabo San Lucas villas',
+          'luxury villa rental',
+          villa.location,
+          'beachfront villa',
+          'vacation rental',
+          villa.name
+        ]}
+      />
       <main className="flex-1">
         <VillaBookingTemplate
           title={villa.name}

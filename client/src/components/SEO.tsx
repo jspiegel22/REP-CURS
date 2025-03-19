@@ -1,4 +1,4 @@
-import Head from 'next/head';
+import { Helmet } from 'react-helmet';
 
 interface SEOProps {
   title: string;
@@ -37,7 +37,7 @@ export default function SEO({
   const siteUrl = 'https://cabo-adventures.com';
 
   return (
-    <Head>
+    <Helmet>
       {/* Basic Meta Tags */}
       <title>{title}</title>
       <meta name="description" content={description} />
@@ -75,22 +75,106 @@ export default function SEO({
       ))}
       <link rel="alternate" hrefLang="x-default" href={canonicalUrl || siteUrl} />
 
-      {/* Favicon and App Icons */}
-      <link rel="icon" href="/favicon.ico" />
-      <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-      <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-      <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-      <link rel="manifest" href="/site.webmanifest" />
-
       {/* Schema.org Markup */}
       {schema && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
-        />
+        <script type="application/ld+json">
+          {JSON.stringify(schema)}
+        </script>
       )}
-    </Head>
+    </Helmet>
   );
+}
+
+// Helper function to generate villa schema
+export function generateVillaSchema(villa: any) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Accommodation',
+    name: villa.name,
+    description: villa.description,
+    image: villa.imageUrl,
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: villa.location,
+      addressRegion: 'Baja California Sur',
+      addressCountry: 'MX'
+    },
+    numberOfRooms: villa.bedrooms,
+    numberOfBathroomsTotal: villa.bathrooms,
+    occupancy: {
+      '@type': 'QuantitativeValue',
+      maxValue: villa.maxGuests
+    },
+    amenityFeature: [
+      {
+        '@type': 'LocationFeatureSpecification',
+        name: 'Ocean View',
+        value: villa.isOceanfront,
+      },
+      {
+        '@type': 'LocationFeatureSpecification',
+        name: 'Beach Access',
+        value: villa.isBeachfront,
+      }
+    ]
+  };
+}
+
+// Helper function to generate guide schema
+export function generateGuideSchema(guide: any) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: guide.title,
+    description: guide.description,
+    image: guide.image,
+    author: {
+      '@type': 'Organization',
+      name: 'Cabo Adventures',
+      url: 'https://cabo-adventures.com'
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Cabo Adventures',
+      logo: {
+        '@type': 'ImageObject',
+        url: 'https://cabo-adventures.com/logo.png'
+      }
+    },
+    datePublished: new Date().toISOString(),
+    dateModified: new Date().toISOString()
+  };
+}
+
+// Helper function to generate adventure schema
+export function generateAdventureSchema(adventure: any) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'TouristAttraction',
+    name: adventure.name,
+    description: adventure.description,
+    image: adventure.imageUrl,
+    location: {
+      '@type': 'Place',
+      name: adventure.location,
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: 'Cabo San Lucas',
+        addressRegion: 'Baja California Sur',
+        addressCountry: 'MX'
+      }
+    },
+    offers: {
+      '@type': 'Offer',
+      price: adventure.price,
+      priceCurrency: 'USD'
+    },
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: adventure.rating,
+      reviewCount: adventure.reviewCount
+    }
+  };
 }
 
 // Helper function to generate restaurant schema
@@ -117,12 +201,12 @@ export function generateRestaurantSchema(restaurant: any) {
     telephone: restaurant.phone,
     priceRange: restaurant.priceRange,
     servesCuisine: restaurant.cuisine,
-    openingHoursSpecification: Object.entries(restaurant.hours || {}).map(([day, hours]) => ({
+    openingHoursSpecification: restaurant.hours?.map((hour: any) => ({
       '@type': 'OpeningHoursSpecification',
-      dayOfWeek: day,
-      opens: hours.split(' - ')[0],
-      closes: hours.split(' - ')[1]
-    })),
+      dayOfWeek: hour.day,
+      opens: hour.opens,
+      closes: hour.closes
+    })) || [],
     aggregateRating: {
       '@type': 'AggregateRating',
       ratingValue: restaurant.rating,
@@ -130,79 +214,3 @@ export function generateRestaurantSchema(restaurant: any) {
     }
   };
 }
-
-// Helper function to generate villa schema
-export function generateVillaSchema(villa: any) {
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'House',
-    name: villa.name,
-    description: villa.description,
-    image: villa.imageUrl,
-    address: {
-      '@type': 'PostalAddress',
-      streetAddress: villa.address,
-      addressLocality: villa.location,
-      addressRegion: 'Baja California Sur',
-      addressCountry: 'MX',
-      postalCode: '23454'
-    },
-    geo: {
-      '@type': 'GeoCoordinates',
-      latitude: villa.latitude,
-      longitude: villa.longitude
-    },
-    numberOfRooms: villa.bedrooms,
-    numberOfBathroomsTotal: villa.bathrooms,
-    floorSize: {
-      '@type': 'QuantitativeValue',
-      value: villa.squareFootage,
-      unitCode: 'FTK'
-    },
-    priceSpecification: {
-      '@type': 'PriceSpecification',
-      price: villa.price,
-      priceCurrency: 'USD'
-    },
-    amenityFeature: villa.amenities.map((amenity: string) => ({
-      '@type': 'LocationFeatureSpecification',
-      name: amenity
-    }))
-  };
-}
-
-// Helper function to generate adventure schema
-export function generateAdventureSchema(adventure: any) {
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'TouristAttraction',
-    name: adventure.name,
-    description: adventure.description,
-    image: adventure.imageUrl,
-    address: {
-      '@type': 'PostalAddress',
-      streetAddress: adventure.address,
-      addressLocality: adventure.location,
-      addressRegion: 'Baja California Sur',
-      addressCountry: 'MX',
-      postalCode: '23454'
-    },
-    geo: {
-      '@type': 'GeoCoordinates',
-      latitude: adventure.latitude,
-      longitude: adventure.longitude
-    },
-    priceSpecification: {
-      '@type': 'PriceSpecification',
-      price: adventure.price,
-      priceCurrency: 'USD'
-    },
-    duration: adventure.duration,
-    tourBookingPage: adventure.bookingUrl,
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      ratingValue: adventure.rating,
-      reviewCount: adventure.reviewCount
-    }
-  };
-} 

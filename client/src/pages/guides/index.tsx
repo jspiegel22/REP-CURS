@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Download } from "lucide-react";
 import Footer from "@/components/footer";
+import SEO, { generateGuideSchema } from "@/components/SEO";
 
 // Sample guides data
 const guides = [
@@ -52,6 +53,45 @@ const guides = [
 export default function GuidesPage() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      <SEO
+        title="Cabo Travel Guides & Resources | Cabo Adventures"
+        description="Download expert travel guides for Cabo San Lucas. Get insider tips on restaurants, activities, beaches, and more to make the most of your Cabo experience."
+        canonicalUrl="https://cabo-adventures.com/guides"
+        schema={{
+          '@context': 'https://schema.org',
+          '@type': 'CollectionPage',
+          name: 'Cabo Travel Guides',
+          description: 'Collection of expert travel guides for Cabo San Lucas',
+          publisher: {
+            '@type': 'Organization',
+            name: 'Cabo Adventures',
+            url: 'https://cabo-adventures.com'
+          },
+          mainEntity: {
+            '@type': 'ItemList',
+            itemListElement: guides.map((guide, index) => ({
+              '@type': 'ListItem',
+              position: index + 1,
+              item: generateGuideSchema(guide)
+            }))
+          }
+        }}
+        openGraph={{
+          title: "Expert Travel Guides for Cabo San Lucas",
+          description: "Download comprehensive guides for your Cabo adventure. Restaurant recommendations, activity guides, and local insights.",
+          image: "https://images.unsplash.com/photo-1516546453174-5e1098a4b4af",
+          url: "https://cabo-adventures.com/guides"
+        }}
+        keywords={[
+          'Cabo San Lucas guides',
+          'travel tips',
+          'restaurant guide',
+          'activity guide',
+          'local recommendations',
+          'beach guide',
+          'Cabo travel planning'
+        ]}
+      />
       <main className="flex-1">
         {/* Hero Section */}
         <div className="relative h-[40vh] w-full overflow-hidden">

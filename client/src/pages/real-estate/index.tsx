@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Star, Home, TrendingUp, MapPin, Download } from "lucide-react";
 import Footer from "@/components/footer";
+import SEO from "@/components/SEO";
 
 // Sample listings data
 const sampleListings = [
@@ -58,6 +59,59 @@ export default function RealEstatePage() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      <SEO
+        title="Luxury Real Estate in Cabo San Lucas | Cabo Adventures"
+        description="Discover exclusive luxury real estate opportunities in Cabo San Lucas. From oceanfront villas to premium penthouses, find your dream property in paradise."
+        canonicalUrl="https://cabo-adventures.com/real-estate"
+        schema={{
+          '@context': 'https://schema.org',
+          '@type': 'RealEstateAgent',
+          name: 'Cabo Adventures Real Estate',
+          description: 'Premium real estate services in Cabo San Lucas',
+          areaServed: {
+            '@type': 'Place',
+            name: 'Cabo San Lucas',
+            address: {
+              '@type': 'PostalAddress',
+              addressRegion: 'Baja California Sur',
+              addressCountry: 'MX'
+            }
+          },
+          hasOfferCatalog: {
+            '@type': 'OfferCatalog',
+            name: 'Cabo San Lucas Properties',
+            itemListElement: sampleListings.map(listing => ({
+              '@type': 'Offer',
+              itemOffered: {
+                '@type': 'House',
+                name: listing.title,
+                description: listing.title,
+                numberOfRooms: listing.beds,
+                numberOfBathroomsTotal: listing.baths,
+                floorSize: {
+                  '@type': 'QuantitativeValue',
+                  value: listing.sqft,
+                  unitCode: 'FTK'
+                }
+              }
+            }))
+          }
+        }}
+        openGraph={{
+          title: "Luxury Real Estate in Cabo San Lucas",
+          description: "Find your dream property in Cabo San Lucas. Exclusive listings of luxury homes, villas, and penthouses.",
+          image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811",
+          url: "https://cabo-adventures.com/real-estate"
+        }}
+        keywords={[
+          'Cabo San Lucas real estate',
+          'luxury properties',
+          'oceanfront villas',
+          'investment properties',
+          'Pedregal homes',
+          'Puerto Los Cabos real estate'
+        ]}
+      />
       <main className="flex-1">
         {/* Hero Section */}
         <div className="relative h-[80vh] w-full overflow-hidden">
