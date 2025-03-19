@@ -122,7 +122,7 @@ export async function fetchVillas() {
   }
 }
 
-// Schedule villa data sync
+// Schedule villa sync
 export function scheduleVillaSync(intervalMinutes = 60) {
   // Initial sync
   fetchVillas().catch(console.error);

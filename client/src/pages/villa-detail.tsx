@@ -1,11 +1,25 @@
 import { useParams } from "wouter";
 import Footer from "@/components/footer";
-import { villas } from "@/data/villas";
 import VillaBookingTemplate from "@/components/templates/VillaBookingTemplate";
-import { generateSlug } from "@/lib/utils";
 import SEO, { generateVillaSchema } from "@/components/SEO";
+import { useQuery } from "@tanstack/react-query";
+import type { Villa } from "@shared/schema";
 
-// Reviews data
+// Villa amenities mapping
+const defaultAmenities = [
+  "Private Pool",
+  "Ocean View",
+  "WiFi",
+  "Air Conditioning",
+  "Full Kitchen",
+  "Daily Housekeeping",
+  "Concierge Service",
+  "Parking",
+  "Security System",
+  "Outdoor Space"
+];
+
+// Reviews data (can be moved to API later)
 const reviews = [
   {
     author: "Sarah M.",
@@ -30,53 +44,30 @@ const reviews = [
   }
 ];
 
-// Villa amenities
-const amenities = [
-  "Private Beach Access",
-  "Infinity Pool",
-  "Full-Service Spa",
-  "Fitness Center",
-  "24-Hour Room Service",
-  "Valet Parking",
-  "High-Speed WiFi",
-  "Air Conditioning",
-  "Mini Bar",
-  "Flat-screen TV",
-  "In-room Safe",
-  "Ocean View"
-];
-
-// Villa-specific features
-const villaFeatures = {
-  "Villa Tranquilidad": [
-    "Private Chef Service",
-    "Butler Service",
-    "Direct Beach Access",
-    "Panoramic Ocean Views",
-    "Heated Pool",
-    "Outdoor Kitchen",
-    "Wine Cellar"
-  ],
-  "Villa Lorena": [
-    "24/7 Concierge",
-    "Daily Housekeeping",
-    "Private Pool",
-    "Gourmet Kitchen",
-    "Home Theater",
-    "Game Room"
-  ]
-};
-
-// Villa pricing (per night)
-const villaPricing = {
-  "Villa Tranquilidad": 2500,
-  "Villa Lorena": 1500,
-  "Villa Esencia Del Mar": 1800
-};
-
 export default function VillaDetail() {
-  const { slug } = useParams();
-  const villa = villas.find(v => generateSlug(v.name) === slug);
+  const { trackHsId } = useParams();
+  const { data: villa, isLoading } = useQuery<Villa>({
+    queryKey: ["/api/villas", trackHsId],
+    enabled: !!trackHsId,
+  });
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col">
+        <main className="flex-1">
+          <div className="container mx-auto px-4 py-16">
+            <div className="animate-pulse space-y-4">
+              <div className="h-8 bg-muted rounded w-1/3"></div>
+              <div className="h-96 bg-muted rounded"></div>
+              <div className="h-4 bg-muted rounded w-2/3"></div>
+              <div className="h-4 bg-muted rounded w-1/2"></div>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   if (!villa) {
     return (
@@ -96,21 +87,21 @@ export default function VillaDetail() {
     );
   }
 
-  const features = villaFeatures[villa.name as keyof typeof villaFeatures] || [];
-  const pricePerNight = villaPricing[villa.name as keyof typeof villaPricing] || 1500;
+  // Combine villa's amenities with default ones if needed
+  const combinedAmenities = Array.from(new Set([...defaultAmenities, ...(villa.amenities as string[])]));
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <SEO
         title={`${villa.name} - Luxury Villa in ${villa.location} | Cabo Adventures`}
         description={`Experience ${villa.name}, a stunning ${villa.bedrooms}-bedroom villa in ${villa.location}. ${villa.description} Book your stay today!`}
-        canonicalUrl={`https://cabo-adventures.com/villa/${generateSlug(villa.name)}`}
+        canonicalUrl={`https://cabo-adventures.com/villa/${villa.trackHsId}`}
         schema={generateVillaSchema(villa)}
         openGraph={{
           title: `${villa.name} - Luxury Villa in ${villa.location}`,
           description: villa.description,
           image: villa.imageUrl,
-          url: `https://cabo-adventures.com/villa/${generateSlug(villa.name)}`
+          url: `https://cabo-adventures.com/villa/${villa.trackHsId}`
         }}
         keywords={[
           'Cabo San Lucas villas',
@@ -124,17 +115,24 @@ export default function VillaDetail() {
       <main className="flex-1">
         <VillaBookingTemplate
           title={villa.name}
-          subtitle={`${villa.rating} in ${villa.location}`}
+          subtitle={`Luxury ${villa.bedrooms} Bedroom Villa in ${villa.location}`}
           description={villa.description}
-          imageUrls={[villa.imageUrl]}
-          pricePerNight={pricePerNight}
+          imageUrls={villa.imageUrls as string[]}
+          pricePerNight={parseFloat(villa.pricePerNight)}
           rating={5}
           reviewCount={reviews.length}
           location={villa.location}
           maximumGuests={villa.maxGuests}
-          features={features}
-          amenities={amenities}
-          villaId={parseInt(villa.id.replace('villa-', ''))}
+          features={[
+            `${villa.bedrooms} Bedrooms`,
+            `${villa.bathrooms} Bathrooms`,
+            `Max ${villa.maxGuests} Guests`,
+            'Daily Housekeeping',
+            'Concierge Service',
+            'Ocean Views'
+          ]}
+          amenities={combinedAmenities}
+          villaId={villa.trackHsId}
           reviews={reviews}
         />
       </main>
