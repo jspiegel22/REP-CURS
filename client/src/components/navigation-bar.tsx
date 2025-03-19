@@ -264,7 +264,7 @@ const NavigationBar = () => {
               <NavigationMenuList>
                 {/* Stays Menu */}
                 <NavigationMenuItem>
-                  <NavigationMenuTrigger className="text-[#2F4F4F] bg-transparent">STAYS</NavigationMenuTrigger>
+                  <NavigationMenuTrigger className="text-[#2F4F4F] bg-transparent text-base">STAYS</NavigationMenuTrigger>
                   <NavigationMenuContent>
                     <ul className="grid w-[600px] gap-3 p-4">
                       {stays.filter(item => item.title !== "Real Estate").map((item) => (
@@ -286,7 +286,7 @@ const NavigationBar = () => {
 
                 {/* Adventures Menu */}
                 <NavigationMenuItem>
-                  <NavigationMenuTrigger className="text-[#2F4F4F] bg-transparent">ADVENTURES</NavigationMenuTrigger>
+                  <NavigationMenuTrigger className="text-[#2F4F4F] bg-transparent text-base">ADVENTURES</NavigationMenuTrigger>
                   <NavigationMenuContent>
                     <ul className="grid w-[600px] gap-3 p-4">
                       {adventures.map((item) => (
@@ -308,7 +308,7 @@ const NavigationBar = () => {
 
                 {/* Group Trips Menu */}
                 <NavigationMenuItem>
-                  <NavigationMenuTrigger className="text-[#2F4F4F] bg-transparent">GROUP TRIPS</NavigationMenuTrigger>
+                  <NavigationMenuTrigger className="text-[#2F4F4F] bg-transparent text-base">GROUP TRIPS</NavigationMenuTrigger>
                   <NavigationMenuContent>
                     <ul className="grid w-[600px] gap-3 p-4">
                       {groupTrips.map((item) => (
@@ -331,7 +331,7 @@ const NavigationBar = () => {
                 {/* Eats Link */}
                 <NavigationMenuItem>
                   <NavigationMenuLink asChild>
-                    <Link href="/restaurants" className="text-[#2F4F4F] hover:text-[#1F3F3F] px-4 py-2 text-base">
+                    <Link href="/restaurants" className="text-[#2F4F4F] hover:text-[#1F3F3F] px-4 py-2 text-base uppercase">
                       EATS
                     </Link>
                   </NavigationMenuLink>
@@ -340,7 +340,7 @@ const NavigationBar = () => {
                 {/* Blog Link */}
                 <NavigationMenuItem>
                   <NavigationMenuLink asChild>
-                    <Link href="/blog" className="text-[#2F4F4F] hover:text-[#1F3F3F] px-4 py-2 text-base">
+                    <Link href="/blog" className="text-[#2F4F4F] hover:text-[#1F3F3F] px-4 py-2 text-base uppercase">
                       BLOG
                     </Link>
                   </NavigationMenuLink>
@@ -348,7 +348,7 @@ const NavigationBar = () => {
 
                 {/* More Menu */}
                 <NavigationMenuItem>
-                  <NavigationMenuTrigger className="text-[#2F4F4F] bg-transparent">MORE</NavigationMenuTrigger>
+                  <NavigationMenuTrigger className="text-[#2F4F4F] bg-transparent text-base">MORE</NavigationMenuTrigger>
                   <NavigationMenuContent>
                     <ul className="grid w-[600px] grid-cols-2 gap-3 p-4">
                       {[...moreMenuItems].map((item) => (
