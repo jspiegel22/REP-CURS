@@ -1,6 +1,6 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, FormProvider } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon, Loader2, Star, MapPin, ThumbsUp, Waves, Palmtree, Dumbbell, Clock, Car, Wifi, Wind, GlassWater, Monitor, LockKeyhole, Mountain } from "lucide-react";
@@ -9,13 +9,14 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { queryClient, apiRequest } from "@/lib/queryClient";
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
+import { useState, useEffect } from "react";
 
 // Resort inquiry form schema
 const resortInquiryFormSchema = z.object({
@@ -73,6 +74,7 @@ export default function ResortBookingTemplate({
 }: ResortBookingTemplateProps) {
   const { toast } = useToast();
   const { user } = useAuth();
+  const [showFloatingCTA, setShowFloatingCTA] = useState(false);
 
   const form = useForm<ResortInquiryFormData>({
     resolver: zodResolver(resortInquiryFormSchema),
@@ -82,8 +84,6 @@ export default function ResortBookingTemplate({
       specialRequests: "",
     },
   });
-
-  const [showFloatingCTA, setShowFloatingCTA] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -354,7 +354,7 @@ function ResortInquiryFormContent({
         </div>
       </div>
 
-      <FormProvider {...form}>
+      <Form {...form}>
         <form
           onSubmit={form.handleSubmit((data: any) => inquiryMutation.mutate(data))}
           className="space-y-4"
@@ -470,22 +470,12 @@ function ResortInquiryFormContent({
                 <FormItem>
                   <FormLabel>Guests</FormLabel>
                   <FormControl>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-full pl-3 text-left font-normal",
-                        !field.value && "text-muted-foreground"
-                      )}
-                      onClick={(e) => e.preventDefault()}
-                    >
-                      <Input
-                        type="number"
-                        min="1"
-                        max={maximumGuests}
-                        className="border-0 p-0 focus-visible:ring-0"
-                        {...field}
-                      />
-                    </Button>
+                    <Input
+                      type="number"
+                      min="1"
+                      max={maximumGuests}
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -499,21 +489,11 @@ function ResortInquiryFormContent({
                 <FormItem>
                   <FormLabel>Phone</FormLabel>
                   <FormControl>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-full pl-3 text-left font-normal",
-                        !field.value && "text-muted-foreground"
-                      )}
-                      onClick={(e) => e.preventDefault()}
-                    >
-                      <Input
-                        type="tel"
-                        placeholder="+1 (555) 123-4567"
-                        className="border-0 p-0 focus-visible:ring-0"
-                        {...field}
-                      />
-                    </Button>
+                    <Input
+                      type="tel"
+                      placeholder="+1 (555) 123-4567"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -553,7 +533,7 @@ function ResortInquiryFormContent({
             Request Information
           </Button>
         </form>
-      </FormProvider>
+      </Form>
     </>
   );
 }
