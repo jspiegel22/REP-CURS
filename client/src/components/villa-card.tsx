@@ -16,11 +16,13 @@ export function VillaCard({ villa, className = "" }: VillaCardProps) {
       className={`block transition-transform hover:scale-[1.02] ${className}`}
     >
       <Card className="cursor-pointer hover:shadow-lg transition-shadow duration-200">
-        <div className="aspect-[16/9] relative overflow-hidden rounded-t-lg">
+        <div className="aspect-[16/9] relative overflow-hidden rounded-t-lg bg-muted">
           <img
             src={villa.imageUrl}
             alt={villa.name}
             className="object-cover w-full h-full"
+            loading="lazy"
+            decoding="async"
           />
         </div>
         <CardContent className="p-4">

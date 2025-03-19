@@ -213,12 +213,13 @@ const NavigationBar = () => {
                     <div className="grid grid-cols-1 gap-2">
                       {mainMenuItems.map((item) => (
                         <Link key={item.href} href={item.href}>
-                          <a className="block">
+                          <a className="block" onClick={() => setIsOpen(false)}>
                             <div className="relative h-32 rounded-lg overflow-hidden">
                               <img
                                 src={item.image}
                                 alt={item.title}
                                 className="w-full h-full object-cover"
+                                loading="lazy"
                               />
                               <div className="absolute inset-0 bg-black/50 flex items-center">
                                 <span className="text-white text-xl font-semibold px-4">{item.title}</span>
@@ -233,12 +234,13 @@ const NavigationBar = () => {
                     <div className="grid grid-cols-2 gap-2 mt-2">
                       {gridMenuItems.map((item) => (
                         <Link key={item.href} href={item.href}>
-                          <a className="block">
+                          <a className="block" onClick={() => setIsOpen(false)}>
                             <div className="relative aspect-[3/1] rounded-lg overflow-hidden">
                               <img
                                 src={item.image}
                                 alt={item.title}
                                 className="w-full h-full object-cover"
+                                loading="lazy"
                               />
                               <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-center p-2">
                                 <span className="text-white text-xs font-semibold px-1">{item.title}</span>
@@ -253,12 +255,13 @@ const NavigationBar = () => {
                     <div className="grid grid-cols-3 gap-2 mt-2">
                       {bottomRowItems.map((item) => (
                         <Link key={item.href} href={item.href}>
-                          <a className="block">
+                          <a className="block" onClick={() => setIsOpen(false)}>
                             <div className="relative aspect-square rounded-lg overflow-hidden">
                               <img
                                 src={item.image}
                                 alt={item.title}
                                 className="w-full h-full object-cover"
+                                loading="lazy"
                               />
                               <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-center p-2">
                                 <span className="text-white text-xs font-semibold px-1">{item.title}</span>
