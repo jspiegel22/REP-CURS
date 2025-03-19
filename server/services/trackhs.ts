@@ -4,7 +4,7 @@ import { villas } from '@shared/schema';
 
 // Initialize axios instance with base configuration
 const trackHsApi = axios.create({
-  baseURL: 'https://api.trackhs.com/api/v3',
+  baseURL: 'https://api.trackhs.com/api/v3/channel',
   headers: {
     'Content-Type': 'application/json',
     'X-API-KEY': process.env.TRACKHS_API_KEY,
@@ -61,7 +61,7 @@ export async function fetchVillas() {
     while (hasMore) {
       try {
         console.log(`Fetching page ${page}...`);
-        // Try the /units endpoint directly
+        // Try the /units endpoint with parameters from documentation
         const response = await trackHsApi.get('/units', {
           params: {
             page,
