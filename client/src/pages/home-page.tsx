@@ -256,8 +256,12 @@ export default function HomePage() {
             <p className="text-lg text-gray-600 mb-8">Stories, tips, and guides for your next Cabo adventure</p>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {sampleBlogs.map((blog) => (
-                <Link key={blog.id} href={`/blog/${blog.slug}`}>
+              {sampleBlogs.map((blog, index) => (
+                <Link 
+                  key={blog.id} 
+                  href={`/blog/${blog.slug}`}
+                  className={`block ${index === 2 ? 'hidden md:block' : ''}`}
+                >
                   <a className="group block">
                     <div className="relative aspect-[16/9] rounded-lg overflow-hidden mb-4">
                       <img
