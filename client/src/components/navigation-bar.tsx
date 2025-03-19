@@ -16,12 +16,12 @@ import {
 const mainMenuItems = [
   {
     title: "VILLAS",
-    href: "/villa",
+    href: "/villas",
     image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811"
   },
   {
     title: "RESORTS",
-    href: "/resort",
+    href: "/resorts",
     image: "https://images.unsplash.com/photo-1582719508461-905c673771fd"
   },
   {
@@ -90,13 +90,13 @@ const bottomRowItems = [
 const stays = [
   {
     title: "Villas",
-    href: "/villa",
+    href: "/villas",
     description: "Luxury private villas with stunning ocean views",
     image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811"
   },
   {
     title: "Resorts",
-    href: "/resort",
+    href: "/resorts",
     description: "World-class resorts and hotels",
     image: "https://images.unsplash.com/photo-1582719508461-905c673771fd"
   }
