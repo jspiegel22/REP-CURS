@@ -2,7 +2,7 @@ import axios from 'axios';
 import { db } from '../db';
 import { villas } from '@shared/schema';
 
-const TRACKHS_API_BASE_URL = 'https://api.trackhs.com/channel/v1';
+const TRACKHS_API_BASE_URL = 'https://api.trackhs.com/api/v3/channel';
 
 // Initialize axios instance with base configuration
 const trackHsApi = axios.create({

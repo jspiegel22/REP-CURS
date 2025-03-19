@@ -1,8 +1,8 @@
 import { IStorage } from "./types";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
-import { users, listings, bookings, rewards, socialShares, weatherCache, resorts } from "@shared/schema";
-import type { User, InsertUser, Listing, Booking, Reward, SocialShare, WeatherCache, Resort } from "@shared/schema";
+import { users, listings, bookings, rewards, socialShares, weatherCache, resorts, villas } from "@shared/schema";
+import type { User, InsertUser, Listing, Booking, Reward, SocialShare, WeatherCache, Resort, Villa } from "@shared/schema";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
 
@@ -21,6 +21,16 @@ export class DatabaseStorage implements IStorage {
       },
       createTableIfMissing: true,
     });
+  }
+
+  // Villa Management
+  async getVillas(): Promise<Villa[]> {
+    return db.select().from(villas);
+  }
+
+  async getVillaByTrackHsId(trackHsId: string): Promise<Villa | undefined> {
+    const [villa] = await db.select().from(villas).where(eq(villas.trackHsId, trackHsId));
+    return villa;
   }
 
   // Resort Management
