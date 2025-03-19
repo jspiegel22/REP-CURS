@@ -3,6 +3,7 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { HelmetProvider } from 'react-helmet-async';
+import Footer from "@/components/footer";
 import NotFound from "@/pages/not-found";
 import HomePage from "@/pages/home-page";
 import ResortsLanding from "@/pages/resorts-landing";
@@ -23,36 +24,44 @@ import WeddingsPage from "@/pages/weddings";
 import RealEstatePage from "@/pages/real-estate";
 import EventsPage from "@/pages/events";
 import GuidesPage from "@/pages/guides";
+import WorkWithUsPage from "@/pages/work-with-us";
 import NavigationBar from "./components/navigation-bar";
 import { ChatButton } from "./components/chat-button";
 import { AuthProvider } from "@/hooks/use-auth";
 
 function Router() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <NavigationBar />
-      <Switch>
-        <Route path="/" component={HomePage} />
-        <Route path="/blog" component={BlogIndex} />
-        <Route path="/blog/:slug" component={BlogDetail} />
-        <Route path="/resorts" component={ResortsLanding} />
-        <Route path="/resorts/:slug" component={ResortDetail} />
-        <Route path="/villas" component={VillasLanding} />
-        <Route path="/villas/:slug" component={VillaDetail} />
-        <Route path="/adventures" component={AdventuresLanding} />
-        <Route path="/adventures/:slug" component={AdventureDetail} />
-        <Route path="/restaurants" component={RestaurantsPage} />
-        <Route path="/restaurants/:id" component={RestaurantDetails} />
-        <Route path="/group-trips/family" component={FamilyTripsPage} />
-        <Route path="/group-trips/bachelor-bachelorette" component={BachelorBachelorettePage} />
-        <Route path="/group-trips/luxury-concierge" component={LuxuryConcierge} />
-        <Route path="/group-trips/influencer" component={InfluencerPage} />
-        <Route path="/weddings" component={WeddingsPage} />
-        <Route path="/real-estate" component={RealEstatePage} />
-        <Route path="/events" component={EventsPage} />
-        <Route path="/guides" component={GuidesPage} />
-        <Route component={NotFound} />
-      </Switch>
+      <div className="flex-grow">
+        <Switch>
+          <Route path="/" component={HomePage} />
+          <Route path="/blog" component={BlogIndex} />
+          <Route path="/blog/:slug" component={BlogDetail} />
+          <Route path="/resorts" component={ResortsLanding} />
+          <Route path="/resorts/:slug" component={ResortDetail} />
+          <Route path="/villas" component={VillasLanding} />
+          <Route path="/villas/:slug" component={VillaDetail} />
+          <Route path="/adventures" component={AdventuresLanding} />
+          <Route path="/adventures/:slug" component={AdventureDetail} />
+          <Route path="/adventures/atv" component={AdventuresLanding} />
+          <Route path="/adventures/private-yachts" component={AdventuresLanding} />
+          <Route path="/adventures/whale-watching" component={AdventuresLanding} />
+          <Route path="/restaurants" component={RestaurantsPage} />
+          <Route path="/restaurants/:id" component={RestaurantDetails} />
+          <Route path="/group-trips/family" component={FamilyTripsPage} />
+          <Route path="/group-trips/bachelor-bachelorette" component={BachelorBachelorettePage} />
+          <Route path="/group-trips/luxury-concierge" component={LuxuryConcierge} />
+          <Route path="/group-trips/influencer" component={InfluencerPage} />
+          <Route path="/weddings" component={WeddingsPage} />
+          <Route path="/real-estate" component={RealEstatePage} />
+          <Route path="/events" component={EventsPage} />
+          <Route path="/guides" component={GuidesPage} />
+          <Route path="/work-with-us" component={WorkWithUsPage} />
+          <Route component={NotFound} />
+        </Switch>
+      </div>
+      <Footer />
       <ChatButton />
     </div>
   );

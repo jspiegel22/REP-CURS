@@ -65,15 +65,21 @@ const adventures = [
     image: "https://images.unsplash.com/photo-1569263979104-865ab7cd8d13"
   },
   {
-    title: "Luxury Sailing",
-    href: "/adventures/luxury-sailing",
-    description: "Private yacht charters and sailing experiences",
+    title: "ATV Tours",
+    href: "/adventures/atv",
+    description: "Thrilling desert and mountain adventures",
+    image: "https://images.unsplash.com/photo-1623176035122-4e07bc19bab7"
+  },
+  {
+    title: "Private Yachts",
+    href: "/adventures/private-yachts",
+    description: "Luxury yacht charters and experiences",
     image: "https://images.unsplash.com/photo-1605281317010-fe5ffe798166"
   },
   {
     title: "Whale Watching",
     href: "/adventures/whale-watching",
-    description: "Unforgettable whale watching tours",
+    description: "Unforgettable whale watching experiences",
     image: "https://images.unsplash.com/photo-1570481662006-a3a1374699e8"
   }
 ];
@@ -107,10 +113,10 @@ const groupTrips = [
 
 const moreMenuItems = [
   {
-    title: "Restaurants",
-    href: "/restaurants",
-    description: "Best dining experiences in Cabo",
-    image: "https://images.unsplash.com/photo-1578474846511-04ba529f0b88"
+    title: "Real Estate",
+    href: "/real-estate",
+    description: "Find your dream property in Cabo",
+    image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c"
   },
   {
     title: "Local Events",
@@ -125,16 +131,16 @@ const moreMenuItems = [
     image: "https://images.unsplash.com/photo-1516546453174-5e1098a4b4af"
   },
   {
-    title: "Weddings",
-    href: "/weddings",
-    description: "Plan your dream destination wedding",
-    image: "https://images.unsplash.com/photo-1546032996-6dfacbacbf3f"
-  },
-  {
     title: "Work with Us",
     href: "/work-with-us",
     description: "Partnership opportunities",
     image: "https://images.unsplash.com/photo-1552664730-d307ca884978"
+  },
+  {
+    title: "Weddings",
+    href: "/weddings",
+    description: "Plan your dream destination wedding",
+    image: "https://images.unsplash.com/photo-1546032996-6dfacbacbf3f"
   }
 ];
 
@@ -168,7 +174,7 @@ const NavigationBar = () => {
                   <div className="p-3">
                     {/* Main Categories */}
                     <div className="grid grid-cols-1 gap-2">
-                      {[...stays, ...adventures].map((item) => (
+                      {[...stays.filter(item => item.title !== "Real Estate"), ...adventures].map((item) => (
                         <Link key={item.href} href={item.href} className="block group">
                           <div className="relative h-32 rounded-lg overflow-hidden">
                             <img
@@ -206,7 +212,7 @@ const NavigationBar = () => {
 
                     {/* Additional Pages */}
                     <div className="grid grid-cols-3 gap-2 mt-2">
-                      {moreMenuItems.slice(0, 6).map((item) => (
+                      {[...moreMenuItems].slice(0, 6).map((item) => (
                         <Link key={item.href} href={item.href} className="block group">
                           <div className="relative aspect-square rounded-lg overflow-hidden">
                             <img
@@ -261,7 +267,7 @@ const NavigationBar = () => {
                   <NavigationMenuTrigger className="text-[#2F4F4F] bg-transparent">STAYS</NavigationMenuTrigger>
                   <NavigationMenuContent>
                     <ul className="grid w-[600px] gap-3 p-4">
-                      {stays.map((item) => (
+                      {stays.filter(item => item.title !== "Real Estate").map((item) => (
                         <li key={item.href}>
                           <NavigationMenuLink asChild>
                             <Link href={item.href} className="flex gap-4 select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
@@ -322,10 +328,19 @@ const NavigationBar = () => {
                   </NavigationMenuContent>
                 </NavigationMenuItem>
 
+                {/* Eats Link */}
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild>
+                    <Link href="/restaurants" className="text-[#2F4F4F] hover:text-[#1F3F3F] px-4 py-2 text-base">
+                      EATS
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+
                 {/* Blog Link */}
                 <NavigationMenuItem>
                   <NavigationMenuLink asChild>
-                    <Link href="/blog" className="text-[#2F4F4F] hover:text-[#1F3F3F] px-4 py-2">
+                    <Link href="/blog" className="text-[#2F4F4F] hover:text-[#1F3F3F] px-4 py-2 text-base">
                       BLOG
                     </Link>
                   </NavigationMenuLink>
@@ -336,7 +351,7 @@ const NavigationBar = () => {
                   <NavigationMenuTrigger className="text-[#2F4F4F] bg-transparent">MORE</NavigationMenuTrigger>
                   <NavigationMenuContent>
                     <ul className="grid w-[600px] grid-cols-2 gap-3 p-4">
-                      {moreMenuItems.map((item) => (
+                      {[...moreMenuItems].map((item) => (
                         <li key={item.href}>
                           <NavigationMenuLink asChild>
                             <Link href={item.href} className="flex gap-4 select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
