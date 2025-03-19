@@ -153,62 +153,68 @@ export default function ResortsLanding() {
           {/* Resort Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredResorts.map((resort) => (
-              <Card key={resort.id} className="overflow-hidden">
-                <div className="aspect-[16/9] relative">
-                  <img
-                    src={resort.imageUrl}
-                    alt={resort.name}
-                    className="absolute inset-0 w-full h-full object-cover"
-                  />
-                  {(resort.isBeachfront || resort.isOceanfront) && (
-                    <div className="absolute top-2 right-2 bg-primary/90 text-primary-foreground px-2 py-1 rounded-full text-xs">
-                      {resort.isBeachfront ? 'Beachfront' : 'Oceanfront'}
-                    </div>
-                  )}
-                </div>
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-semibold mb-2">{resort.name}</h3>
-                  <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
-                    <div className="flex items-center">
-                      <Star className="h-4 w-4 text-yellow-400 mr-1" fill="currentColor" />
-                      <span>{resort.rating} ({resort.reviewCount} reviews)</span>
-                    </div>
-                    <div className="flex items-center">
-                      <MapPin className="h-4 w-4 mr-1" />
-                      <span>{resort.location}</span>
-                    </div>
+              <Link
+                key={resort.id}
+                href={`/resorts/${generateSlug(resort.name)}`}
+                className="block group"
+              >
+                <Card className="overflow-hidden transition-transform hover:scale-[1.02] h-full">
+                  <div className="aspect-[16/9] relative">
+                    <img
+                      src={resort.imageUrl}
+                      alt={resort.name}
+                      className="absolute inset-0 w-full h-full object-cover"
+                    />
+                    {(resort.isBeachfront || resort.isOceanfront) && (
+                      <div className="absolute top-2 right-2 bg-primary/90 text-primary-foreground px-2 py-1 rounded-full text-xs">
+                        {resort.isBeachfront ? 'Beachfront' : 'Oceanfront'}
+                      </div>
+                    )}
                   </div>
-                  <p className="line-clamp-2 text-muted-foreground mb-4">
-                    {resort.description}
-                  </p>
-                  <div className="flex items-center justify-between">
-                    <span className="text-lg font-semibold">{resort.priceLevel}</span>
-                    <div className="space-x-2">
-                      <Link href={`/resorts/${generateSlug(resort.name)}`}>
-                        <Button variant="outline">View Details</Button>
-                      </Link>
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <Button
-                            onClick={() => setSelectedResort(resort.name)}
-                          >
-                            Inquire Now
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-[425px]">
-                          <DialogHeader>
-                            <DialogTitle>Inquire about {resort.name}</DialogTitle>
-                            <DialogDescription>
-                              Fill out this form and our team will get back to you with availability and rates.
-                            </DialogDescription>
-                          </DialogHeader>
-                          <ResortInquiryForm resortName={resort.name} />
-                        </DialogContent>
-                      </Dialog>
+                  <CardContent className="p-6">
+                    <h3 className="text-xl font-semibold mb-2">{resort.name}</h3>
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
+                      <div className="flex items-center">
+                        <Star className="h-4 w-4 text-yellow-400 mr-1" fill="currentColor" />
+                        <span>{resort.rating} ({resort.reviewCount} reviews)</span>
+                      </div>
+                      <div className="flex items-center">
+                        <MapPin className="h-4 w-4 mr-1" />
+                        <span>{resort.location}</span>
+                      </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
+                    <p className="line-clamp-2 text-muted-foreground mb-4">
+                      {resort.description}
+                    </p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-lg font-semibold">{resort.priceLevel}</span>
+                      <div className="space-x-2">
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button
+                              onClick={(e) => {
+                                e.preventDefault();
+                                setSelectedResort(resort.name);
+                              }}
+                            >
+                              Inquire Now
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent className="sm:max-w-[425px]">
+                            <DialogHeader>
+                              <DialogTitle>Inquire about {resort.name}</DialogTitle>
+                              <DialogDescription>
+                                Fill out this form and our team will get back to you with availability and rates.
+                              </DialogDescription>
+                            </DialogHeader>
+                            <ResortInquiryForm resortName={resort.name} />
+                          </DialogContent>
+                        </Dialog>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
             ))}
           </div>
         </div>
