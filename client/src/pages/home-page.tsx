@@ -11,6 +11,7 @@ import SEO from "@/components/SEO";
 import { sampleBlogs } from "@/data/sample-blogs";
 import { format } from "date-fns";
 import { GuideDownloadForm } from "@/components/guide-download-form";
+import GuideRequestPopup from '@/components/GuideRequestPopup';
 
 
 // Import villa data
@@ -52,6 +53,8 @@ const guides = [
 ];
 
 export default function HomePage() {
+  const [isGuidePopupOpen, setIsGuidePopupOpen] = useState(false);
+
   return (
     <>
       <SEO
@@ -350,6 +353,12 @@ export default function HomePage() {
           </div>
         </footer>
       </main>
+
+      {/* Guide Request Popup */}
+      <GuideRequestPopup
+        isOpen={isGuidePopupOpen}
+        onClose={() => setIsGuidePopupOpen(false)}
+      />
     </>
   );
 }

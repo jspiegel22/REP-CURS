@@ -1,44 +1,37 @@
 import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { FormError } from "@/components/form/FormError";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Download, ChevronRight } from "lucide-react";
 
 const formSchema = z.object({
   firstName: z.string().min(1, "First Name is required"),
-  email: z.string().email("Please enter a valid email address").min(1, "Email is required"),
+  email: z.string().email("Please enter a valid email address"),
 });
 
 type FormData = z.infer<typeof formSchema>;
 
-// Form error display component
-const FormError = ({ message }: { message: string }) => {
-  return message ? (
-    <span className="text-sm text-red-500 mt-1">{message}</span>
-  ) : null;
-};
-
 export function GuideDownloadForm() {
   const [isOpen, setIsOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       firstName: "",
       email: "",
-    }
+    },
   });
 
   const onSubmit = async (data: FormData) => {
@@ -46,7 +39,6 @@ export function GuideDownloadForm() {
     setIsSubmitting(true);
 
     try {
-      console.log('Submitting form data:', data);  // Debug log
       const response = await fetch('/api/leads', {
         method: 'POST',
         headers: {
@@ -54,8 +46,12 @@ export function GuideDownloadForm() {
         },
         body: JSON.stringify({
           ...data,
+          source: "guide-download",
           interestType: "guide",
-          source: "cabo-guide-download"
+          formData: {
+            guideName: "2025 ULTIMATE Cabo Guide",
+            downloadDate: new Date().toISOString(),
+          }
         }),
       });
 
@@ -64,11 +60,10 @@ export function GuideDownloadForm() {
       }
 
       setIsSuccess(true);
-      form.reset();
     } catch (error) {
       console.error('Error submitting form:', error);
       form.setError("root", {
-        message: "Failed to submit form. Please try again."
+        message: "Failed to submit form. Please try again.",
       });
     } finally {
       setIsSubmitting(false);
@@ -85,13 +80,16 @@ export function GuideDownloadForm() {
         <ChevronRight className="w-5 h-5" />
       </Button>
 
-      <Dialog open={isOpen} onOpenChange={(open) => {
-        setIsOpen(open);
-        if (!open) {
-          setIsSuccess(false);
-          form.reset();
-        }
-      }}>
+      <Dialog 
+        open={isOpen} 
+        onOpenChange={(open) => {
+          setIsOpen(open);
+          if (!open) {
+            setIsSuccess(false);
+            form.reset();
+          }
+        }}
+      >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Get Your 2025 ULTIMATE Cabo Guide</DialogTitle>
@@ -99,6 +97,7 @@ export function GuideDownloadForm() {
               Enter your details below to receive your comprehensive guide to Cabo.
             </DialogDescription>
           </DialogHeader>
+
           {!isSuccess ? (
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
               <div className="space-y-2">
@@ -109,6 +108,7 @@ export function GuideDownloadForm() {
                 />
                 <FormError message={form.formState.errors.firstName?.message || ""} />
               </div>
+
               <div className="space-y-2">
                 <Input
                   {...form.register("email")}
@@ -118,6 +118,11 @@ export function GuideDownloadForm() {
                 />
                 <FormError message={form.formState.errors.email?.message || ""} />
               </div>
+
+              {form.formState.errors.root && (
+                <FormError message={form.formState.errors.root.message || ""} />
+              )}
+
               <Button
                 type="submit"
                 disabled={isSubmitting}
