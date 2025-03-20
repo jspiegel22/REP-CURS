@@ -9,16 +9,23 @@ import { useToast } from "@/hooks/use-toast";
 import Footer from "@/components/footer";
 
 const formSchema = z.object({
-  firstName: z.string().min(2, "Please enter your first name"),
+  firstName: z.string().min(1, "First Name is required").min(2, "Please enter your first name"),
   lastName: z.string().min(2, "Please enter your last name"),
-  email: z.string().email("Please enter a valid email"),
+  email: z.string().email("Please enter a valid email address").min(1, "Email is required"),
   phone: z.string().min(10, "Please enter a valid phone number"),
   checkIn: z.string().min(1, "Please select a check-in date"),
   checkOut: z.string().min(1, "Please select a check-out date"),
-  budget: z.string().min(1, "Please enter your budget").optional(),
-  groupSize: z.string().min(1, "Please enter group size").optional(),
+  budget: z.string().optional(),
+  groupSize: z.string().optional(),
   notes: z.string().optional(),
 });
+
+// Form error display component
+const FormError = ({ message }: { message: string }) => {
+  return message ? (
+    <span className="text-sm text-red-500 mt-1">{message}</span>
+  ) : null;
+};
 
 type FormData = z.infer<typeof formSchema>;
 
@@ -26,19 +33,51 @@ export default function LuxuryConcierge() {
   const { toast } = useToast();
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      checkIn: "",
+      checkOut: "",
+      budget: "",
+      groupSize: "",
+      notes: "",
+    }
   });
 
   const onSubmit = async (data: FormData) => {
     try {
-      toast({
-        title: "Thanks for your interest!",
-        description: "Our luxury concierge team will be in touch shortly.",
+      // Submit to our API endpoint
+      const response = await fetch('/api/leads', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...data,
+          interestType: "concierge",
+          source: "luxury-concierge-page"
+        }),
       });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit form');
+      }
+
+      // Show success message
+      toast({
+        title: "Thanks for your interest in our VIP services!",
+        description: "One of our luxury concierge specialists will contact you within 24 hours to discuss your custom experience.",
+        duration: 5000,
+      });
+
+      // Reset form
       form.reset();
     } catch (error: any) {
       toast({
         title: "Something went wrong",
-        description: error.message,
+        description: "Please try again or contact us directly.",
         variant: "destructive",
       });
     }
@@ -116,7 +155,7 @@ export default function LuxuryConcierge() {
             </p>
 
             {/* Enhanced Desktop CTA Button */}
-            <Button 
+            <Button
               onClick={() => document.getElementById('booking-form')?.scrollIntoView({ behavior: 'smooth' })}
               className="hidden md:inline-flex items-center gap-2 bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white text-xl px-10 py-8 rounded-2xl transform transition-all duration-300 hover:scale-105 hover:shadow-xl shadow-lg hover:gap-4"
             >
@@ -125,7 +164,7 @@ export default function LuxuryConcierge() {
             </Button>
 
             {/* Mobile CTA Button */}
-            <Button 
+            <Button
               onClick={() => document.getElementById('booking-form')?.scrollIntoView({ behavior: 'smooth' })}
               className="md:hidden w-full bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white text-lg py-6 rounded-xl flex items-center justify-center gap-2"
             >
@@ -209,9 +248,11 @@ export default function LuxuryConcierge() {
               <form onSubmit={form.handleSubmit(onSubmit)}>
                 {/* Grid layout - 2 columns on both mobile and desktop */}
                 <div className="grid grid-cols-2 gap-3 md:gap-6">
-                  <Input {...form.register("firstName")} placeholder="First Name" className="text-sm md:text-base" />
+                  <Input {...form.register("firstName")} placeholder="First Name*" className="text-sm md:text-base" />
+                  <FormError message={form.formState.errors.firstName?.message || ""} />
                   <Input {...form.register("lastName")} placeholder="Last Name" className="text-sm md:text-base" />
-                  <Input {...form.register("email")} type="email" placeholder="Email" className="text-sm md:text-base" />
+                  <Input {...form.register("email")} type="email" placeholder="Email*" className="text-sm md:text-base" />
+                  <FormError message={form.formState.errors.email?.message || ""} />
                   <Input {...form.register("phone")} type="tel" placeholder="Phone" className="text-sm md:text-base" />
                   <Input {...form.register("checkIn")} type="date" placeholder="Check-in" className="text-sm md:text-base" />
                   <Input {...form.register("checkOut")} type="date" placeholder="Check-out" className="text-sm md:text-base" />
@@ -219,15 +260,15 @@ export default function LuxuryConcierge() {
                   <Input {...form.register("groupSize")} type="number" placeholder="Group Size" className="text-sm md:text-base" />
                   {/* Notes field spans full width */}
                   <div className="col-span-2">
-                    <Textarea 
-                      {...form.register("notes")} 
+                    <Textarea
+                      {...form.register("notes")}
                       placeholder="Tell us about your desired experience (Optional)"
                       className="w-full h-24 md:h-32 text-sm md:text-base mt-0"
                     />
                   </div>
                 </div>
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   className="w-full mt-4 bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white py-4 md:py-6 text-base md:text-lg flex items-center justify-center gap-2"
                 >
                   Request VIP Services
