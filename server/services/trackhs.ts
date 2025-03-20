@@ -4,7 +4,7 @@ import { villas } from '@shared/schema';
 
 // Initialize axios instance with base configuration
 const trackHsApi = axios.create({
-  baseURL: 'https://api.trackhs.com/api/v3/channel',
+  baseURL: 'https://api.trackhs.com/v3', // Remove /channel from base URL
   headers: {
     'Content-Type': 'application/json',
     'X-API-KEY': process.env.TRACKHS_API_KEY,
@@ -21,8 +21,9 @@ trackHsApi.interceptors.response.use(
       status: error.response?.status,
       statusText: error.response?.statusText,
       data: error.response?.data,
-      headers: error.response?.headers,
-      config: error.config
+      url: error.config?.url,
+      method: error.config?.method,
+      params: error.config?.params
     });
     throw error;
   }
@@ -61,8 +62,8 @@ export async function fetchVillas() {
     while (hasMore) {
       try {
         console.log(`Fetching page ${page}...`);
-        // Try the /units endpoint with parameters from documentation
-        const response = await trackHsApi.get('/units', {
+        // Try the /properties endpoint instead of /units
+        const response = await trackHsApi.get('/properties', {
           params: {
             page,
             limit: 100,
@@ -78,7 +79,7 @@ export async function fetchVillas() {
           break;
         }
 
-        const villasData = response.data.villas || response.data.data || [];
+        const villasData = response.data.data || [];
         console.log(`Retrieved ${villasData.length} villas from page ${page}`);
 
         if (villasData.length === 0) {
@@ -90,7 +91,6 @@ export async function fetchVillas() {
         page++;
       } catch (error) {
         console.error(`Error fetching page ${page}:`, error);
-        console.error('Full error details:', JSON.stringify(error, null, 2));
         hasMore = false;
         break;
       }
