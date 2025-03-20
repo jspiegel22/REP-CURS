@@ -10,6 +10,8 @@ import CategoryGrid from "@/components/category-grid";
 import SEO from "@/components/SEO";
 import { sampleBlogs } from "@/data/sample-blogs";
 import { format } from "date-fns";
+import { GuideDownloadForm } from "@/components/guide-download-form";
+
 
 // Import villa data
 const villaData = `stretched-link href,w-100 src,location,detail,col-12,detail (2),detail (3),col-auto,col-auto (2),col-auto (3)
@@ -138,20 +140,12 @@ export default function HomePage() {
               </div>
 
               {/* Enhanced CTA Button - Desktop */}
-              <Button 
-                className="hidden md:inline-flex items-center gap-3 bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white text-xl px-10 py-8 rounded-2xl transform transition-all duration-300 hover:scale-105 hover:shadow-xl shadow-lg"
-              >
-                Get Your Free Cabo Guide
-                <ChevronRight className="w-6 h-6" />
-              </Button>
+              <GuideDownloadForm />
 
               {/* Mobile CTA Button */}
-              <Button 
-                className="md:hidden w-full bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white text-lg py-6 rounded-xl flex items-center justify-center gap-2"
-              >
-                Get Your Free Guide
-                <ChevronRight className="w-5 h-5" />
-              </Button>
+              <div className="md:hidden w-full">
+                <GuideDownloadForm />
+              </div>
 
               {/* Hero Image */}
               <div className="relative mt-12 rounded-2xl overflow-hidden shadow-2xl">
