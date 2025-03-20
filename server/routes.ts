@@ -3,13 +3,63 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth } from "./auth";
 import { z } from "zod";
-import { insertBookingSchema } from "@shared/schema";
+import { insertBookingSchema, insertLeadSchema } from "@shared/schema";
 import { generateSlug } from "@/lib/utils";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   setupAuth(app);
 
-  // Add villa routes
+  // Booking endpoint
+  app.post("/api/bookings", async (req, res) => {
+    try {
+      // Validate request body
+      const bookingData = insertBookingSchema.safeParse(req.body);
+      if (!bookingData.success) {
+        return res.status(400).json({ 
+          message: "Invalid booking data",
+          errors: bookingData.error.errors 
+        });
+      }
+
+      // Create booking
+      const booking = await storage.createBooking({
+        ...bookingData.data,
+        status: "pending"
+      });
+
+      res.status(201).json(booking);
+    } catch (error) {
+      console.error("Booking creation error:", error);
+      res.status(500).json({ message: "Failed to create booking" });
+    }
+  });
+
+  // Lead form submission endpoint
+  app.post("/api/leads", async (req, res) => {
+    try {
+      // Validate request body
+      const leadData = insertLeadSchema.safeParse(req.body);
+      if (!leadData.success) {
+        return res.status(400).json({ 
+          message: "Invalid lead data",
+          errors: leadData.error.errors 
+        });
+      }
+
+      // Create lead
+      const lead = await storage.createLead({
+        ...leadData.data,
+        status: "new"
+      });
+
+      res.status(201).json(lead);
+    } catch (error) {
+      console.error("Lead creation error:", error);
+      res.status(500).json({ message: "Failed to create lead" });
+    }
+  });
+
+  // Keep existing routes
   app.get("/api/villas", async (req, res) => {
     try {
       const villas = await storage.getVillas();
@@ -33,114 +83,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Villa-specific booking endpoint
-  app.post("/api/villa-bookings", async (req, res) => {
+  // Resorts endpoint
+  app.get("/api/resorts/:slug", async (req, res) => {
     try {
-      if (!req.isAuthenticated()) {
-        return res.status(401).json({ message: "Please log in to make a booking" });
+      const resorts = await storage.getResorts();
+      const resort = resorts.find(
+        r => generateSlug(r.name) === req.params.slug
+      );
+
+      if (!resort) {
+        return res.status(404).json({ message: "Resort not found" });
       }
 
-      // Validate request body
-      const bookingData = insertBookingSchema.safeParse(req.body);
-      if (!bookingData.success) {
-        return res.status(400).json({ 
-          message: "Invalid booking data",
-          errors: bookingData.error.errors 
-        });
-      }
-
-      try {
-        // Create booking in our database
-        const booking = await storage.createBooking({
-          ...bookingData.data,
-          userId: req.user.id,
-          status: "pending",
-          pointsEarned: 100 // Default points for villa bookings
-        });
-
-        // Create Airtable record for villa owner
-        const airtableRecord = {
-          fields: {
-            Name: req.user.username,
-            Email: bookingData.data.contactEmail,
-            Phone: bookingData.data.contactPhone,
-            "Check In": bookingData.data.startDate,
-            "Check Out": bookingData.data.endDate,
-            "Number of Guests": bookingData.data.guests,
-            "Special Requests": bookingData.data.specialRequests || "",
-            Status: "Pending",
-          }
-        };
-
-        // Send to Make webhook for processing
-        const makeWebhookUrl = process.env.MAKE_WEBHOOK_URL;
-        if (!makeWebhookUrl) {
-          throw new Error("Make webhook URL not configured");
-        }
-
-        await fetch(makeWebhookUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(airtableRecord)
-        });
-
-        res.status(201).json(booking);
-      } catch (error) {
-        console.error("Error in villa booking process:", error);
-        throw error;
-      }
+      res.json(resort);
     } catch (error) {
-      console.error("Villa booking error:", error);
-      res.status(500).json({ message: "Failed to create villa booking" });
+      console.error("Error fetching resort:", error);
+      res.status(500).json({ message: "Failed to fetch resort" });
     }
   });
-
-  // Booking endpoint
-  app.post("/api/bookings", async (req, res) => {
-    try {
-      // Check authentication
-      if (!req.isAuthenticated()) {
-        return res.status(401).json({ message: "Please log in to make a booking" });
-      }
-
-      // Validate request body
-      const bookingData = insertBookingSchema.safeParse(req.body);
-      if (!bookingData.success) {
-        return res.status(400).json({ 
-          message: "Invalid booking data",
-          errors: bookingData.error.errors 
-        });
-      }
-
-      // Create booking
-      const booking = await storage.createBooking({
-        ...bookingData.data,
-        userId: req.user.id,
-        status: "pending"
-      });
-
-      res.status(201).json(booking);
-    } catch (error) {
-      console.error("Booking creation error:", error);
-      res.status(500).json({ message: "Failed to create booking" });
-    }
-  });
-
-  // Get user's bookings
-  app.get("/api/bookings", async (req, res) => {
-    if (!req.isAuthenticated()) {
-      return res.status(401).json({ message: "Please log in to view bookings" });
-    }
-
-    try {
-      const bookings = await storage.getUserBookings(req.user.id);
-      res.json(bookings);
-    } catch (error) {
-      console.error("Error fetching bookings:", error);
-      res.status(500).json({ message: "Failed to fetch bookings" });
-    }
-  });
-
   // Weather endpoint
   app.get("/api/weather", async (req, res) => {
     try {
@@ -217,25 +177,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(201).json({ share, user: updatedUser });
     } catch (error) {
       res.status(500).json({ message: "Failed to record share" });
-    }
-  });
-
-  // Resorts endpoint (from original code)
-  app.get("/api/resorts/:slug", async (req, res) => {
-    try {
-      const resorts = await storage.getResorts();
-      const resort = resorts.find(
-        r => generateSlug(r.name) === req.params.slug
-      );
-
-      if (!resort) {
-        return res.status(404).json({ message: "Resort not found" });
-      }
-
-      res.json(resort);
-    } catch (error) {
-      console.error("Error fetching resort:", error);
-      res.status(500).json({ message: "Failed to fetch resort" });
     }
   });
 
