@@ -63,6 +63,7 @@ export function GuideDownloadForm() {
       }
 
       setIsSuccess(true);
+      form.reset();
     } catch (error) {
       console.error('Error submitting form:', error);
       form.setError("root", {
@@ -73,10 +74,15 @@ export function GuideDownloadForm() {
     }
   };
 
+  const openModal = () => {
+    setIsOpen(true);
+    setIsSuccess(false);
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="default" size="lg" className="bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white">
+        <Button onClick={openModal} className="bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white text-lg py-6 px-8 rounded-xl">
           Get Your 2025 ULTIMATE Cabo Guide
         </Button>
       </DialogTrigger>
