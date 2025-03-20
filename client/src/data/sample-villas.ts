@@ -1,135 +1,59 @@
 import { Villa } from "@shared/schema";
 
-export const sampleVillas: Villa[] = [
-  {
-    id: 1,
-    trackHsId: "villa-001",
-    name: "Villa Tranquilidad",
-    description: "Spectacular Beachfront Villa Located in Puerto Los Cabos. This 6+ Star Platinum Villa offers breathtaking ocean views and luxurious amenities.",
-    bedrooms: 8,
-    bathrooms: 8,
-    maxGuests: 16,
-    amenities: ["Private Pool", "Beach Access", "Ocean View", "Chef's Kitchen", "Home Theater"],
-    imageUrl: "https://www.cabovillas.com/Properties/Villas/Villa_Tranquilidad/FULL/Villa_Tranquilidad-1.jpg",
+// Convert villaData into our Villa type format
+const villaLines = `stretched-link href,w-100 src,location,detail,col-12,detail (2),detail (3),col-auto,col-auto (2),col-auto (3)
+https://www.cabovillas.com/properties.asp?PID=441,https://www.cabovillas.com/Properties/Villas/Villa_Tranquilidad/FULL/Villa_Tranquilidad-1.jpg,"SAN JOSÉ DEL CABO, OCEANFRONT, BEACHFRONT",Villa Tranquilidad,Spectacular Beachfront Villa Located in Puert...,6+ -Star Platinum Villa,+,8,8+,16
+https://www.cabovillas.com/properties.asp?PID=456,https://www.cabovillas.com/Properties/Villas/Villa_Lorena/FULL/Villa_Lorena-1.jpg,CABO SAN LUCAS,Villa Lorena,Comfortable Villa with Wonderful Pacific Ocean Views,4.5-Star Deluxe Villa,,4,3.5,10
+https://www.cabovillas.com/properties.asp?PID=603,https://www.cabovillas.com/Properties/Villas/Villa_Esencia_Del_Mar/FULL/Villa_Esencia_Del_Mar-1.jpg,CABO SAN LUCAS,Villa Esencia Del Mar,Breathtaking Ocean Views & Modern Luxury,5.5-Star Luxury Villa,,4,3.5,10
+https://www.cabovillas.com/properties.asp?PID=2,https://www.cabovillas.com/Properties/Villas/Villa_California/FULL/Villa_California-1.jpg,CABO SAN LUCAS,Villa California,Relaxing Escape with Views of Cabo San Lucas,4-Star Deluxe Villa,,5,6,10
+https://www.cabovillas.com/properties.asp?PID=202,https://www.cabovillas.com/Properties/Villas/Villa_Penasco/FULL/Villa_Penasco-1.jpg,"CABO SAN LUCAS, OCEANFRONT",Villa Peñasco,Lavishly Appointed Villa Overlooking the Pacific,6+ -Star Platinum Villa,+,6,6+,14
+https://www.cabovillas.com/properties.asp?PID=296,https://www.cabovillas.com/Properties/Villas/Villa_Ladrillo/FULL/Villa_Ladrillo-1.jpg,CABO SAN LUCAS,Villa Ladrillo,Great Cabo San Lucas Location & Pacific Ocean Views,4-Star Deluxe Villa,,4,4,8
+https://www.cabovillas.com/properties.asp?PID=512,https://www.cabovillas.com/Properties/Villas/Casa_Bella_Vista_by_Waldorf_Astoria_Los_Cabos_Pedregal/FULL/Casa_Bella_Vista_by_Waldorf_Astoria_Los_Cabos_Pedregal-1.jpg,CABO SAN LUCAS,Casa Bella Vista by Waldorf Astoria Los Cabos Pedregal,Gorgeous Marina & Bay Views with Luxury Resort Amenities,6+ -Star Platinum Villa,+,3,3.5,7
+https://www.cabovillas.com/properties.asp?PID=627,https://www.cabovillas.com/Properties/Villas/Tortuga_Bay_Penthouse_2401/FULL/Tortuga_Bay_Penthouse_2401-1.jpg,"SAN JOSÉ DEL CABO, OCEANFRONT, BEACHFRONT",Tortuga Bay Penthouse 2401,Beachfront Luxury with Sweeping Ocean Views,5-Star Luxury Villa,,3,3,6
+https://www.cabovillas.com/properties.asp?PID=140,https://www.cabovillas.com/Properties/Villas/Villa_Marcella/FULL/Villa_Marcella-1.jpg,"CABO SAN LUCAS, OCEANFRONT, BEACHFRONT",Villa Marcella,Luxury Beach Front Estate,6-Star Premier Villa,,5,6.5,14`.split('\n');
+
+function parseVillaLine(line: string, index: number): Villa {
+  const [url, imageUrl, location, name, description, rating] = line.split(',');
+  const amenities = [
+    "Private Pool",
+    "Ocean View",
+    "Chef's Kitchen",
+    "Daily Housekeeping",
+    "Wi-Fi",
+    "Air Conditioning",
+    "Security System",
+    location.toLowerCase().includes('beachfront') ? "Beach Access" : "Mountain View"
+  ];
+
+  return {
+    id: index,
+    trackHsId: `villa-${index}`,
+    name: name.trim(),
+    description: description.trim(),
+    bedrooms: 4 + Math.floor(Math.random() * 4), // Random between 4-8 bedrooms
+    bathrooms: 4 + Math.floor(Math.random() * 4),
+    maxGuests: 8 + Math.floor(Math.random() * 8), // Random between 8-16 guests
+    amenities,
+    imageUrl: imageUrl.trim(),
     imageUrls: [
-      "https://www.cabovillas.com/Properties/Villas/Villa_Tranquilidad/FULL/Villa_Tranquilidad-1.jpg",
+      imageUrl.trim(),
       "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&auto=format",
       "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&auto=format",
       "https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=800&auto=format",
-      "https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?w=800&auto=format",
-      "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=800&auto=format"
     ],
-    pricePerNight: "2500",
-    location: "San José del Cabo",
-    address: "Puerto Los Cabos",
-    latitude: "23.0",
-    longitude: "-109.7",
+    pricePerNight: String(1500 + Math.floor(Math.random() * 2500)), // Random between $1500-$4000
+    location: location.includes('SAN JOSÉ') ? 'San José del Cabo' : 'Cabo San Lucas',
+    address: location.trim(),
+    latitude: String(22.89 + (Math.random() * 0.2)), // Random coordinates around Cabo
+    longitude: String(-109.91 + (Math.random() * 0.2)),
     lastSyncedAt: new Date(),
     createdAt: new Date(),
     updatedAt: new Date()
-  },
-  {
-    id: 2,
-    trackHsId: "villa-002",
-    name: "Villa Lorena",
-    description: "Comfortable Villa with Wonderful Pacific Ocean Views. This 4.5-Star Deluxe Villa combines luxury with comfort.",
-    bedrooms: 4,
-    bathrooms: 4,
-    maxGuests: 10,
-    amenities: ["Infinity Pool", "Ocean View", "Gourmet Kitchen", "Outdoor Dining"],
-    imageUrl: "https://www.cabovillas.com/Properties/Villas/Villa_Lorena/FULL/Villa_Lorena-1.jpg",
-    imageUrls: [
-      "https://www.cabovillas.com/Properties/Villas/Villa_Lorena/FULL/Villa_Lorena-1.jpg",
-      "https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?w=800&auto=format",
-      "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=800&auto=format",
-      "https://images.unsplash.com/photo-1613977257592-4871e5fcd7c4?w=800&auto=format",
-      "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?w=800&auto=format"
-    ],
-    pricePerNight: "1500",
-    location: "Cabo San Lucas",
-    address: "Pedregal",
-    latitude: "22.9",
-    longitude: "-109.9",
-    lastSyncedAt: new Date(),
-    createdAt: new Date(),
-    updatedAt: new Date()
-  },
-  {
-    id: 3,
-    trackHsId: "villa-003",
-    name: "Villa Esencia Del Mar",
-    description: "Breathtaking Ocean Views & Modern Luxury. Experience the essence of Cabo living in this stunning villa.",
-    bedrooms: 4,
-    bathrooms: 3,
-    maxGuests: 10,
-    amenities: ["Private Pool", "Ocean View", "Chef's Kitchen", "Outdoor Living Space"],
-    imageUrl: "https://www.cabovillas.com/Properties/Villas/Villa_Esencia_Del_Mar/FULL/Villa_Esencia_Del_Mar-1.jpg",
-    imageUrls: [
-      "https://www.cabovillas.com/Properties/Villas/Villa_Esencia_Del_Mar/FULL/Villa_Esencia_Del_Mar-1.jpg",
-      "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=800&auto=format",
-      "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=800&auto=format",
-      "https://images.unsplash.com/photo-1565183928294-7063f23ce0f8?w=800&auto=format",
-      "https://images.unsplash.com/photo-1540518614846-7eded433c457?w=800&auto=format"
-    ],
-    pricePerNight: "1800",
-    location: "Cabo San Lucas",
-    address: "Cabo San Lucas",
-    latitude: "22.89",
-    longitude: "-109.91",
-    lastSyncedAt: new Date(),
-    createdAt: new Date(),
-    updatedAt: new Date()
-  },
-  {
-    id: 4,
-    trackHsId: "villa-004",
-    name: "Villa Luna",
-    description: "Modern Luxury Villa with Panoramic Views. Perfect for families and groups seeking privacy and comfort.",
-    bedrooms: 6,
-    bathrooms: 6,
-    maxGuests: 12,
-    amenities: ["Infinity Pool", "Ocean View", "Home Theater", "Game Room", "Gym"],
-    imageUrl: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&auto=format",
-    imageUrls: [
-      "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&auto=format",
-      "https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?w=800&auto=format",
-      "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?w=800&auto=format",
-      "https://images.unsplash.com/photo-1515263487990-61b07816b324?w=800&auto=format",
-      "https://images.unsplash.com/photo-1484154218962-a197022b5858?w=800&auto=format"
-    ],
-    pricePerNight: "2200",
-    location: "San José del Cabo",
-    address: "Costa Azul",
-    latitude: "23.05",
-    longitude: "-109.68",
-    lastSyncedAt: new Date(),
-    createdAt: new Date(),
-    updatedAt: new Date()
-  },
-  {
-    id: 5,
-    trackHsId: "villa-005",
-    name: "Casa del Mar",
-    description: "Beachfront Paradise with World-Class Amenities. This villa offers the ultimate luxury beach experience.",
-    bedrooms: 5,
-    bathrooms: 5,
-    maxGuests: 10,
-    amenities: ["Private Beach", "Infinity Pool", "Chef Service", "Spa Room", "Wine Cellar"],
-    imageUrl: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&auto=format",
-    imageUrls: [
-      "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&auto=format",
-      "https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=800&auto=format",
-      "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800&auto=format",
-      "https://images.unsplash.com/photo-1560448204-603b3fc33ddc?w=800&auto=format",
-      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&auto=format"
-    ],
-    pricePerNight: "3000",
-    location: "Cabo San Lucas",
-    address: "Medano Beach",
-    latitude: "22.88",
-    longitude: "-109.90",
-    lastSyncedAt: new Date(),
-    createdAt: new Date(),
-    updatedAt: new Date()
-  }
-];
+  };
+}
+
+// Parse villa data and create array
+export const sampleVillas: Villa[] = villaLines
+  .slice(1) // Skip header row
+  .filter(line => line.trim() !== '')
+  .map((line, index) => parseVillaLine(line, index + 1));
