@@ -1,4 +1,4 @@
-import { Star, ChevronRight, Crown, Gem, Car, Calendar, Phone, Clock } from "lucide-react";
+import { Star, ChevronRight, Crown, Gem, Car, Calendar, Phone, Clock, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
 import Footer from "@/components/footer";
+import { useState } from "react";
 
 const formSchema = z.object({
   firstName: z.string().min(1, "First Name is required").min(2, "Please enter your first name"),
@@ -31,6 +32,7 @@ type FormData = z.infer<typeof formSchema>;
 
 export default function LuxuryConcierge() {
   const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -47,6 +49,9 @@ export default function LuxuryConcierge() {
   });
 
   const onSubmit = async (data: FormData) => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+
     try {
       // Submit to our API endpoint
       const response = await fetch('/api/leads', {
@@ -80,6 +85,8 @@ export default function LuxuryConcierge() {
         description: "Please try again or contact us directly.",
         variant: "destructive",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -245,34 +252,114 @@ export default function LuxuryConcierge() {
           <div className="max-w-4xl mx-auto">
             <h2 className="text-2xl md:text-3xl font-bold text-center mb-6 md:mb-8">Request VIP Services</h2>
             <div className="bg-white rounded-xl shadow-lg p-4 md:p-8">
-              <form onSubmit={form.handleSubmit(onSubmit)}>
-                {/* Grid layout - 2 columns on both mobile and desktop */}
-                <div className="grid grid-cols-2 gap-3 md:gap-6">
-                  <Input {...form.register("firstName")} placeholder="First Name*" className="text-sm md:text-base" />
-                  <FormError message={form.formState.errors.firstName?.message || ""} />
-                  <Input {...form.register("lastName")} placeholder="Last Name" className="text-sm md:text-base" />
-                  <Input {...form.register("email")} type="email" placeholder="Email*" className="text-sm md:text-base" />
-                  <FormError message={form.formState.errors.email?.message || ""} />
-                  <Input {...form.register("phone")} type="tel" placeholder="Phone" className="text-sm md:text-base" />
-                  <Input {...form.register("checkIn")} type="date" placeholder="Check-in" className="text-sm md:text-base" />
-                  <Input {...form.register("checkOut")} type="date" placeholder="Check-out" className="text-sm md:text-base" />
-                  <Input {...form.register("budget")} type="text" placeholder="Budget Range" className="text-sm md:text-base" />
-                  <Input {...form.register("groupSize")} type="number" placeholder="Group Size" className="text-sm md:text-base" />
-                  {/* Notes field spans full width */}
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="col-span-2 md:col-span-1">
+                    <Input 
+                      {...form.register("firstName")} 
+                      placeholder="First Name*" 
+                      className="w-full"
+                      disabled={isSubmitting}
+                    />
+                    <FormError message={form.formState.errors.firstName?.message || ""} />
+                  </div>
+
+                  <div className="col-span-2 md:col-span-1">
+                    <Input 
+                      {...form.register("lastName")} 
+                      placeholder="Last Name" 
+                      className="w-full"
+                      disabled={isSubmitting}
+                    />
+                  </div>
+
+                  <div className="col-span-2 md:col-span-1">
+                    <Input 
+                      {...form.register("email")} 
+                      type="email" 
+                      placeholder="Email*" 
+                      className="w-full"
+                      disabled={isSubmitting}
+                    />
+                    <FormError message={form.formState.errors.email?.message || ""} />
+                  </div>
+
+                  <div className="col-span-2 md:col-span-1">
+                    <Input 
+                      {...form.register("phone")} 
+                      type="tel" 
+                      placeholder="Phone" 
+                      className="w-full"
+                      disabled={isSubmitting}
+                    />
+                  </div>
+
+                  <div className="col-span-2 md:col-span-1">
+                    <Input 
+                      {...form.register("checkIn")} 
+                      type="date" 
+                      placeholder="Check-in" 
+                      className="w-full"
+                      disabled={isSubmitting}
+                    />
+                  </div>
+
+                  <div className="col-span-2 md:col-span-1">
+                    <Input 
+                      {...form.register("checkOut")} 
+                      type="date" 
+                      placeholder="Check-out" 
+                      className="w-full"
+                      disabled={isSubmitting}
+                    />
+                  </div>
+
+                  <div className="col-span-2 md:col-span-1">
+                    <Input 
+                      {...form.register("budget")} 
+                      type="text" 
+                      placeholder="Budget Range" 
+                      className="w-full"
+                      disabled={isSubmitting}
+                    />
+                  </div>
+
+                  <div className="col-span-2 md:col-span-1">
+                    <Input 
+                      {...form.register("groupSize")} 
+                      type="number" 
+                      placeholder="Group Size" 
+                      className="w-full"
+                      disabled={isSubmitting}
+                    />
+                  </div>
+
                   <div className="col-span-2">
                     <Textarea
                       {...form.register("notes")}
                       placeholder="Tell us about your desired experience (Optional)"
-                      className="w-full h-24 md:h-32 text-sm md:text-base mt-0"
+                      className="w-full h-24 md:h-32"
+                      disabled={isSubmitting}
                     />
                   </div>
                 </div>
+
                 <Button
                   type="submit"
-                  className="w-full mt-4 bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white py-4 md:py-6 text-base md:text-lg flex items-center justify-center gap-2"
+                  className="w-full mt-6 bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white py-4 md:py-6 text-base md:text-lg"
+                  disabled={isSubmitting}
                 >
-                  Request VIP Services
-                  <ChevronRight className="w-5 h-5" />
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Submitting...
+                    </>
+                  ) : (
+                    <>
+                      Request VIP Services
+                      <ChevronRight className="w-5 h-5 ml-2" />
+                    </>
+                  )}
                 </Button>
               </form>
             </div>
