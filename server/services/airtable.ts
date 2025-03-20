@@ -16,6 +16,33 @@ const base = airtable.base(process.env.AIRTABLE_BASE_ID);
 const BOOKINGS_TABLE = 'Bookings';
 const LEADS_TABLE = 'Leads';
 
+export async function syncLeadToAirtable(lead: Lead) {
+  try {
+    const record = await base(LEADS_TABLE).create([{
+      fields: {
+        'First Name': lead.firstName,
+        'Last Name': lead.lastName || '',
+        'Email': lead.email,
+        'Phone': lead.phone || '',
+        'Interest Type': lead.interestType,
+        'Source Page': lead.source,
+        'Status': lead.status,
+        'Form Data': JSON.stringify(lead.formData || {}),
+        'Notes': lead.notes || '',
+        'Assigned To': lead.assignedTo || '',
+        'Created At': lead.createdAt?.toISOString() || new Date().toISOString(),
+        'Lead ID': `LEAD-${Date.now()}`, // Unique identifier
+        'Last Modified': new Date().toISOString(),
+      }
+    }]);
+
+    return record[0].getId();
+  } catch (error) {
+    console.error('Error syncing lead to Airtable:', error);
+    throw new Error('Failed to sync lead to Airtable');
+  }
+}
+
 export async function syncBookingToAirtable(booking: Booking) {
   try {
     const record = await base(BOOKINGS_TABLE).create([{
@@ -33,6 +60,8 @@ export async function syncBookingToAirtable(booking: Booking) {
         'Special Requests': booking.specialRequests || '',
         'Form Data': JSON.stringify(booking.formData || {}),
         'Created At': booking.createdAt?.toISOString() || new Date().toISOString(),
+        'Booking ID': `BOOK-${Date.now()}`, // Unique identifier
+        'Last Modified': new Date().toISOString(),
       }
     }]);
 
@@ -40,31 +69,6 @@ export async function syncBookingToAirtable(booking: Booking) {
   } catch (error) {
     console.error('Error syncing booking to Airtable:', error);
     throw new Error('Failed to sync booking to Airtable');
-  }
-}
-
-export async function syncLeadToAirtable(lead: Lead) {
-  try {
-    const record = await base(LEADS_TABLE).create([{
-      fields: {
-        'First Name': lead.firstName,
-        'Last Name': lead.lastName,
-        'Email': lead.email,
-        'Phone': lead.phone,
-        'Interest Type': lead.interestType,
-        'Source': lead.source,
-        'Status': lead.status,
-        'Form Data': JSON.stringify(lead.formData || {}),
-        'Notes': lead.notes || '',
-        'Assigned To': lead.assignedTo || '',
-        'Created At': lead.createdAt?.toISOString() || new Date().toISOString(),
-      }
-    }]);
-
-    return record[0].getId();
-  } catch (error) {
-    console.error('Error syncing lead to Airtable:', error);
-    throw new Error('Failed to sync lead to Airtable');
   }
 }
 
