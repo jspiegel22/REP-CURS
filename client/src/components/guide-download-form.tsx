@@ -12,7 +12,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Loader2, Download } from "lucide-react";
+import { Loader2, Download, ChevronRight } from "lucide-react";
 
 const formSchema = z.object({
   firstName: z.string().min(1, "First Name is required"),
@@ -46,6 +46,7 @@ export function GuideDownloadForm() {
     setIsSubmitting(true);
 
     try {
+      console.log('Submitting form data:', data);  // Debug log
       const response = await fetch('/api/leads', {
         method: 'POST',
         headers: {
@@ -74,75 +75,81 @@ export function GuideDownloadForm() {
     }
   };
 
-  const openModal = () => {
-    setIsOpen(true);
-    setIsSuccess(false);
-  };
-
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button onClick={openModal} className="bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white text-lg py-6 px-8 rounded-xl">
-          Get Your 2025 ULTIMATE Cabo Guide
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Get Your 2025 ULTIMATE Cabo Guide</DialogTitle>
-          <DialogDescription>
-            Enter your details below to receive your comprehensive guide to Cabo.
-          </DialogDescription>
-        </DialogHeader>
-        {!isSuccess ? (
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
-            <div className="space-y-2">
-              <Input
-                {...form.register("firstName")}
-                placeholder="First Name*"
+    <div>
+      <Button 
+        onClick={() => setIsOpen(true)}
+        className="bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white text-lg py-6 px-8 rounded-xl w-full md:w-auto flex items-center gap-2"
+      >
+        Get Your 2025 ULTIMATE Cabo Guide
+        <ChevronRight className="w-5 h-5" />
+      </Button>
+
+      <Dialog open={isOpen} onOpenChange={(open) => {
+        setIsOpen(open);
+        if (!open) {
+          setIsSuccess(false);
+          form.reset();
+        }
+      }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Get Your 2025 ULTIMATE Cabo Guide</DialogTitle>
+            <DialogDescription>
+              Enter your details below to receive your comprehensive guide to Cabo.
+            </DialogDescription>
+          </DialogHeader>
+          {!isSuccess ? (
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
+              <div className="space-y-2">
+                <Input
+                  {...form.register("firstName")}
+                  placeholder="First Name*"
+                  disabled={isSubmitting}
+                />
+                <FormError message={form.formState.errors.firstName?.message || ""} />
+              </div>
+              <div className="space-y-2">
+                <Input
+                  {...form.register("email")}
+                  type="email"
+                  placeholder="Email*"
+                  disabled={isSubmitting}
+                />
+                <FormError message={form.formState.errors.email?.message || ""} />
+              </div>
+              <Button
+                type="submit"
                 disabled={isSubmitting}
-              />
-              <FormError message={form.formState.errors.firstName?.message || ""} />
+                className="w-full bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white"
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Submitting...
+                  </>
+                ) : (
+                  "Get Your Guide"
+                )}
+              </Button>
+            </form>
+          ) : (
+            <div className="space-y-4 mt-4">
+              <p className="text-green-600 font-semibold text-center">Thanks! Your guide is ready to download.</p>
+              <Button
+                onClick={() => window.open("/cabo-guide-2025.pdf", "_blank")}
+                className="w-full flex items-center justify-center bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white"
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Download Your Guide
+              </Button>
+              <p className="text-sm text-gray-500 mt-2 text-center">
+                Check your email - we've also sent you a copy for safekeeping!
+              </p>
             </div>
-            <div className="space-y-2">
-              <Input
-                {...form.register("email")}
-                type="email"
-                placeholder="Email*"
-                disabled={isSubmitting}
-              />
-              <FormError message={form.formState.errors.email?.message || ""} />
-            </div>
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white"
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Submitting...
-                </>
-              ) : (
-                "Get Your Guide"
-              )}
-            </Button>
-          </form>
-        ) : (
-          <div className="space-y-4 mt-4">
-            <p className="text-green-600">Thanks! Your guide is ready to download.</p>
-            <Button
-              onClick={() => window.open("/cabo-guide-2025.pdf", "_blank")}
-              className="w-full flex items-center justify-center bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white"
-            >
-              <Download className="w-4 h-4 mr-2" />
-              Download Your Guide
-            </Button>
-            <p className="text-sm text-gray-500 mt-2">
-              Check your email - we've also sent you a copy for safekeeping!
-            </p>
-          </div>
-        )}
-      </DialogContent>
-    </Dialog>
+          )}
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 }

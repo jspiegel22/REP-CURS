@@ -37,9 +37,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Lead form submission endpoint
   app.post("/api/leads", async (req, res) => {
     try {
+      console.log('Received lead submission:', req.body); // Debug log
+
       // Validate request body
       const leadData = insertLeadSchema.safeParse(req.body);
       if (!leadData.success) {
+        console.log('Lead validation failed:', leadData.error.errors); // Debug log
         return res.status(400).json({ 
           message: "Invalid lead data",
           errors: leadData.error.errors 
@@ -49,8 +52,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Create lead
       const lead = await storage.createLead({
         ...leadData.data,
-        status: "new"
+        status: "new",
+        createdAt: new Date(),
       });
+
+      console.log('Lead created successfully:', lead); // Debug log
 
       res.status(201).json(lead);
     } catch (error) {
