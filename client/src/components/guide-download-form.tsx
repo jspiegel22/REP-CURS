@@ -109,7 +109,7 @@ export function GuideDownloadForm() {
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="w-full"
+              className="w-full bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white"
             >
               {isSubmitting ? (
                 <>
@@ -126,7 +126,7 @@ export function GuideDownloadForm() {
             <p className="text-green-600">Thanks! Your guide is ready to download.</p>
             <Button
               onClick={() => window.open("/cabo-guide-2025.pdf", "_blank")}
-              className="w-full flex items-center justify-center"
+              className="w-full flex items-center justify-center bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white"
             >
               <Download className="w-4 h-4 mr-2" />
               Download Your Guide
