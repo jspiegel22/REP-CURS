@@ -4,7 +4,7 @@ import { villas } from '@shared/schema';
 
 // Initialize axios instance with base configuration
 const trackHsApi = axios.create({
-  baseURL: 'https://api.trackhs.com/v3', // Remove /channel from base URL
+  baseURL: 'https://api.trackhs.com/v3', // Base URL for API v3
   headers: {
     'Content-Type': 'application/json',
     'X-API-KEY': process.env.TRACKHS_API_KEY,
@@ -23,7 +23,8 @@ trackHsApi.interceptors.response.use(
       data: error.response?.data,
       url: error.config?.url,
       method: error.config?.method,
-      params: error.config?.params
+      params: error.config?.params,
+      headers: error.config?.headers // Log headers for debugging
     });
     throw error;
   }
@@ -59,40 +60,54 @@ export async function fetchVillas() {
     let page = 1;
     let hasMore = true;
 
-    while (hasMore) {
+    // Try different endpoint combinations
+    const endpoints = [
+      '/properties',
+      '/listings',
+      '/rentals'
+    ];
+
+    for (const endpoint of endpoints) {
       try {
-        console.log(`Fetching page ${page}...`);
-        // Try the /properties endpoint instead of /units
-        const response = await trackHsApi.get('/properties', {
+        console.log(`Trying endpoint: ${endpoint}`);
+        const response = await trackHsApi.get(endpoint, {
           params: {
-            page,
+            page: 1,
             limit: 100,
             status: 'active',
             include: 'amenities,images,rates,location'
           }
         });
 
-        console.log('API Response:', response.data);
+        if (response.data && (response.data.data || response.data.properties || response.data.listings)) {
+          console.log(`Success with endpoint: ${endpoint}`);
+          // Use this endpoint for pagination
+          while (hasMore) {
+            const pageResponse = await trackHsApi.get(endpoint, {
+              params: {
+                page,
+                limit: 100,
+                status: 'active',
+                include: 'amenities,images,rates,location'
+              }
+            });
 
-        if (!response.data) {
-          console.error('No data received from API');
-          break;
+            const villasData = pageResponse.data.data || pageResponse.data.properties || pageResponse.data.listings || [];
+            console.log(`Retrieved ${villasData.length} villas from page ${page}`);
+
+            if (villasData.length === 0) {
+              hasMore = false;
+              break;
+            }
+
+            allVillas.push(...villasData);
+            page++;
+          }
+          break; // Exit endpoints loop if successful
         }
-
-        const villasData = response.data.data || [];
-        console.log(`Retrieved ${villasData.length} villas from page ${page}`);
-
-        if (villasData.length === 0) {
-          hasMore = false;
-          break;
-        }
-
-        allVillas.push(...villasData);
-        page++;
       } catch (error) {
-        console.error(`Error fetching page ${page}:`, error);
-        hasMore = false;
-        break;
+        console.error(`Error with endpoint ${endpoint}:`, error);
+        continue; // Try next endpoint
       }
     }
 
