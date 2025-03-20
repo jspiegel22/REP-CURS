@@ -1,11 +1,12 @@
 import { IStorage } from "./types";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
-import { users, listings, bookings, rewards, socialShares, weatherCache, resorts, villas } from "@shared/schema";
-import type { User, InsertUser, Listing, Booking, Reward, SocialShare, WeatherCache, Resort, Villa } from "@shared/schema";
+import { users, listings, bookings, rewards, socialShares, weatherCache, resorts, villas, leads } from "@shared/schema";
+import type { User, InsertUser, Listing, Booking, Reward, SocialShare, WeatherCache, Resort, Villa, Lead, InsertLead } from "@shared/schema";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
 import { generateResortSlug } from "../client/src/lib/utils";
+import { syncBookingToAirtable, syncLeadToAirtable, retryFailedSync } from "./services/airtable";
 
 const PostgresSessionStore = connectPg(session);
 
@@ -81,6 +82,7 @@ export class DatabaseStorage implements IStorage {
   // Booking Management
   async createBooking(booking: Omit<Booking, "id">): Promise<Booking> {
     try {
+      // First save to database
       const [newBooking] = await db
         .insert(bookings)
         .values({
@@ -89,6 +91,16 @@ export class DatabaseStorage implements IStorage {
           endDate: new Date(booking.endDate),
         })
         .returning();
+
+      // Then sync to Airtable with retry logic
+      try {
+        await retryFailedSync(syncBookingToAirtable, newBooking);
+      } catch (error) {
+        console.error("Failed to sync booking to Airtable:", error);
+        // Don't throw error here - we still want to return the booking
+        // The sync can be retried later if needed
+      }
+
       return newBooking;
     } catch (error) {
       console.error("Error creating booking:", error);
@@ -147,6 +159,57 @@ export class DatabaseStorage implements IStorage {
       .from(rewards)
       .where(eq(rewards.active, true))
       .where(rewards.pointsRequired <= userPoints);
+  }
+
+  // New methods for bookings and leads
+  async createLead(lead: Omit<Lead, "id">): Promise<Lead> {
+    try {
+      // First save to database
+      const [newLead] = await db
+        .insert(leads)
+        .values(lead)
+        .returning();
+
+      // Then sync to Airtable with retry logic
+      try {
+        await retryFailedSync(syncLeadToAirtable, newLead);
+      } catch (error) {
+        console.error("Failed to sync lead to Airtable:", error);
+        // Don't throw error here - we still want to return the lead
+        // The sync can be retried later if needed
+      }
+
+      return newLead;
+    } catch (error) {
+      console.error("Error creating lead:", error);
+      throw new Error("Failed to create lead");
+    }
+  }
+
+  async getBookingsByEmail(email: string): Promise<Booking[]> {
+    try {
+      return await db
+        .select()
+        .from(bookings)
+        .where(eq(bookings.email, email))
+        .orderBy(bookings.startDate);
+    } catch (error) {
+      console.error("Error fetching bookings by email:", error);
+      throw new Error("Failed to fetch bookings");
+    }
+  }
+
+  async getLeadsByEmail(email: string): Promise<Lead[]> {
+    try {
+      return await db
+        .select()
+        .from(leads)
+        .where(eq(leads.email, email))
+        .orderBy(leads.createdAt);
+    } catch (error) {
+      console.error("Error fetching leads by email:", error);
+      throw new Error("Failed to fetch leads");
+    }
   }
 }
 
