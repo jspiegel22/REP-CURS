@@ -1,160 +1,173 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { FormError } from "@/components/form/FormError";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, Download, ChevronRight } from "lucide-react";
+import { Loader2 } from "lucide-react";
+import { guideDownloadSchema, type GuideDownload } from "@/types/booking";
+import { submitGuideDownload } from "@/lib/airtable";
+import ReCAPTCHA from "react-google-recaptcha";
 
-const formSchema = z.object({
-  firstName: z.string().min(1, "First Name is required"),
-  email: z.string().email("Please enter a valid email address"),
-});
+type GuideDownloadFormData = Omit<GuideDownload, 'submissionId' | 'submissionDate'>;
 
-type FormData = z.infer<typeof formSchema>;
+interface GuideDownloadFormProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
 
-export function GuideDownloadForm() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
+export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [recaptchaError, setRecaptchaError] = useState("");
+  const [success, setSuccess] = useState(false);
+  const recaptchaRef = useRef<ReCAPTCHA>(null);
 
-  const form = useForm<FormData>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<GuideDownloadFormData>({
+    resolver: zodResolver(guideDownloadSchema),
     defaultValues: {
-      firstName: "",
-      email: "",
+      guideName: "Ultimate Cabo Guide 2025",
+      guideType: "digital",
+      source: "homepage",
+      formName: "guide_download",
     },
   });
 
-  const onSubmit = async (data: FormData) => {
-    if (isSubmitting) return;
+  const onSubmit = async (data: GuideDownloadFormData) => {
+    setRecaptchaError("");
+    const token = recaptchaRef.current?.getValue();
+    
+    if (!token) {
+      setRecaptchaError("Please complete the reCAPTCHA verification");
+      return;
+    }
+
     setIsSubmitting(true);
-
     try {
-      const response = await fetch('/api/leads', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...data,
-          source: "guide-download",
-          interestType: "guide",
-          formData: {
-            guideName: "2025 ULTIMATE Cabo Guide",
-            downloadDate: new Date().toISOString(),
-          }
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to submit form');
+      const result = await submitGuideDownload(data, token);
+      if (result.success) {
+        setSuccess(true);
+        form.reset();
+      } else {
+        setRecaptchaError(result.message);
       }
-
-      setIsSuccess(true);
     } catch (error) {
-      console.error('Error submitting form:', error);
-      form.setError("root", {
-        message: "Failed to submit form. Please try again.",
-      });
+      console.error("Guide download submission error:", error);
+      setRecaptchaError("An error occurred while submitting the form");
     } finally {
       setIsSubmitting(false);
+      recaptchaRef.current?.reset();
     }
   };
 
   return (
-    <div>
-      <Button 
-        onClick={() => setIsOpen(true)}
-        className="bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white text-lg py-6 px-8 rounded-xl w-full md:w-auto flex items-center gap-2"
-      >
-        Get Your 2025 ULTIMATE Cabo Guide
-        <ChevronRight className="w-5 h-5" />
-      </Button>
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-[600px]">
+        <DialogHeader>
+          <DialogTitle>Download Your Ultimate Cabo Guide 2025</DialogTitle>
+          <DialogDescription>
+            Get exclusive insights, tips, and recommendations for your perfect Cabo getaway.
+          </DialogDescription>
+        </DialogHeader>
 
-      <Dialog 
-        open={isOpen} 
-        onOpenChange={(open) => {
-          setIsOpen(open);
-          if (!open) {
-            setIsSuccess(false);
-            form.reset();
-          }
-        }}
-      >
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Get Your 2025 ULTIMATE Cabo Guide</DialogTitle>
-            <DialogDescription>
-              Enter your details below to receive your comprehensive guide to Cabo.
-            </DialogDescription>
-          </DialogHeader>
-
-          {!isSuccess ? (
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
-              <div className="space-y-2">
-                <Input
-                  {...form.register("firstName")}
-                  placeholder="First Name*"
-                  disabled={isSubmitting}
-                />
-                <FormError message={form.formState.errors.firstName?.message || ""} />
-              </div>
-
-              <div className="space-y-2">
-                <Input
-                  {...form.register("email")}
-                  type="email"
-                  placeholder="Email*"
-                  disabled={isSubmitting}
-                />
-                <FormError message={form.formState.errors.email?.message || ""} />
-              </div>
-
-              {form.formState.errors.root && (
-                <FormError message={form.formState.errors.root.message || ""} />
-              )}
-
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white"
-              >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Submitting...
-                  </>
-                ) : (
-                  "Get Your Guide"
-                )}
-              </Button>
-            </form>
-          ) : (
-            <div className="space-y-4 mt-4">
-              <p className="text-green-600 font-semibold text-center">Thanks! Your guide is ready to download.</p>
-              <Button
-                onClick={() => window.open("/cabo-guide-2025.pdf", "_blank")}
-                className="w-full flex items-center justify-center bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white"
-              >
-                <Download className="w-4 h-4 mr-2" />
-                Download Your Guide
-              </Button>
-              <p className="text-sm text-gray-500 mt-2 text-center">
-                Check your email - we've also sent you a copy for safekeeping!
-              </p>
+        {success ? (
+          <div className="space-y-4">
+            <div className="text-center text-green-600">
+              <p className="font-medium">Thank you for your interest!</p>
+              <p className="mt-2">Your guide will be sent to your email shortly.</p>
             </div>
-          )}
-        </DialogContent>
-      </Dialog>
-    </div>
+            <Button
+              onClick={onClose}
+              className="w-full bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white"
+            >
+              Close
+            </Button>
+          </div>
+        ) : (
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="firstName">First Name*</Label>
+                <Input
+                  id="firstName"
+                  {...form.register("firstName")}
+                  disabled={isSubmitting}
+                />
+                <FormError message={form.formState.errors.firstName?.message} />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="lastName">Last Name*</Label>
+                <Input
+                  id="lastName"
+                  {...form.register("lastName")}
+                  disabled={isSubmitting}
+                />
+                <FormError message={form.formState.errors.lastName?.message} />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email*</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  {...form.register("email")}
+                  disabled={isSubmitting}
+                />
+                <FormError message={form.formState.errors.email?.message} />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="phone">Phone*</Label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  {...form.register("phone")}
+                  disabled={isSubmitting}
+                />
+                <FormError message={form.formState.errors.phone?.message} />
+              </div>
+            </div>
+
+            <div className="flex justify-center">
+              <ReCAPTCHA
+                ref={recaptchaRef}
+                sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!}
+                onChange={() => setRecaptchaError("")}
+              />
+            </div>
+            {recaptchaError && (
+              <div className="text-red-600 text-sm text-center">
+                {recaptchaError}
+              </div>
+            )}
+
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white"
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Submitting...
+                </>
+              ) : (
+                "Download Guide"
+              )}
+            </Button>
+          </form>
+        )}
+      </DialogContent>
+    </Dialog>
   );
 }

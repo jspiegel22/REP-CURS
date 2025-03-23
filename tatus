@@ -1,0 +1,10 @@
+core.excludesfile=/etc/.gitignore
+core.repositoryformatversion=0
+core.filemode=true
+core.bare=false
+core.logallrefupdates=true
+remote.origin.url=https://github.com/jspiegel22/REP-CURS.git
+remote.origin.fetch=+refs/heads/*:refs/remotes/origin/*
+branch.main.vscode-merge-base=origin/main
+branch.main.remote=origin
+branch.main.merge=refs/heads/main

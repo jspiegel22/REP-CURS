@@ -1,15 +1,16 @@
-import { FC } from "react";
+import { cn } from "@/lib/utils";
 
 interface FormErrorProps {
-  message: string;
+  message?: string;
+  className?: string;
 }
 
-export const FormError: FC<FormErrorProps> = ({ message }) => {
+export function FormError({ message, className }: FormErrorProps) {
   if (!message) return null;
 
   return (
-    <p className="text-sm font-medium text-red-600">
+    <p className={cn("text-sm text-red-600 mt-1", className)}>
       {message}
     </p>
   );
-};
+}

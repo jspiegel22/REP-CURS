@@ -54,6 +54,7 @@ const guides = [
 
 export default function HomePage() {
   const [isGuidePopupOpen, setIsGuidePopupOpen] = useState(false);
+  const [isGuideFormOpen, setIsGuideFormOpen] = useState(false);
 
   return (
     <>
@@ -291,6 +292,30 @@ export default function HomePage() {
           </div>
         </div>
 
+        {/* Guide Download CTA */}
+        <div className="container mx-auto px-4 py-12">
+          <div className="bg-[#2F4F4F] rounded-2xl p-8 md:p-12 text-center text-white">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Get Your Ultimate Cabo Guide 2025
+            </h2>
+            <p className="text-lg mb-8 max-w-2xl mx-auto">
+              Discover the best of Cabo with our comprehensive guide featuring exclusive tips, recommendations, and insider knowledge.
+            </p>
+            <Button
+              onClick={() => setIsGuideFormOpen(true)}
+              className="bg-white text-[#2F4F4F] hover:bg-gray-100 text-lg py-6 px-8 rounded-xl flex items-center gap-2 mx-auto"
+            >
+              Download Your Guide
+              <ChevronRight className="w-5 h-5" />
+            </Button>
+          </div>
+        </div>
+
+        {/* Guide Download Form */}
+        <GuideDownloadForm
+          isOpen={isGuideFormOpen}
+          onClose={() => setIsGuideFormOpen(false)}
+        />
 
         {/* Footer */}
         <footer className="bg-[#2F4F4F] text-white pt-16 pb-8">

@@ -2,15 +2,19 @@ import axios from 'axios';
 import { db } from '../db';
 import { villas } from '@shared/schema';
 
+if (!process.env.TRACKHS_API_KEY || !process.env.TRACKHS_API_SECRET) {
+  throw new Error('Missing required TrackHS API credentials');
+}
+
 // Initialize axios instance with base configuration
 const trackHsApi = axios.create({
-  baseURL: 'https://api.trackhs.com/v3', // Base URL for API v3
+  baseURL: 'https://api.trackhs.com/v3',
   headers: {
     'Content-Type': 'application/json',
     'X-API-KEY': process.env.TRACKHS_API_KEY,
     'X-API-SECRET': process.env.TRACKHS_API_SECRET,
     'Authorization': `Bearer ${process.env.TRACKHS_API_KEY}`
-  },
+  }
 });
 
 // Add response interceptor for better error logging
@@ -30,6 +34,24 @@ trackHsApi.interceptors.response.use(
     throw error;
   }
 );
+
+// Try to get API configuration first
+async function checkApiConfiguration() {
+  try {
+    const response = await trackHsApi.get('/configuration');
+    console.log('API Configuration Response:', {
+      status: response.status,
+      data: response.data,
+      headers: response.headers
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Failed to get API configuration:', error);
+    return null;
+  }
+}
+
+export interface Villa extends TrackHSVilla{}
 
 export interface TrackHSVilla {
   id: string;
@@ -56,32 +78,31 @@ export interface TrackHSVilla {
 
 export async function fetchVillas() {
   try {
-    console.log('Fetching villas from TrackHS API...');
+    console.log('Starting villa fetch process...');
 
-    // First try to get API configuration/status
-    try {
-      const configResponse = await trackHsApi.get('/configuration');
-      console.log('API Configuration:', configResponse.data);
-    } catch (error) {
-      console.error('Error fetching API configuration:', error);
+    // Check API configuration first
+    const config = await checkApiConfiguration();
+    if (!config) {
+      console.log('Could not get API configuration. May need additional authentication parameters.');
     }
 
-    const allVillas: TrackHSVilla[] = [];
+    const allVillas: Villa[] = [];
     let page = 1;
     let hasMore = true;
 
-    // Try different endpoint patterns to determine the correct one
+    // Test each potential endpoint
     const endpoints = [
       '/properties',
       '/rentals',
       '/units',
-      '/listings'
+      '/listings',
+      '/channel/properties', // Try with channel prefix
+      '/channel/units'
     ];
 
     for (const endpoint of endpoints) {
       try {
-        console.log(`Attempting to fetch villas from ${endpoint}...`);
-
+        console.log(`Testing endpoint: ${endpoint}`);
         const response = await trackHsApi.get(endpoint, {
           params: {
             page: 1,
@@ -93,95 +114,36 @@ export async function fetchVillas() {
 
         console.log(`Response from ${endpoint}:`, {
           status: response.status,
-          dataKeys: Object.keys(response.data),
-          itemCount: response.data?.data?.length || response.data?.properties?.length || response.data?.listings?.length
+          dataStructure: Object.keys(response.data),
+          itemCount: response.data?.data?.length || 0
         });
 
-        if (response.data && (response.data.data || response.data.properties || response.data.listings)) {
-          // We found a working endpoint, now paginate through all results
-          while (hasMore) {
-            console.log(`Fetching page ${page} from ${endpoint}...`);
-
-            const pageResponse = await trackHsApi.get(endpoint, {
-              params: {
-                page,
-                limit: 100,
-                status: 'active',
-                include: 'amenities,images,rates,location'
-              }
-            });
-
-            const villasData = pageResponse.data.data || pageResponse.data.properties || pageResponse.data.listings || [];
-
-            if (villasData.length === 0) {
-              hasMore = false;
-              break;
-            }
-
-            console.log(`Retrieved ${villasData.length} villas from page ${page}`);
-            allVillas.push(...villasData);
-            page++;
-          }
-
-          // If we successfully got villas, no need to try other endpoints
-          if (allVillas.length > 0) {
-            break;
-          }
+        // If we got a successful response with data, break the loop
+        if (response.data?.data?.length > 0) {
+          console.log(`Found working endpoint: ${endpoint}`);
+          break;
         }
       } catch (error) {
-        console.error(`Error with endpoint ${endpoint}:`, error);
-        continue; // Try next endpoint
+        console.error(`Failed with endpoint ${endpoint}:`, {
+          status: error.response?.status,
+          message: error.response?.data?.message || error.message
+        });
       }
     }
-
-    console.log(`Total villas fetched: ${allVillas.length}`);
 
     if (allVillas.length === 0) {
-      throw new Error('No villas could be fetched from any endpoint. Additional configuration may be required.');
+      throw new Error(
+        'Could not fetch villas. Possible reasons:\n' +
+        '1. Need Channel ID or PMS ID in request\n' +
+        '2. Incorrect endpoint structure\n' +
+        '3. Additional authentication required\n' +
+        'Please verify API requirements with provider.'
+      );
     }
 
-    // Process and store each villa
-    for (const villaData of allVillas) {
-      try {
-        // Transform TrackHS villa data to match our schema
-        const villaRecord = {
-          trackHsId: villaData.id,
-          name: villaData.name,
-          description: villaData.description || "Luxury villa in Cabo San Lucas",
-          bedrooms: villaData.bedrooms,
-          bathrooms: villaData.bathrooms,
-          maxGuests: villaData.maxOccupancy,
-          amenities: villaData.amenities || [],
-          imageUrl: villaData.images[0]?.url || '',
-          imageUrls: villaData.images.map(img => img.url),
-          pricePerNight: String(villaData.rates?.defaultNightly || 0),
-          location: villaData.location?.city || "Cabo San Lucas",
-          address: villaData.location?.address || "",
-          latitude: String(villaData.location?.latitude || 0),
-          longitude: String(villaData.location?.longitude || 0),
-          lastSyncedAt: new Date(),
-        };
-
-        console.log(`Processing villa ${villaData.id}:`, villaRecord);
-
-        // Upsert villa data
-        await db
-          .insert(villas)
-          .values(villaRecord)
-          .onConflictDoUpdate({
-            target: villas.trackHsId,
-            set: villaRecord,
-          });
-
-      } catch (error) {
-        console.error(`Error processing villa ${villaData.id}:`, error);
-      }
-    }
-
-    console.log('Villa sync completed successfully');
-    return true;
+    return allVillas;
   } catch (error) {
-    console.error('Error fetching villas from TrackHS:', error);
+    console.error('Villa fetch process failed:', error);
     throw error;
   }
 }
