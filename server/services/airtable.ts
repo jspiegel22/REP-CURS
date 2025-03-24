@@ -1,19 +1,19 @@
 import Airtable from 'airtable';
 import type { Booking, Lead } from '@shared/schema';
 
-if (!process.env.AIRTABLE_API_KEY || !process.env.AIRTABLE_BASE_ID) {
-  console.warn('Airtable credentials missing, some features will be disabled');
-  export const syncLeadToAirtable = async () => null;
-} else {
+// Define the function outside conditionals
+export const syncLeadToAirtable = async (lead?: Lead) => {
+  if (!process.env.AIRTABLE_API_KEY || !process.env.AIRTABLE_BASE_ID) {
+    console.warn('Airtable credentials missing, some features will be disabled');
+    return null;
+  }
 
-const airtable = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY });
-const base = airtable.base(process.env.AIRTABLE_BASE_ID);
+  if (!lead) return null;
 
-// Table names in your Airtable base
-const BOOKINGS_TABLE = 'Bookings';
-const LEADS_TABLE = 'Leads';
+  const airtable = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY });
+  const base = airtable.base(process.env.AIRTABLE_BASE_ID);
+  const LEADS_TABLE = 'Leads';
 
-export async function syncLeadToAirtable(lead: Lead) {
   try {
     const record = await base(LEADS_TABLE).create([{
       fields: {
@@ -28,7 +28,7 @@ export async function syncLeadToAirtable(lead: Lead) {
         'Notes': lead.notes || '',
         'Assigned To': lead.assignedTo || '',
         'Created At': lead.createdAt?.toISOString() || new Date().toISOString(),
-        'Lead ID': `LEAD-${Date.now()}`, // Unique identifier
+        'Lead ID': `LEAD-${Date.now()}`,
         'Last Modified': new Date().toISOString(),
       }
     }]);
@@ -38,7 +38,7 @@ export async function syncLeadToAirtable(lead: Lead) {
     console.error('Error syncing lead to Airtable:', error);
     throw new Error('Failed to sync lead to Airtable');
   }
-}
+};
 
 export async function syncBookingToAirtable(booking: Booking) {
   try {
