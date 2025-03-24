@@ -2,7 +2,7 @@ import Airtable from 'airtable';
 import type { Booking, Lead } from '@shared/schema';
 
 const AIRTABLE_API_KEY = 'pathWHIzP3lxGRdWM.f1298c67689266c18302187f7bfef1872a80d42166331902c246458d07185451';
-const AIRTABLE_BASE_ID = 'apphIbkEiIvmmgUIX';
+const AIRTABLE_BASE_ID = 'tbl3882i9kYQN5wMO';
 
 const airtable = new Airtable({ apiKey: AIRTABLE_API_KEY });
 const base = airtable.base(AIRTABLE_BASE_ID);
