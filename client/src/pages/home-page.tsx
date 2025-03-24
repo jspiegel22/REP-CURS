@@ -143,8 +143,19 @@ export default function HomePage() {
                 </span>
               </div>
 
-              {/* Enhanced CTA Button - Desktop */}
-              <GuideDownloadForm />
+              {/* CTA Button */}
+              <Button 
+                onClick={() => setIsGuideFormOpen(true)}
+                className="bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white text-xl px-10 py-6 rounded-2xl transform transition-all duration-300 hover:scale-105 shadow-lg"
+              >
+                Get Your Free Guide
+              </Button>
+
+              {/* Guide Download Form Modal */}
+              <GuideDownloadForm
+                isOpen={isGuideFormOpen}
+                onClose={() => setIsGuideFormOpen(false)}
+              />>
 
               {/* Mobile CTA Button */}
               <div className="md:hidden w-full">
