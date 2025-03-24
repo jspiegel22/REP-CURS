@@ -14,10 +14,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { guideDownloadSchema, type GuideDownload } from "@/types/booking";
-import { submitGuideDownload } from "@/lib/airtable";
+import { submitToAirtable } from "@/lib/airtable";
 import ReCAPTCHA from "react-google-recaptcha";
+import { nanoid } from "nanoid";
 
-type GuideDownloadFormData = Omit<GuideDownload, 'submissionId' | 'submissionDate'>;
+type GuideDownloadFormData = Pick<GuideDownload, 'firstName' | 'email'>;
 
 interface GuideDownloadFormProps {
   isOpen: boolean;
@@ -32,12 +33,6 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
 
   const form = useForm<GuideDownloadFormData>({
     resolver: zodResolver(guideDownloadSchema),
-    defaultValues: {
-      guideName: "Ultimate Cabo Guide 2025",
-      guideType: "digital",
-      source: "homepage",
-      formName: "guide_download",
-    },
   });
 
   const onSubmit = async (data: GuideDownloadFormData) => {
@@ -51,7 +46,28 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
 
     setIsSubmitting(true);
     try {
-      const result = await submitGuideDownload(data, token);
+      const enrichedData = {
+        ...data,
+        formName: "guide_download",
+        source: "homepage",
+        tags: ["GUIDE", "DOWNLOAD"],
+        status: "New",
+        submissionId: nanoid(),
+        submissionDate: new Date().toISOString(),
+        randomId: Math.floor(Math.random() * 1000000),
+        formData: JSON.stringify(data),
+        guideUrl: "https://drive.google.com/file/d/1iM6eeb5P5aKLcSiE1ZI_7Vu3XsJqgOs6/view?usp=sharing"
+      };
+
+      const result = await submitToAirtable(
+        {
+          baseId: process.env.NEXT_PUBLIC_AIRTABLE_BASE_ID!,
+          tableName: 'ALL'
+        },
+        enrichedData,
+        token
+      );
+
       if (result.success) {
         setSuccess(true);
         form.reset();
@@ -67,21 +83,81 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
     }
   };
 
+  // Test function
+  const testFormSubmission = async () => {
+    const testData = {
+      firstName: "Jeff",
+      email: "jeff@newpsmedia.com"
+    };
+
+    setIsSubmitting(true);
+    try {
+      const enrichedData = {
+        ...testData,
+        formName: "guide_download",
+        source: "homepage",
+        tags: ["GUIDE", "DOWNLOAD"],
+        status: "New",
+        submissionId: nanoid(),
+        submissionDate: new Date().toISOString(),
+        randomId: Math.floor(Math.random() * 1000000),
+        formData: JSON.stringify(testData),
+        guideUrl: "https://drive.google.com/file/d/1iM6eeb5P5aKLcSiE1ZI_7Vu3XsJqgOs6/view?usp=sharing"
+      };
+
+      const result = await submitToAirtable(
+        {
+          baseId: process.env.NEXT_PUBLIC_AIRTABLE_BASE_ID!,
+          tableName: 'ALL'
+        },
+        enrichedData,
+        "test-token" // Using a test token for testing
+      );
+
+      if (result.success) {
+        setSuccess(true);
+        console.log("Test submission successful!");
+      } else {
+        console.error("Test submission failed:", result.message);
+      }
+    } catch (error) {
+      console.error("Test submission error:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Add test button in development
+  const isDevelopment = process.env.NODE_ENV === 'development';
+  
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="sm:max-w-[425px] bg-white rounded-2xl shadow-xl">
         <DialogHeader>
-          <DialogTitle>Download Your Ultimate Cabo Guide 2025</DialogTitle>
-          <DialogDescription>
-            Get exclusive insights, tips, and recommendations for your perfect Cabo getaway.
+          <DialogTitle className="text-2xl font-bold text-[#2F4F4F]">Get Your Ultimate Cabo Guide 2025</DialogTitle>
+          <DialogDescription className="text-gray-600">
+            Enter your details below to receive your free guide to Cabo's best experiences.
           </DialogDescription>
         </DialogHeader>
 
         {success ? (
-          <div className="space-y-4">
-            <div className="text-center text-green-600">
-              <p className="font-medium">Thank you for your interest!</p>
-              <p className="mt-2">Your guide will be sent to your email shortly.</p>
+          <div className="space-y-6">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold text-[#2F4F4F] mb-2">Thank you for your interest!</h3>
+              <p className="text-gray-600 mb-4">Your guide will be sent to your email shortly.</p>
+              <a
+                href="https://drive.google.com/file/d/1iM6eeb5P5aKLcSiE1ZI_7Vu3XsJqgOs6/view?usp=sharing"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block bg-[#2F4F4F] text-white px-6 py-3 rounded-xl hover:bg-[#1F3F3F] transition-colors mb-4"
+              >
+                Download Guide Now
+              </a>
             </div>
             <Button
               onClick={onClose}
@@ -92,50 +168,29 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
           </div>
         ) : (
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="firstName">First Name*</Label>
-                <Input
-                  id="firstName"
-                  {...form.register("firstName")}
-                  disabled={isSubmitting}
-                />
-                <FormError message={form.formState.errors.firstName?.message} />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="lastName">Last Name*</Label>
-                <Input
-                  id="lastName"
-                  {...form.register("lastName")}
-                  disabled={isSubmitting}
-                />
-                <FormError message={form.formState.errors.lastName?.message} />
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="firstName" className="text-[#2F4F4F]">First Name*</Label>
+              <Input
+                id="firstName"
+                {...form.register("firstName")}
+                disabled={isSubmitting}
+                placeholder="Your first name"
+                className="border-gray-300 focus:border-[#2F4F4F] focus:ring-[#2F4F4F]"
+              />
+              <FormError message={form.formState.errors.firstName?.message} />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email*</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  {...form.register("email")}
-                  disabled={isSubmitting}
-                />
-                <FormError message={form.formState.errors.email?.message} />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="phone">Phone*</Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  {...form.register("phone")}
-                  disabled={isSubmitting}
-                />
-                <FormError message={form.formState.errors.phone?.message} />
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-[#2F4F4F]">Email*</Label>
+              <Input
+                id="email"
+                type="email"
+                {...form.register("email")}
+                disabled={isSubmitting}
+                placeholder="your@email.com"
+                className="border-gray-300 focus:border-[#2F4F4F] focus:ring-[#2F4F4F]"
+              />
+              <FormError message={form.formState.errors.email?.message} />
             </div>
 
             <div className="flex justify-center">
@@ -154,18 +209,27 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white"
+              className="w-full bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white py-6 text-lg"
             >
               {isSubmitting ? (
                 <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
                   Submitting...
                 </>
               ) : (
-                "Download Guide"
+                "Get Guide Now"
               )}
             </Button>
           </form>
+        )}
+
+        {isDevelopment && (
+          <Button
+            onClick={testFormSubmission}
+            className="mt-4 w-full bg-gray-500 hover:bg-gray-600 text-white"
+          >
+            Test Form Submission
+          </Button>
         )}
       </DialogContent>
     </Dialog>
