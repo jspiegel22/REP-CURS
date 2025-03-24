@@ -13,7 +13,9 @@ const trackHsApi = axios.create({
     'Content-Type': 'application/json',
     'X-API-KEY': process.env.TRACKHS_API_KEY,
     'X-API-SECRET': process.env.TRACKHS_API_SECRET,
-    'Authorization': `Bearer ${process.env.TRACKHS_API_KEY}`
+    'Authorization': `Bearer ${process.env.TRACKHS_API_KEY}`,
+    'X-Channel-ID': process.env.TRACKHS_CHANNEL_ID || '1', // Add channel ID
+    'X-PMS-ID': process.env.TRACKHS_PMS_ID || '1' // Add PMS ID
   }
 });
 

@@ -1,17 +1,15 @@
 import Airtable from 'airtable';
 import type { Booking, Lead } from '@shared/schema';
 
-// Define the function outside conditionals
-export const syncLeadToAirtable = async (lead?: Lead) => {
-  if (!process.env.AIRTABLE_API_KEY || !process.env.AIRTABLE_BASE_ID) {
-    console.warn('Airtable credentials missing, some features will be disabled');
-    return null;
-  }
+const AIRTABLE_API_KEY = 'pathWHIzP3lxGRdWM.f1298c67689266c18302187f7bfef1872a80d42166331902c246458d07185451';
+const AIRTABLE_BASE_ID = 'apphIbkEiIvmmgUIX';
 
+const airtable = new Airtable({ apiKey: AIRTABLE_API_KEY });
+const base = airtable.base(AIRTABLE_BASE_ID);
+
+export const syncLeadToAirtable = async (lead) => {
   if (!lead) return null;
 
-  const airtable = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY });
-  const base = airtable.base(process.env.AIRTABLE_BASE_ID);
   const LEADS_TABLE = 'Leads';
 
   try {
@@ -41,6 +39,7 @@ export const syncLeadToAirtable = async (lead?: Lead) => {
 };
 
 export async function syncBookingToAirtable(booking: Booking) {
+  const BOOKINGS_TABLE = 'Bookings'; // Added table name here
   try {
     const record = await base(BOOKINGS_TABLE).create([{
       fields: {
