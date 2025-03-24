@@ -120,7 +120,7 @@ const AIRTABLE_CONFIGS = {
   }
 };
 
-async function submitToAirtable<T extends BaseSubmission>(
+export async function submitToAirtable<T extends BaseSubmission>(
   config: AirtableConfig,
   data: T,
   recaptchaToken: string

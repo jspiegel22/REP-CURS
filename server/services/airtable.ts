@@ -3,12 +3,8 @@ import type { Booking, Lead } from '@shared/schema';
 
 if (!process.env.AIRTABLE_API_KEY || !process.env.AIRTABLE_BASE_ID) {
   console.warn('Airtable credentials missing, some features will be disabled');
-  module.exports = {
-    syncLeadToAirtable: async () => null,
-    // Add other exported functions here
-  };
-  return;
-}
+  export const syncLeadToAirtable = async () => null;
+} else {
 
 const airtable = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY });
 const base = airtable.base(process.env.AIRTABLE_BASE_ID);
