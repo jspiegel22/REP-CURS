@@ -5,7 +5,7 @@ const AIRTABLE_API_KEY = 'pathWHIzP3lxGRdWM.f1298c67689266c18302187f7bfef1872a80
 const AIRTABLE_BASE_ID = 'tbl3882i9kYQN5wMO';
 
 const airtable = new Airtable({ apiKey: AIRTABLE_API_KEY });
-const base = airtable.base(AIRTABLE_BASE_ID);
+const base = airtable.base('zKq3J9js9AKhpH');
 
 export const syncLeadToAirtable = async (lead) => {
   if (!lead) return null;

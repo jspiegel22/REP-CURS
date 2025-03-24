@@ -4,8 +4,8 @@ import { format } from 'date-fns';
 import { BaseSubmission, GuideDownload, Booking, LeadGen } from '@/types/booking';
 
 const config = {
-  apiKey: process.env.AIRTABLE_API_KEY,
-  baseId: process.env.AIRTABLE_BASE_ID,
+  apiKey: 'pathWHIzP3lxGRdWM.f1298c67689266c18302187f7bfef1872a80d42166331902c246458d07185451',
+  baseId: 'tbl3882i9kYQN5wMO',
 };
 
 const airtable = new Airtable({ apiKey: config.apiKey }).base(config.baseId!);
