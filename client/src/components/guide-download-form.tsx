@@ -38,7 +38,7 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
   const onSubmit = async (data: GuideDownloadFormData) => {
     setRecaptchaError("");
     const token = recaptchaRef.current?.getValue();
-    
+
     if (!token) {
       setRecaptchaError("Please complete the reCAPTCHA verification");
       return;
@@ -129,7 +129,7 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
 
   // Add test button in development
   const isDevelopment = process.env.NODE_ENV === 'development';
-  
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px] bg-white rounded-2xl shadow-xl">
