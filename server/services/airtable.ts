@@ -1,12 +1,13 @@
 import Airtable from 'airtable';
 import type { Booking, Lead } from '@shared/schema';
 
-if (!process.env.AIRTABLE_API_KEY) {
-  throw new Error('Missing AIRTABLE_API_KEY environment variable');
-}
-
-if (!process.env.AIRTABLE_BASE_ID) {
-  throw new Error('Missing AIRTABLE_BASE_ID environment variable');
+if (!process.env.AIRTABLE_API_KEY || !process.env.AIRTABLE_BASE_ID) {
+  console.warn('Airtable credentials missing, some features will be disabled');
+  module.exports = {
+    syncLeadToAirtable: async () => null,
+    // Add other exported functions here
+  };
+  return;
 }
 
 const airtable = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY });
