@@ -8,14 +8,11 @@ if (!process.env.TRACKHS_API_KEY || !process.env.TRACKHS_API_SECRET) {
 
 // Initialize axios instance with base configuration
 const trackHsApi = axios.create({
-  baseURL: 'https://api.trackhs.com/v3',
+  baseURL: 'https://cabovillas.trackhs.com/api/pms',
   headers: {
+    'Accept': 'application/json',
     'Content-Type': 'application/json',
-    'X-API-KEY': process.env.TRACKHS_API_KEY,
-    'X-API-SECRET': process.env.TRACKHS_API_SECRET,
-    'Authorization': `Bearer ${process.env.TRACKHS_API_KEY}`,
-    'X-Channel-ID': process.env.TRACKHS_CHANNEL_ID || '1', // Add channel ID
-    'X-PMS-ID': process.env.TRACKHS_PMS_ID || '1' // Add PMS ID
+    'Authorization': 'Basic M2Q5ZDFlMzM4MzE5MGRiMDdjN2JlMTk1OGExYzRiMGI6OGM5ZDE4NTMyNmEzM2Q0OTQxN2JiNzc3ODlhMzg2ZmM='
   }
 });
 
@@ -94,12 +91,9 @@ export async function fetchVillas() {
 
     // Test each potential endpoint
     const endpoints = [
-      '/properties',
-      '/rentals',
       '/units',
-      '/listings',
-      '/channel/properties', // Try with channel prefix
-      '/channel/units'
+      '/properties',
+      '/listings'
     ];
 
     for (const endpoint of endpoints) {
