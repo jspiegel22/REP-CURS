@@ -101,104 +101,102 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="fixed inset-0 bg-black/70">
-        <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[425px] bg-white rounded-2xl p-6 shadow-xl">
-          {success ? (
-            <div className="space-y-6">
-              <div className="text-center">
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-                <a
-                  href="https://drive.google.com/file/d/1iM6eeb5P5aKLcSiE1ZI_7Vu3XsJqgOs6/view?usp=sharing"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block bg-[#2F4F4F] text-white px-6 py-3 rounded-xl hover:bg-[#1F3F3F] transition-colors mb-4"
-                >
-                  Download Guide Now
-                </a>
+      <DialogContent className="sm:max-w-[425px] bg-white rounded-2xl shadow-xl [&[role=dialog]::backdrop]:bg-black/50">
+        {success ? (
+          <div className="space-y-6">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
               </div>
-              <Button
-                onClick={onClose}
-                className="w-full bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white"
+              <a
+                href="https://drive.google.com/file/d/1iM6eeb5P5aKLcSiE1ZI_7Vu3XsJqgOs6/view?usp=sharing"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block bg-[#2F4F4F] text-white px-6 py-3 rounded-xl hover:bg-[#1F3F3F] transition-colors mb-4"
               >
-                Close
-              </Button>
+                Download Guide Now
+              </a>
             </div>
-          ) : (
-            <>
-              <DialogHeader>
-                <DialogTitle className="text-2xl font-bold text-[#2F4F4F]">Get Your Free Guide</DialogTitle>
-                <DialogDescription className="text-gray-600">
-                  Enter your details below to receive your free guide to Cabo's best experiences.
-                </DialogDescription>
-              </DialogHeader>
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                <div className="space-y-2">
-                  <Label htmlFor="firstName" className="text-[#2F4F4F]">First Name*</Label>
-                  <Input
-                    id="firstName"
-                    {...register("firstName")}
-                    disabled={isSubmitting}
-                    placeholder="Your first name"
-                    className="border-gray-300 focus:border-[#2F4F4F] focus:ring-[#2F4F4F]"
-                  />
-                  {errors.firstName && (
-                    <FormError message={errors.firstName.message} />
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="email" className="text-[#2F4F4F]">Email*</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    {...register("email")}
-                    disabled={isSubmitting}
-                    placeholder="your@email.com"
-                    className="border-gray-300 focus:border-[#2F4F4F] focus:ring-[#2F4F4F]"
-                  />
-                  {errors.email && (
-                    <FormError message={errors.email.message} />
-                  )}
-                </div>
-
-                {RECAPTCHA_SITE_KEY && (
-                  <div className="flex justify-center">
-                    <ReCAPTCHA
-                      ref={recaptchaRef}
-                      sitekey={RECAPTCHA_SITE_KEY}
-                      onChange={() => setRecaptchaError("")}
-                    />
-                  </div>
-                )}
-
-                {recaptchaError && (
-                  <div className="text-red-600 text-sm text-center">
-                    {recaptchaError}
-                  </div>
-                )}
-
-                <Button
-                  type="submit"
+            <Button
+              onClick={onClose}
+              className="w-full bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white"
+            >
+              Close
+            </Button>
+          </div>
+        ) : (
+          <>
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold text-[#2F4F4F]">Get Your Free Guide</DialogTitle>
+              <DialogDescription className="text-gray-600">
+                Enter your details below to receive your free guide to Cabo's best experiences.
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="firstName" className="text-[#2F4F4F]">First Name*</Label>
+                <Input
+                  id="firstName"
+                  {...register("firstName")}
                   disabled={isSubmitting}
-                  className="w-full bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white py-6 text-lg"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                      Submitting...
-                    </>
-                  ) : (
-                    "Get Guide Now"
-                  )}
-                </Button>
-              </form>
-            </>
-          )}
-        </div>
+                  placeholder="Your first name"
+                  className="border-gray-300 focus:border-[#2F4F4F] focus:ring-[#2F4F4F]"
+                />
+                {errors.firstName && (
+                  <FormError message={errors.firstName.message} />
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-[#2F4F4F]">Email*</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  {...register("email")}
+                  disabled={isSubmitting}
+                  placeholder="your@email.com"
+                  className="border-gray-300 focus:border-[#2F4F4F] focus:ring-[#2F4F4F]"
+                />
+                {errors.email && (
+                  <FormError message={errors.email.message} />
+                )}
+              </div>
+
+              {RECAPTCHA_SITE_KEY && (
+                <div className="flex justify-center">
+                  <ReCAPTCHA
+                    ref={recaptchaRef}
+                    sitekey={RECAPTCHA_SITE_KEY}
+                    onChange={() => setRecaptchaError("")}
+                  />
+                </div>
+              )}
+
+              {recaptchaError && (
+                <div className="text-red-600 text-sm text-center">
+                  {recaptchaError}
+                </div>
+              )}
+
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white py-6 text-lg"
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                    Submitting...
+                  </>
+                ) : (
+                  "Get Guide Now"
+                )}
+              </Button>
+            </form>
+          </>
+        )}
       </DialogContent>
     </Dialog>
   );
