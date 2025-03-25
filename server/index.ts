@@ -45,9 +45,14 @@ app.use((req, res, next) => {
 (async () => {
   const server = await registerRoutes(app);
 
-  // Start villa sync scheduler after routes are registered
-  // Sync every hour (60 minutes)
-  scheduleVillaSync(60);
+  // Start villa sync scheduler in background
+  // Failure to sync villas shouldn't prevent app from starting
+  try {
+    scheduleVillaSync(60); // Sync every hour
+    console.log('Villa sync scheduler started');
+  } catch (error) {
+    console.error('Failed to start villa sync scheduler:', error);
+  }
 
   // Handle API routes first
   app.use("/api/*", (req, res) => {

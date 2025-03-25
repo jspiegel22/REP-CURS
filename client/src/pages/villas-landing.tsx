@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { Search, Loader2 } from "lucide-react";
 import { VillaCard } from "@/components/villa-card";
 import Footer from "@/components/footer";
 import type { Villa } from "@shared/schema";
-import { sampleVillas } from "@/data/sample-villas";
+import { useQuery } from "@tanstack/react-query";
 
 export default function VillasLanding() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -13,8 +13,34 @@ export default function VillasLanding() {
   const [bedroomFilter, setBedroomFilter] = useState<string>("all");
   const [guestFilter, setGuestFilter] = useState<string>("all");
 
-  // Use sample data instead of API call temporarily
-  const villas = sampleVillas;
+  // Fetch villas from API
+  const { data: villas = [], isLoading, error } = useQuery<Villa[]>({
+    queryKey: ['/api/villas'],
+  });
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+          <p className="text-muted-foreground">Loading villas...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto px-4">
+          <h2 className="text-xl font-semibold mb-2">Unable to load villas</h2>
+          <p className="text-muted-foreground">
+            We're experiencing technical difficulties. Please try again later.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   const locations = Array.from(new Set(villas.map(villa => villa.location))).sort();
   const bedroomOptions = Array.from(new Set(villas.map(villa => villa.bedrooms))).sort((a, b) => a - b);
@@ -102,7 +128,11 @@ export default function VillasLanding() {
 
           {/* Results Count */}
           <div className="mt-8 mb-6 text-center text-muted-foreground">
-            Found {filteredVillas.length} villas
+            {villas.length === 0 ? (
+              <p>No villas available at the moment. Please check back later.</p>
+            ) : (
+              <p>Found {filteredVillas.length} villas</p>
+            )}
           </div>
 
           {/* Villa Grid */}

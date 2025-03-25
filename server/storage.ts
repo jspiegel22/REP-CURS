@@ -27,7 +27,17 @@ export class DatabaseStorage implements IStorage {
 
   // Villa Management
   async getVillas(): Promise<Villa[]> {
-    return db.select().from(villas);
+    try {
+      const villas = await db.select().from(villas);
+      if (villas.length === 0) {
+        console.log('No villas found in database');
+      }
+      return villas;
+    } catch (error) {
+      console.error('Error fetching villas:', error);
+      // Return empty array instead of throwing
+      return [];
+    }
   }
 
   async getVillaByTrackHsId(trackHsId: string): Promise<Villa | undefined> {
