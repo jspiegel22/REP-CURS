@@ -1,30 +1,87 @@
 import Airtable from 'airtable';
 import { nanoid } from 'nanoid';
 import { format } from 'date-fns';
-import { BaseSubmission, GuideDownload, Booking, LeadGen } from '@/types/booking';
+import { GuideDownload } from '@/types/booking';
 
-const config = {
-  apiKey: 'pathWHIzP3lxGRdWM.f1298c67689266c18302187f7bfef1872a80d42166331902c246458d07185451',
-  baseId: 'tbl3882i9kYQN5wMO',
-};
+const AIRTABLE_API_KEY = import.meta.env.VITE_AIRTABLE_API_KEY;
+const AIRTABLE_BASE_ID = import.meta.env.VITE_AIRTABLE_BASE_ID;
 
-const airtable = new Airtable({ apiKey: config.apiKey }).base(config.baseId!);
-
-interface AirtableRecord {
-  id: string;
-  fields: Record<string, any>;
+if (!AIRTABLE_API_KEY) {
+  throw new Error('Missing Airtable API key');
 }
 
-interface CreateRecordOptions {
-  name: string;
-  email: string;
-  imageUrl: string;
-  folder: string;
-  status: string;
-  [key: string]: any;
+if (!AIRTABLE_BASE_ID) {
+  throw new Error('Missing Airtable base ID');
 }
 
-export async function createAirtableRecord(options: CreateRecordOptions): Promise<AirtableRecord> {
+const airtable = new Airtable({
+  apiKey: AIRTABLE_API_KEY
+}).base(AIRTABLE_BASE_ID);
+
+export async function submitGuideDownload(
+  data: Omit<GuideDownload, 'submissionId' | 'submissionDate'>,
+  recaptchaToken: string
+): Promise<{ success: boolean; message: string }> {
+  try {
+    // Verify reCAPTCHA if token is provided
+    if (recaptchaToken !== "no-recaptcha") {
+      const recaptchaResponse = await fetch('/api/verify-recaptcha', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: recaptchaToken })
+      });
+
+      const recaptchaResult = await recaptchaResponse.json();
+      if (!recaptchaResult.success) {
+        return {
+          success: false,
+          message: 'reCAPTCHA verification failed'
+        };
+      }
+    }
+
+    // Prepare data for Airtable
+    const enrichedData = {
+      ...data,
+      submissionId: nanoid(),
+      submissionDate: format(new Date(), 'yyyy-MM-dd HH:mm:ss')
+    };
+
+    // Submit to Airtable
+    const record = await airtable('Guide Downloads').create([
+      {
+        fields: {
+          Name: enrichedData.firstName,
+          Email: enrichedData.email,
+          'Guide Type': enrichedData.guideType,
+          Source: enrichedData.source,
+          Status: enrichedData.status,
+          'Submission ID': enrichedData.submissionId,
+          'Submission Date': enrichedData.submissionDate,
+          'Form Name': enrichedData.formName,
+          Tags: enrichedData.tags?.join(', ') || ''
+        }
+      }
+    ]);
+
+    if (!record || record.length === 0) {
+      throw new Error('Failed to create Airtable record');
+    }
+
+    return {
+      success: true,
+      message: 'Guide download request submitted successfully'
+    };
+  } catch (error) {
+    console.error('Airtable submission error:', error);
+    return {
+      success: false,
+      message: 'An error occurred while submitting the form'
+    };
+  }
+}
+
+export async function createAirtableRecord(options: any): Promise<any> {
   try {
     const record = await airtable('Image Uploads').create([
       {
@@ -49,7 +106,7 @@ export async function createAirtableRecord(options: CreateRecordOptions): Promis
 export async function updateAirtableRecord(
   recordId: string,
   fields: Record<string, any>
-): Promise<AirtableRecord> {
+): Promise<any> {
   try {
     const record = await airtable('Image Uploads').update(recordId, {
       fields,
@@ -62,7 +119,7 @@ export async function updateAirtableRecord(
   }
 }
 
-export async function getAirtableRecord(recordId: string): Promise<AirtableRecord> {
+export async function getAirtableRecord(recordId: string): Promise<any> {
   try {
     const record = await airtable('Image Uploads').find(recordId);
     return record;
@@ -75,7 +132,7 @@ export async function getAirtableRecord(recordId: string): Promise<AirtableRecor
 export async function listAirtableRecords(
   filterByFormula?: string,
   maxRecords?: number
-): Promise<AirtableRecord[]> {
+): Promise<any[]> {
   try {
     const records = await airtable('Image Uploads')
       .select({
@@ -100,52 +157,34 @@ export async function deleteAirtableRecord(recordId: string): Promise<void> {
   }
 }
 
-interface AirtableConfig {
-  baseId: string;
-  tableName: string;
-}
 
-const AIRTABLE_CONFIGS = {
-  guideDownloads: {
-    baseId: process.env.NEXT_PUBLIC_AIRTABLE_BASE_ID!,
-    tableName: 'Guide Downloads'
-  },
-  bookings: {
-    baseId: process.env.NEXT_PUBLIC_AIRTABLE_BASE_ID!,
-    tableName: 'Bookings'
-  },
-  leads: {
-    baseId: process.env.NEXT_PUBLIC_AIRTABLE_BASE_ID!,
-    tableName: 'Leads'
-  }
-};
-
-export async function submitToAirtable<T extends BaseSubmission>(
-  config: AirtableConfig,
+export async function submitToAirtable<T extends any>(
+  config: any,
   data: T,
   recaptchaToken: string
 ): Promise<{ success: boolean; message: string }> {
   try {
-    // Verify reCAPTCHA first
-    const recaptchaResponse = await fetch('/api/verify-recaptcha', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token: recaptchaToken })
-    });
+    // Verify reCAPTCHA if token is provided
+    if (recaptchaToken !== "no-recaptcha") {
+      const recaptchaResponse = await fetch('/api/verify-recaptcha', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: recaptchaToken })
+      });
 
-    const recaptchaResult = await recaptchaResponse.json();
-    if (!recaptchaResult.success) {
-      return {
-        success: false,
-        message: 'reCAPTCHA verification failed'
-      };
+      const recaptchaResult = await recaptchaResponse.json();
+      if (!recaptchaResult.success) {
+        return {
+          success: false,
+          message: 'reCAPTCHA verification failed'
+        };
+      }
     }
 
-    // Submit to Airtable
     const response = await fetch(`https://api.airtable.com/v0/${config.baseId}/${config.tableName}`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${process.env.NEXT_PUBLIC_AIRTABLE_API_KEY}`,
+        'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
@@ -170,43 +209,38 @@ export async function submitToAirtable<T extends BaseSubmission>(
   }
 }
 
-export async function submitGuideDownload(
-  data: Omit<GuideDownload, 'submissionId' | 'submissionDate'>,
-  recaptchaToken: string
-): Promise<{ success: boolean; message: string }> {
-  const enrichedData: GuideDownload = {
-    ...data,
-    submissionId: nanoid(),
-    submissionDate: format(new Date(), 'yyyy-MM-dd HH:mm:ss')
-  };
-
-  return submitToAirtable(AIRTABLE_CONFIGS.guideDownloads, enrichedData, recaptchaToken);
-}
-
 export async function submitBooking(
-  data: Omit<Booking, 'submissionId' | 'submissionDate' | 'bookingId'>,
+  data: any,
   recaptchaToken: string
 ): Promise<{ success: boolean; message: string }> {
-  const enrichedData: Booking = {
+  const enrichedData: any = {
     ...data,
     submissionId: nanoid(),
     submissionDate: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
     bookingId: `BK-${nanoid(8)}`
   };
 
-  return submitToAirtable(AIRTABLE_CONFIGS.bookings, enrichedData, recaptchaToken);
+  return submitToAirtable(
+    { baseId: AIRTABLE_BASE_ID, tableName: 'Bookings' },
+    enrichedData,
+    recaptchaToken
+  );
 }
 
 export async function submitLead(
-  data: Omit<LeadGen, 'submissionId' | 'submissionDate' | 'leadId'>,
+  data: any,
   recaptchaToken: string
 ): Promise<{ success: boolean; message: string }> {
-  const enrichedData: LeadGen = {
+  const enrichedData: any = {
     ...data,
     submissionId: nanoid(),
     submissionDate: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
     leadId: `LD-${nanoid(8)}`
   };
 
-  return submitToAirtable(AIRTABLE_CONFIGS.leads, enrichedData, recaptchaToken);
-} 
+  return submitToAirtable(
+    { baseId: AIRTABLE_BASE_ID, tableName: 'Leads' },
+    enrichedData,
+    recaptchaToken
+  );
+}

@@ -14,7 +14,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { guideDownloadSchema, type GuideDownload } from "@/types/booking";
-import { submitToAirtable } from "@/lib/airtable";
+import { submitGuideDownload } from "@/lib/airtable";
 import ReCAPTCHA from "react-google-recaptcha";
 import { nanoid } from "nanoid";
 
@@ -51,27 +51,15 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
 
     setIsSubmitting(true);
     try {
-      const enrichedData = {
-        ...data,
+      const result = await submitGuideDownload({
+        firstName: data.firstName,
+        email: data.email,
+        source: "website",
+        guideType: "Ultimate Cabo Guide 2025",
+        status: "pending",
         formName: "guide_download",
-        source: "homepage",
         tags: ["GUIDE", "DOWNLOAD"],
-        status: "New",
-        submissionId: nanoid(),
-        submissionDate: new Date().toISOString(),
-        randomId: Math.floor(Math.random() * 1000000),
-        formData: JSON.stringify(data),
-        guideUrl: "https://drive.google.com/file/d/1iM6eeb5P5aKLcSiE1ZI_7Vu3XsJqgOs6/view?usp=sharing"
-      };
-
-      const result = await submitToAirtable(
-        {
-          baseId: process.env.NEXT_PUBLIC_AIRTABLE_BASE_ID!,
-          tableName: 'ALL'
-        },
-        enrichedData,
-        RECAPTCHA_SITE_KEY ? recaptchaRef.current?.getValue() || "" : "no-recaptcha"
-      );
+      }, RECAPTCHA_SITE_KEY ? recaptchaRef.current?.getValue() || "" : "no-recaptcha");
 
       if (result.success) {
         setSuccess(true);
@@ -89,53 +77,6 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
       }
     }
   };
-
-  // Test function (remains unchanged)
-  const testFormSubmission = async () => {
-    const testData = {
-      firstName: "Jeff",
-      email: "jeff@newpsmedia.com"
-    };
-
-    setIsSubmitting(true);
-    try {
-      const enrichedData = {
-        ...testData,
-        formName: "guide_download",
-        source: "homepage",
-        tags: ["GUIDE", "DOWNLOAD"],
-        status: "New",
-        submissionId: nanoid(),
-        submissionDate: new Date().toISOString(),
-        randomId: Math.floor(Math.random() * 1000000),
-        formData: JSON.stringify(testData),
-        guideUrl: "https://drive.google.com/file/d/1iM6eeb5P5aKLcSiE1ZI_7Vu3XsJqgOs6/view?usp=sharing"
-      };
-
-      const result = await submitToAirtable(
-        {
-          baseId: process.env.NEXT_PUBLIC_AIRTABLE_BASE_ID!,
-          tableName: 'ALL'
-        },
-        enrichedData,
-        "test-token" // Using a test token for testing
-      );
-
-      if (result.success) {
-        setSuccess(true);
-        console.log("Test submission successful!");
-      } else {
-        console.error("Test submission failed:", result.message);
-      }
-    } catch (error) {
-      console.error("Test submission error:", error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  // Add test button in development (remains unchanged)
-  const isDevelopment = process.env.NODE_ENV === 'development';
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -231,14 +172,6 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
               )}
             </Button>
           </form>
-        )}
-        {isDevelopment && (
-          <Button
-            onClick={testFormSubmission}
-            className="mt-4 w-full bg-gray-500 hover:bg-gray-600 text-white"
-          >
-            Test Form Submission
-          </Button>
         )}
       </DialogContent>
     </Dialog>
