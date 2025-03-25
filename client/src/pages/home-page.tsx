@@ -155,7 +155,7 @@ export default function HomePage() {
               <GuideDownloadForm
                 isOpen={isGuideFormOpen}
                 onClose={() => setIsGuideFormOpen(false)}
-              />>
+              />
 
               {/* Mobile CTA Button */}
               <div className="md:hidden w-full">
