@@ -3,11 +3,38 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth } from "./auth";
 import { z } from "zod";
-import { insertBookingSchema, insertLeadSchema } from "@shared/schema";
+import { insertBookingSchema, insertLeadSchema, insertGuideSubmissionSchema } from "@shared/schema";
 import { generateSlug } from "@/lib/utils";
+import { nanoid } from "nanoid";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   setupAuth(app);
+
+  // Add guide submission endpoint
+  app.post("/api/guide-submissions", async (req, res) => {
+    try {
+      // Validate request body
+      const submissionData = insertGuideSubmissionSchema.safeParse({
+        ...req.body,
+        submissionId: nanoid(),
+      });
+
+      if (!submissionData.success) {
+        return res.status(400).json({ 
+          message: "Invalid submission data",
+          errors: submissionData.error.errors 
+        });
+      }
+
+      // Create guide submission
+      const submission = await storage.createGuideSubmission(submissionData.data);
+
+      res.status(201).json(submission);
+    } catch (error) {
+      console.error("Guide submission error:", error);
+      res.status(500).json({ message: "Failed to create guide submission" });
+    }
+  });
 
   // Booking endpoint
   app.post("/api/bookings", async (req, res) => {

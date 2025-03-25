@@ -13,18 +13,15 @@ import { FormError } from "@/components/form/FormError";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
-import { guideDownloadSchema, type GuideDownload } from "@/types/booking";
-import { submitGuideDownload } from "@/lib/airtable";
+import { insertGuideSubmissionSchema } from "@shared/schema";
 import ReCAPTCHA from "react-google-recaptcha";
 
-type GuideDownloadFormData = Pick<GuideDownload, 'firstName' | 'email'>;
+const RECAPTCHA_SITE_KEY = import.meta.env.VITE_NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
 
 interface GuideDownloadFormProps {
   isOpen: boolean;
   onClose: () => void;
 }
-
-const RECAPTCHA_SITE_KEY = import.meta.env.VITE_NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
 
 export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -37,39 +34,48 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
     handleSubmit,
     formState: { errors },
     reset
-  } = useForm<GuideDownloadFormData>({
-    resolver: zodResolver(guideDownloadSchema),
+  } = useForm({
+    resolver: zodResolver(insertGuideSubmissionSchema),
+    defaultValues: {
+      firstName: '',
+      email: '',
+      guideType: 'Ultimate Cabo Guide 2025',
+      source: 'website',
+      formName: 'guide_download'
+    }
   });
 
-  const onSubmit = async (data: GuideDownloadFormData) => {
+  const onSubmit = async (data: any) => {
+    console.log("Form submission started", data);
     setRecaptchaError("");
 
-    // Only verify reCAPTCHA if it's available
-    if (RECAPTCHA_SITE_KEY) {
-      const token = recaptchaRef.current?.getValue();
-      if (!token) {
-        setRecaptchaError("Please complete the reCAPTCHA verification");
-        return;
-      }
-    }
-
-    setIsSubmitting(true);
     try {
-      const result = await submitGuideDownload({
-        firstName: data.firstName,
-        email: data.email,
-        source: "website",
-        guideType: "Ultimate Cabo Guide 2025",
-        status: "pending",
-        formName: "guide_download",
-        tags: ["GUIDE", "DOWNLOAD"],
-      }, RECAPTCHA_SITE_KEY ? recaptchaRef.current?.getValue() || "" : "no-recaptcha");
+      // Verify reCAPTCHA if available
+      if (RECAPTCHA_SITE_KEY) {
+        const token = recaptchaRef.current?.getValue();
+        if (!token) {
+          setRecaptchaError("Please complete the reCAPTCHA verification");
+          return;
+        }
+      }
 
-      if (result.success) {
+      setIsSubmitting(true);
+
+      const response = await fetch('/api/guide-submissions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
         setSuccess(true);
         reset();
       } else {
-        setRecaptchaError(result.message);
+        setRecaptchaError(result.message || "Failed to submit form");
       }
     } catch (error) {
       console.error("Guide download submission error:", error);

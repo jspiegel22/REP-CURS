@@ -195,3 +195,30 @@ export type Villa = typeof villas.$inferSelect;
 export type InsertVilla = z.infer<typeof insertVillaSchema>;
 export type Lead = typeof leads.$inferSelect;
 export type InsertLead = z.infer<typeof insertLeadSchema>;
+
+// Add this new table definition after the existing tables
+export const guideSubmissions = pgTable("guide_submissions", {
+  id: serial("id").primaryKey(),
+  firstName: text("first_name").notNull(),
+  email: text("email").notNull(),
+  guideType: text("guide_type").notNull(),
+  source: text("source").notNull(),
+  status: text("status", {
+    enum: ["pending", "sent", "failed"]
+  }).notNull().default("pending"),
+  formName: text("form_name").notNull(),
+  submissionId: text("submission_id").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Add insert schema after other insert schemas
+export const insertGuideSubmissionSchema = createInsertSchema(guideSubmissions).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+// Add these types with other types
+export type GuideSubmission = typeof guideSubmissions.$inferSelect;
+export type InsertGuideSubmission = z.infer<typeof insertGuideSubmissionSchema>;

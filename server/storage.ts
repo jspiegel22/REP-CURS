@@ -1,12 +1,11 @@
 import { IStorage } from "./types";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
-import { users, listings, bookings, rewards, socialShares, weatherCache, resorts, villas, leads } from "@shared/schema";
-import type { User, InsertUser, Listing, Booking, Reward, SocialShare, WeatherCache, Resort, Villa, Lead, InsertLead } from "@shared/schema";
+import { users, listings, bookings, rewards, socialShares, weatherCache, resorts, villas, leads, guideSubmissions } from "@shared/schema";
+import type { User, InsertUser, Listing, Booking, Reward, SocialShare, WeatherCache, Resort, Villa, Lead, InsertLead, GuideSubmission, InsertGuideSubmission } from "@shared/schema";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
 import { generateResortSlug } from "../client/src/lib/utils";
-import { syncBookingToAirtable, syncLeadToAirtable, retryFailedSync } from "./services/airtable";
 
 const PostgresSessionStore = connectPg(session);
 
@@ -23,6 +22,21 @@ export class DatabaseStorage implements IStorage {
       },
       createTableIfMissing: true,
     });
+  }
+
+  // Add the new createGuideSubmission method
+  async createGuideSubmission(submission: InsertGuideSubmission): Promise<GuideSubmission> {
+    try {
+      const [newSubmission] = await db
+        .insert(guideSubmissions)
+        .values(submission)
+        .returning();
+
+      return newSubmission;
+    } catch (error) {
+      console.error("Error creating guide submission:", error);
+      throw new Error("Failed to create guide submission");
+    }
   }
 
   // Villa Management
