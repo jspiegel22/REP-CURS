@@ -101,14 +101,7 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px] bg-white rounded-2xl shadow-xl">
-        <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-[#2F4F4F]">Get Your Ultimate Cabo Guide 2025</DialogTitle>
-          <DialogDescription className="text-gray-600">
-            Enter your details below to receive your free guide to Cabo's best experiences.
-          </DialogDescription>
-        </DialogHeader>
-
+      <DialogContent className="sm:max-w-[425px] bg-white rounded-2xl shadow-xl [&[role=dialog]::backdrop]:bg-black/50">
         {success ? (
           <div className="space-y-6">
             <div className="text-center">
@@ -117,8 +110,6 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold text-[#2F4F4F] mb-2">Thank you for your interest!</h3>
-              <p className="text-gray-600 mb-4">Your guide will be sent to your email shortly.</p>
               <a
                 href="https://drive.google.com/file/d/1iM6eeb5P5aKLcSiE1ZI_7Vu3XsJqgOs6/view?usp=sharing"
                 target="_blank"
@@ -136,67 +127,75 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
             </Button>
           </div>
         ) : (
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="firstName" className="text-[#2F4F4F]">First Name*</Label>
-              <Input
-                id="firstName"
-                {...register("firstName")}
-                disabled={isSubmitting}
-                placeholder="Your first name"
-                className="border-gray-300 focus:border-[#2F4F4F] focus:ring-[#2F4F4F]"
-              />
-              {errors.firstName && (
-                <FormError message={errors.firstName.message} />
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-[#2F4F4F]">Email*</Label>
-              <Input
-                id="email"
-                type="email"
-                {...register("email")}
-                disabled={isSubmitting}
-                placeholder="your@email.com"
-                className="border-gray-300 focus:border-[#2F4F4F] focus:ring-[#2F4F4F]"
-              />
-              {errors.email && (
-                <FormError message={errors.email.message} />
-              )}
-            </div>
-
-            {RECAPTCHA_SITE_KEY && (
-              <div className="flex justify-center">
-                <ReCAPTCHA
-                  ref={recaptchaRef}
-                  sitekey={RECAPTCHA_SITE_KEY}
-                  onChange={() => setRecaptchaError("")}
+          <>
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold text-[#2F4F4F]">Get Your Free Guide</DialogTitle>
+              <DialogDescription className="text-gray-600">
+                Enter your details below to receive your free guide to Cabo's best experiences.
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="firstName" className="text-[#2F4F4F]">First Name*</Label>
+                <Input
+                  id="firstName"
+                  {...register("firstName")}
+                  disabled={isSubmitting}
+                  placeholder="Your first name"
+                  className="border-gray-300 focus:border-[#2F4F4F] focus:ring-[#2F4F4F]"
                 />
+                {errors.firstName && (
+                  <FormError message={errors.firstName.message} />
+                )}
               </div>
-            )}
 
-            {recaptchaError && (
-              <div className="text-red-600 text-sm text-center">
-                {recaptchaError}
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-[#2F4F4F]">Email*</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  {...register("email")}
+                  disabled={isSubmitting}
+                  placeholder="your@email.com"
+                  className="border-gray-300 focus:border-[#2F4F4F] focus:ring-[#2F4F4F]"
+                />
+                {errors.email && (
+                  <FormError message={errors.email.message} />
+                )}
               </div>
-            )}
 
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white py-6 text-lg"
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                  Submitting...
-                </>
-              ) : (
-                "Get Guide Now"
+              {RECAPTCHA_SITE_KEY && (
+                <div className="flex justify-center">
+                  <ReCAPTCHA
+                    ref={recaptchaRef}
+                    sitekey={RECAPTCHA_SITE_KEY}
+                    onChange={() => setRecaptchaError("")}
+                  />
+                </div>
               )}
-            </Button>
-          </form>
+
+              {recaptchaError && (
+                <div className="text-red-600 text-sm text-center">
+                  {recaptchaError}
+                </div>
+              )}
+
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white py-6 text-lg"
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                    Submitting...
+                  </>
+                ) : (
+                  "Get Guide Now"
+                )}
+              </Button>
+            </form>
+          </>
         )}
       </DialogContent>
     </Dialog>
