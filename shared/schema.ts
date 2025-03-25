@@ -222,3 +222,15 @@ export const insertGuideSubmissionSchema = createInsertSchema(guideSubmissions).
 // Add these types with other types
 export type GuideSubmission = typeof guideSubmissions.$inferSelect;
 export type InsertGuideSubmission = z.infer<typeof insertGuideSubmissionSchema>;
+
+// Add the guide submission schema after other schemas
+export const guideFormSchema = z.object({
+  firstName: z.string().min(1, "First name is required"),
+  email: z.string().email("Invalid email address"),
+  guideType: z.string().default("Ultimate Cabo Guide 2025"),
+  source: z.string().default("website"),
+  formName: z.string().default("guide_download"),
+  status: z.enum(["pending", "sent", "failed"]).default("pending"),
+});
+
+export type GuideFormData = z.infer<typeof guideFormSchema>;

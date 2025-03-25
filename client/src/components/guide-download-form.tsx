@@ -13,7 +13,7 @@ import { FormError } from "@/components/form/FormError";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
-import { insertGuideSubmissionSchema } from "@shared/schema";
+import { guideFormSchema, type GuideFormData } from "@shared/schema";
 import ReCAPTCHA from "react-google-recaptcha";
 
 const RECAPTCHA_SITE_KEY = import.meta.env.VITE_NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
@@ -34,25 +34,26 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
     handleSubmit,
     formState: { errors },
     reset
-  } = useForm({
-    resolver: zodResolver(insertGuideSubmissionSchema),
+  } = useForm<GuideFormData>({
+    resolver: zodResolver(guideFormSchema),
     defaultValues: {
       firstName: '',
       email: '',
       guideType: 'Ultimate Cabo Guide 2025',
       source: 'website',
-      formName: 'guide_download'
+      formName: 'guide_download',
+      status: 'pending'
     }
   });
 
-  const onSubmit = async (data: any) => {
-    console.log("Form submission started", data);
+  const onSubmit = async (formData: GuideFormData) => {
+    console.log("Form submission started with data:", formData);
     setRecaptchaError("");
 
     try {
-      // Verify reCAPTCHA if available
       if (RECAPTCHA_SITE_KEY) {
         const token = recaptchaRef.current?.getValue();
+        console.log("reCAPTCHA token:", token);
         if (!token) {
           setRecaptchaError("Please complete the reCAPTCHA verification");
           return;
@@ -60,16 +61,18 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
       }
 
       setIsSubmitting(true);
+      console.log("Submitting form data to API:", formData);
 
       const response = await fetch('/api/guide-submissions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data)
+        body: JSON.stringify(formData)
       });
 
       const result = await response.json();
+      console.log("API Response:", result);
 
       if (response.ok) {
         setSuccess(true);
@@ -135,7 +138,9 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
                 placeholder="Your first name"
                 className="border-gray-300 focus:border-[#2F4F4F] focus:ring-[#2F4F4F]"
               />
-              <FormError message={errors.firstName?.message} />
+              {errors.firstName && (
+                <FormError message={errors.firstName.message} />
+              )}
             </div>
 
             <div className="space-y-2">
@@ -148,7 +153,9 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
                 placeholder="your@email.com"
                 className="border-gray-300 focus:border-[#2F4F4F] focus:ring-[#2F4F4F]"
               />
-              <FormError message={errors.email?.message} />
+              {errors.email && (
+                <FormError message={errors.email.message} />
+              )}
             </div>
 
             {RECAPTCHA_SITE_KEY && (
