@@ -25,6 +25,8 @@ interface GuideDownloadFormProps {
   onClose: () => void;
 }
 
+const RECAPTCHA_SITE_KEY = import.meta.env.VITE_NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
+
 export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [recaptchaError, setRecaptchaError] = useState("");
@@ -37,11 +39,14 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
 
   const onSubmit = async (data: GuideDownloadFormData) => {
     setRecaptchaError("");
-    const token = recaptchaRef.current?.getValue();
 
-    if (!token) {
-      setRecaptchaError("Please complete the reCAPTCHA verification");
-      return;
+    // Only verify reCAPTCHA if it's available
+    if (RECAPTCHA_SITE_KEY) {
+      const token = recaptchaRef.current?.getValue();
+      if (!token) {
+        setRecaptchaError("Please complete the reCAPTCHA verification");
+        return;
+      }
     }
 
     setIsSubmitting(true);
@@ -65,7 +70,7 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
           tableName: 'ALL'
         },
         enrichedData,
-        token
+        RECAPTCHA_SITE_KEY ? recaptchaRef.current?.getValue() || "" : "no-recaptcha"
       );
 
       if (result.success) {
@@ -79,11 +84,13 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
       setRecaptchaError("An error occurred while submitting the form");
     } finally {
       setIsSubmitting(false);
-      recaptchaRef.current?.reset();
+      if (recaptchaRef.current) {
+        recaptchaRef.current.reset();
+      }
     }
   };
 
-  // Test function
+  // Test function (remains unchanged)
   const testFormSubmission = async () => {
     const testData = {
       firstName: "Jeff",
@@ -127,7 +134,7 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
     }
   };
 
-  // Add test button in development
+  // Add test button in development (remains unchanged)
   const isDevelopment = process.env.NODE_ENV === 'development';
 
   return (
@@ -193,13 +200,16 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
               <FormError message={form.formState.errors.email?.message} />
             </div>
 
-            <div className="flex justify-center">
-              <ReCAPTCHA
-                ref={recaptchaRef}
-                sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!}
-                onChange={() => setRecaptchaError("")}
-              />
-            </div>
+            {RECAPTCHA_SITE_KEY && (
+              <div className="flex justify-center">
+                <ReCAPTCHA
+                  ref={recaptchaRef}
+                  sitekey={RECAPTCHA_SITE_KEY}
+                  onChange={() => setRecaptchaError("")}
+                />
+              </div>
+            )}
+
             {recaptchaError && (
               <div className="text-red-600 text-sm text-center">
                 {recaptchaError}
@@ -222,7 +232,6 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
             </Button>
           </form>
         )}
-
         {isDevelopment && (
           <Button
             onClick={testFormSubmission}

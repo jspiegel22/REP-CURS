@@ -158,9 +158,13 @@ export default function HomePage() {
               />
 
               {/* Mobile CTA Button */}
-              <div className="md:hidden w-full">
-                <GuideDownloadForm />
-              </div>
+              <Button
+                onClick={() => setIsGuideFormOpen(true)}
+                className="md:hidden w-full bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white text-lg py-6 rounded-xl flex items-center justify-center gap-2"
+              >
+                Get Your Free Guide
+                <ChevronRight className="w-5 h-5" />
+              </Button>
 
               {/* Hero Image */}
               <div className="relative mt-12 rounded-2xl overflow-hidden shadow-2xl">
