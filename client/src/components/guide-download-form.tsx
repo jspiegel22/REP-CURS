@@ -15,6 +15,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { guideFormSchema, type GuideFormData } from "@shared/schema";
 import ReCAPTCHA from "react-google-recaptcha";
+import { nanoid } from "nanoid";
 
 const RECAPTCHA_SITE_KEY = import.meta.env.VITE_NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
 
@@ -46,8 +47,8 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
     }
   });
 
-  const onSubmit = async (formData: GuideFormData) => {
-    console.log("Form submission started with data:", formData);
+  const onSubmit = async (data: GuideFormData) => {
+    console.log("Form submission started with data:", data);
     setRecaptchaError("");
 
     try {
@@ -61,14 +62,21 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
       }
 
       setIsSubmitting(true);
-      console.log("Submitting form data to API:", formData);
+
+      // Add submissionId to the data
+      const submissionData = {
+        ...data,
+        submissionId: nanoid()
+      };
+
+      console.log("Submitting to API:", submissionData);
 
       const response = await fetch('/api/guide-submissions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(submissionData)
       });
 
       const result = await response.json();

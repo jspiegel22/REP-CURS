@@ -27,11 +27,21 @@ export class DatabaseStorage implements IStorage {
   // Add the new createGuideSubmission method
   async createGuideSubmission(submission: InsertGuideSubmission): Promise<GuideSubmission> {
     try {
+      console.log("Creating guide submission with data:", submission);
       const [newSubmission] = await db
         .insert(guideSubmissions)
-        .values(submission)
+        .values({
+          firstName: submission.firstName,
+          email: submission.email,
+          guideType: submission.guideType,
+          source: submission.source,
+          status: submission.status || "pending",
+          formName: submission.formName,
+          submissionId: submission.submissionId,
+        })
         .returning();
 
+      console.log("Successfully created guide submission:", newSubmission);
       return newSubmission;
     } catch (error) {
       console.error("Error creating guide submission:", error);
@@ -238,3 +248,23 @@ export class DatabaseStorage implements IStorage {
 }
 
 export const storage = new DatabaseStorage();
+
+// Placeholder functions -  replace with actual implementations
+async function retryFailedSync(func: any, data: any) {
+    try{
+        await func(data)
+    } catch(error){
+        console.error("Retry failed", error)
+        throw error
+    }
+}
+
+async function syncBookingToAirtable(data: any) {
+    // Implementation to sync with Airtable
+    console.log("Syncing booking to Airtable:", data);
+}
+
+async function syncLeadToAirtable(data: any) {
+    //Implementation to sync with Airtable
+    console.log("Syncing lead to Airtable:", data);
+}
