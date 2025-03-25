@@ -16,7 +16,6 @@ import { Loader2 } from "lucide-react";
 import { guideDownloadSchema, type GuideDownload } from "@/types/booking";
 import { submitGuideDownload } from "@/lib/airtable";
 import ReCAPTCHA from "react-google-recaptcha";
-import { nanoid } from "nanoid";
 
 type GuideDownloadFormData = Pick<GuideDownload, 'firstName' | 'email'>;
 
@@ -33,7 +32,12 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
   const [success, setSuccess] = useState(false);
   const recaptchaRef = useRef<ReCAPTCHA>(null);
 
-  const form = useForm<GuideDownloadFormData>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset
+  } = useForm<GuideDownloadFormData>({
     resolver: zodResolver(guideDownloadSchema),
   });
 
@@ -63,7 +67,7 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
 
       if (result.success) {
         setSuccess(true);
-        form.reset();
+        reset();
       } else {
         setRecaptchaError(result.message);
       }
@@ -115,17 +119,17 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
             </Button>
           </div>
         ) : (
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="firstName" className="text-[#2F4F4F]">First Name*</Label>
               <Input
                 id="firstName"
-                {...form.register("firstName")}
+                {...register("firstName")}
                 disabled={isSubmitting}
                 placeholder="Your first name"
                 className="border-gray-300 focus:border-[#2F4F4F] focus:ring-[#2F4F4F]"
               />
-              <FormError message={form.formState.errors.firstName?.message} />
+              <FormError message={errors.firstName?.message} />
             </div>
 
             <div className="space-y-2">
@@ -133,12 +137,12 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
               <Input
                 id="email"
                 type="email"
-                {...form.register("email")}
+                {...register("email")}
                 disabled={isSubmitting}
                 placeholder="your@email.com"
                 className="border-gray-300 focus:border-[#2F4F4F] focus:ring-[#2F4F4F]"
               />
-              <FormError message={form.formState.errors.email?.message} />
+              <FormError message={errors.email?.message} />
             </div>
 
             {RECAPTCHA_SITE_KEY && (
