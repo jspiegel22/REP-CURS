@@ -15,6 +15,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Check } from "lucide-react";
 import { z } from "zod";
 import { nanoid } from "nanoid";
+import { useMutation } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 
 // Simple form schema without external dependencies
 const formSchema = z.object({
@@ -30,8 +33,8 @@ interface GuideDownloadFormProps {
 }
 
 export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+  const { toast } = useToast();
 
   const {
     register,
@@ -46,17 +49,42 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
     }
   });
 
+  const submitMutation = useMutation({
+    mutationFn: async (data: FormData) => {
+      const submissionData = {
+        firstName: data.firstName,
+        email: data.email,
+        guideType: "Cabo San Lucas Travel Guide",
+        source: "website",
+        status: "pending" as const,
+        formName: "guide-download",
+        submissionId: nanoid(),
+      };
+      
+      const response = await apiRequest("POST", "/api/guide-submissions", submissionData);
+      return await response.json();
+    },
+    onSuccess: () => {
+      setSuccess(true);
+      reset();
+      toast({
+        title: "Guide Request Submitted",
+        description: "Your guide is ready to download!",
+      });
+    },
+    onError: (error) => {
+      console.error("Form submission error:", error);
+      toast({
+        title: "Submission Failed",
+        description: "There was a problem processing your request. Please try again.",
+        variant: "destructive",
+      });
+    }
+  });
+
   const onSubmit = async (data: FormData) => {
     console.log("Form submission started with data:", data);
-    setIsSubmitting(true);
-    
-    // Simulate API submission
-    setTimeout(() => {
-      console.log("Form submitted successfully");
-      setSuccess(true);
-      setIsSubmitting(false);
-      reset();
-    }, 1000);
+    submitMutation.mutate(data);
   };
 
   const handleClose = () => {
@@ -110,7 +138,7 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
                 <Input
                   id="firstName"
                   {...register("firstName")}
-                  disabled={isSubmitting}
+                  disabled={submitMutation.isPending}
                   placeholder="Your first name"
                   className="border-gray-300 focus:border-[#2F4F4F] focus:ring-[#2F4F4F]"
                 />
@@ -125,7 +153,7 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
                   id="email"
                   type="email"
                   {...register("email")}
-                  disabled={isSubmitting}
+                  disabled={submitMutation.isPending}
                   placeholder="your@email.com"
                   className="border-gray-300 focus:border-[#2F4F4F] focus:ring-[#2F4F4F]"
                 />
@@ -136,10 +164,10 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
 
               <Button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={submitMutation.isPending}
                 className="w-full bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white py-6 text-lg"
               >
-                {isSubmitting ? (
+                {submitMutation.isPending ? (
                   <>
                     <Loader2 className="w-5 h-5 mr-2 animate-spin" />
                     Submitting...

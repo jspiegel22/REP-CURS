@@ -10,13 +10,15 @@ import { nanoid } from "nanoid";
 export async function registerRoutes(app: Express): Promise<Server> {
   setupAuth(app);
 
-  // Add guide submission endpoint
+  // Add guide submission endpoint with Airtable integration and email sending
   app.post("/api/guide-submissions", async (req, res) => {
     try {
       // Validate request body
       const submissionData = insertGuideSubmissionSchema.safeParse({
         ...req.body,
-        submissionId: nanoid(),
+        submissionId: req.body.submissionId || nanoid(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
       });
 
       if (!submissionData.success) {
@@ -26,8 +28,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      // Create guide submission
+      // Create guide submission in database
       const submission = await storage.createGuideSubmission(submissionData.data);
+
+      // Process the submission for Airtable & email (non-blocking)
+      import('./services/guideSubmissions').then(({ processGuideSubmission }) => {
+        processGuideSubmission(submission)
+          .then(success => {
+            if (success) {
+              console.log(`Guide submission successfully processed for ${submission.email}`);
+            } else {
+              console.error(`Failed to process guide submission for ${submission.email}`);
+            }
+          })
+          .catch(error => {
+            console.error("Error in background processing:", error);
+          });
+      });
 
       res.status(201).json(submission);
     } catch (error) {
@@ -36,7 +53,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Booking endpoint
+  // Booking endpoint with Airtable integration and email confirmation
   app.post("/api/bookings", async (req, res) => {
     try {
       // Validate request body
@@ -51,7 +68,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Create booking
       const booking = await storage.createBooking({
         ...bookingData.data,
-        status: "pending"
+        status: "pending",
+        createdAt: new Date(),
+        updatedAt: new Date()
+      });
+
+      // Send confirmation email and sync to Airtable (non-blocking)
+      import('./services/airtable').then(({ syncBookingToAirtable, retryFailedSync }) => {
+        retryFailedSync(syncBookingToAirtable, booking)
+          .then(() => console.log(`Booking synced to Airtable for ${booking.email}`))
+          .catch(error => console.error("Error syncing booking to Airtable:", error));
+      });
+
+      import('./services/emailService').then(({ sendEmail, createBookingConfirmationEmail }) => {
+        const emailOptions = createBookingConfirmationEmail(booking);
+        sendEmail(emailOptions)
+          .then(success => {
+            if (success) {
+              console.log(`Booking confirmation email sent to ${booking.email}`);
+            } else {
+              console.error(`Failed to send booking confirmation email to ${booking.email}`);
+            }
+          })
+          .catch(error => {
+            console.error("Error sending booking confirmation email:", error);
+          });
       });
 
       res.status(201).json(booking);
@@ -61,7 +102,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Lead form submission endpoint
+  // Lead form submission endpoint with Airtable integration
   app.post("/api/leads", async (req, res) => {
     try {
       console.log('Received lead submission:', req.body); // Debug log
@@ -81,9 +122,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ...leadData.data,
         status: "new",
         createdAt: new Date(),
+        updatedAt: new Date()
       });
 
       console.log('Lead created successfully:', lead); // Debug log
+
+      // Sync to Airtable (non-blocking)
+      import('./services/airtable').then(({ syncLeadToAirtable, retryFailedSync }) => {
+        retryFailedSync(syncLeadToAirtable, lead)
+          .then(() => console.log(`Lead synced to Airtable for ${lead.email}`))
+          .catch(error => console.error("Error syncing lead to Airtable:", error));
+      });
 
       res.status(201).json(lead);
     } catch (error) {

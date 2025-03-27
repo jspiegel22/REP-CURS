@@ -168,11 +168,20 @@ export default function HomePage() {
 
               {/* Hero Video */}
               <div className="relative mt-12 rounded-2xl overflow-hidden shadow-2xl h-[500px]">
-                <img 
-                  src="/attached_assets/image_1742331906326.png" 
-                  alt="Cabo San Lucas destination" 
+                <video 
+                  autoPlay 
+                  muted 
+                  loop 
+                  playsInline
                   className="w-full h-full rounded-2xl object-cover"
-                />
+                >
+                  <source src="https://drive.google.com/uc?id=1trwXP-BNmUxDMNzMy6BnQFeMykKhsDP3&export=download" type="video/mp4" />
+                  <img 
+                    src="/attached_assets/image_1742331906326.png" 
+                    alt="Cabo San Lucas destination" 
+                    className="w-full h-full rounded-2xl object-cover"
+                  />
+                </video>
               </div>
             </div>
           </div>
