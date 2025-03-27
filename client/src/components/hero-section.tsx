@@ -4,18 +4,42 @@ import { Check } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { GuideDownloadForm } from "./guide-download-form";
 
+// Video source options
+const VideoSource = {
+  LocalFile: 'local-file',
+  YouTube: 'youtube',
+  GoogleDrive: 'google-drive'
+} as const;
+
+type VideoSourceType = typeof VideoSource[keyof typeof VideoSource];
+
 export default function HeroSection() {
   const [showGuideForm, setShowGuideForm] = useState(false);
   const [videoLoaded, setVideoLoaded] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
-
-  // Video URLs - try local file first, then Google Drive link, then fallback to image
-  const localVideoUrl = "/cabo-travel.mp4"; // Using the converted video from your .mov file
+  
+  // You can switch between these options as needed
+  const videoSource = VideoSource.YouTube; // Change this to use different video sources
+  
+  // Video settings
+  const localVideoUrl = "/cabo-travel.mp4"; // Local file in public directory
   const driveVideoUrl = "https://drive.google.com/uc?export=download&id=1dWtKxd4SHjmBym7_F4OOB2Pdo5EBIjT7";
-  const videoUrl = localVideoUrl; // Using local video file
+  const youtubeVideoId = "02mzc-SyIYA"; // From the YouTube URL: youtube.com/watch?v=02mzc-SyIYA
   const fallbackImage = "https://images.unsplash.com/photo-1561736778-92e52a7769ef?ixlib=rb-4.0.3";
 
+  // Choose the correct video URL based on source type
+  const videoUrl = 
+    videoSource === VideoSource.LocalFile ? localVideoUrl : 
+    videoSource === VideoSource.GoogleDrive ? driveVideoUrl : 
+    ""; // YouTube doesn't use the videoUrl
+
   useEffect(() => {
+    // Only run this effect for local file or Google Drive options
+    if (videoSource === VideoSource.YouTube) {
+      setVideoLoaded(true); // YouTube handles loading itself
+      return;
+    }
+    
     const videoElement = videoRef.current;
     
     if (videoElement) {
@@ -40,25 +64,42 @@ export default function HeroSection() {
         videoElement.removeEventListener('error', handleError);
       };
     }
-  }, []);
+  }, [videoSource]);
   
   return (
     <div className="relative min-h-[600px] md:h-[80vh] w-full overflow-hidden">
       {/* Video Background */}
       <div className="absolute inset-0 w-full h-full">
-        {/* Video element */}
-        <video 
-          ref={videoRef}
-          className="absolute inset-0 min-w-full min-h-full object-cover"
-          autoPlay 
-          muted 
-          loop 
-          playsInline
-        >
-          <source src={videoUrl} type="video/mp4" />
-          {/* No video support fallback */}
-          Your browser does not support the video tag.
-        </video>
+        {/* YouTube Embed */}
+        {videoSource === VideoSource.YouTube && (
+          <div className="absolute inset-0 w-full h-full pointer-events-none">
+            <iframe 
+              src={`https://www.youtube.com/embed/${youtubeVideoId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${youtubeVideoId}&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&disablekb=1&playsinline=1`}
+              className="absolute top-[-60px] left-0 w-[100vw] h-[calc(100%+120px)]"
+              title="YouTube video player"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              style={{ objectFit: 'cover' }}
+            ></iframe>
+          </div>
+        )}
+        
+        {/* Local File or Google Drive Video */}
+        {(videoSource === VideoSource.LocalFile || videoSource === VideoSource.GoogleDrive) && (
+          <video 
+            ref={videoRef}
+            className="absolute inset-0 min-w-full min-h-full object-cover"
+            autoPlay 
+            muted 
+            loop 
+            playsInline
+          >
+            <source src={videoUrl} type="video/mp4" />
+            {/* No video support fallback */}
+            Your browser does not support the video tag.
+          </video>
+        )}
         
         {/* Fallback image for when video fails to load */}
         {!videoLoaded && (
