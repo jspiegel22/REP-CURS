@@ -8,27 +8,8 @@ export default function HeroSection() {
   const [showGuideForm, setShowGuideForm] = useState(false);
   
   return (
-    <div className="relative min-h-[600px] md:h-[80vh] w-full overflow-hidden">
-      {/* Video Background */}
-      <div className="absolute inset-0 w-full h-full z-0">
-        <video 
-          className="absolute inset-0 min-w-full min-h-full object-cover"
-          autoPlay 
-          muted 
-          loop 
-          playsInline
-        >
-          <source src="/cabo-travel.mp4" type="video/mp4" />
-          {/* Fallback background if video doesn't load */}
-          <img 
-            src="https://images.unsplash.com/photo-1561736778-92e52a7769ef?ixlib=rb-4.0.3" 
-            alt="Cabo San Lucas beach" 
-            className="absolute inset-0 min-w-full min-h-full object-cover" 
-          />
-        </video>
-      </div>
-      
-      {/* Overlay */}
+    <div className="relative min-h-[600px] md:h-[80vh] w-full overflow-hidden bg-[url('https://images.unsplash.com/photo-1561736778-92e52a7769ef?ixlib=rb-4.0.3')] bg-cover bg-center">
+      {/* Overlay with opacity for text readability */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/60 z-10">
         <div className="container mx-auto px-4 h-full flex items-center">
           <div className="max-w-3xl text-white py-12 md:py-0">
@@ -90,10 +71,10 @@ export default function HeroSection() {
             {/* CTA Button */}
             <div className="mt-8">
               <Button 
-                className="bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white px-8 py-3 text-lg rounded-xl shadow-xl"
+                className="bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white px-8 py-6 text-xl font-medium rounded-xl shadow-xl"
                 onClick={() => setShowGuideForm(true)}
               >
-                Download Free Guide
+                Get Your Free Guide
               </Button>
             </div>
           </div>
