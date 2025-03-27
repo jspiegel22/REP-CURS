@@ -146,16 +146,10 @@ export default function HomePage() {
               {/* CTA Button */}
               <Button 
                 onClick={() => setIsGuideFormOpen(true)}
-                className="bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white text-xl px-10 py-6 rounded-2xl transform transition-all duration-300 hover:scale-105 shadow-lg"
+                className="bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white text-xl px-10 py-6 rounded-2xl transform transition-all duration-300 hover:scale-105 shadow-lg hidden md:inline-flex"
               >
                 Get Your Free Guide
               </Button>
-
-              {/* Guide Download Form Modal */}
-              <GuideDownloadForm
-                isOpen={isGuideFormOpen}
-                onClose={() => setIsGuideFormOpen(false)}
-              />
 
               {/* Mobile CTA Button */}
               <Button
@@ -165,19 +159,20 @@ export default function HomePage() {
                 Get Your Free Guide
                 <ChevronRight className="w-5 h-5" />
               </Button>
+              
+              {/* Guide Download Form Modal */}
+              <GuideDownloadForm
+                isOpen={isGuideFormOpen}
+                onClose={() => setIsGuideFormOpen(false)}
+              />
 
               {/* Hero Video */}
-              <div className="relative mt-12 rounded-2xl overflow-hidden shadow-2xl">
-                <video 
-                  autoPlay 
-                  muted 
-                  loop 
-                  className="w-full h-[500px] rounded-2xl object-cover"
-                  playsInline
-                >
-                  <source src="/cabo-travel.mp4" type="video/mp4" />
-                  Your browser does not support the video tag.
-                </video>
+              <div className="relative mt-12 rounded-2xl overflow-hidden shadow-2xl h-[500px]">
+                <img 
+                  src="/attached_assets/image_1742331906326.png" 
+                  alt="Cabo San Lucas destination" 
+                  className="w-full h-full rounded-2xl object-cover"
+                />
               </div>
             </div>
           </div>

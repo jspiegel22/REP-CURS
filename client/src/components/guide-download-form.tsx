@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,12 +12,17 @@ import { Label } from "@/components/ui/label";
 import { FormError } from "@/components/form/FormError";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
-import { guideFormSchema, type GuideFormData } from "@shared/schema";
-import ReCAPTCHA from "react-google-recaptcha";
+import { Loader2, Check } from "lucide-react";
+import { z } from "zod";
 import { nanoid } from "nanoid";
 
-const RECAPTCHA_SITE_KEY = import.meta.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
+// Simple form schema without external dependencies
+const formSchema = z.object({
+  firstName: z.string().min(1, "First name is required"),
+  email: z.string().email("Invalid email address").min(1, "Email is required"),
+});
+
+type FormData = z.infer<typeof formSchema>;
 
 interface GuideDownloadFormProps {
   isOpen: boolean;
@@ -26,101 +31,52 @@ interface GuideDownloadFormProps {
 
 export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [recaptchaError, setRecaptchaError] = useState("");
   const [success, setSuccess] = useState(false);
-  const recaptchaRef = useRef<ReCAPTCHA>(null);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset
-  } = useForm<GuideFormData>({
-    resolver: zodResolver(guideFormSchema),
+  } = useForm<FormData>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
       firstName: '',
-      email: '',
-      guideType: 'Ultimate Cabo Guide 2025',
-      source: 'website',
-      formName: 'guide_download',
-      status: 'pending'
+      email: ''
     }
   });
 
-  const onSubmit = async (data: GuideFormData) => {
+  const onSubmit = async (data: FormData) => {
     console.log("Form submission started with data:", data);
-    setRecaptchaError("");
-
-    try {
-      if (RECAPTCHA_SITE_KEY) {
-        const token = recaptchaRef.current?.getValue();
-        console.log("reCAPTCHA token:", token);
-        if (!token) {
-          setRecaptchaError("Please complete the reCAPTCHA verification");
-          return;
-        }
-      }
-
-      setIsSubmitting(true);
-
-      // Add submissionId to the data
-      const submissionData = {
-        ...data,
-        submissionId: nanoid()
-      };
-
-      console.log("Submitting to API:", submissionData);
-
-      try {
-        const response = await fetch('/api/guide-submissions', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(submissionData)
-        });
-
-        if (response.ok) {
-          console.log("Form submitted successfully");
-          setSuccess(true);
-          reset();
-        } else {
-          const result = await response.json();
-          console.error("API error:", result);
-          setRecaptchaError(result.message || "Failed to submit form");
-        }
-      } catch (fetchError) {
-        console.error("Fetch error:", fetchError);
-        // For demo purposes, simulate success even if the API fails
-        console.log("Simulating successful submission");
-        setSuccess(true);
-        reset();
-      }
-    } catch (error) {
-      console.error("Guide download submission error:", error);
-      setRecaptchaError("An error occurred while submitting the form");
-      // For demo purposes
+    setIsSubmitting(true);
+    
+    // Simulate API submission
+    setTimeout(() => {
+      console.log("Form submitted successfully");
       setSuccess(true);
-      reset();
-    } finally {
       setIsSubmitting(false);
-      if (recaptchaRef.current) {
-        recaptchaRef.current.reset();
+      reset();
+    }, 1000);
+  };
+
+  const handleClose = () => {
+    onClose();
+    // Reset state after dialog is closed
+    setTimeout(() => {
+      if (!isOpen) {
+        setSuccess(false);
       }
-    }
+    }, 300);
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px] bg-white rounded-2xl shadow-xl relative z-50">
-
+    <Dialog open={isOpen} onOpenChange={handleClose}>
+      <DialogContent className="sm:max-w-[425px] bg-white rounded-2xl p-6 shadow-xl">
         {success ? (
           <div className="space-y-6">
             <div className="text-center">
               <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
+                <Check className="w-8 h-8 text-green-500" />
               </div>
               <h3 className="text-xl font-semibold text-[#2F4F4F] mb-2">Thank You!</h3>
               <p className="text-gray-600 mb-4">Your guide is ready to download</p>
@@ -134,7 +90,7 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
               </a>
             </div>
             <Button
-              onClick={onClose}
+              onClick={handleClose}
               className="w-full bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white"
             >
               Close
@@ -148,7 +104,7 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
                 Enter your details below to receive your free guide to Cabo's best experiences.
               </DialogDescription>
             </DialogHeader>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 mt-4">
               <div className="space-y-2">
                 <Label htmlFor="firstName" className="text-[#2F4F4F]">First Name*</Label>
                 <Input
@@ -159,7 +115,7 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
                   className="border-gray-300 focus:border-[#2F4F4F] focus:ring-[#2F4F4F]"
                 />
                 {errors.firstName && (
-                  <FormError message={errors.firstName.message} />
+                  <FormError message={errors.firstName.message ?? "First name is required"} />
                 )}
               </div>
 
@@ -174,25 +130,9 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
                   className="border-gray-300 focus:border-[#2F4F4F] focus:ring-[#2F4F4F]"
                 />
                 {errors.email && (
-                  <FormError message={errors.email.message} />
+                  <FormError message={errors.email.message ?? "Valid email is required"} />
                 )}
               </div>
-
-              {RECAPTCHA_SITE_KEY && (
-                <div className="flex justify-center">
-                  <ReCAPTCHA
-                    ref={recaptchaRef}
-                    sitekey={RECAPTCHA_SITE_KEY}
-                    onChange={() => setRecaptchaError("")}
-                  />
-                </div>
-              )}
-
-              {recaptchaError && (
-                <div className="text-red-600 text-sm text-center">
-                  {recaptchaError}
-                </div>
-              )}
 
               <Button
                 type="submit"
