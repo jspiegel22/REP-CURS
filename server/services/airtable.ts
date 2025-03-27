@@ -1,11 +1,12 @@
 import Airtable from 'airtable';
-import type { Booking, Lead } from '@shared/schema';
+import type { Booking, Lead, GuideSubmission } from '@shared/schema';
 
-const AIRTABLE_API_KEY = 'pathWHIzP3lxGRdWM.f1298c67689266c18302187f7bfef1872a80d42166331902c246458d07185451';
-const AIRTABLE_BASE_ID = 'tbl3882i9kYQN5wMO';
+if (!process.env.AIRTABLE_API_KEY || !process.env.AIRTABLE_BASE_ID) {
+  console.error('Airtable API key or Base ID is missing. Airtable integration will not work.');
+}
 
-const airtable = new Airtable({ apiKey: AIRTABLE_API_KEY });
-const base = airtable.base('zKq3J9js9AKhpH');
+const airtable = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY });
+const base = airtable.base(process.env.AIRTABLE_BASE_ID || '');
 
 export const syncLeadToAirtable = async (lead) => {
   if (!lead) return null;
@@ -65,6 +66,31 @@ export async function syncBookingToAirtable(booking: Booking) {
   } catch (error) {
     console.error('Error syncing booking to Airtable:', error);
     throw new Error('Failed to sync booking to Airtable');
+  }
+}
+
+export async function syncGuideSubmissionToAirtable(submission: GuideSubmission): Promise<string> {
+  const GUIDES_TABLE = 'Guide Submissions';
+  
+  try {
+    console.log('Syncing guide submission to Airtable:', submission);
+    const record = await base(GUIDES_TABLE).create([{
+      fields: {
+        'First Name': submission.firstName,
+        'Email': submission.email,
+        'Guide Type': submission.guideType,
+        'Source': submission.source,
+        'Form Name': submission.formName,
+        'Status': submission.status,
+        'Submission ID': submission.submissionId,
+        'Submission Date': submission.createdAt?.toISOString() || new Date().toISOString(),
+      }
+    }]);
+
+    return record[0].getId();
+  } catch (error) {
+    console.error('Error syncing guide submission to Airtable:', error);
+    throw new Error('Failed to sync guide submission to Airtable');
   }
 }
 
