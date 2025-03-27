@@ -2,6 +2,7 @@ import Airtable from 'airtable';
 import { nanoid } from 'nanoid';
 import { format } from 'date-fns';
 import { GuideDownload } from '@/types/booking';
+import type { GuideDownloadSubmission, BookingSubmission, LeadSubmission } from "@/types/booking";
 
 const AIRTABLE_API_KEY = import.meta.env.VITE_AIRTABLE_API_KEY;
 const AIRTABLE_BASE_ID = import.meta.env.VITE_AIRTABLE_BASE_ID;
@@ -157,7 +158,6 @@ export async function deleteAirtableRecord(recordId: string): Promise<void> {
   }
 }
 
-
 export async function submitToAirtable<T extends any>(
   config: any,
   data: T,
@@ -244,3 +244,179 @@ export async function submitLead(
     recaptchaToken
   );
 }
+
+export class AirtableService {
+  private static instance: AirtableService;
+  private base: Airtable.Base;
+  private config: {
+    guideDownloadsTable: string;
+    bookingsTable: string;
+    leadsTable: string;
+  };
+
+  private constructor() {
+    const apiKey = process.env.AIRTABLE_API_KEY;
+    const baseId = process.env.AIRTABLE_BASE_ID;
+
+    if (!apiKey || !baseId) {
+      throw new Error("Airtable configuration is missing");
+    }
+
+    this.base = new Airtable({ apiKey }).base(baseId);
+    this.config = {
+      guideDownloadsTable: "Guide Downloads",
+      bookingsTable: "Bookings",
+      leadsTable: "Leads",
+    };
+  }
+
+  public static getInstance(): AirtableService {
+    if (!AirtableService.instance) {
+      AirtableService.instance = new AirtableService();
+    }
+    return AirtableService.instance;
+  }
+
+  public async getGuideDownloads(): Promise<GuideDownloadSubmission[]> {
+    try {
+      const records = await this.base(this.config.guideDownloadsTable)
+        .select({
+          sort: [{ field: "submissionDate", direction: "desc" }],
+        })
+        .all();
+
+      return records.map((record) => ({
+        submissionId: record.get("submissionId") as string,
+        firstName: record.get("firstName") as string,
+        lastName: record.get("lastName") as string,
+        email: record.get("email") as string,
+        phone: record.get("phone") as string,
+        guideType: record.get("guideType") as string,
+        guideName: record.get("guideName") as string,
+        downloadDate: record.get("downloadDate") as string,
+        source: record.get("source") as string,
+        formName: record.get("formName") as string,
+      }));
+    } catch (error) {
+      console.error("Error fetching guide downloads:", error);
+      throw error;
+    }
+  }
+
+  public async getBookings(): Promise<BookingSubmission[]> {
+    try {
+      const records = await this.base(this.config.bookingsTable)
+        .select({
+          sort: [{ field: "submissionDate", direction: "desc" }],
+        })
+        .all();
+
+      return records.map((record) => ({
+        submissionId: record.get("submissionId") as string,
+        firstName: record.get("firstName") as string,
+        lastName: record.get("lastName") as string,
+        email: record.get("email") as string,
+        phone: record.get("phone") as string,
+        bookingType: record.get("bookingType") as string,
+        startDate: record.get("startDate") as string,
+        endDate: record.get("endDate") as string,
+        numberOfGuests: record.get("numberOfGuests") as number,
+        budget: record.get("budget") as string,
+        specialRequests: record.get("specialRequests") as string,
+        status: record.get("status") as string,
+        bookingId: record.get("bookingId") as string,
+        submissionDate: record.get("submissionDate") as string,
+        source: record.get("source") as string,
+        formName: record.get("formName") as string,
+      }));
+    } catch (error) {
+      console.error("Error fetching bookings:", error);
+      throw error;
+    }
+  }
+
+  public async getLeads(): Promise<LeadSubmission[]> {
+    try {
+      const records = await this.base(this.config.leadsTable)
+        .select({
+          sort: [{ field: "submissionDate", direction: "desc" }],
+        })
+        .all();
+
+      return records.map((record) => ({
+        submissionId: record.get("submissionId") as string,
+        firstName: record.get("firstName") as string,
+        lastName: record.get("lastName") as string,
+        email: record.get("email") as string,
+        phone: record.get("phone") as string,
+        interestType: record.get("interestType") as string,
+        budget: record.get("budget") as string,
+        preferredContactMethod: record.get("preferredContactMethod") as string,
+        preferredContactTime: record.get("preferredContactTime") as string,
+        additionalInfo: record.get("additionalInfo") as string,
+        leadId: record.get("leadId") as string,
+        submissionDate: record.get("submissionDate") as string,
+        source: record.get("source") as string,
+        formName: record.get("formName") as string,
+      }));
+    } catch (error) {
+      console.error("Error fetching leads:", error);
+      throw error;
+    }
+  }
+
+  public async submitGuideDownload(submission: Omit<GuideDownloadSubmission, "submissionId" | "submissionDate">): Promise<void> {
+    try {
+      await this.base(this.config.guideDownloadsTable).create([
+        {
+          fields: {
+            ...submission,
+            submissionId: `GD-${Date.now()}`,
+            submissionDate: new Date().toISOString(),
+          },
+        },
+      ]);
+    } catch (error) {
+      console.error("Error submitting guide download:", error);
+      throw error;
+    }
+  }
+
+  public async submitBooking(submission: Omit<BookingSubmission, "submissionId" | "submissionDate" | "bookingId">): Promise<void> {
+    try {
+      await this.base(this.config.bookingsTable).create([
+        {
+          fields: {
+            ...submission,
+            submissionId: `B-${Date.now()}`,
+            bookingId: `BK-${Date.now()}`,
+            submissionDate: new Date().toISOString(),
+          },
+        },
+      ]);
+    } catch (error) {
+      console.error("Error submitting booking:", error);
+      throw error;
+    }
+  }
+
+  public async submitLead(submission: Omit<LeadSubmission, "submissionId" | "submissionDate" | "leadId">): Promise<void> {
+    try {
+      await this.base(this.config.leadsTable).create([
+        {
+          fields: {
+            ...submission,
+            submissionId: `L-${Date.now()}`,
+            leadId: `LD-${Date.now()}`,
+            submissionDate: new Date().toISOString(),
+          },
+        },
+      ]);
+    } catch (error) {
+      console.error("Error submitting lead:", error);
+      throw error;
+    }
+  }
+}
+
+export const Airtable = AirtableService.getInstance();

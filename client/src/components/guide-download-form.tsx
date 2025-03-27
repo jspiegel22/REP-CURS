@@ -101,7 +101,8 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px] bg-white rounded-2xl shadow-xl [&[role=dialog]::backdrop]:bg-black/30">
+      <DialogContent className="sm:max-w-[425px] bg-white rounded-2xl shadow-xl relative z-50">
+
         {success ? (
           <div className="space-y-6">
             <div className="text-center">

@@ -108,7 +108,7 @@ export default function HomePage() {
               </div>
 
               <h1 className="text-4xl md:text-6xl font-bold mb-6 text-gray-900">
-                Discover the Magic of Cabo San Lucas
+                Discover the Magic of Cabo
               </h1>
               <p className="text-lg md:text-xl mb-8 text-gray-600 max-w-2xl mx-auto">
                 From luxury villas to thrilling adventures, experience the best of Cabo with our curated travel guide
@@ -166,13 +166,18 @@ export default function HomePage() {
                 <ChevronRight className="w-5 h-5" />
               </Button>
 
-              {/* Hero Image */}
+              {/* Hero Video */}
               <div className="relative mt-12 rounded-2xl overflow-hidden shadow-2xl">
-                <img
-                  src="/attached_assets/image_1742331906326.png"
-                  alt="Cabo San Lucas Destination"
-                  className="w-full rounded-2xl"
-                />
+                <video 
+                  autoPlay 
+                  muted 
+                  loop 
+                  className="w-full rounded-2xl object-cover"
+                  playsInline
+                >
+                  <source src="https://drive.google.com/uc?export=download&id=1trwXP-BNmUxDMNzMy6BnQFeMykKhsDP3" type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
               </div>
             </div>
           </div>
@@ -331,67 +336,6 @@ export default function HomePage() {
           isOpen={isGuideFormOpen}
           onClose={() => setIsGuideFormOpen(false)}
         />
-
-        {/* Footer */}
-        <footer className="bg-[#2F4F4F] text-white pt-16 pb-8">
-          <div className="container mx-auto px-4">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-              <div>
-                <h3 className="text-xl font-bold mb-4">About Us</h3>
-                <p className="text-gray-300">Your premier destination for luxury travel experiences in Cabo San Lucas.</p>
-              </div>
-              <div>
-                <h3 className="text-xl font-bold mb-4">Quick Links</h3>
-                <ul className="space-y-2">
-                  <li><Link href="/resorts">Resorts & Hotels</Link></li>
-                  <li><Link href="/villas">Luxury Villas</Link></li>
-                  <li><Link href="/adventures">Adventures</Link></li>
-                  <li><Link href="/restaurants">Restaurants</Link></li>
-                </ul>
-              </div>
-              <div>
-                <h3 className="text-xl font-bold mb-4">Travel Guides</h3>
-                <ul className="space-y-2">
-                  <li><Link href="/guides/bachelorette">Bachelorette</Link></li>
-                  <li><Link href="/guides/weddings">Wedding Planning</Link></li>
-                  <li><Link href="/guides/real-estate">Real Estate</Link></li>
-                  <li><Link href="/guides/restaurants">Dining Guide</Link></li>
-                </ul>
-              </div>
-              <div>
-                <h3 className="text-xl font-bold mb-4">Contact</h3>
-                <ul className="space-y-2">
-                  <li>Email: info@cabotravels.com</li>
-                  <li>Phone: +1 (888) 123-4567</li>
-                  <li>WhatsApp: +52 624 244 6303</li>
-                </ul>
-              </div>
-            </div>
-            <div className="border-t border-white/20 pt-8">
-              <div className="flex justify-center space-x-6 mb-4">
-                <a href="https://www.tiktok.com/@atcabo" target="_blank" rel="noopener noreferrer" className="text-white hover:text-[#F5F5DC] transition-colors">
-                  <SiTiktok size={24} />
-                </a>
-                <a href="https://instagram.com/cabo" target="_blank" rel="noopener noreferrer" className="text-white hover:text-[#F5F5DC] transition-colors">
-                  <SiInstagram size={24} />
-                </a>
-                <a href="https://www.youtube.com/@atCabo" target="_blank" rel="noopener noreferrer" className="text-white hover:text-[#F5F5DC] transition-colors">
-                  <SiYoutube size={24} />
-                </a>
-                <a href="https://wa.me/526242446303" target="_blank" rel="noopener noreferrer" className="text-white hover:text-[#F5F5DC] transition-colors">
-                  <SiWhatsapp size={24} />
-                </a>
-                <a href="https://www.facebook.com/cabosanlucasbaja" target="_blank" rel="noopener noreferrer" className="text-white hover:text-[#F5F5DC] transition-colors">
-                  <SiFacebook size={24} />
-                </a>
-                <a href="https://www.pinterest.com/instacabo/" target="_blank" rel="noopener noreferrer" className="text-white hover:text-[#F5F5DC] transition-colors">
-                  <SiPinterest size={24} />
-                </a>
-              </div>
-              <p className="text-center text-sm text-gray-300">&copy; {new Date().getFullYear()} Cabo Travels. All rights reserved.</p>
-            </div>
-          </div>
-        </footer>
       </main>
 
       {/* Guide Request Popup */}
