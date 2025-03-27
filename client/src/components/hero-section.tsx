@@ -1,14 +1,75 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { Check } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { GuideDownloadForm } from "./guide-download-form";
 
 export default function HeroSection() {
   const [showGuideForm, setShowGuideForm] = useState(false);
+  const [videoLoaded, setVideoLoaded] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  // Video URLs - try local file first, then Google Drive link, then fallback to image
+  const localVideoUrl = "/cabo-travel.mp4"; // Using the converted video from your .mov file
+  const driveVideoUrl = "https://drive.google.com/uc?export=download&id=1dWtKxd4SHjmBym7_F4OOB2Pdo5EBIjT7";
+  const videoUrl = localVideoUrl; // Using local video file
+  const fallbackImage = "https://images.unsplash.com/photo-1561736778-92e52a7769ef?ixlib=rb-4.0.3";
+
+  useEffect(() => {
+    const videoElement = videoRef.current;
+    
+    if (videoElement) {
+      const handleCanPlay = () => {
+        setVideoLoaded(true);
+        videoElement.play().catch(error => {
+          console.error("Error playing video:", error);
+          setVideoLoaded(false);
+        });
+      };
+
+      const handleError = (error: any) => {
+        console.error("Video loading error:", error);
+        setVideoLoaded(false);
+      };
+
+      videoElement.addEventListener('canplay', handleCanPlay);
+      videoElement.addEventListener('error', handleError);
+
+      return () => {
+        videoElement.removeEventListener('canplay', handleCanPlay);
+        videoElement.removeEventListener('error', handleError);
+      };
+    }
+  }, []);
   
   return (
-    <div className="relative min-h-[600px] md:h-[80vh] w-full overflow-hidden bg-[url('https://images.unsplash.com/photo-1561736778-92e52a7769ef?ixlib=rb-4.0.3')] bg-cover bg-center">
+    <div className="relative min-h-[600px] md:h-[80vh] w-full overflow-hidden">
+      {/* Video Background */}
+      <div className="absolute inset-0 w-full h-full">
+        {/* Video element */}
+        <video 
+          ref={videoRef}
+          className="absolute inset-0 min-w-full min-h-full object-cover"
+          autoPlay 
+          muted 
+          loop 
+          playsInline
+        >
+          <source src={videoUrl} type="video/mp4" />
+          {/* No video support fallback */}
+          Your browser does not support the video tag.
+        </video>
+        
+        {/* Fallback image for when video fails to load */}
+        {!videoLoaded && (
+          <img 
+            src={fallbackImage} 
+            alt="Cabo San Lucas beach" 
+            className="absolute inset-0 min-w-full min-h-full object-cover" 
+          />
+        )}
+      </div>
+      
       {/* Overlay with opacity for text readability */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/60 z-10">
         <div className="container mx-auto px-4 h-full flex items-center">
