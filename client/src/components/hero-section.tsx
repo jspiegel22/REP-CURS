@@ -1,13 +1,33 @@
 import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { GuideDownloadForm } from "./guide-download-form";
 
 export default function HeroSection() {
   const [showGuideForm, setShowGuideForm] = useState(false);
+  const [videoLoaded, setVideoLoaded] = useState(false);
+  const youtubeVideoId = "02mzc-SyIYA";
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  
+  // Handle YouTube video error
+  useEffect(() => {
+    const handleError = () => {
+      console.error("YouTube video failed to load");
+      setVideoLoaded(false);
+    };
+
+    const iframe = iframeRef.current;
+    if (iframe) {
+      iframe.addEventListener('error', handleError);
+      
+      return () => {
+        iframe.removeEventListener('error', handleError);
+      };
+    }
+  }, []);
   
   return (
-    <div className="relative min-h-[600px] md:h-[80vh] w-full overflow-hidden">
+    <div className="relative min-h-[600px] md:h-[90vh] w-full overflow-hidden">
       {/* Background Image */}
       <div 
         className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat"
@@ -18,8 +38,8 @@ export default function HeroSection() {
       
       {/* Overlay for text readability */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/60 z-10">
-        <div className="container mx-auto px-4 h-full flex items-center">
-          <div className="max-w-3xl text-white py-12 md:py-0">
+        <div className="container mx-auto px-4 h-full flex flex-col items-center">
+          <div className="max-w-3xl text-white py-12 md:py-6 mt-8 md:mt-16">
             {/* Pill label */}
             <div className="inline-block bg-white/20 backdrop-blur-sm px-4 md:px-6 py-2 rounded-full mb-6 md:mb-8">
               <p className="text-white text-xs md:text-sm font-medium">✨ Your Ultimate Guide to Cabo</p>
@@ -83,6 +103,38 @@ export default function HeroSection() {
               >
                 Get Your Free Guide
               </Button>
+            </div>
+          </div>
+          
+          {/* YouTube Video Section */}
+          <div className="w-full max-w-4xl mt-8 md:mt-10 mb-8 rounded-lg overflow-hidden shadow-2xl">
+            <div className="relative pb-[56.25%] h-0 overflow-hidden">
+              <iframe 
+                ref={iframeRef}
+                className="absolute top-0 left-0 w-full h-full"
+                src={`https://www.youtube.com/embed/${youtubeVideoId}?autoplay=1&mute=1&controls=1&loop=1&playlist=${youtubeVideoId}&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&playsinline=1`}
+                title="Cabo San Lucas Promotional Video"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                onLoad={() => setVideoLoaded(true)}
+              ></iframe>
+              
+              {/* Fallback if video doesn't load */}
+              {!videoLoaded && (
+                <div className="absolute inset-0 flex items-center justify-center bg-gray-900 text-white p-6 text-center">
+                  <div>
+                    <h3 className="text-xl font-semibold mb-2">Cabo San Lucas Video</h3>
+                    <p>Click to watch our promotional video showcasing the beauty of Cabo San Lucas.</p>
+                    <Button 
+                      className="mt-4 bg-[#2F4F4F] hover:bg-[#1F3F3F]"
+                      onClick={() => window.open(`https://www.youtube.com/watch?v=${youtubeVideoId}`, '_blank')}
+                    >
+                      Watch on YouTube
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
