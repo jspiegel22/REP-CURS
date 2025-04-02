@@ -1,36 +1,64 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { Check } from "lucide-react";
-import { useState, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { GuideDownloadForm } from "./guide-download-form";
 
 export default function HeroSection() {
   const [showGuideForm, setShowGuideForm] = useState(false);
-  const [videoError, setVideoError] = useState(false);
-  const youtubeVideoId = "02mzc-SyIYA"; // From your provided YouTube URL
+  const [videoLoaded, setVideoLoaded] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const fallbackImage = "https://images.unsplash.com/photo-1561736778-92e52a7769ef?ixlib=rb-4.0.3";
+  
+  useEffect(() => {
+    const videoElement = videoRef.current;
+    
+    if (videoElement) {
+      // Event handlers for video
+      const handleCanPlay = () => {
+        setVideoLoaded(true);
+        videoElement.play().catch(error => {
+          console.error("Error playing video:", error);
+          setVideoLoaded(false);
+        });
+      };
+
+      const handleError = () => {
+        console.error("Video loading error");
+        setVideoLoaded(false);
+      };
+
+      // Add event listeners
+      videoElement.addEventListener('canplay', handleCanPlay);
+      videoElement.addEventListener('error', handleError);
+
+      // Clean up event listeners
+      return () => {
+        videoElement.removeEventListener('canplay', handleCanPlay);
+        videoElement.removeEventListener('error', handleError);
+      };
+    }
+  }, []);
   
   return (
     <div className="relative min-h-[600px] md:h-[80vh] w-full overflow-hidden">
       {/* Video Background */}
       <div className="absolute inset-0 w-full h-full">
-        {/* YouTube Embed */}
-        {!videoError && (
-          <div className="absolute inset-0 w-full h-full overflow-hidden">
-            <iframe 
-              src={`https://www.youtube.com/embed/${youtubeVideoId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${youtubeVideoId}&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&playsinline=1`}
-              className="absolute top-0 left-0 w-full h-full"
-              title="YouTube video player"
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              onError={() => setVideoError(true)}
-            ></iframe>
-          </div>
-        )}
+        {/* Local Video */}
+        <video 
+          ref={videoRef}
+          className="absolute inset-0 min-w-full min-h-full object-cover"
+          autoPlay 
+          muted 
+          loop 
+          playsInline
+        >
+          <source src="/cabo-travel.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
         
-        {/* Fallback image if YouTube video fails */}
-        {videoError && (
+        {/* Fallback image if video fails to load */}
+        {!videoLoaded && (
           <img 
             src={fallbackImage} 
             alt="Cabo San Lucas beach" 

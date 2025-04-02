@@ -1,21 +1,37 @@
 # Hero Video Instructions
 
-The hero section now uses a YouTube video embed as the background. This is the most reliable and best performance option for high-quality video backgrounds.
+The hero section now uses a local MP4 video file as the background. This approach provides more reliable playback than embedded videos.
 
-## Current YouTube Video Setup
+## Current Video Setup
 
-The hero section is currently configured to use the YouTube video with ID `02mzc-SyIYA` that you provided.
+The hero section is configured to use the local file `cabo-travel.mp4` that we converted from your original .mov file.
 
-## How to Change the YouTube Video
+## How to Update the Background Video
 
-1. Upload your video to YouTube
-2. Get the video ID from the URL (the part after `v=` in the URL)
-   * Example: From `https://www.youtube.com/watch?v=02mzc-SyIYA`, the ID is `02mzc-SyIYA`
-3. In `hero-section.tsx`, simply update the `youtubeVideoId` constant with your new video ID:
-   ```javascript
-   const youtubeVideoId = "YOUR_VIDEO_ID"; // Replace with your YouTube video ID
+There are two ways to update the video:
+
+### Option 1: Replace the existing video file (easiest)
+
+1. Convert your video to MP4 format (H.264 codec is best for web compatibility)
+2. Name it `cabo-travel.mp4`
+3. Upload it to the `client/public/` directory, replacing the existing file
+
+### Option 2: Use a different video file
+
+1. Upload your new video file to the `client/public/` directory
+2. In `hero-section.tsx`, update the video source path:
+   ```jsx
+   <source src="/your-new-video.mp4" type="video/mp4" />
    ```
+
+## Video Guidelines
+
+For best performance:
+- Keep file size under 10MB 
+- Use MP4 format with H.264 encoding
+- Resolution: 1920x1080 or 1280x720
+- Duration: 10-30 seconds (will loop automatically)
 
 ## Fallback Image
 
-If the YouTube video fails to load for any reason, the hero section will automatically display a fallback image. You can change this image by updating the `fallbackImage` URL in the hero-section.tsx file.
+If the video fails to load for any reason, the hero section will automatically display a fallback image. You can change this image by updating the `fallbackImage` URL in the hero-section.tsx file.
