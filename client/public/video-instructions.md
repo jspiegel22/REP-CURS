@@ -1,37 +1,36 @@
-# Hero Video Instructions
+# Hero Background Instructions
 
-The hero section now uses a local MP4 video file as the background. This approach provides more reliable playback than embedded videos.
+After multiple attempts with video backgrounds that had technical issues, we've implemented a high-quality image background for the hero section. This provides a reliable, professional appearance while ensuring fast page load speeds.
 
-## Current Video Setup
+## Current Background Setup
 
-The hero section is configured to use the local file `cabo-travel.mp4` that we converted from your original .mov file.
+The hero section is currently using a high-quality image of Cabo San Lucas from Unsplash.
 
-## How to Update the Background Video
+## How to Update the Background Image
 
-There are two ways to update the video:
+To change the background image, simply update the URL in the `backgroundImage` style property in `hero-section.tsx`:
 
-### Option 1: Replace the existing video file (easiest)
+```jsx
+<div 
+  className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat"
+  style={{ 
+    backgroundImage: `url(YOUR_NEW_IMAGE_URL)`,
+  }}
+/>
+```
 
-1. Convert your video to MP4 format (H.264 codec is best for web compatibility)
-2. Name it `cabo-travel.mp4`
-3. Upload it to the `client/public/` directory, replacing the existing file
-
-### Option 2: Use a different video file
-
-1. Upload your new video file to the `client/public/` directory
-2. In `hero-section.tsx`, update the video source path:
-   ```jsx
-   <source src="/your-new-video.mp4" type="video/mp4" />
-   ```
-
-## Video Guidelines
+## Image Guidelines
 
 For best performance:
-- Keep file size under 10MB 
-- Use MP4 format with H.264 encoding
-- Resolution: 1920x1080 or 1280x720
-- Duration: 10-30 seconds (will loop automatically)
+- Use high-resolution images (at least 1920x1080)
+- Optimize file size for web (under 500KB if possible)
+- Choose landscape orientation images
+- Use images with good contrast to ensure text readability
+- Consider the content positioning - the right side has more text overlay
 
-## Fallback Image
+## Future Video Implementation
 
-If the video fails to load for any reason, the hero section will automatically display a fallback image. You can change this image by updating the `fallbackImage` URL in the hero-section.tsx file.
+If you'd like to revisit video backgrounds in the future:
+1. Ensure your video is properly encoded as H.264 MP4
+2. Keep file size under 10MB
+3. Consider hosting on a CDN for better performance
