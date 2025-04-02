@@ -207,89 +207,6 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Enhanced Social Proof Section */}
-        <div className="bg-[#F5F5F5] py-16">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold mb-4">Trusted by Thousands of Happy Travelers</h2>
-              <p className="text-lg text-gray-600">Join our community of luxury travelers who've experienced the magic of Cabo</p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {/* Review Card 1 */}
-              <div className="bg-white p-6 rounded-2xl shadow-lg">
-                <div className="flex items-center mb-4">
-                  <img 
-                    src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=64" 
-                    alt="Sarah M."
-                    className="w-12 h-12 rounded-full"
-                  />
-                  <div className="ml-4">
-                    <h4 className="font-semibold">Sarah M.</h4>
-                    <p className="text-sm text-gray-500">Honeymoon Trip</p>
-                  </div>
-                </div>
-                <div className="text-yellow-400 mb-2">⭐⭐⭐⭐⭐</div>
-                <p className="text-gray-600">"The concierge service was exceptional. They arranged everything from our airport transfer to sunset sailing. Best vacation ever!"</p>
-              </div>
-
-              {/* Review Card 2 */}
-              <div className="bg-white p-6 rounded-2xl shadow-lg">
-                <div className="flex items-center mb-4">
-                  <img 
-                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=64" 
-                    alt="Michael R."
-                    className="w-12 h-12 rounded-full"
-                  />
-                  <div className="ml-4">
-                    <h4 className="font-semibold">Michael R.</h4>
-                    <p className="text-sm text-gray-500">Family Vacation</p>
-                  </div>
-                </div>
-                <div className="text-yellow-400 mb-2">⭐⭐⭐⭐⭐</div>
-                <p className="text-gray-600">"The villa exceeded our expectations. Perfect location, amazing staff, and the views were breathtaking!"</p>
-              </div>
-
-              {/* Review Card 3 */}
-              <div className="bg-white p-6 rounded-2xl shadow-lg">
-                <div className="flex items-center mb-4">
-                  <img 
-                    src="https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=64" 
-                    alt="Jessica L."
-                    className="w-12 h-12 rounded-full"
-                  />
-                  <div className="ml-4">
-                    <h4 className="font-semibold">Jessica L.</h4>
-                    <p className="text-sm text-gray-500">Girls Trip</p>
-                  </div>
-                </div>
-                <div className="text-yellow-400 mb-2">⭐⭐⭐⭐⭐</div>
-                <p className="text-gray-600">"Their travel guide was a game-changer! Found the best restaurants and hidden gems we would've never discovered otherwise."</p>
-              </div>
-            </div>
-
-            {/* Trust Indicators */}
-            <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-              <div>
-                <div className="text-3xl font-bold text-[#2F4F4F] mb-2">15K+</div>
-                <p className="text-gray-600">Happy Travelers</p>
-              </div>
-              <div>
-                <div className="text-3xl font-bold text-[#2F4F4F] mb-2">500+</div>
-                <p className="text-gray-600">Luxury Villas</p>
-              </div>
-              <div>
-                <div className="text-3xl font-bold text-[#2F4F4F] mb-2">98%</div>
-                <p className="text-gray-600">Satisfaction Rate</p>
-              </div>
-              <div>
-                <div className="text-3xl font-bold text-[#2F4F4F] mb-2">24/7</div>
-                <p className="text-gray-600">Concierge Support</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
         {/* Featured Luxury Resorts */}
         <div className="container mx-auto px-4 py-8 bg-white">
           <h2 className="text-2xl font-bold mb-4">Luxury Resorts</h2>
@@ -324,23 +241,6 @@ export default function HomePage() {
         <div className="container mx-auto px-4 py-16">
           <h2 className="text-3xl font-bold mb-8 text-gray-900">Explore Cabo San Lucas</h2>
           <CategoryGrid />
-        </div>
-
-        {/* Featured Adventures */}
-        <div className="bg-[#F5F5DC] py-16">
-          <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-bold mb-8 text-gray-900">Featured Adventures</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {featuredAdventures.map((adventure) => (
-                <div key={adventure.title} className="relative overflow-hidden rounded-lg group">
-                  <img src={adventure.image} alt={adventure.title} className="w-full aspect-[4/3] object-cover transition-transform group-hover:scale-105" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
-                    <h3 className="text-white text-xl font-semibold p-6">{adventure.title}</h3>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
 
         {/* Luxury Concierge */}
@@ -439,63 +339,18 @@ export default function HomePage() {
           onClose={() => setIsGuideFormOpen(false)}
         />
 
-        {/* Trust & Security Indicators */}
-        <div className="bg-white py-12">
-          <div className="container mx-auto px-4">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-              <div className="flex flex-col items-center text-center">
-                <div className="bg-[#2F4F4F]/5 w-16 h-16 rounded-full flex items-center justify-center mb-4">
-                  <svg className="w-8 h-8 text-[#2F4F4F]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                  </svg>
-                </div>
-                <h3 className="font-semibold mb-2">Secure Booking</h3>
-                <p className="text-sm text-gray-600">SSL encrypted payment</p>
-              </div>
-              <div className="flex flex-col items-center text-center">
-                <div className="bg-[#2F4F4F]/5 w-16 h-16 rounded-full flex items-center justify-center mb-4">
-                  <svg className="w-8 h-8 text-[#2F4F4F]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                  </svg>
-                </div>
-                <h3 className="font-semibold mb-2">Travel Insurance</h3>
-                <p className="text-sm text-gray-600">Full coverage options</p>
-              </div>
-              <div className="flex flex-col items-center text-center">
-                <div className="bg-[#2F4F4F]/5 w-16 h-16 rounded-full flex items-center justify-center mb-4">
-                  <svg className="w-8 h-8 text-[#2F4F4F]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                  </svg>
-                </div>
-                <h3 className="font-semibold mb-2">Flexible Payment</h3>
-                <p className="text-sm text-gray-600">Multiple payment options</p>
-              </div>
-              <div className="flex flex-col items-center text-center">
-                <div className="bg-[#2F4F4F]/5 w-16 h-16 rounded-full flex items-center justify-center mb-4">
-                  <svg className="w-8 h-8 text-[#2F4F4F]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <h3 className="font-semibold mb-2">24/7 Support</h3>
-                <p className="text-sm text-gray-600">Always here to help</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
         {/* Instagram Feed */}
         <div className="bg-white py-16">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold mb-4">Follow Our Journey</h2>
-              <p className="text-lg text-gray-600">Tag us @CaboAdventures for a chance to be featured!</p>
+              <h2 className="text-3xl font-bold mb-4">Follow us on Insta @Cabo</h2>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {/* Sample Instagram posts - replace with actual Instagram API integration */}
-              {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+              {/* Sample Instagram posts - first row only */}
+              {[1, 2, 3, 4].map((i) => (
                 <a 
                   key={i}
-                  href="https://instagram.com/caboadventures"
+                  href="https://instagram.com/cabo"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="relative aspect-square overflow-hidden rounded-lg group"
@@ -510,17 +365,6 @@ export default function HomePage() {
                   </div>
                 </a>
               ))}
-            </div>
-            <div className="text-center mt-8">
-              <a 
-                href="https://instagram.com/caboadventures"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-[#2F4F4F] hover:text-[#1F3F3F] font-medium"
-              >
-                <SiInstagram className="w-5 h-5" />
-                Follow us on Instagram
-              </a>
             </div>
           </div>
         </div>
