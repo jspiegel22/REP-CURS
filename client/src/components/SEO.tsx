@@ -32,9 +32,9 @@ export default function SEO({
   language = 'en',
   alternateLanguages = {}
 }: SEOProps) {
-  const siteName = 'Cabo Adventures';
-  const defaultImage = 'https://cabo-adventures.com/og-image.jpg';
-  const siteUrl = 'https://cabo-adventures.com';
+  const siteName = '@cabo';
+  const defaultImage = 'https://cabo.is/og-image.jpg';
+  const siteUrl = 'https://cabo.is';
 
   return (
     <Helmet>
@@ -57,8 +57,8 @@ export default function SEO({
 
       {/* Twitter Card Meta Tags */}
       <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:site" content="@cabo_adventures" />
-      <meta name="twitter:creator" content="@cabo_adventures" />
+      <meta name="twitter:site" content="@cabo" />
+      <meta name="twitter:creator" content="@cabo" />
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={openGraph?.image || defaultImage} />

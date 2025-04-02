@@ -62,21 +62,21 @@ export default function HomePage() {
   return (
     <>
       <SEO
-        title="Cabo Adventures - Luxury Travel & Experiences in Cabo San Lucas"
-        description="Discover luxury villas, exclusive resorts, thrilling adventures, and real estate opportunities in Cabo San Lucas. Your premier destination for unforgettable experiences."
-        canonicalUrl="https://cabo-adventures.com"
+        title="@cabo - Luxury Travel & Experiences in Cabo San Lucas | #1 Cabo Community Since 2015"
+        description="Discover luxury villas, exclusive resorts, and curated experiences in Cabo San Lucas with @cabo. Your trusted source for premium travel since 2015. Get insider tips, restaurant guides, and concierge services."
+        canonicalUrl="https://cabo.is"
         schema={{
           '@context': 'https://schema.org',
           '@type': 'Organization',
-          name: 'Cabo Adventures',
-          url: 'https://cabo-adventures.com',
-          logo: 'https://cabo-adventures.com/logo.png',
+          name: '@cabo',
+          url: 'https://cabo.is',
+          logo: 'https://cabo.is/logo.png',
           sameAs: [
             'https://www.instagram.com/cabo',
             'https://www.facebook.com/cabosanlucasbaja',
             'https://www.tiktok.com/@atcabo'
           ],
-          description: 'Premier luxury travel and experiences provider in Cabo San Lucas',
+          description: 'Premier luxury travel and experiences provider in Cabo San Lucas since 2015',
           contactPoint: {
             '@type': 'ContactPoint',
             telephone: '+1 (888) 123-4567',
@@ -84,10 +84,10 @@ export default function HomePage() {
           }
         }}
         openGraph={{
-          title: 'Cabo Adventures - Luxury Travel & Experiences',
-          description: 'Your gateway to exclusive experiences in Cabo San Lucas. Discover luxury villas, resorts, and adventures.',
+          title: '@cabo - Luxury Travel & Experiences in Cabo San Lucas',
+          description: 'Your gateway to exclusive experiences in Cabo San Lucas. Discover luxury villas, resorts, and adventures with @cabo.',
           image: '/attached_assets/image_1742331906326.png',
-          url: 'https://cabo-adventures.com'
+          url: 'https://cabo.is'
         }}
         keywords={[
           'Cabo San Lucas',
@@ -97,7 +97,11 @@ export default function HomePage() {
           'real estate',
           'travel guide',
           'luxury travel',
-          'Mexico vacation'
+          'Mexico vacation',
+          '@cabo',
+          'Cabo restaurants',
+          'Cabo concierge',
+          'Cabo luxury experiences'
         ]}
       />
       <main>
@@ -171,12 +175,14 @@ export default function HomePage() {
               <div className="mt-8 rounded-2xl overflow-hidden shadow-2xl">
                 <div className="relative w-full pt-[56.25%] bg-black">
                   <iframe
-                    src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&enablejsapi=1&origin=${window.location.origin}&iv_load_policy=3&fs=0&color=white&disablekb=1&hl=en&cc_load_policy=0&cc_lang_pref=en&widget_referrer=${window.location.href}&enablejsapi=1&playerapiid=ytplayer&version=3`}
+                    src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&enablejsapi=1&origin=${window.location.origin}&iv_load_policy=3&fs=0&color=white&disablekb=1&hl=en&cc_load_policy=0&cc_lang_pref=en&widget_referrer=${window.location.href}&version=3&autohide=1&title=0&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&enablejsapi=1&origin=${window.location.origin}&iv_load_policy=3&fs=0&color=white&disablekb=1&hl=en&cc_load_policy=0&cc_lang_pref=en&widget_referrer=${window.location.href}&version=3&autohide=1&title=0&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&enablejsapi=1&origin=${window.location.origin}&iv_load_policy=3&fs=0&color=white&disablekb=1&hl=en&cc_load_policy=0&cc_lang_pref=en&widget_referrer=${window.location.href}&version=3&autohide=1&title=0`}
                     className="absolute top-0 left-0 w-full h-full pointer-events-none"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    title="Cabo Experience"
+                    frameBorder="0"
                   />
-                  {/* Overlay to prevent interactions */}
-                  <div className="absolute inset-0 z-10" />
+                  {/* Black overlay with reduced opacity */}
+                  <div className="absolute inset-0 bg-black/15 pointer-events-none" />
                 </div>
               </div>
               
@@ -187,6 +193,12 @@ export default function HomePage() {
               />
             </div>
           </div>
+        </div>
+
+        {/* Main Categories - Explore Cabo */}
+        <div className="container mx-auto px-4 py-16">
+          <h2 className="text-3xl font-bold mb-8 text-gray-900">Explore Cabo</h2>
+          <CategoryGrid />
         </div>
 
         {/* Featured Villas Section */}
@@ -205,42 +217,6 @@ export default function HomePage() {
               </div>
             </div>
           </div>
-        </div>
-
-        {/* Featured Luxury Resorts */}
-        <div className="container mx-auto px-4 py-8 bg-white">
-          <h2 className="text-2xl font-bold mb-4">Luxury Resorts</h2>
-          <div className="relative">
-            <div className="overflow-x-auto pb-4 hide-scrollbar">
-              <div className="flex space-x-6">
-                {featuredResorts.map((resort) => (
-                  <Link 
-                    key={resort.title}
-                    href={`/resort/${generateSlug(resort.title)}`}
-                    className="block group flex-none w-[300px]"
-                  >
-                    <div className="relative overflow-hidden rounded-lg aspect-[4/3]">
-                      <img 
-                        src={resort.image} 
-                        alt={resort.title} 
-                        className="w-full h-full object-cover transition-transform group-hover:scale-105"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-4">
-                        <h3 className="text-white text-xl font-semibold">{resort.title}</h3>
-                        <p className="text-white/80">{resort.location}</p>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Main Categories */}
-        <div className="container mx-auto px-4 py-16">
-          <h2 className="text-3xl font-bold mb-8 text-gray-900">Explore Cabo San Lucas</h2>
-          <CategoryGrid />
         </div>
 
         {/* Luxury Concierge */}
@@ -315,21 +291,34 @@ export default function HomePage() {
         </div>
 
         {/* Guide Download CTA */}
-        <div className="container mx-auto px-4 py-12">
-          <div className="bg-[#2F4F4F] rounded-2xl p-8 md:p-12 text-center text-white">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Get Your Ultimate Cabo Guide 2025
-            </h2>
-            <p className="text-lg mb-8 max-w-2xl mx-auto">
-              Discover the best of Cabo with our comprehensive guide featuring exclusive tips, recommendations, and insider knowledge.
-            </p>
-            <Button
-              onClick={() => setIsGuideFormOpen(true)}
-              className="bg-white text-[#2F4F4F] hover:bg-gray-100 text-lg py-6 px-8 rounded-xl flex items-center gap-2 mx-auto shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-[0_8px_30px_rgba(255,255,255,0.2)]"
-            >
-              Download Your Guide
-              <ChevronRight className="w-5 h-5" />
-            </Button>
+        <div className="bg-[#2F4F4F] py-16">
+          <div className="container mx-auto px-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+              {/* Left Column - Content */}
+              <div className="text-left text-white">
+                <h2 className="text-3xl font-bold mb-4">
+                  Download Our 2025 Restaurant Guide
+                </h2>
+                <p className="text-lg mb-8 text-gray-200">
+                  Discover the finest dining experiences in Cabo with our curated guide to the best restaurants, from hidden gems to Michelin-starred establishments.
+                </p>
+                <Button
+                  onClick={() => setIsGuideFormOpen(true)}
+                  className="bg-white text-[#2F4F4F] hover:bg-gray-100 text-lg py-6 px-8 rounded-xl flex items-center gap-2 shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-[0_8px_30px_rgba(255,255,255,0.2)]"
+                >
+                  Get Your Restaurant Guide
+                  <ChevronRight className="w-5 h-5" />
+                </Button>
+              </div>
+              {/* Right Column - Image */}
+              <div className="relative h-[400px] rounded-2xl overflow-hidden">
+                <img 
+                  src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3" 
+                  alt="Cabo Restaurant Guide"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </div>
           </div>
         </div>
 
@@ -343,7 +332,7 @@ export default function HomePage() {
         <div className="bg-white py-16">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold mb-4">Follow us on Insta @Cabo</h2>
+              <h2 className="text-3xl font-bold mb-4">Follow @cabo on Instagram</h2>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {/* Sample Instagram posts - first row only */}
