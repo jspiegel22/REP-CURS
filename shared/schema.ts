@@ -44,49 +44,70 @@ export const resorts = pgTable("resorts", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-// Enhanced bookings table
-export const bookings = pgTable("bookings", {
+// Common fields for all submissions
+const commonFields = {
   id: serial("id").primaryKey(),
   firstName: text("first_name").notNull(),
-  lastName: text("last_name").notNull(),
+  lastName: text("last_name"),
   email: text("email").notNull(),
-  phone: text("phone").notNull(),
+  phone: text("phone"),
+  preferredContactMethod: text("preferred_contact_method"),
+  preferredContactTime: text("preferred_contact_time"),
+  source: text("source").notNull(),
+  status: text("status").notNull(),
+  formName: text("form_name"),
+  formData: jsonb("form_data"),
+  notes: text("notes"),
+  ipAddress: text("ip_address"),
+  userAgent: text("user_agent"),
+  referrer: text("referrer"),
+  tags: text("tags").array(),
+  utmSource: text("utm_source"),
+  utmMedium: text("utm_medium"),
+  utmCampaign: text("utm_campaign"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+};
+
+// Enhanced bookings table
+export const bookings = pgTable("bookings", {
+  ...commonFields,
   bookingType: text("booking_type", {
     enum: ["villa", "resort", "adventure", "restaurant", "event"]
   }).notNull(),
   startDate: timestamp("start_date").notNull(),
   endDate: timestamp("end_date").notNull(),
   guests: integer("guests").notNull(),
-  status: text("status", {
-    enum: ["pending", "confirmed", "cancelled", "completed"]
-  }).notNull().default("pending"),
   totalAmount: decimal("total_amount"),
-  listingId: integer("listing_id").references(() => listings.id),
-  formData: jsonb("form_data"),
+  currency: text("currency").default("USD"),
+  paymentStatus: text("payment_status").default("pending"),
+  paymentMethod: text("payment_method"),
   specialRequests: text("special_requests"),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
+  budget: text("budget"),
+  listingId: integer("listing_id").references(() => listings.id),
 });
 
-// New leads table for form submissions
+// Enhanced leads table
 export const leads = pgTable("leads", {
-  id: serial("id").primaryKey(),
-  firstName: text("first_name").notNull(),
-  lastName: text("last_name").notNull(),
-  email: text("email").notNull(),
-  phone: text("phone").notNull(),
+  ...commonFields,
   interestType: text("interest_type", {
     enum: ["villa", "resort", "adventure", "wedding", "group_trip", "influencer", "concierge"]
   }).notNull(),
-  source: text("source").notNull(),
-  status: text("status", {
-    enum: ["new", "contacted", "qualified", "converted", "lost"]
-  }).notNull().default("new"),
-  formData: jsonb("form_data"),
-  notes: text("notes"),
+  budget: text("budget"),
+  timeline: text("timeline"),
+  priority: text("priority").default("normal"),
   assignedTo: text("assigned_to"),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Enhanced guide submissions table
+export const guideSubmissions = pgTable("guide_submissions", {
+  ...commonFields,
+  guideType: text("guide_type").notNull(),
+  interestAreas: text("interest_areas").array(),
+  travelDates: text("travel_dates"),
+  numberOfTravelers: integer("number_of_travelers"),
+  downloadLink: text("download_link"),
+  processedAt: timestamp("processed_at"),
 });
 
 export const rewards = pgTable("rewards", {
@@ -133,11 +154,6 @@ export const insertBookingSchema = createInsertSchema(bookings).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
-}).extend({
-  guests: z.string().transform(val => parseInt(val, 10)),
-  startDate: z.string().min(1, "Start date is required"),
-  endDate: z.string().min(1, "End date is required"),
-
 });
 
 // Other insert schemas
@@ -146,6 +162,12 @@ export const insertRewardSchema = createInsertSchema(rewards);
 export const insertSocialShareSchema = createInsertSchema(socialShares);
 
 export const insertLeadSchema = createInsertSchema(leads).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertGuideSubmissionSchema = createInsertSchema(guideSubmissions).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
@@ -197,33 +219,6 @@ export type Lead = typeof leads.$inferSelect;
 export type InsertLead = z.infer<typeof insertLeadSchema>;
 
 // Add this new table definition after the existing tables
-export const guideSubmissions = pgTable("guide_submissions", {
-  id: serial("id").primaryKey(),
-  firstName: text("first_name").notNull(),
-  email: text("email").notNull(),
-  guideType: text("guide_type").notNull(),
-  source: text("source").notNull(),
-  status: text("status", {
-    enum: ["pending", "sent", "failed"]
-  }).notNull().default("pending"),
-  formName: text("form_name").notNull(),
-  submissionId: text("submission_id").notNull(),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
-
-// Add insert schema after other insert schemas
-export const insertGuideSubmissionSchema = createInsertSchema(guideSubmissions).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
-
-// Add these types with other types
-export type GuideSubmission = typeof guideSubmissions.$inferSelect;
-export type InsertGuideSubmission = z.infer<typeof insertGuideSubmissionSchema>;
-
-// Add the guide submission schema after other schemas
 export const guideFormSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   email: z.string().email("Invalid email address"),

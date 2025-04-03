@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Table,
   TableBody,
@@ -11,124 +11,128 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { format } from "date-fns";
-import type { GuideDownloadSubmission } from "@/types/booking";
+import { useQuery } from "@tanstack/react-query";
+
+// Type for guide submissions from the API
+type GuideSubmission = {
+  id: number;
+  firstName: string;
+  email: string;
+  guideType: string;
+  source: string;
+  status: string;
+  formName: string;
+  submissionId: string;
+  createdAt: string;
+  updatedAt: string;
+};
 
 export function GuideDownloads() {
-  const [submissions, setSubmissions] = useState<GuideDownloadSubmission[]>([]);
-  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterType, setFilterType] = useState("all");
+  const [filterGuideType, setFilterGuideType] = useState("all");
 
-  useEffect(() => {
-    fetchSubmissions();
-  }, []);
-
-  const fetchSubmissions = async () => {
-    try {
-      const response = await fetch("/api/admin/guide-downloads");
-      const data = await response.json();
-      setSubmissions(data);
-    } catch (error) {
-      console.error("Error fetching submissions:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const filteredSubmissions = submissions.filter((submission) => {
-    const matchesSearch = 
-      submission.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      submission.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      submission.email.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesType = filterType === "all" || submission.guideType === filterType;
-    
-    return matchesSearch && matchesType;
+  const {
+    data: submissions = [],
+    isLoading,
+    isError,
+    refetch
+  } = useQuery<GuideSubmission[]>({
+    queryKey: ["/api/admin/guide-submissions"],
   });
 
-  const exportToCSV = () => {
-    const headers = ["Name", "Email", "Phone", "Guide Type", "Download Date"];
-    const csvContent = [
-      headers.join(","),
-      ...filteredSubmissions.map(submission => [
-        `${submission.firstName} ${submission.lastName}`,
-        submission.email,
-        submission.phone,
-        submission.guideType,
-        format(new Date(submission.downloadDate), "yyyy-MM-dd HH:mm:ss")
-      ].join(","))
-    ].join("\n");
-
-    const blob = new Blob([csvContent], { type: "text/csv" });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `guide-downloads-${format(new Date(), "yyyy-MM-dd")}.csv`;
-    a.click();
-    window.URL.revokeObjectURL(url);
-  };
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  // Filter submissions based on search and filter
+  const filteredSubmissions = submissions.filter(submission => {
+    const matchesSearch = 
+      submission.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      submission.firstName.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesGuideType = filterGuideType === "all" || submission.guideType.includes(filterGuideType);
+    
+    return matchesSearch && matchesGuideType;
+  });
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <div className="flex gap-4">
+      <div className="flex flex-col md:flex-row gap-4 mb-6">
+        <div className="flex-1">
           <Input
-            placeholder="Search by name or email..."
+            placeholder="Search by email or name..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-64"
+            className="w-full"
           />
-          <Select value={filterType} onValueChange={setFilterType}>
-            <SelectTrigger className="w-32">
-              <SelectValue placeholder="Guide Type" />
+        </div>
+        <div className="flex gap-2">
+          <Select value={filterGuideType} onValueChange={setFilterGuideType}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Filter by guide" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Types</SelectItem>
-              <SelectItem value="food">Food Guide</SelectItem>
-              <SelectItem value="activities">Activities Guide</SelectItem>
-              <SelectItem value="nightlife">Nightlife Guide</SelectItem>
+              <SelectItem value="all">All Guides</SelectItem>
+              <SelectItem value="Cabo">Cabo Guide</SelectItem>
+              <SelectItem value="Villa">Villa Guide</SelectItem>
+              <SelectItem value="Resort">Resort Guide</SelectItem>
             </SelectContent>
           </Select>
+          
+          <Button variant="outline" onClick={() => refetch()}>Refresh</Button>
         </div>
-        <Button onClick={exportToCSV}>Export to CSV</Button>
       </div>
 
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Phone</TableHead>
-              <TableHead>Guide Type</TableHead>
-              <TableHead>Download Date</TableHead>
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredSubmissions.map((submission) => (
-              <TableRow key={submission.submissionId}>
-                <TableCell>{submission.firstName} {submission.lastName}</TableCell>
-                <TableCell>{submission.email}</TableCell>
-                <TableCell>{submission.phone}</TableCell>
-                <TableCell>{submission.guideType}</TableCell>
-                <TableCell>
-                  {format(new Date(submission.downloadDate), "MMM d, yyyy HH:mm")}
-                </TableCell>
-                <TableCell>
-                  <Button variant="outline" size="sm">
-                    View Details
-                  </Button>
-                </TableCell>
+      {isLoading ? (
+        <div className="flex justify-center my-8">
+          <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
+        </div>
+      ) : isError ? (
+        <div className="text-center text-red-500 my-8">
+          Error loading guide submissions. Please try again.
+        </div>
+      ) : filteredSubmissions.length === 0 ? (
+        <div className="text-center text-muted-foreground my-8">
+          No guide downloads found with current filters.
+        </div>
+      ) : (
+        <div className="rounded-md border">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Date</TableHead>
+                <TableHead>Name</TableHead>
+                <TableHead>Email</TableHead>
+                <TableHead>Guide Type</TableHead>
+                <TableHead>Source</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+            </TableHeader>
+            <TableBody>
+              {filteredSubmissions.map((submission) => (
+                <TableRow key={submission.id}>
+                  <TableCell className="font-medium">
+                    {submission.createdAt && format(new Date(submission.createdAt), "MMM d, yyyy")}
+                  </TableCell>
+                  <TableCell>{submission.firstName}</TableCell>
+                  <TableCell>{submission.email}</TableCell>
+                  <TableCell>{submission.guideType}</TableCell>
+                  <TableCell>{submission.source}</TableCell>
+                  <TableCell>
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                      ${submission.status === 'sent' ? 'bg-green-100 text-green-800' : 
+                        submission.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 
+                        'bg-red-100 text-red-800'}`}>
+                      {submission.status}
+                    </span>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Button variant="ghost" size="sm">View</Button>
+                    <Button variant="ghost" size="sm">Resend</Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
     </div>
   );
-} 
+}

@@ -6,6 +6,7 @@ import { z } from "zod";
 import { insertBookingSchema, insertLeadSchema, insertGuideSubmissionSchema } from "@shared/schema";
 import { generateSlug } from "@/lib/utils";
 import { nanoid } from "nanoid";
+import passport from "passport";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   setupAuth(app);
@@ -17,8 +18,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const submissionData = insertGuideSubmissionSchema.safeParse({
         ...req.body,
         submissionId: req.body.submissionId || nanoid(),
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        // No need to set createdAt and updatedAt as they have database defaults
       });
 
       if (!submissionData.success) {
@@ -68,9 +68,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Create booking
       const booking = await storage.createBooking({
         ...bookingData.data,
-        status: "pending",
-        createdAt: new Date(),
-        updatedAt: new Date()
+        status: "pending"
+        // created_at and updated_at will be set by database defaults
       });
 
       // Send confirmation email and sync to Airtable (non-blocking)
@@ -120,9 +119,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Create lead
       const lead = await storage.createLead({
         ...leadData.data,
-        status: "new",
-        createdAt: new Date(),
-        updatedAt: new Date()
+        status: "new"
+        // created_at and updated_at will be set by database defaults
       });
 
       console.log('Lead created successfully:', lead); // Debug log
@@ -259,6 +257,74 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(201).json({ share, user: updatedUser });
     } catch (error) {
       res.status(500).json({ message: "Failed to record share" });
+    }
+  });
+
+  // Admin routes
+  app.post("/api/admin/login", passport.authenticate("local"), (req, res) => {
+    if (req.user?.role !== "admin") {
+      req.logout((err) => {
+        if (err) console.error("Logout error:", err);
+      });
+      return res.status(403).json({ message: "Unauthorized" });
+    }
+    res.json(req.user);
+  });
+
+  // Protected admin routes
+  const requireAdmin = (req, res, next) => {
+    if (!req.isAuthenticated() || req.user?.role !== "admin") {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
+    next();
+  };
+
+  app.get("/api/admin/guide-submissions", requireAdmin, async (req, res) => {
+    try {
+      const submissions = await storage.getGuideSubmissions();
+      res.json(submissions);
+    } catch (error) {
+      console.error("Error fetching guide submissions:", error);
+      res.status(500).json({ message: "Failed to fetch submissions" });
+    }
+  });
+
+  app.get("/api/admin/bookings", requireAdmin, async (req, res) => {
+    try {
+      const bookings = await storage.getAllBookings();
+      res.json(bookings);
+    } catch (error) {
+      console.error("Error fetching bookings:", error);
+      res.status(500).json({ message: "Failed to fetch bookings" });
+    }
+  });
+
+  app.get("/api/admin/leads", requireAdmin, async (req, res) => {
+    try {
+      const leads = await storage.getAllLeads();
+      res.json(leads);
+    } catch (error) {
+      console.error("Error fetching leads:", error);
+      res.status(500).json({ message: "Failed to fetch leads" });
+    }
+  });
+
+  // Create admin user if it doesn't exist
+  const { hashPassword } = await import("./auth");
+  storage.getUserByUsername("jefe").then(async (user) => {
+    if (!user) {
+      try {
+        await storage.createUser({
+          username: "jefe",
+          password: await hashPassword("cryptoboy"),
+          email: "admin@cabo.is",
+          role: "admin"
+          // created_at and updated_at will be set by database defaults
+        });
+        console.log("Admin user created successfully");
+      } catch (error) {
+        console.error("Error creating admin user:", error);
+      }
     }
   });
 

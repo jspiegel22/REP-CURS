@@ -1,11 +1,38 @@
-import { IStorage } from "./types";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
 import { users, listings, bookings, rewards, socialShares, weatherCache, resorts, villas, leads, guideSubmissions } from "@shared/schema";
-import type { User, InsertUser, Listing, Booking, Reward, SocialShare, WeatherCache, Resort, Villa, Lead, InsertLead, GuideSubmission, InsertGuideSubmission } from "@shared/schema";
+import type { User, InsertUser, Listing, Booking, Reward, SocialShare, WeatherCache, Resort, Villa, Lead, InsertLead } from "@shared/schema";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
 import { generateResortSlug } from "../client/src/lib/utils";
+
+interface IStorage {
+  sessionStore: session.Store;
+  createGuideSubmission(submission: any): Promise<any>;
+  getVillas(): Promise<Villa[]>;
+  getVillaByTrackHsId(trackHsId: string): Promise<Villa | undefined>;
+  getResorts(): Promise<Resort[]>;
+  getResortBySlug(slug: string): Promise<Resort | undefined>;
+  getUser(id: number): Promise<User | undefined>;
+  getUserByUsername(username: string): Promise<User | undefined>;
+  createUser(insertUser: InsertUser): Promise<User>;
+  getListings(type?: string): Promise<Listing[]>;
+  getListing(id: number): Promise<Listing | undefined>;
+  createListing(listing: Omit<Listing, "id">): Promise<Listing>;
+  createBooking(booking: Omit<Booking, "id">): Promise<Booking>;
+  getUserBookings(userId: number): Promise<Booking[]>;
+  cacheWeather(location: string, data: any): Promise<WeatherCache>;
+  getWeatherCache(location: string): Promise<WeatherCache | undefined>;
+  addUserPoints(userId: number, points: number): Promise<User>;
+  createSocialShare(share: Omit<SocialShare, "id">): Promise<SocialShare>;
+  getAvailableRewards(userPoints: number): Promise<Reward[]>;
+  createLead(lead: Omit<Lead, "id">): Promise<Lead>;
+  getBookingsByEmail(email: string): Promise<Booking[]>;
+  getLeadsByEmail(email: string): Promise<Lead[]>;
+  getGuideSubmissions(): Promise<any[]>;
+  getAllBookings(): Promise<Booking[]>;
+  getAllLeads(): Promise<Lead[]>;
+}
 
 const PostgresSessionStore = connectPg(session);
 
@@ -25,20 +52,25 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Add the new createGuideSubmission method
-  async createGuideSubmission(submission: InsertGuideSubmission): Promise<GuideSubmission> {
+  async createGuideSubmission(submission: any): Promise<any> {
     try {
       console.log("Creating guide submission with data:", submission);
+      
+      // Create a properly formatted object for database insertion
+      const submissionData = {
+        first_name: submission.firstName,
+        email: submission.email,
+        guide_type: submission.guideType,
+        source: submission.source,
+        status: submission.status || "pending",
+        form_name: submission.formName,
+        submission_id: submission.submissionId
+        // No need to set created_at and updated_at as they have database defaults
+      };
+      
       const [newSubmission] = await db
         .insert(guideSubmissions)
-        .values({
-          firstName: submission.firstName,
-          email: submission.email,
-          guideType: submission.guideType,
-          source: submission.source,
-          status: submission.status || "pending",
-          formName: submission.formName,
-          submissionId: submission.submissionId,
-        })
+        .values(submissionData)
         .returning();
 
       console.log("Successfully created guide submission:", newSubmission);
@@ -52,11 +84,11 @@ export class DatabaseStorage implements IStorage {
   // Villa Management
   async getVillas(): Promise<Villa[]> {
     try {
-      const villas = await db.select().from(villas);
-      if (villas.length === 0) {
+      const villaList = await db.select().from(villas);
+      if (villaList.length === 0) {
         console.log('No villas found in database');
       }
-      return villas;
+      return villaList;
     } catch (error) {
       console.error('Error fetching villas:', error);
       // Return empty array instead of throwing
@@ -243,6 +275,43 @@ export class DatabaseStorage implements IStorage {
     } catch (error) {
       console.error("Error fetching leads by email:", error);
       throw new Error("Failed to fetch leads");
+    }
+  }
+
+  // Admin methods
+  async getGuideSubmissions(): Promise<any[]> {
+    try {
+      return await db
+        .select()
+        .from(guideSubmissions)
+        .orderBy(guideSubmissions.createdAt);
+    } catch (error) {
+      console.error("Error fetching guide submissions:", error);
+      throw new Error("Failed to fetch guide submissions");
+    }
+  }
+
+  async getAllBookings(): Promise<Booking[]> {
+    try {
+      return await db
+        .select()
+        .from(bookings)
+        .orderBy(bookings.createdAt);
+    } catch (error) {
+      console.error("Error fetching all bookings:", error);
+      throw new Error("Failed to fetch all bookings");
+    }
+  }
+
+  async getAllLeads(): Promise<Lead[]> {
+    try {
+      return await db
+        .select()
+        .from(leads)
+        .orderBy(leads.createdAt);
+    } catch (error) {
+      console.error("Error fetching all leads:", error);
+      throw new Error("Failed to fetch all leads");
     }
   }
 }

@@ -1,6 +1,8 @@
 // This file simulates an email service
 // In a production environment, you would use a real email service like SendGrid, Mailgun, etc.
 
+import sgMail from '@sendgrid/mail';
+
 interface EmailOptions {
   to: string;
   subject: string;
@@ -12,24 +14,48 @@ interface EmailOptions {
   }>;
 }
 
+const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY;
+const DEFAULT_FROM_EMAIL = 'noreply@cabo.is';
+
+if (SENDGRID_API_KEY) {
+  sgMail.setApiKey(SENDGRID_API_KEY);
+}
+
 export async function sendEmail(options: EmailOptions): Promise<boolean> {
-  // In a real implementation, this would connect to an email API
-  console.log('Sending email to:', options.to);
-  console.log('Subject:', options.subject);
-  console.log('From:', options.from || 'noreply@cabosanlucastravel.com');
-  
-  // Log email sending (simulated)
-  console.log('Email sent successfully');
-  
-  // Return true for successful email sending (simulated)
-  return true;
+  try {
+    if (!SENDGRID_API_KEY) {
+      // Fallback to console logging in development
+      console.log('Email would be sent:', {
+        to: options.to,
+        from: options.from || DEFAULT_FROM_EMAIL,
+        subject: options.subject,
+        html: options.html
+      });
+      return true;
+    }
+
+    const msg = {
+      to: options.to,
+      from: options.from || DEFAULT_FROM_EMAIL,
+      subject: options.subject,
+      html: options.html,
+      attachments: options.attachments
+    };
+
+    await sgMail.send(msg);
+    console.log('Email sent successfully to:', options.to);
+    return true;
+  } catch (error) {
+    console.error('Error sending email:', error);
+    return false;
+  }
 }
 
 export function createGuideDownloadEmail(firstName: string, email: string, guideType: string): EmailOptions {
   return {
     to: email,
     subject: `Your ${guideType} is here!`,
-    from: 'Cabo San Lucas Travel <guides@cabosanlucastravel.com>',
+    from: 'Cabo San Lucas Travel <guides@cabo.is>',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h1 style="color: #2F4F4F;">Your Cabo Guide is Ready!</h1>
@@ -44,7 +70,7 @@ export function createGuideDownloadEmail(firstName: string, email: string, guide
         </div>
         <p>If you have any questions or need personalized recommendations, feel free to reply to this email.</p>
         <p>Enjoy planning your Cabo adventure!</p>
-        <p>Warm regards,<br>The Cabo San Lucas Travel Team</p>
+        <p>Warm regards,<br>The @cabo Team</p>
       </div>
     `
   };
@@ -54,12 +80,12 @@ export function createBookingConfirmationEmail(booking: any): EmailOptions {
   return {
     to: booking.email,
     subject: 'Your Cabo Booking Confirmation',
-    from: 'Cabo San Lucas Travel <bookings@cabosanlucastravel.com>',
+    from: '@cabo <bookings@cabo.is>',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h1 style="color: #2F4F4F;">Your Booking is Confirmed!</h1>
         <p>Hello ${booking.firstName},</p>
-        <p>Thank you for booking with Cabo San Lucas Travel. Your ${booking.bookingType} booking has been received.</p>
+        <p>Thank you for booking with @cabo. Your ${booking.bookingType} booking has been received.</p>
         <p>Here are your booking details:</p>
         <div style="background-color: #f9f9f9; padding: 15px; border-radius: 4px; margin: 20px 0;">
           <p><strong>Booking Type:</strong> ${booking.bookingType}</p>
@@ -71,7 +97,7 @@ export function createBookingConfirmationEmail(booking: any): EmailOptions {
         <p>A confirmation number will be sent separately once your booking is fully processed.</p>
         <p>If you have any questions, please don't hesitate to contact us.</p>
         <p>We look forward to welcoming you to Cabo San Lucas!</p>
-        <p>Warm regards,<br>The Cabo San Lucas Travel Team</p>
+        <p>Warm regards,<br>The @cabo Team</p>
       </div>
     `
   };

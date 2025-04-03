@@ -27,7 +27,27 @@ import GuidesPage from "@/pages/guides";
 import WorkWithUsPage from "@/pages/work-with-us";
 import NavigationBar from "./components/navigation-bar";
 import { ChatButton } from "./components/chat-button";
-import { AuthProvider } from "@/hooks/use-auth";
+import { AuthProvider, useAuth } from "@/hooks/use-auth";
+import AdminDashboard from "@/pages/admin";
+import AdminLoginPage from "@/pages/admin/login";
+
+function ProtectedAdminRoute({ children }: { children: React.ReactNode }) {
+  const { user, isLoading } = useAuth();
+  
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
+      </div>
+    );
+  }
+  
+  if (!user || user.role !== "admin") {
+    return <AdminLoginPage />;
+  }
+  
+  return <>{children}</>;
+}
 
 function Router() {
   return (
@@ -36,6 +56,14 @@ function Router() {
       <div className="flex-grow">
         <Switch>
           <Route path="/" component={HomePage} />
+          <Route path="/admin/login" component={AdminLoginPage} />
+          <Route path="/admin">
+            {() => (
+              <ProtectedAdminRoute>
+                <AdminDashboard />
+              </ProtectedAdminRoute>
+            )}
+          </Route>
           <Route path="/blog" component={BlogIndex} />
           <Route path="/blog/:slug" component={BlogDetail} />
           <Route path="/resorts" component={ResortsLanding} />
