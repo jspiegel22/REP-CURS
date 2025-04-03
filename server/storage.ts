@@ -56,25 +56,66 @@ export class DatabaseStorage implements IStorage {
     try {
       console.log("Creating guide submission with data:", submission);
       
-      // Create a properly formatted object for database insertion
-      const submissionData = {
-        first_name: submission.firstName,
-        email: submission.email,
-        guide_type: submission.guideType,
-        source: submission.source,
-        status: submission.status || "pending",
-        form_name: submission.formName,
-        submission_id: submission.submissionId
-        // No need to set created_at and updated_at as they have database defaults
-      };
-      
-      const [newSubmission] = await db
-        .insert(guideSubmissions)
-        .values(submissionData)
-        .returning();
+      // We'll use raw SQL to avoid any type issues with Drizzle
+      const result = await db.execute(
+        `INSERT INTO guide_submissions (
+          first_name, 
+          last_name, 
+          email, 
+          phone, 
+          preferred_contact_method, 
+          guide_type, 
+          source, 
+          status, 
+          form_name, 
+          submission_id, 
+          interest_areas, 
+          tags,
+          form_data
+        ) VALUES (
+          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13
+        ) RETURNING *`,
+        [
+          submission.firstName,
+          submission.lastName || null,
+          submission.email,
+          submission.phone || null,
+          submission.preferredContactMethod || "Email",
+          submission.guideType,
+          submission.source,
+          submission.status || "pending",
+          submission.formName,
+          submission.submissionId,
+          Array.isArray(submission.interestAreas) ? submission.interestAreas : null,
+          Array.isArray(submission.tags) ? submission.tags : null,
+          submission.formData || {}
+        ]
+      );
 
-      console.log("Successfully created guide submission:", newSubmission);
-      return newSubmission;
+      const newSubmission = result.rows[0];
+      
+      // Transform snake_case back to camelCase for the response
+      const formattedSubmission = {
+        id: newSubmission.id,
+        firstName: newSubmission.first_name,
+        lastName: newSubmission.last_name,
+        email: newSubmission.email,
+        phone: newSubmission.phone,
+        preferredContactMethod: newSubmission.preferred_contact_method,
+        guideType: newSubmission.guide_type,
+        source: newSubmission.source,
+        status: newSubmission.status,
+        formName: newSubmission.form_name,
+        submissionId: newSubmission.submission_id,
+        interestAreas: newSubmission.interest_areas,
+        tags: newSubmission.tags,
+        formData: newSubmission.form_data,
+        createdAt: newSubmission.created_at,
+        updatedAt: newSubmission.updated_at
+      };
+
+      console.log("Successfully created guide submission:", formattedSubmission);
+      return formattedSubmission;
     } catch (error) {
       console.error("Error creating guide submission:", error);
       throw new Error("Failed to create guide submission");

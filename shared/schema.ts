@@ -108,6 +108,7 @@ export const guideSubmissions = pgTable("guide_submissions", {
   numberOfTravelers: integer("number_of_travelers"),
   downloadLink: text("download_link"),
   processedAt: timestamp("processed_at"),
+  submissionId: text("submission_id").notNull().unique(),
 });
 
 export const rewards = pgTable("rewards", {
@@ -217,15 +218,23 @@ export type Villa = typeof villas.$inferSelect;
 export type InsertVilla = z.infer<typeof insertVillaSchema>;
 export type Lead = typeof leads.$inferSelect;
 export type InsertLead = z.infer<typeof insertLeadSchema>;
+export type GuideSubmission = typeof guideSubmissions.$inferSelect;
+export type InsertGuideSubmission = z.infer<typeof insertGuideSubmissionSchema>;
 
 // Add this new table definition after the existing tables
 export const guideFormSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().optional().nullable(),
   email: z.string().email("Invalid email address"),
+  phone: z.string().optional().nullable(),
+  preferredContactMethod: z.enum(["Email", "Phone", "Either"]).default("Email"),
   guideType: z.string().default("Ultimate Cabo Guide 2025"),
   source: z.string().default("website"),
   formName: z.string().default("guide_download"),
   status: z.enum(["pending", "sent", "failed"]).default("pending"),
+  interestAreas: z.array(z.string()).optional(),
+  tags: z.array(z.string()).optional(),
+  formData: z.record(z.any()).optional()
 });
 
 export type GuideFormData = z.infer<typeof guideFormSchema>;

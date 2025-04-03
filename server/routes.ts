@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth } from "./auth";
 import { z } from "zod";
-import { insertBookingSchema, insertLeadSchema, insertGuideSubmissionSchema } from "@shared/schema";
+import { insertBookingSchema, insertLeadSchema, insertGuideSubmissionSchema, insertListingSchema } from "@shared/schema";
 import { generateSlug } from "@/lib/utils";
 import { nanoid } from "nanoid";
 import passport from "passport";
@@ -14,8 +14,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Add guide submission endpoint with Airtable integration and email sending
   app.post("/api/guide-submissions", async (req, res) => {
     try {
+      // Create a custom validator that extends the base schema but allows additional fields
+      const extendedGuideSubmissionSchema = insertGuideSubmissionSchema.extend({
+        // Add the new fields that we're collecting from the form
+        lastName: z.string().optional().nullable(),
+        phone: z.string().optional().nullable(),
+        preferredContactMethod: z.enum(["Email", "Phone", "Either"]).default("Email"),
+        tags: z.array(z.string()).optional(),
+        interestAreas: z.array(z.string()).optional(),
+      });
+      
       // Validate request body
-      const submissionData = insertGuideSubmissionSchema.safeParse({
+      const submissionData = extendedGuideSubmissionSchema.safeParse({
         ...req.body,
         submissionId: req.body.submissionId || nanoid(),
         // No need to set createdAt and updatedAt as they have database defaults
@@ -68,8 +78,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Create booking
       const booking = await storage.createBooking({
         ...bookingData.data,
-        status: "pending"
-        // created_at and updated_at will be set by database defaults
+        status: "pending",
+        createdAt: new Date(),
+        updatedAt: new Date()
       });
 
       // Send confirmation email and sync to Airtable (non-blocking)
@@ -119,8 +130,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Create lead
       const lead = await storage.createLead({
         ...leadData.data,
-        status: "new"
-        // created_at and updated_at will be set by database defaults
+        status: "new",
+        createdAt: new Date(),
+        updatedAt: new Date()
       });
 
       console.log('Lead created successfully:', lead); // Debug log
@@ -181,28 +193,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to fetch resort" });
     }
   });
-  // Weather endpoint
-  app.get("/api/weather", async (req, res) => {
-    try {
-      const location = "cabo-san-lucas";
-      let weather = await storage.getWeatherCache(location);
 
-      if (!weather || Date.now() - new Date(weather.updatedAt).getTime() > 1800000) {
-        // Mock weather data - in production this would come from a weather API
-        const mockWeather = {
-          temperature: 28,
-          condition: "sunny" as const,
-        };
-
-        weather = await storage.cacheWeather(location, mockWeather);
-      }
-
-      res.json(weather.data);
-    } catch (error) {
-      console.error("Weather fetch error:", error);
-      res.status(500).json({ message: "Failed to fetch weather data" });
-    }
-  });
 
   // Listings endpoints
   app.get("/api/listings", async (req, res) => {
@@ -247,12 +238,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const share = await storage.createSocialShare({
         userId: req.user.id,
-        listingId,
-        platform,
+        listingId: listingId || null,
+        platform: platform || "facebook",
+        sharedAt: new Date(),
+        pointsEarned: 10
       });
 
       // Award points for sharing
-      const updatedUser = await storage.addUserPoints(req.user.id, share.pointsEarned);
+      const updatedUser = await storage.addUserPoints(req.user.id, share.pointsEarned || 10);
 
       res.status(201).json({ share, user: updatedUser });
     } catch (error) {
@@ -272,7 +265,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Protected admin routes
-  const requireAdmin = (req, res, next) => {
+  const requireAdmin = (req: any, res: any, next: any) => {
     if (!req.isAuthenticated() || req.user?.role !== "admin") {
       return res.status(403).json({ message: "Unauthorized" });
     }

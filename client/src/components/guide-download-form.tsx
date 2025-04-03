@@ -19,10 +19,14 @@ import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
-// Simple form schema without external dependencies
+// Enhanced form schema with additional fields
 const formSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().optional(),
   email: z.string().email("Invalid email address").min(1, "Email is required"),
+  phone: z.string().optional(),
+  preferredContactMethod: z.enum(["Email", "Phone", "Either"]).default("Email"),
+  interestAreas: z.array(z.string()).default([]),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -45,7 +49,11 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       firstName: '',
-      email: ''
+      lastName: '',
+      email: '',
+      phone: '',
+      preferredContactMethod: 'Email',
+      interestAreas: []
     }
   });
 
@@ -53,12 +61,17 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
     mutationFn: async (data: FormData) => {
       const submissionData = {
         firstName: data.firstName,
+        lastName: data.lastName || '',
         email: data.email,
+        phone: data.phone || '',
+        preferredContactMethod: data.preferredContactMethod,
         guideType: "Cabo San Lucas Travel Guide",
         source: "website",
         status: "pending" as const,
         formName: "guide-download",
         submissionId: nanoid(),
+        tags: ["Guide Request", "Website"],
+        interestAreas: data.interestAreas.length > 0 ? data.interestAreas : ["Travel Guide"],
       };
       
       const response = await apiRequest("POST", "/api/guide-submissions", submissionData);
@@ -133,18 +146,31 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 mt-4">
-              <div className="space-y-2">
-                <Label htmlFor="firstName" className="text-[#2F4F4F]">First Name*</Label>
-                <Input
-                  id="firstName"
-                  {...register("firstName")}
-                  disabled={submitMutation.isPending}
-                  placeholder="Your first name"
-                  className="border-gray-300 focus:border-[#2F4F4F] focus:ring-[#2F4F4F]"
-                />
-                {errors.firstName && (
-                  <FormError message={errors.firstName.message ?? "First name is required"} />
-                )}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="firstName" className="text-[#2F4F4F]">First Name*</Label>
+                  <Input
+                    id="firstName"
+                    {...register("firstName")}
+                    disabled={submitMutation.isPending}
+                    placeholder="Your first name"
+                    className="border-gray-300 focus:border-[#2F4F4F] focus:ring-[#2F4F4F]"
+                  />
+                  {errors.firstName && (
+                    <FormError message={errors.firstName.message ?? "First name is required"} />
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="lastName" className="text-[#2F4F4F]">Last Name</Label>
+                  <Input
+                    id="lastName"
+                    {...register("lastName")}
+                    disabled={submitMutation.isPending}
+                    placeholder="Your last name"
+                    className="border-gray-300 focus:border-[#2F4F4F] focus:ring-[#2F4F4F]"
+                  />
+                </div>
               </div>
 
               <div className="space-y-2">
@@ -160,6 +186,98 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
                 {errors.email && (
                   <FormError message={errors.email.message ?? "Valid email is required"} />
                 )}
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="phone" className="text-[#2F4F4F]">Phone Number</Label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  {...register("phone")}
+                  disabled={submitMutation.isPending}
+                  placeholder="(123) 456-7890"
+                  className="border-gray-300 focus:border-[#2F4F4F] focus:ring-[#2F4F4F]"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="preferredContactMethod" className="text-[#2F4F4F]">Preferred Contact Method</Label>
+                <select
+                  id="preferredContactMethod"
+                  {...register("preferredContactMethod")}
+                  disabled={submitMutation.isPending}
+                  className="w-full p-2 border border-gray-300 rounded-md focus:border-[#2F4F4F] focus:ring-[#2F4F4F]"
+                >
+                  <option value="Email">Email</option>
+                  <option value="Phone">Phone</option>
+                  <option value="Either">Either</option>
+                </select>
+              </div>
+              
+              <div className="space-y-2">
+                <Label className="text-[#2F4F4F]">What are you interested in?</Label>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="interest-villas"
+                      value="Villas"
+                      {...register("interestAreas")}
+                      className="rounded border-gray-300 text-[#2F4F4F] focus:ring-[#2F4F4F]"
+                    />
+                    <Label htmlFor="interest-villas" className="text-sm font-normal">Luxury Villas</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="interest-resorts"
+                      value="Resorts"
+                      {...register("interestAreas")}
+                      className="rounded border-gray-300 text-[#2F4F4F] focus:ring-[#2F4F4F]"
+                    />
+                    <Label htmlFor="interest-resorts" className="text-sm font-normal">Resorts</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="interest-activities"
+                      value="Activities"
+                      {...register("interestAreas")}
+                      className="rounded border-gray-300 text-[#2F4F4F] focus:ring-[#2F4F4F]"
+                    />
+                    <Label htmlFor="interest-activities" className="text-sm font-normal">Activities</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="interest-restaurants"
+                      value="Restaurants"
+                      {...register("interestAreas")}
+                      className="rounded border-gray-300 text-[#2F4F4F] focus:ring-[#2F4F4F]"
+                    />
+                    <Label htmlFor="interest-restaurants" className="text-sm font-normal">Restaurants</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="interest-concierge"
+                      value="Concierge"
+                      {...register("interestAreas")}
+                      className="rounded border-gray-300 text-[#2F4F4F] focus:ring-[#2F4F4F]"
+                    />
+                    <Label htmlFor="interest-concierge" className="text-sm font-normal">Concierge</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="interest-weddings"
+                      value="Weddings"
+                      {...register("interestAreas")}
+                      className="rounded border-gray-300 text-[#2F4F4F] focus:ring-[#2F4F4F]"
+                    />
+                    <Label htmlFor="interest-weddings" className="text-sm font-normal">Weddings</Label>
+                  </div>
+                </div>
               </div>
 
               <Button
