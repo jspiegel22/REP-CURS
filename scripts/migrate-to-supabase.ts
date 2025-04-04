@@ -1,10 +1,21 @@
-import { Pool } from '@neondatabase/serverless';
-import { createClient } from '@supabase/supabase-js';
-import * as dotenv from 'dotenv';
-import * as fs from 'fs';
-import * as path from 'path';
+const { Pool } = require('@neondatabase/serverless');
+const { createClient } = require('@supabase/supabase-js');
+const dotenv = require('dotenv');
+const fs = require('fs');
+const path = require('path');
 
 dotenv.config();
+
+// Check for required environment variables
+if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+  console.error('Missing required Supabase credentials. Please set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY');
+  process.exit(1);
+}
+
+if (!process.env.NEON_DATABASE_URL && !process.env.DATABASE_URL) {
+  console.error('Missing required database URL. Please set NEON_DATABASE_URL or DATABASE_URL');
+  process.exit(1);
+}
 
 const tables = [
   'users',
@@ -30,8 +41,8 @@ async function migrateSchema() {
 
   // Connect to Supabase
   const supabase = createClient(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
+    process.env.SUPABASE_URL,
+    process.env.SUPABASE_SERVICE_ROLE_KEY
   );
 
   try {
@@ -54,12 +65,13 @@ async function migrateData() {
   console.log('Migrating data...');
   
   // Connect to Neon
-  const neonPool = new Pool({ connectionString: process.env.NEON_DATABASE_URL });
+  const dbUrl = process.env.NEON_DATABASE_URL || process.env.DATABASE_URL;
+  const neonPool = new Pool({ connectionString: dbUrl });
   
   // Connect to Supabase
   const supabase = createClient(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
+    process.env.SUPABASE_URL,
+    process.env.SUPABASE_SERVICE_ROLE_KEY
   );
 
   try {
@@ -106,8 +118,8 @@ async function setupWebhooks() {
 
   // Connect to Supabase
   const supabase = createClient(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
+    process.env.SUPABASE_URL,
+    process.env.SUPABASE_SERVICE_ROLE_KEY
   );
 
   try {

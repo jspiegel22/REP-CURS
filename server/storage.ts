@@ -5,6 +5,7 @@ import type { User, InsertUser, Listing, Booking, Reward, SocialShare, WeatherCa
 import session from "express-session";
 import connectPg from "connect-pg-simple";
 import { generateResortSlug } from "../client/src/lib/utils";
+import { supabase, supabaseAdmin, isSupabaseConfigured, handleDatabaseError } from "./services/supabase";
 
 interface IStorage {
   sessionStore: session.Store;
@@ -610,7 +611,314 @@ export class DatabaseStorage implements IStorage {
   }
 }
 
-export const storage = new DatabaseStorage();
+// Supabase Storage implementation
+export class SupabaseStorage implements IStorage {
+  sessionStore: session.Store;
+
+  constructor() {
+    if (!process.env.DATABASE_URL) {
+      throw new Error("DATABASE_URL must be set");
+    }
+    this.sessionStore = new PostgresSessionStore({
+      conObject: {
+        connectionString: process.env.DATABASE_URL,
+      },
+      createTableIfMissing: true,
+    });
+  }
+
+  // Guide Submissions
+  async createGuideSubmission(submission: any): Promise<GuideSubmission> {
+    try {
+      console.log("Creating guide submission with data:", submission);
+      
+      // Ensure interestAreas is always a properly formatted array
+      let interestAreas = [];
+      if (submission.interestAreas) {
+        interestAreas = Array.isArray(submission.interestAreas) 
+          ? submission.interestAreas 
+          : [submission.interestAreas];
+      }
+      
+      // Format for Supabase
+      const supabaseData = {
+        first_name: submission.firstName,
+        email: submission.email,
+        phone: submission.phone || null,
+        guide_type: submission.guideType || "Cabo San Lucas Travel Guide",
+        source: submission.source || "website",
+        status: submission.status || "pending",
+        form_name: submission.formName || "guide-download",
+        submission_id: submission.submissionId || Date.now().toString(),
+        interest_areas: interestAreas,
+        last_name: submission.lastName || null,
+        preferred_contact_method: submission.preferredContactMethod || "Email",
+        form_data: {
+          tags: Array.isArray(submission.tags) ? submission.tags : null,
+          referrer: submission.referrer || null,
+          ipAddress: submission.ipAddress || null,
+          userAgent: submission.userAgent || null,
+          utmSource: submission.utmSource || null,
+          utmMedium: submission.utmMedium || null,
+          utmCampaign: submission.utmCampaign || null
+        }
+      };
+      
+      // Insert into Supabase
+      const { data, error } = await supabase
+        .from('guide_submissions')
+        .insert(supabaseData)
+        .select()
+        .single();
+        
+      if (error) {
+        console.error("Supabase error creating guide submission:", error);
+        throw error;
+      }
+      
+      if (!data) {
+        throw new Error("No data returned from Supabase");
+      }
+      
+      // Convert Supabase data to GuideSubmission type
+      const guideSubmission: GuideSubmission = {
+        id: data.id,
+        firstName: data.first_name,
+        lastName: data.last_name,
+        email: data.email,
+        phone: data.phone,
+        preferredContactMethod: data.preferred_contact_method,
+        preferredContactTime: data.preferred_contact_time,
+        source: data.source,
+        status: data.status,
+        formName: data.form_name,
+        formData: data.form_data,
+        notes: data.notes,
+        ipAddress: data.ip_address,
+        userAgent: data.user_agent,
+        referrer: data.referrer,
+        tags: data.tags || [],
+        utmSource: data.utm_source,
+        utmMedium: data.utm_medium,
+        utmCampaign: data.utm_campaign,
+        createdAt: new Date(data.created_at),
+        updatedAt: data.updated_at ? new Date(data.updated_at) : null,
+        guideType: data.guide_type,
+        interestAreas: data.interest_areas || [],
+        travelDates: data.travel_dates,
+        numberOfTravelers: data.number_of_travelers,
+        downloadLink: data.download_link,
+        processedAt: data.processed_at ? new Date(data.processed_at) : null,
+        submissionId: data.submission_id
+      };
+
+      console.log("Successfully created guide submission:", guideSubmission.id);
+      
+      // Process in background - but don't process with insufficient data format
+      try {
+        const airtableService = await import("./services/airtable").catch(() => null);
+        const guideService = await import("./services/guideSubmissions").catch(() => null);
+        
+        if (airtableService?.syncGuideSubmissionToAirtable) {
+          airtableService.syncGuideSubmissionToAirtable(guideSubmission)
+            .catch(err => console.error("Error syncing to Airtable:", err));
+        }
+        
+        if (guideService?.processGuideSubmission) {
+          guideService.processGuideSubmission(guideSubmission)
+            .catch(err => console.error("Error processing submission:", err));
+        }
+      } catch (processingError) {
+        console.error("Error in post-processing setup:", processingError);
+      }
+      
+      return guideSubmission;
+    } catch (error) {
+      console.error("Error creating guide submission:", error);
+      throw new Error("Failed to create guide submission");
+    }
+  }
+
+  // Other methods would be implemented similarly
+  // For brevity, we'll implement a few key methods to test with and add more as needed
+
+  async getVillas(): Promise<Villa[]> {
+    try {
+      const { data, error } = await supabase
+        .from('villas')
+        .select('*');
+        
+      if (error) {
+        console.error("Error fetching villas:", error);
+        return [];
+      }
+      
+      return data || [];
+    } catch (error) {
+      console.error('Error fetching villas:', error);
+      return [];
+    }
+  }
+
+  async getVillaByTrackHsId(trackHsId: string): Promise<Villa | undefined> {
+    const { data, error } = await supabase
+      .from('villas')
+      .select('*')
+      .eq('trackhs_id', trackHsId)
+      .single();
+      
+    if (error) {
+      console.error("Error fetching villa by trackHsId:", error);
+      return undefined;
+    }
+    
+    return data || undefined;
+  }
+
+  async getResorts(): Promise<Resort[]> {
+    const { data, error } = await supabase
+      .from('resorts')
+      .select('*');
+      
+    if (error) {
+      console.error("Error fetching resorts:", error);
+      return [];
+    }
+    
+    return data || [];
+  }
+
+  async getResortBySlug(slug: string): Promise<Resort | undefined> {
+    const resorts = await this.getResorts();
+    return resorts.find(resort => generateResortSlug(resort.name) === slug);
+  }
+
+  // Remaining methods would be similar adaptations from the DatabaseStorage implementation
+  // For now, we'll throw errors for unimplemented methods to identify them during testing
+
+  async getUser(id: number): Promise<User | undefined> {
+    const { data, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', id)
+      .single();
+      
+    if (error) {
+      console.error("Error fetching user:", error);
+      return undefined;
+    }
+    
+    return data || undefined;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const { data, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('username', username)
+      .single();
+      
+    if (error && error.code !== 'PGRST116') { // PGRST116 is "no rows returned"
+      console.error("Error fetching user by username:", error);
+    }
+    
+    return data || undefined;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const { data, error } = await supabase
+      .from('users')
+      .insert(insertUser)
+      .select()
+      .single();
+      
+    if (error) {
+      console.error("Error creating user:", error);
+      throw error;
+    }
+    
+    if (!data) {
+      throw new Error("No data returned from Supabase");
+    }
+    
+    return data;
+  }
+
+  // For remaining methods, we'll implement them as needed
+  // This pattern can be repeated for the rest of the methods
+
+  // Placeholder implementations to satisfy interface
+  async getListings(type?: string): Promise<Listing[]> {
+    return new DatabaseStorage().getListings(type);
+  }
+
+  async getListing(id: number): Promise<Listing | undefined> {
+    return new DatabaseStorage().getListing(id);
+  }
+
+  async createListing(listing: Omit<Listing, "id">): Promise<Listing> {
+    return new DatabaseStorage().createListing(listing);
+  }
+
+  async createBooking(booking: Omit<Booking, "id">): Promise<Booking> {
+    return new DatabaseStorage().createBooking(booking);
+  }
+
+  async getUserBookings(userId: number): Promise<Booking[]> {
+    return new DatabaseStorage().getUserBookings(userId);
+  }
+
+  async cacheWeather(location: string, data: any): Promise<WeatherCache> {
+    return new DatabaseStorage().cacheWeather(location, data);
+  }
+
+  async getWeatherCache(location: string): Promise<WeatherCache | undefined> {
+    return new DatabaseStorage().getWeatherCache(location);
+  }
+
+  async addUserPoints(userId: number, points: number): Promise<User> {
+    return new DatabaseStorage().addUserPoints(userId, points);
+  }
+
+  async createSocialShare(share: Omit<SocialShare, "id">): Promise<SocialShare> {
+    return new DatabaseStorage().createSocialShare(share);
+  }
+
+  async getAvailableRewards(userPoints: number): Promise<Reward[]> {
+    return new DatabaseStorage().getAvailableRewards(userPoints);
+  }
+
+  async createLead(lead: Omit<Lead, "id">): Promise<Lead> {
+    return new DatabaseStorage().createLead(lead);
+  }
+
+  async getBookingsByEmail(email: string): Promise<Booking[]> {
+    return new DatabaseStorage().getBookingsByEmail(email);
+  }
+
+  async getLeadsByEmail(email: string): Promise<Lead[]> {
+    return new DatabaseStorage().getLeadsByEmail(email);
+  }
+
+  async getGuideSubmissions(): Promise<any[]> {
+    return new DatabaseStorage().getGuideSubmissions();
+  }
+
+  async getAllBookings(): Promise<Booking[]> {
+    return new DatabaseStorage().getAllBookings();
+  }
+
+  async getAllLeads(): Promise<Lead[]> {
+    return new DatabaseStorage().getAllLeads();
+  }
+}
+
+// Select the appropriate storage implementation based on environment
+// If Supabase is configured and enabled, use it
+// Otherwise, fall back to the database storage
+export const storage = isSupabaseConfigured() && process.env.USE_SUPABASE === 'true'
+  ? new SupabaseStorage()
+  : new DatabaseStorage();
 
 // Placeholder functions -  replace with actual implementations
 async function retryFailedSync(func: any, data: any) {
