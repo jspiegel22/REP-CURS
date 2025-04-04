@@ -51,18 +51,22 @@ export class DatabaseStorage implements IStorage {
     });
   }
 
-  // Add the new createGuideSubmission method
+  // Simplified createGuideSubmission method
   async createGuideSubmission(submission: any): Promise<any> {
     try {
       console.log("Creating guide submission with data:", submission);
       
-      // Prepare data using updated schema with missing fields
-      // Need to stringify the interestAreas array for JSONB field
-      const interestAreas = JSON.stringify(
-        Array.isArray(submission.interestAreas) ? submission.interestAreas : []
-      );
+      // Ensure interestAreas is always a properly formatted JSON array
+      let interestAreasJson = '[]';
+      if (submission.interestAreas) {
+        if (Array.isArray(submission.interestAreas)) {
+          interestAreasJson = JSON.stringify(submission.interestAreas);
+        } else if (typeof submission.interestAreas === 'string') {
+          interestAreasJson = JSON.stringify([submission.interestAreas]);
+        }
+      }
       
-      // Store any extra data as JSON
+      // Create form data JSON
       const formData = JSON.stringify({
         tags: Array.isArray(submission.tags) ? submission.tags : null,
         referrer: submission.referrer || null,
@@ -73,31 +77,28 @@ export class DatabaseStorage implements IStorage {
         utmCampaign: submission.utmCampaign || null
       });
       
-      // Use the new schema with additional columns
-      const query = `
+      // Simplified query
+      const result = await pool.query(`
         INSERT INTO guide_submissions 
-        (first_name, last_name, email, phone, preferred_contact_method, guide_type, 
-         source, status, form_name, submission_id, interest_areas, form_data)
+        (first_name, email, phone, guide_type, source, status, form_name, submission_id, interest_areas, form_data, last_name, preferred_contact_method)
         VALUES 
         ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
-        RETURNING *
-      `;
-      
-      // Execute the query using pg pool directly 
-      const result = await pool.query(query, [
-        submission.firstName,
-        submission.lastName || null,
-        submission.email,
-        submission.phone || null,
-        submission.preferredContactMethod || "Email",
-        submission.guideType,
-        submission.source || "website",
-        submission.status || "pending",
-        submission.formName,
-        submission.submissionId,
-        interestAreas,
-        formData
-      ]);
+        RETURNING *`,
+        [
+          submission.firstName,
+          submission.email,
+          submission.phone || null,
+          submission.guideType || "Cabo San Lucas Travel Guide",
+          submission.source || "website",
+          submission.status || "pending",
+          submission.formName || "guide-download",
+          submission.submissionId || Date.now().toString(),
+          interestAreasJson,
+          formData,
+          submission.lastName || null,
+          submission.preferredContactMethod || "Email"
+        ]
+      );
       
       if (!result.rows || result.rows.length === 0) {
         throw new Error("Failed to insert guide submission");
@@ -105,47 +106,36 @@ export class DatabaseStorage implements IStorage {
       
       const dbSubmission = result.rows[0];
       
-      // Format for API response
+      // Simplified formatting
       const formattedSubmission = {
         id: dbSubmission.id,
         firstName: dbSubmission.first_name,
-        lastName: dbSubmission.last_name,
         email: dbSubmission.email,
         phone: dbSubmission.phone,
-        preferredContactMethod: dbSubmission.preferred_contact_method,
         guideType: dbSubmission.guide_type,
-        source: dbSubmission.source,
-        status: dbSubmission.status,
-        formName: dbSubmission.form_name,
         submissionId: dbSubmission.submission_id,
-        interestAreas: JSON.parse(dbSubmission.interest_areas),
-        createdAt: dbSubmission.created_at,
-        updatedAt: dbSubmission.updated_at,
-        // Add any additional data from form_data
-        ...(dbSubmission.form_data ? JSON.parse(dbSubmission.form_data) : {})
+        createdAt: dbSubmission.created_at
       };
 
       console.log("Successfully created guide submission:", formattedSubmission);
       
       // Sync to Airtable and process submission
       try {
-        const services = {
-          airtable: await import("./services/airtable").catch(() => null),
-          guideService: await import("./services/guideSubmissions").catch(() => null)
-        };
+        const airtableService = await import("./services/airtable").catch(() => null);
+        const guideService = await import("./services/guideSubmissions").catch(() => null);
         
-        // Sync to Airtable if service exists
-        if (services.airtable && typeof services.airtable.syncGuideSubmissionToAirtable === 'function') {
-          await services.airtable.syncGuideSubmissionToAirtable(formattedSubmission);
+        // Process in background
+        if (airtableService?.syncGuideSubmissionToAirtable) {
+          airtableService.syncGuideSubmissionToAirtable(formattedSubmission)
+            .catch(err => console.error("Error syncing to Airtable:", err));
         }
         
-        // Process submission if service exists (send email, etc.)
-        if (services.guideService && typeof services.guideService.processGuideSubmission === 'function') {
-          await services.guideService.processGuideSubmission(formattedSubmission);
+        if (guideService?.processGuideSubmission) {
+          guideService.processGuideSubmission(formattedSubmission)
+            .catch(err => console.error("Error processing submission:", err));
         }
       } catch (processingError) {
-        console.error("Error in post-processing submission:", processingError);
-        // Don't throw - we still want to return the submission
+        console.error("Error in post-processing setup:", processingError);
       }
       
       return formattedSubmission;

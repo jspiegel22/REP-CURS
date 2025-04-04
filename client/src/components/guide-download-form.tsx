@@ -5,21 +5,20 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { FormError } from "@/components/form/FormError";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, Check } from "lucide-react";
+import { Loader2, Check, Download, X } from "lucide-react";
 import { z } from "zod";
 import { nanoid } from "nanoid";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
-// Simplified form schema - only essential fields
+// Very simple form schema
 const formSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   email: z.string().email("Invalid email address").min(1, "Email is required"),
@@ -53,143 +52,119 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
 
   const submitMutation = useMutation({
     mutationFn: async (data: FormData) => {
-      const submissionData = {
+      const response = await apiRequest("POST", "/api/guide-submissions", {
         firstName: data.firstName,
         email: data.email,
         phone: data.phone || '',
-        guideType: "Cabo San Lucas Travel Guide",
-        source: "website",
-        status: "pending" as const,
-        formName: "guide-download",
         submissionId: nanoid(),
-        tags: ["Guide Request", "Website"],
-      };
-      
-      const response = await apiRequest("POST", "/api/guide-submissions", submissionData);
+      });
       return await response.json();
     },
     onSuccess: () => {
       setSuccess(true);
       reset();
-      toast({
-        title: "Guide Request Submitted",
-        description: "Your guide is ready to download!",
-      });
     },
     onError: (error) => {
       console.error("Form submission error:", error);
       toast({
-        title: "Submission Failed",
-        description: "There was a problem processing your request. Please try again.",
+        title: "Sorry!",
+        description: "There was a problem. Please try again or contact us for assistance.",
         variant: "destructive",
       });
     }
   });
 
-  const onSubmit = async (data: FormData) => {
-    console.log("Form submission started with data:", data);
-    submitMutation.mutate(data);
-  };
-
   const handleClose = () => {
     onClose();
-    // Reset state after dialog is closed
     setTimeout(() => {
-      if (!isOpen) {
-        setSuccess(false);
-      }
+      if (!isOpen) setSuccess(false);
     }, 300);
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[425px] bg-white rounded-2xl p-6 shadow-xl">
+      <DialogContent className="sm:max-w-[400px] bg-white rounded-xl p-5 shadow-lg">
+        <button 
+          onClick={handleClose}
+          className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+          aria-label="Close"
+        >
+          <X size={20} />
+        </button>
+        
         {success ? (
-          <div className="space-y-6">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Check className="w-8 h-8 text-green-500" />
-              </div>
-              <h3 className="text-xl font-semibold text-[#2F4F4F] mb-2">Thank You!</h3>
-              <p className="text-gray-600 mb-4">Your guide is ready to download</p>
-              <a
-                href="https://drive.google.com/file/d/1iM6eeb5P5aKLcSiE1ZI_7Vu3XsJqgOs6/view?usp=sharing"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block bg-[#2F4F4F] text-white px-6 py-3 rounded-xl hover:bg-[#1F3F3F] transition-colors mb-4"
-              >
-                Download Guide Now
-              </a>
+          <div className="py-4 text-center">
+            <div className="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+              <Check className="w-7 h-7 text-green-500" />
             </div>
-            <Button
-              onClick={handleClose}
-              className="w-full bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white"
+            <h3 className="text-xl font-semibold text-[#2F4F4F] mb-2">Thanks!</h3>
+            <p className="text-gray-600 mb-4 text-sm">Your Cabo guide is ready</p>
+            
+            <a
+              href="https://drive.google.com/file/d/1iM6eeb5P5aKLcSiE1ZI_7Vu3XsJqgOs6/view?usp=sharing"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 bg-[#2F4F4F] text-white px-5 py-2 rounded-lg hover:bg-[#1F3F3F] transition-colors mx-auto mb-1 w-3/4"
             >
-              Close
-            </Button>
+              <Download size={18} />
+              <span>Download Guide</span>
+            </a>
           </div>
         ) : (
           <>
             <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-[#2F4F4F]">Get Your Free Guide</DialogTitle>
-              <DialogDescription className="text-gray-600">
-                Enter your details below to receive your free guide to Cabo's best experiences.
-              </DialogDescription>
+              <DialogTitle className="text-xl font-bold text-[#2F4F4F] text-center">
+                Get Your Free Cabo Guide
+              </DialogTitle>
             </DialogHeader>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 mt-4">
-              <div className="space-y-2">
-                <Label htmlFor="firstName" className="text-[#2F4F4F]">First Name*</Label>
+            
+            <form onSubmit={handleSubmit((data) => submitMutation.mutate(data))} className="space-y-4 mt-2">
+              <div>
+                <Label htmlFor="firstName" className="text-[#2F4F4F] text-sm">Name*</Label>
                 <Input
                   id="firstName"
                   {...register("firstName")}
                   disabled={submitMutation.isPending}
-                  placeholder="Your first name"
-                  className="border-gray-300 focus:border-[#2F4F4F] focus:ring-[#2F4F4F]"
+                  placeholder="Your name"
+                  className="border-gray-300"
                 />
-                {errors.firstName && (
-                  <FormError message={errors.firstName.message ?? "First name is required"} />
-                )}
+                {errors.firstName && <FormError message="Name is required" />}
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-[#2F4F4F]">Email*</Label>
+              <div>
+                <Label htmlFor="email" className="text-[#2F4F4F] text-sm">Email*</Label>
                 <Input
                   id="email"
                   type="email"
                   {...register("email")}
                   disabled={submitMutation.isPending}
                   placeholder="your@email.com"
-                  className="border-gray-300 focus:border-[#2F4F4F] focus:ring-[#2F4F4F]"
+                  className="border-gray-300"
                 />
-                {errors.email && (
-                  <FormError message={errors.email.message ?? "Valid email is required"} />
-                )}
+                {errors.email && <FormError message="Valid email is required" />}
               </div>
               
-              <div className="space-y-2">
-                <Label htmlFor="phone" className="text-[#2F4F4F]">Phone Number</Label>
+              <div>
+                <Label htmlFor="phone" className="text-[#2F4F4F] text-sm">Phone</Label>
                 <Input
                   id="phone"
                   type="tel"
                   {...register("phone")}
                   disabled={submitMutation.isPending}
-                  placeholder="(123) 456-7890"
-                  className="border-gray-300 focus:border-[#2F4F4F] focus:ring-[#2F4F4F]"
+                  placeholder="(Optional)"
+                  className="border-gray-300"
                 />
               </div>
 
               <Button
                 type="submit"
                 disabled={submitMutation.isPending}
-                className="w-full bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white py-6 text-lg"
+                className="w-full bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white py-5 mt-2"
               >
                 {submitMutation.isPending ? (
-                  <>
-                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                    Submitting...
-                  </>
+                  <Loader2 className="w-5 h-5 animate-spin mx-auto" />
                 ) : (
-                  "Get Guide Now"
+                  "Get Free Guide"
                 )}
               </Button>
             </form>
