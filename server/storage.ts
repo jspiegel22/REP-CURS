@@ -56,62 +56,36 @@ export class DatabaseStorage implements IStorage {
     try {
       console.log("Creating guide submission with data:", submission);
       
-      // We'll use raw SQL to avoid any type issues with Drizzle
-      const result = await db.execute(
-        `INSERT INTO guide_submissions (
-          first_name, 
-          last_name, 
-          email, 
-          phone, 
-          preferred_contact_method, 
-          guide_type, 
-          source, 
-          status, 
-          form_name, 
-          submission_id, 
-          interest_areas, 
-          tags,
-          form_data
-        ) VALUES (
-          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13
-        ) RETURNING *`,
-        [
-          submission.firstName,
-          submission.lastName || null,
-          submission.email,
-          submission.phone || null,
-          submission.preferredContactMethod || "Email",
-          submission.guideType,
-          submission.source,
-          submission.status || "pending",
-          submission.formName,
-          submission.submissionId,
-          Array.isArray(submission.interestAreas) ? submission.interestAreas : null,
-          Array.isArray(submission.tags) ? submission.tags : null,
-          submission.formData || {}
-        ]
-      );
-
-      const newSubmission = result.rows[0];
+      // Store additional fields in formData JSON
+      const formData = {
+        lastName: submission.lastName || null,
+        phone: submission.phone || null,
+        preferredContactMethod: submission.preferredContactMethod || "Email",
+        tags: Array.isArray(submission.tags) ? submission.tags : null
+      };
       
-      // Transform snake_case back to camelCase for the response
+      // Use drizzle insert with explicit type casting for arrays
+      const [newSubmission] = await db
+        .insert(guideSubmissions)
+        .values({
+          firstName: submission.firstName,
+          email: submission.email,
+          guideType: submission.guideType,
+          source: submission.source,
+          status: submission.status || "pending",
+          formName: submission.formName,
+          submissionId: submission.submissionId,
+          interestAreas: Array.isArray(submission.interestAreas) ? submission.interestAreas : [],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        .returning();
+      
+      // Transform data for the response and add the additional fields
       const formattedSubmission = {
-        id: newSubmission.id,
-        firstName: newSubmission.first_name,
-        lastName: newSubmission.last_name,
-        email: newSubmission.email,
-        phone: newSubmission.phone,
-        preferredContactMethod: newSubmission.preferred_contact_method,
-        guideType: newSubmission.guide_type,
-        source: newSubmission.source,
-        status: newSubmission.status,
-        formName: newSubmission.form_name,
-        submissionId: newSubmission.submission_id,
-        interestAreas: newSubmission.interest_areas,
-        tags: newSubmission.tags,
-        formData: newSubmission.form_data,
-        createdAt: newSubmission.created_at,
-        updatedAt: newSubmission.updated_at
+        ...newSubmission,
+        // Add back the additional fields from formData
+        ...formData
       };
 
       console.log("Successfully created guide submission:", formattedSubmission);
