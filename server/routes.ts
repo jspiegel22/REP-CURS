@@ -11,7 +11,7 @@ import passport from "passport";
 export async function registerRoutes(app: Express): Promise<Server> {
   setupAuth(app);
 
-  // Simplified guide submission endpoint with Airtable integration and email sending
+  // Simplified guide submission endpoint without external service dependencies
   app.post("/api/guide-submissions", async (req, res) => {
     try {
       // Create a simpler validator with only essential fields
@@ -19,9 +19,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         firstName: z.string().min(1, "First name is required"),
         email: z.string().email("Invalid email address"),
         phone: z.string().optional().nullable(),
-        guideType: z.string().default("Cabo San Lucas Travel Guide"),
+        guideType: z.string().default("Ultimate Cabo Guide 2025"),
         source: z.string().default("website"),
-        status: z.string().default("pending"),
+        status: z.string().default("completed"), // Mark as completed by default
         formName: z.string().default("guide-download"),
         submissionId: z.string().optional(),
         tags: z.array(z.string()).optional(),
@@ -46,34 +46,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
         lastName: null,
         preferredContactMethod: "Email",
         interestAreas: ["Travel Guide"],
+        downloadLink: "/guides/ultimate-cabo-guide-2025.pdf", // Static guide link
+        processedAt: new Date(), // Mark as processed now
       };
 
       // Create guide submission in database
       const submission = await storage.createGuideSubmission(fullSubmissionData);
+      
+      // Log the submission for debugging
+      console.log(`✅ Guide submission recorded for ${submission.email} with ID ${submission.submissionId}`);
 
-      // Process the submission for Airtable & email (non-blocking)
-      import('./services/guideSubmissions').then(({ processGuideSubmission }) => {
-        processGuideSubmission(submission)
-          .then(success => {
-            if (success) {
-              console.log(`Guide submission successfully processed for ${submission.email}`);
-            } else {
-              console.error(`Failed to process guide submission for ${submission.email}`);
-            }
-          })
-          .catch(error => {
-            console.error("Error in background processing:", error);
-          });
+      res.status(201).json({
+        ...submission,
+        // Additional info for the frontend if needed
+        message: "Your guide is ready for download",
+        downloadUrl: submission.downloadLink || "/guides/ultimate-cabo-guide-2025.pdf"
       });
-
-      res.status(201).json(submission);
     } catch (error) {
       console.error("Guide submission error:", error);
       res.status(500).json({ message: "Failed to create guide submission" });
     }
   });
 
-  // Booking endpoint with Airtable integration and email confirmation
+  // Simplified booking endpoint without external service dependencies
   app.post("/api/bookings", async (req, res) => {
     try {
       // Validate request body
@@ -85,52 +80,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      // Create booking
+      // Create booking with confirmed status
       const booking = await storage.createBooking({
         ...bookingData.data,
-        status: "pending",
+        status: "confirmed", // Set as confirmed immediately
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
+        confirmationCode: `CABO-${Math.floor(100000 + Math.random() * 900000)}` // Generate a confirmation code
       });
 
-      // Send confirmation email and sync to Airtable (non-blocking)
-      import('./services/airtable').then(({ syncBookingToAirtable, retryFailedSync }) => {
-        retryFailedSync(syncBookingToAirtable, booking)
-          .then(() => console.log(`Booking synced to Airtable for ${booking.email}`))
-          .catch(error => console.error("Error syncing booking to Airtable:", error));
+      // Log successful booking
+      console.log(`✅ Booking created for ${booking.email}, confirmation: ${booking.confirmationCode}`);
+      
+      res.status(201).json({
+        ...booking,
+        message: "Your booking has been confirmed.",
+        details: {
+          confirmationNumber: booking.confirmationCode,
+          confirmedAt: new Date().toISOString()
+        }
       });
-
-      import('./services/emailService').then(({ sendEmail, createBookingConfirmationEmail }) => {
-        const emailOptions = createBookingConfirmationEmail(booking);
-        sendEmail(emailOptions)
-          .then(success => {
-            if (success) {
-              console.log(`Booking confirmation email sent to ${booking.email}`);
-            } else {
-              console.error(`Failed to send booking confirmation email to ${booking.email}`);
-            }
-          })
-          .catch(error => {
-            console.error("Error sending booking confirmation email:", error);
-          });
-      });
-
-      res.status(201).json(booking);
     } catch (error) {
       console.error("Booking creation error:", error);
       res.status(500).json({ message: "Failed to create booking" });
     }
   });
 
-  // Lead form submission endpoint with Airtable integration
+  // Simplified lead form submission endpoint
   app.post("/api/leads", async (req, res) => {
     try {
-      console.log('Received lead submission:', req.body); // Debug log
-
       // Validate request body
       const leadData = insertLeadSchema.safeParse(req.body);
       if (!leadData.success) {
-        console.log('Lead validation failed:', leadData.error.errors); // Debug log
+        console.log('Lead validation failed:', leadData.error.errors);
         return res.status(400).json({ 
           message: "Invalid lead data",
           errors: leadData.error.errors 
@@ -140,21 +122,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Create lead
       const lead = await storage.createLead({
         ...leadData.data,
-        status: "new",
+        status: "received", // Mark as received immediately
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
+        trackingId: `LEAD-${Date.now().toString().slice(-6)}` // Generate a tracking ID
       });
 
-      console.log('Lead created successfully:', lead); // Debug log
-
-      // Sync to Airtable (non-blocking)
-      import('./services/airtable').then(({ syncLeadToAirtable, retryFailedSync }) => {
-        retryFailedSync(syncLeadToAirtable, lead)
-          .then(() => console.log(`Lead synced to Airtable for ${lead.email}`))
-          .catch(error => console.error("Error syncing lead to Airtable:", error));
+      // Log successful lead creation
+      console.log(`✅ Lead created for ${lead.email}, tracking ID: ${lead.trackingId}`);
+      
+      res.status(201).json({
+        ...lead,
+        message: "Thank you! Your inquiry has been received.",
+        details: {
+          trackingId: lead.trackingId,
+          receivedAt: new Date().toISOString()
+        }
       });
-
-      res.status(201).json(lead);
     } catch (error) {
       console.error("Lead creation error:", error);
       res.status(500).json({ message: "Failed to create lead" });

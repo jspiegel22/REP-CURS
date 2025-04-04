@@ -1,3 +1,4 @@
+import React from "react";
 import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -35,76 +36,87 @@ function ProtectedAdminRoute({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
   
   if (isLoading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
-      </div>
+    return React.createElement(
+      "div", 
+      { className: "flex justify-center items-center min-h-screen" },
+      React.createElement("div", { 
+        className: "animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" 
+      })
     );
   }
   
   if (!user || user.role !== "admin") {
-    return <AdminLoginPage />;
+    return React.createElement(AdminLoginPage);
   }
   
-  return <>{children}</>;
+  return React.createElement(React.Fragment, null, children);
 }
 
 function Router() {
-  return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <NavigationBar />
-      <div className="flex-grow">
-        <Switch>
-          <Route path="/" component={HomePage} />
-          <Route path="/admin/login" component={AdminLoginPage} />
-          <Route path="/admin">
-            {() => (
-              <ProtectedAdminRoute>
-                <AdminDashboard />
-              </ProtectedAdminRoute>
-            )}
-          </Route>
-          <Route path="/blog" component={BlogIndex} />
-          <Route path="/blog/:slug" component={BlogDetail} />
-          <Route path="/resorts" component={ResortsLanding} />
-          <Route path="/resorts/:slug" component={ResortDetail} />
-          <Route path="/villas" component={VillasLanding} />
-          <Route path="/villas/:slug" component={VillaDetail} />
-          <Route path="/adventures" component={AdventuresLanding} />
-          <Route path="/adventures/:slug" component={AdventureDetail} />
-          <Route path="/adventures/atv" component={AdventuresLanding} />
-          <Route path="/adventures/private-yachts" component={AdventuresLanding} />
-          <Route path="/adventures/whale-watching" component={AdventuresLanding} />
-          <Route path="/restaurants" component={RestaurantsPage} />
-          <Route path="/restaurants/:id" component={RestaurantDetails} />
-          <Route path="/group-trips/family" component={FamilyTripsPage} />
-          <Route path="/group-trips/bachelor-bachelorette" component={BachelorBachelorettePage} />
-          <Route path="/group-trips/luxury-concierge" component={LuxuryConcierge} />
-          <Route path="/group-trips/influencer" component={InfluencerPage} />
-          <Route path="/weddings" component={WeddingsPage} />
-          <Route path="/real-estate" component={RealEstatePage} />
-          <Route path="/events" component={EventsPage} />
-          <Route path="/guides" component={GuidesPage} />
-          <Route path="/work-with-us" component={WorkWithUsPage} />
-          <Route component={NotFound} />
-        </Switch>
-      </div>
-      <Footer />
-      <ChatButton />
-    </div>
+  return React.createElement(
+    "div", 
+    { className: "min-h-screen bg-background flex flex-col" },
+    React.createElement(NavigationBar),
+    React.createElement(
+      "div", 
+      { className: "flex-grow" },
+      React.createElement(
+        Switch,
+        null,
+        React.createElement(Route, { path: "/", component: HomePage }),
+        React.createElement(Route, { path: "/admin/login", component: AdminLoginPage }),
+        React.createElement(Route, { 
+          path: "/admin",
+          children: () => React.createElement(
+            ProtectedAdminRoute,
+            null,
+            React.createElement(AdminDashboard)
+          )
+        }),
+        React.createElement(Route, { path: "/blog", component: BlogIndex }),
+        React.createElement(Route, { path: "/blog/:slug", component: BlogDetail }),
+        React.createElement(Route, { path: "/resorts", component: ResortsLanding }),
+        React.createElement(Route, { path: "/resorts/:slug", component: ResortDetail }),
+        React.createElement(Route, { path: "/villas", component: VillasLanding }),
+        React.createElement(Route, { path: "/villas/:slug", component: VillaDetail }),
+        React.createElement(Route, { path: "/adventures", component: AdventuresLanding }),
+        React.createElement(Route, { path: "/adventures/:slug", component: AdventureDetail }),
+        React.createElement(Route, { path: "/adventures/atv", component: AdventuresLanding }),
+        React.createElement(Route, { path: "/adventures/private-yachts", component: AdventuresLanding }),
+        React.createElement(Route, { path: "/adventures/whale-watching", component: AdventuresLanding }),
+        React.createElement(Route, { path: "/restaurants", component: RestaurantsPage }),
+        React.createElement(Route, { path: "/restaurants/:id", component: RestaurantDetails }),
+        React.createElement(Route, { path: "/group-trips/family", component: FamilyTripsPage }),
+        React.createElement(Route, { path: "/group-trips/bachelor-bachelorette", component: BachelorBachelorettePage }),
+        React.createElement(Route, { path: "/group-trips/luxury-concierge", component: LuxuryConcierge }),
+        React.createElement(Route, { path: "/group-trips/influencer", component: InfluencerPage }),
+        React.createElement(Route, { path: "/weddings", component: WeddingsPage }),
+        React.createElement(Route, { path: "/real-estate", component: RealEstatePage }),
+        React.createElement(Route, { path: "/events", component: EventsPage }),
+        React.createElement(Route, { path: "/guides", component: GuidesPage }),
+        React.createElement(Route, { path: "/work-with-us", component: WorkWithUsPage }),
+        React.createElement(Route, { component: NotFound })
+      )
+    ),
+    React.createElement(Footer),
+    React.createElement(ChatButton)
   );
 }
 
 function App() {
-  return (
-    <HelmetProvider>
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <Router />
-          <Toaster />
-        </AuthProvider>
-      </QueryClientProvider>
-    </HelmetProvider>
+  return React.createElement(
+    HelmetProvider,
+    null,
+    React.createElement(
+      QueryClientProvider,
+      { client: queryClient },
+      React.createElement(
+        AuthProvider,
+        null,
+        React.createElement(Router),
+        React.createElement(Toaster)
+      )
+    )
   );
 }
 

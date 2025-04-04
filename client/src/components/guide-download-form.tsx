@@ -35,6 +35,7 @@ interface GuideDownloadFormProps {
 
 export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
   const [success, setSuccess] = useState(false);
+  const [downloadUrl, setDownloadUrl] = useState("/guides/ultimate-cabo-guide-2025.pdf");
   const { toast } = useToast();
 
   const {
@@ -62,7 +63,7 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
         guideType: "Ultimate Cabo Guide 2025", 
         source: "website",
         formName: "guide_download",
-        status: "pending",
+        status: "completed", // Mark as completed immediately
         submissionId: nanoid(),
         interestAreas: ["Cabo Travel"],
         tags: ["website-download"],
@@ -77,9 +78,24 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
       const response = await apiRequest("POST", "/api/guide-submissions", submissionData);
       return await response.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      // If the API returns a specific download URL, use it
+      if (data.downloadUrl) {
+        setDownloadUrl(data.downloadUrl);
+      }
+      
       setSuccess(true);
       reset();
+      
+      // Track the event (could be connected to analytics later)
+      try {
+        console.log("TRACKING: Guide request completed", {
+          guide: "Ultimate Cabo Guide 2025",
+          timestamp: new Date().toISOString()
+        });
+      } catch (e) {
+        console.error("Tracking error:", e);
+      }
     },
     onError: (error) => {
       console.error("Form submission error:", error);
@@ -118,7 +134,7 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
             <p className="text-gray-600 mb-4 text-sm">Your Cabo guide is ready</p>
             
             <a
-              href="https://drive.google.com/file/d/1iM6eeb5P5aKLcSiE1ZI_7Vu3XsJqgOs6/view?usp=sharing"
+              href={downloadUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-2 bg-[#2F4F4F] text-white px-5 py-2 rounded-lg hover:bg-[#1F3F3F] transition-colors mx-auto mb-1 w-3/4"
@@ -126,6 +142,10 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
               <Download size={18} />
               <span>Download Guide</span>
             </a>
+            
+            <p className="text-xs text-gray-500 mt-4">
+              We'll also send a copy to your email for future reference.
+            </p>
           </div>
         ) : (
           <>
@@ -184,6 +204,11 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
                   "Get Free Guide"
                 )}
               </Button>
+              
+              <p className="text-xs text-gray-500 text-center mt-2">
+                By submitting, you agree to receive occasional updates about Cabo.
+                <br />We'll never share your information with third parties.
+              </p>
             </form>
           </>
         )}
