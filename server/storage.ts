@@ -107,15 +107,36 @@ export class DatabaseStorage implements IStorage {
       
       const dbSubmission = result.rows[0];
       
-      // Simplified formatting
-      const formattedSubmission = {
+      // Create a properly formatted GuideSubmission object with all required fields
+      const formattedSubmission: GuideSubmission = {
         id: dbSubmission.id,
         firstName: dbSubmission.first_name,
+        lastName: dbSubmission.last_name || null,
         email: dbSubmission.email,
-        phone: dbSubmission.phone,
-        guideType: dbSubmission.guide_type,
+        phone: dbSubmission.phone || null,
+        preferredContactMethod: dbSubmission.preferred_contact_method || "Email",
+        preferredContactTime: dbSubmission.preferred_contact_time || null,
+        source: dbSubmission.source || "website",
+        status: dbSubmission.status || "pending",
+        formName: dbSubmission.form_name || "guide-download",
+        formData: dbSubmission.form_data || {},
+        notes: dbSubmission.notes || null,
+        ipAddress: dbSubmission.ip_address || null,
+        userAgent: dbSubmission.user_agent || null,
+        referrer: dbSubmission.referrer || null,
+        tags: dbSubmission.tags || ["website-download"],
+        utmSource: dbSubmission.utm_source || null,
+        utmMedium: dbSubmission.utm_medium || null,
+        utmCampaign: dbSubmission.utm_campaign || null,
+        guideType: dbSubmission.guide_type || "Ultimate Cabo Guide 2025",
+        interestAreas: dbSubmission.interest_areas || ["Cabo Travel"],
+        travelDates: dbSubmission.travel_dates || null,
+        numberOfTravelers: dbSubmission.number_of_travelers || null,
+        downloadLink: dbSubmission.download_link || null,
+        processedAt: dbSubmission.processed_at || null,
         submissionId: dbSubmission.submission_id,
-        createdAt: dbSubmission.created_at
+        createdAt: dbSubmission.created_at,
+        updatedAt: dbSubmission.updated_at
       };
 
       console.log("Successfully created guide submission:", formattedSubmission);
@@ -127,12 +148,12 @@ export class DatabaseStorage implements IStorage {
         
         // Process in background
         if (airtableService?.syncGuideSubmissionToAirtable) {
-          airtableService.syncGuideSubmissionToAirtable(formattedSubmission)
+          airtableService.syncGuideSubmissionToAirtable(formattedSubmission as GuideSubmission)
             .catch(err => console.error("Error syncing to Airtable:", err));
         }
         
         if (guideService?.processGuideSubmission) {
-          guideService.processGuideSubmission(formattedSubmission)
+          guideService.processGuideSubmission(formattedSubmission as GuideSubmission)
             .catch(err => console.error("Error processing submission:", err));
         }
       } catch (processingError) {
