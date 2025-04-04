@@ -1,0 +1,1 @@
+/home/runner/workspace/server/mock-vite-config.ts

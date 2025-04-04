@@ -17,8 +17,9 @@ import { nanoid } from "nanoid";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { guideFormSchema } from '@shared/schema';
 
-// Very simple form schema
+// Simplify form schema for the user-facing form
 const formSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   email: z.string().email("Invalid email address").min(1, "Email is required"),
@@ -52,12 +53,28 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
 
   const submitMutation = useMutation({
     mutationFn: async (data: FormData) => {
-      const response = await apiRequest("POST", "/api/guide-submissions", {
+      // Prepare submission data using our schema
+      const submissionData = {
         firstName: data.firstName,
         email: data.email,
         phone: data.phone || '',
+        preferredContactMethod: "Email",
+        guideType: "Ultimate Cabo Guide 2025", 
+        source: "website",
+        formName: "guide_download",
+        status: "pending",
         submissionId: nanoid(),
-      });
+        interestAreas: ["Cabo Travel"],
+        tags: ["website-download"],
+        // Include more metadata about the submission
+        formData: {
+          device: navigator.userAgent,
+          referrer: document.referrer,
+          timestamp: new Date().toISOString(),
+        }
+      };
+      
+      const response = await apiRequest("POST", "/api/guide-submissions", submissionData);
       return await response.json();
     },
     onSuccess: () => {
