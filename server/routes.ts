@@ -11,24 +11,26 @@ import passport from "passport";
 export async function registerRoutes(app: Express): Promise<Server> {
   setupAuth(app);
 
-  // Add guide submission endpoint with Airtable integration and email sending
+  // Simplified guide submission endpoint with Airtable integration and email sending
   app.post("/api/guide-submissions", async (req, res) => {
     try {
-      // Create a custom validator that extends the base schema but allows additional fields
-      const extendedGuideSubmissionSchema = insertGuideSubmissionSchema.extend({
-        // Add the new fields that we're collecting from the form
-        lastName: z.string().optional().nullable(),
+      // Create a simpler validator with only essential fields
+      const simpleGuideSubmissionSchema = z.object({
+        firstName: z.string().min(1, "First name is required"),
+        email: z.string().email("Invalid email address"),
         phone: z.string().optional().nullable(),
-        preferredContactMethod: z.enum(["Email", "Phone", "Either"]).default("Email"),
+        guideType: z.string().default("Cabo San Lucas Travel Guide"),
+        source: z.string().default("website"),
+        status: z.string().default("pending"),
+        formName: z.string().default("guide-download"),
+        submissionId: z.string().optional(),
         tags: z.array(z.string()).optional(),
-        interestAreas: z.array(z.string()).optional(),
       });
       
       // Validate request body
-      const submissionData = extendedGuideSubmissionSchema.safeParse({
+      const submissionData = simpleGuideSubmissionSchema.safeParse({
         ...req.body,
         submissionId: req.body.submissionId || nanoid(),
-        // No need to set createdAt and updatedAt as they have database defaults
       });
 
       if (!submissionData.success) {
@@ -38,8 +40,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
+      // Add empty values for fields that are in the DB schema but not in form
+      const fullSubmissionData = {
+        ...submissionData.data,
+        lastName: null,
+        preferredContactMethod: "Email",
+        interestAreas: ["Travel Guide"],
+      };
+
       // Create guide submission in database
-      const submission = await storage.createGuideSubmission(submissionData.data);
+      const submission = await storage.createGuideSubmission(fullSubmissionData);
 
       // Process the submission for Airtable & email (non-blocking)
       import('./services/guideSubmissions').then(({ processGuideSubmission }) => {
