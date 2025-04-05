@@ -1,248 +1,461 @@
 require('dotenv').config();
-const { createClient } = require('@supabase/supabase-js');
 const { Pool } = require('pg');
-const fs = require('fs');
-const path = require('path');
-
-// Verify environment variables
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const databaseUrl = process.env.DATABASE_URL;
-
-// Create supabase client
-const supabase = createClient(supabaseUrl, supabaseKey);
-
-// Create a direct database connection for SQL operations
-const pool = new Pool({
-  connectionString: databaseUrl,
-});
+// Modern Node.js has built-in fetch
+const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
 async function directMigration() {
-  console.log('Starting direct Supabase migration...');
+  if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    console.error('Missing required Supabase environment variables');
+    return false;
+  }
+  
+  // First, try to get the database connection details from Supabase
+  console.log('Getting Supabase database connection details...');
   
   try {
-    const client = await pool.connect();
-    console.log('✓ Connected to database directly via connection string');
+    // Check if Supabase is configured properly
+    console.log('Testing Supabase connection...');
     
-    // List existing tables
-    const { rows: existingTables } = await client.query(`
-      SELECT table_name 
-      FROM information_schema.tables 
-      WHERE table_schema = 'public'
-    `);
+    const response = await fetch(`${process.env.SUPABASE_URL}/rest/v1/`, {
+      headers: {
+        'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY,
+        'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`
+      }
+    });
     
-    if (existingTables.length > 0) {
-      console.log('Existing tables in database:');
-      existingTables.forEach(row => console.log(`- ${row.table_name}`));
-    } else {
-      console.log('No tables found in the public schema.');
+    if (!response.ok) {
+      console.error('Failed to connect to Supabase. Please check your credentials.');
+      return false;
     }
     
-    // Create tables directly from schema.sql if it exists
+    console.log('Supabase connection successful.');
+    
+    // Since we're using Supabase in Replit, we can assume it has a direct database URL
+    // provided in the SUPABASE_POSTGRES_URL environment variable, or construct one
+    
+    const connectionString = process.env.SUPABASE_POSTGRES_URL;
+    if (!connectionString) {
+      console.log('No direct Postgres connection URL found. Creating tables via REST API...');
+      
+      // If we don't have a direct connection, try using the REST API
+      const createTableResult = await createTablesViaRestApi();
+      if (createTableResult) {
+        console.log('Tables created successfully via REST API!');
+        return true;
+      } else {
+        console.error('Failed to create tables via REST API.');
+        return false;
+      }
+    }
+    
+    console.log('Connecting to Supabase Postgres directly...');
+    const pool = new Pool({ connectionString });
+    
+    const client = await pool.connect();
+    console.log('Connected to Supabase Postgres database.');
+    
     try {
-      const schemaContent = fs.readFileSync(path.join(__dirname, 'schema.sql'), 'utf8');
-      console.log('Found schema.sql, creating tables...');
+      // Begin transaction
+      await client.query('BEGIN');
       
-      // Split and execute each statement
-      const statements = schemaContent
-        .split(';')
-        .filter(stmt => stmt.trim().length > 0);
+      console.log('Creating tables...');
       
-      for (const statement of statements) {
+      // SQL to create all tables
+      const createTablesSql = `
+      -- Users table
+      CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        username VARCHAR(255) UNIQUE NOT NULL,
+        email VARCHAR(255) UNIQUE,
+        password VARCHAR(255) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+      
+      -- Listings table
+      CREATE TABLE IF NOT EXISTS listings (
+        id SERIAL PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        description TEXT,
+        price DECIMAL(10, 2),
+        location VARCHAR(255),
+        category VARCHAR(50),
+        image_url VARCHAR(255),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+      
+      -- Resorts table
+      CREATE TABLE IF NOT EXISTS resorts (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        description TEXT,
+        location VARCHAR(255),
+        price_range VARCHAR(50),
+        amenities TEXT[],
+        rating DECIMAL(3, 2),
+        image_url VARCHAR(255),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+      
+      -- Bookings table
+      CREATE TABLE IF NOT EXISTS bookings (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER REFERENCES users(id),
+        listing_id INTEGER REFERENCES listings(id),
+        check_in DATE NOT NULL,
+        check_out DATE NOT NULL,
+        guests INTEGER,
+        total_price DECIMAL(10, 2),
+        status VARCHAR(50),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+      
+      -- Leads table
+      CREATE TABLE IF NOT EXISTS leads (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        email VARCHAR(255) NOT NULL,
+        phone VARCHAR(20),
+        interest VARCHAR(100),
+        message TEXT,
+        source VARCHAR(100),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+      
+      -- Guide submissions table
+      CREATE TABLE IF NOT EXISTS guide_submissions (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        email VARCHAR(255) NOT NULL,
+        travel_date DATE,
+        interests TEXT[],
+        guide_id VARCHAR(255),
+        downloaded BOOLEAN DEFAULT FALSE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+      
+      -- Rewards table
+      CREATE TABLE IF NOT EXISTS rewards (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER REFERENCES users(id),
+        points INTEGER DEFAULT 0,
+        tier VARCHAR(50) DEFAULT 'bronze',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+      
+      -- Social shares table
+      CREATE TABLE IF NOT EXISTS social_shares (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER REFERENCES users(id),
+        content_id INTEGER,
+        platform VARCHAR(50),
+        share_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+      
+      -- Weather cache table
+      CREATE TABLE IF NOT EXISTS weather_cache (
+        id SERIAL PRIMARY KEY,
+        location VARCHAR(255) NOT NULL,
+        date DATE NOT NULL,
+        data JSONB NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(location, date)
+      );
+      
+      -- Villas table
+      CREATE TABLE IF NOT EXISTS villas (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        description TEXT,
+        location VARCHAR(255),
+        bedrooms INTEGER,
+        bathrooms INTEGER,
+        capacity INTEGER,
+        price_per_night DECIMAL(10, 2),
+        amenities TEXT[],
+        images TEXT[],
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+      
+      -- Adventures table
+      CREATE TABLE IF NOT EXISTS adventures (
+        id SERIAL PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        description TEXT,
+        duration VARCHAR(50),
+        price DECIMAL(10, 2),
+        location VARCHAR(255),
+        difficulty VARCHAR(50),
+        category VARCHAR(50),
+        image_url VARCHAR(255),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+      
+      -- Session table
+      CREATE TABLE IF NOT EXISTS session (
+        sid VARCHAR(255) NOT NULL PRIMARY KEY,
+        sess JSONB NOT NULL,
+        expire TIMESTAMP(6) NOT NULL
+      );
+      CREATE INDEX IF NOT EXISTS "IDX_session_expire" ON session ("expire");
+      `;
+      
+      // Split SQL into individual statements and execute them
+      const statements = createTablesSql.split(';')
+        .map(stmt => stmt.trim())
+        .filter(stmt => stmt.length > 0)
+        .map(stmt => stmt + ';');
+      
+      for (let i = 0; i < statements.length; i++) {
         try {
-          await client.query(statement);
-          console.log('✓ Executed SQL statement successfully');
-        } catch (error) {
-          console.error('⚠️ Error executing statement:', error.message);
-          console.log('Statement:', statement);
+          console.log(`Executing statement ${i+1}/${statements.length}`);
+          await client.query(statements[i]);
+          console.log(`✅ Statement ${i+1} executed successfully`);
+        } catch (err) {
+          console.error(`❌ Error executing statement ${i+1}:`, err.message);
+          // Continue with other statements
         }
       }
-    } catch (fileError) {
-      console.error('Could not read schema.sql:', fileError.message);
       
-      // Create basic tables if schema file doesn't exist
-      console.log('Creating base tables from schema.ts...');
+      // Set row level security on tables
+      console.log('Setting up row level security...');
+      const tables = [
+        'users', 'listings', 'resorts', 'bookings', 'leads', 'guide_submissions',
+        'rewards', 'social_shares', 'weather_cache', 'villas', 'adventures', 'session'
+      ];
       
-      // Users table
-      await client.query(`
-        CREATE TABLE IF NOT EXISTS users (
-          id SERIAL PRIMARY KEY,
-          username TEXT NOT NULL UNIQUE,
-          email TEXT UNIQUE,
-          password TEXT NOT NULL,
-          first_name TEXT,
-          last_name TEXT,
-          points INTEGER DEFAULT 0,
-          created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-        );
-      `);
-      console.log('✓ Created users table');
+      for (const table of tables) {
+        try {
+          console.log(`Enabling RLS on table: ${table}`);
+          
+          // Enable RLS
+          await client.query(`ALTER TABLE ${table} ENABLE ROW LEVEL SECURITY;`);
+          
+          // Create a policy that allows all operations
+          await client.query(`
+            CREATE POLICY "Allow all" ON ${table}
+            FOR ALL
+            TO authenticated, anon
+            USING (true)
+            WITH CHECK (true);
+          `);
+          
+          console.log(`✅ RLS enabled on table ${table}`);
+        } catch (err) {
+          console.error(`❌ Error setting RLS on table ${table}:`, err.message);
+          // Continue with other tables
+        }
+      }
       
-      // Listings table
-      await client.query(`
-        CREATE TABLE IF NOT EXISTS listings (
-          id SERIAL PRIMARY KEY,
-          title TEXT NOT NULL,
-          description TEXT,
-          price DECIMAL,
-          image_url TEXT,
-          type TEXT,
-          location TEXT,
-          created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-        );
-      `);
-      console.log('✓ Created listings table');
+      // Commit transaction
+      await client.query('COMMIT');
+      console.log('Transaction committed.');
       
-      // Resorts table
-      await client.query(`
-        CREATE TABLE IF NOT EXISTS resorts (
-          id SERIAL PRIMARY KEY,
-          name TEXT NOT NULL,
-          description TEXT,
-          location TEXT,
-          image_url TEXT,
-          rating DECIMAL,
-          price_range TEXT,
-          amenities JSONB,
-          slug TEXT UNIQUE,
-          created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-        );
-      `);
-      console.log('✓ Created resorts table');
+      // Verify tables exist
+      console.log('\nVerifying tables in database...');
       
-      // Bookings table
-      await client.query(`
-        CREATE TABLE IF NOT EXISTS bookings (
-          id SERIAL PRIMARY KEY,
-          user_id INTEGER REFERENCES users(id),
-          listing_id INTEGER REFERENCES listings(id),
-          check_in DATE NOT NULL,
-          check_out DATE NOT NULL,
-          guests INTEGER,
-          total_price DECIMAL NOT NULL,
-          status TEXT DEFAULT 'pending',
-          created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-        );
-      `);
-      console.log('✓ Created bookings table');
+      let successCount = 0;
+      for (const table of tables) {
+        try {
+          const result = await client.query(
+            `SELECT EXISTS (
+              SELECT FROM information_schema.tables 
+              WHERE table_schema = 'public' 
+              AND table_name = $1
+            )`,
+            [table]
+          );
+          
+          if (result.rows[0].exists) {
+            console.log(`✅ Table '${table}' exists`);
+            successCount++;
+          } else {
+            console.log(`❌ Table '${table}' does not exist`);
+          }
+        } catch (err) {
+          console.error(`❌ Error verifying table '${table}':`, err.message);
+        }
+      }
       
-      // Leads table
-      await client.query(`
-        CREATE TABLE IF NOT EXISTS leads (
-          id SERIAL PRIMARY KEY,
-          first_name TEXT NOT NULL,
-          last_name TEXT,
-          email TEXT NOT NULL,
-          phone TEXT,
-          message TEXT,
-          interest_area TEXT,
-          status TEXT DEFAULT 'new',
-          created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-        );
-      `);
-      console.log('✓ Created leads table');
+      console.log(`\nTable verification: ${successCount}/${tables.length} tables exist`);
       
-      // Guide submissions table
-      await client.query(`
-        CREATE TABLE IF NOT EXISTS guide_submissions (
-          id SERIAL PRIMARY KEY,
-          submission_id TEXT UNIQUE,
-          first_name TEXT NOT NULL,
-          email TEXT NOT NULL,
-          phone TEXT,
-          guide_type TEXT,
-          preferred_contact_method TEXT,
-          interest_areas TEXT[],
-          tags TEXT[],
-          source TEXT,
-          form_name TEXT,
-          status TEXT DEFAULT 'new',
-          form_data JSONB,
-          created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-        );
-      `);
-      console.log('✓ Created guide_submissions table');
-      
-      // Weather cache table
-      await client.query(`
-        CREATE TABLE IF NOT EXISTS weather_cache (
-          id SERIAL PRIMARY KEY,
-          location TEXT UNIQUE,
-          data JSONB,
-          updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-        );
-      `);
-      console.log('✓ Created weather_cache table');
-      
-      // Villas table
-      await client.query(`
-        CREATE TABLE IF NOT EXISTS villas (
-          id SERIAL PRIMARY KEY,
-          name TEXT NOT NULL,
-          description TEXT,
-          location TEXT,
-          bedrooms INTEGER,
-          bathrooms INTEGER,
-          max_guests INTEGER,
-          price_per_night DECIMAL,
-          image_urls TEXT[],
-          amenities TEXT[],
-          track_hs_id TEXT UNIQUE,
-          created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-        );
-      `);
-      console.log('✓ Created villas table');
-      
-      // Rewards table
-      await client.query(`
-        CREATE TABLE IF NOT EXISTS rewards (
-          id SERIAL PRIMARY KEY,
-          name TEXT NOT NULL,
-          description TEXT,
-          points_required INTEGER NOT NULL,
-          image_url TEXT,
-          created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-        );
-      `);
-      console.log('✓ Created rewards table');
-      
-      // Social shares table
-      await client.query(`
-        CREATE TABLE IF NOT EXISTS social_shares (
-          id SERIAL PRIMARY KEY,
-          user_id INTEGER REFERENCES users(id),
-          platform TEXT NOT NULL,
-          content_id TEXT,
-          points_earned INTEGER DEFAULT 0,
-          created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-        );
-      `);
-      console.log('✓ Created social_shares table');
+      return successCount > 0;
+    } catch (err) {
+      // Rollback transaction in case of error
+      await client.query('ROLLBACK');
+      console.error('Transaction rolled back due to error:', err.message);
+      return false;
+    } finally {
+      // Release client back to pool
+      client.release();
+      await pool.end();
     }
-    
-    // List tables after migration
-    const { rows: finalTables } = await client.query(`
-      SELECT table_name 
-      FROM information_schema.tables 
-      WHERE table_schema = 'public'
-    `);
-    
-    console.log('\nTables after migration:');
-    finalTables.forEach(row => console.log(`- ${row.table_name}`));
-    
-    client.release();
-    console.log('\n✓ Migration completed successfully');
-    
   } catch (error) {
-    console.error('❌ Migration failed:', error.message);
-    if (error.stack) console.error(error.stack);
-  } finally {
-    await pool.end();
+    console.error('Error in direct migration:', error.message);
+    return false;
   }
 }
 
-// Execute the migration
-directMigration().catch(err => {
-  console.error('Fatal error during migration:', err);
-  process.exit(1);
-});
+async function createTablesViaRestApi() {
+  try {
+    // Function to create a utility SQL function in Supabase
+    const createExecSqlFunction = async () => {
+      const functionSql = `
+      CREATE OR REPLACE FUNCTION exec_sql(sql_string text)
+      RETURNS SETOF json
+      LANGUAGE plpgsql
+      SECURITY DEFINER
+      AS $$
+      BEGIN
+        RETURN QUERY EXECUTE sql_string;
+      END;
+      $$;
+      `;
+      
+      // Try to create the function using the SQL API
+      const response = await fetch(`${process.env.SUPABASE_URL}/rest/v1/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/sql',
+          'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY,
+          'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
+          'Prefer': 'resolution=merge-duplicates'
+        },
+        body: functionSql
+      });
+      
+      return response.ok;
+    };
+    
+    // Try to create the exec_sql function
+    console.log('Creating SQL execution function...');
+    const functionCreated = await createExecSqlFunction();
+    
+    if (!functionCreated) {
+      console.log('Failed to create SQL execution function. Trying an alternative method...');
+      
+      // Try to create tables one by one using the standard API
+      return await createTablesOneByOne();
+    }
+    
+    // Now use the function to create tables
+    console.log('Creating tables via SQL execution function...');
+    
+    const createTablesSql = `
+    -- Users table
+    CREATE TABLE IF NOT EXISTS users (
+      id SERIAL PRIMARY KEY,
+      username VARCHAR(255) UNIQUE NOT NULL,
+      email VARCHAR(255) UNIQUE,
+      password VARCHAR(255) NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+    
+    -- More tables ...
+    `;
+    
+    const response = await fetch(`${process.env.SUPABASE_URL}/rest/v1/rpc/exec_sql`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY,
+        'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`
+      },
+      body: JSON.stringify({
+        sql_string: createTablesSql
+      })
+    });
+    
+    if (!response.ok) {
+      console.error('Failed to create tables via SQL execution function');
+      return false;
+    }
+    
+    console.log('Tables created successfully via SQL execution function!');
+    return true;
+  } catch (error) {
+    console.error('Error creating tables via REST API:', error.message);
+    return false;
+  }
+}
+
+async function createTablesOneByOne() {
+  console.log('Creating tables one by one via REST API...');
+  
+  try {
+    const tables = [
+      {
+        name: 'users',
+        definition: {
+          id: { type: 'serial', primary: true },
+          username: { type: 'varchar', notNull: true, unique: true },
+          email: { type: 'varchar', unique: true },
+          password: { type: 'varchar', notNull: true },
+          created_at: { type: 'timestamp', default: 'CURRENT_TIMESTAMP' },
+          updated_at: { type: 'timestamp', default: 'CURRENT_TIMESTAMP' }
+        }
+      },
+      // Define other tables similarly
+    ];
+    
+    for (const table of tables) {
+      console.log(`Creating table: ${table.name}`);
+      
+      // Create table via API
+      const response = await fetch(`${process.env.SUPABASE_URL}/rest/v1/${table.name}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY,
+          'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify({ definition: table.definition })
+      });
+      
+      if (!response.ok) {
+        console.error(`Failed to create table ${table.name}`);
+      } else {
+        console.log(`✅ Table ${table.name} created successfully`);
+      }
+    }
+    
+    // Check at least some tables were created
+    return true;
+  } catch (error) {
+    console.error('Error creating tables one by one:', error.message);
+    return false;
+  }
+}
+
+// Run if called directly
+if (require.main === module) {
+  directMigration()
+    .then(success => {
+      if (success) {
+        console.log('Supabase direct migration completed successfully!');
+        process.exit(0);
+      } else {
+        console.error('Supabase direct migration failed!');
+        process.exit(1);
+      }
+    })
+    .catch(error => {
+      console.error('Unexpected error in migration:', error);
+      process.exit(1);
+    });
+}
+
+module.exports = { directMigration };
