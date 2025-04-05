@@ -1,121 +1,86 @@
+require('dotenv').config();
+const { createClient } = require('@supabase/supabase-js');
+
 /**
  * Script to check if tables exist in Supabase
  * Useful after migration to verify all tables were created correctly
  */
 
-require('dotenv').config();
-const { createClient } = require('@supabase/supabase-js');
-
-// Expected tables after migration
-const expectedTables = [
-  'users',
-  'listings',
-  'resorts',
-  'villas',
-  'bookings',
-  'leads',
-  'guide_submissions',
-  'rewards',
-  'social_shares',
-  'weather_cache',
-  'adventures',
-  'session'
-];
-
-// Check if Supabase is configured
 function isSupabaseConfigured() {
-  return (
-    process.env.SUPABASE_URL &&
-    process.env.SUPABASE_ANON_KEY &&
-    process.env.SUPABASE_SERVICE_ROLE_KEY
-  );
+  return process.env.SUPABASE_URL && 
+         process.env.SUPABASE_ANON_KEY && 
+         process.env.SUPABASE_SERVICE_ROLE_KEY;
 }
 
-// Check if tables exist
 async function checkTables() {
   if (!isSupabaseConfigured()) {
-    console.error('❌ Supabase is not configured. Please set the following environment variables:');
-    console.error('  - SUPABASE_URL');
-    console.error('  - SUPABASE_ANON_KEY');
-    console.error('  - SUPABASE_SERVICE_ROLE_KEY');
-    process.exit(1);
+    console.error('Missing Supabase credentials');
+    return false;
   }
 
-  console.log('🔍 Connecting to Supabase...');
-  
   const supabase = createClient(
     process.env.SUPABASE_URL,
     process.env.SUPABASE_SERVICE_ROLE_KEY
   );
 
   try {
-    console.log('📋 Checking tables...');
+    console.log('Checking tables in Supabase...');
     
-    // Get all tables from Supabase
-    const { data, error } = await supabase.rpc('exec_sql', {
-      sql_query: `
-        SELECT table_name
-        FROM information_schema.tables
-        WHERE table_schema = 'public'
-        AND table_type = 'BASE TABLE'
-        ORDER BY table_name;
-      `
-    });
-
-    if (error) {
-      if (error.message.includes("function \"exec_sql\" does not exist")) {
-        console.error('❌ The exec_sql function does not exist in Supabase.');
-        console.error('Please run the migration script to create this function first.');
-        process.exit(1);
-      }
-      
-      throw new Error(`Error fetching tables: ${error.message}`);
-    }
-
-    const existingTables = data.map(row => row.table_name);
-    console.log(`\nFound ${existingTables.length} tables in Supabase:`);
+    // Try the simple approach - directly check for tables
+    const tablesWeExpect = [
+      'users', 'listings', 'resorts', 'bookings', 'leads', 'guide_submissions',
+      'rewards', 'social_shares', 'weather_cache', 'villas', 'adventures', 'session'
+    ];
     
-    // Create a table to display results
-    console.log('\n| Table Name        | Status  |');
-    console.log('|-------------------|---------|');
+    let tablesFound = 0;
     
-    let allTablesExist = true;
-    
-    // Check if all expected tables exist
-    for (const tableName of expectedTables) {
-      const exists = existingTables.includes(tableName);
-      const status = exists ? '✅ Found' : '❌ Missing';
-      const statusColumn = exists ? status.padEnd(7) : status.padEnd(7);
-      
-      console.log(`| ${tableName.padEnd(17)} | ${statusColumn} |`);
-      
-      if (!exists) {
-        allTablesExist = false;
+    for (const tableName of tablesWeExpect) {
+      try {
+        const { data, error } = await supabase
+          .from(tableName)
+          .select('*')
+          .limit(1);
+        
+        if (error) {
+          if (error.message.includes('does not exist')) {
+            console.log(`❌ Table '${tableName}' does not exist`);
+          } else {
+            console.log(`❌ Table '${tableName}' - Error: ${error.message}`);
+          }
+        } else {
+          tablesFound++;
+          const count = Array.isArray(data) ? data.length : 0;
+          console.log(`✅ Table '${tableName}' exists with ${count} row(s) in the sample`);
+          
+          // If we have data, show a sample
+          if (count > 0) {
+            console.log('  Sample data:', JSON.stringify(data[0]).substring(0, 100) + '...');
+          }
+        }
+      } catch (e) {
+        console.log(`❌ Table '${tableName}' - Error: ${e.message}`);
       }
     }
     
-    console.log('\n');
+    console.log(`\nFound ${tablesFound} of ${tablesWeExpect.length} expected tables`);
     
-    if (allTablesExist) {
-      console.log('✅ All expected tables exist in Supabase.');
-    } else {
-      console.log('⚠️ Some tables are missing. Please run the migration script to create them.');
+    // Check if we need to run migration
+    if (tablesFound === 0) {
+      console.log('\n⚠️ No tables found. Migration may not have been performed successfully.');
     }
     
-    return {
-      success: allTablesExist,
-      existingTables,
-      missingTables: expectedTables.filter(t => !existingTables.includes(t))
-    };
   } catch (error) {
-    console.error('Error:', error.message);
-    process.exit(1);
+    console.error('Error checking tables:', error.message);
+    return false;
   }
 }
 
 // Run if called directly
-if (require.main === module) {
-  checkTables();
-}
-
-module.exports = { checkTables };
+checkTables()
+  .then(() => {
+    console.log('Done checking tables');
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    process.exit(1);
+  });
