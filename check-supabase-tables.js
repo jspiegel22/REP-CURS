@@ -1,76 +1,129 @@
+// Check if tables exist in Supabase
 require('dotenv').config();
 const { createClient } = require('@supabase/supabase-js');
 
-// Create a single supabase client for interacting with your database
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
-
 async function checkTables() {
+  console.log('Checking Supabase connection and tables...');
+  
+  if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) {
+    console.error('Missing Supabase credentials!');
+    return false;
+  }
+  
+  const supabase = createClient(
+    process.env.SUPABASE_URL,
+    process.env.SUPABASE_ANON_KEY
+  );
+  
   try {
-    console.log('Checking tables in Supabase...');
-    
-    // Query for all tables in public schema
+    // Test basic connection
+    console.log('Testing basic Supabase connection...');
     const { data, error } = await supabase
-      .rpc('get_tables')
-      .select('*');
-
-    if (error) {
-      console.error('Error fetching tables:', error);
-      // Try alternative method
-      console.log('Trying alternative method...');
-      await checkSpecificTables();
-      return;
+      .from('_dummy_non_existent_table')
+      .select('*')
+      .limit(1);
+    
+    if (error && error.code === '42P01') {
+      console.log('Connection successful (expected error for non-existent table)');
+    } else if (error) {
+      console.error('Unexpected error connecting to Supabase:', error);
+      return false;
     }
-
-    if (data && data.length) {
-      console.log('Tables found in Supabase:');
-      data.forEach(table => {
-        console.log(`- ${table.table_name}`);
-      });
-    } else {
-      console.log('No tables found or tables are not accessible.');
-      await checkSpecificTables();
-    }
+    
+    // Now check specific tables
+    return await checkSpecificTables(supabase);
   } catch (error) {
-    console.error('Error checking tables:', error);
-    await checkSpecificTables();
+    console.error('Error in checkTables:', error);
+    return false;
   }
 }
 
-async function checkSpecificTables() {
+async function checkSpecificTables(supabase) {
   const tables = [
-    'users', 
-    'listings', 
-    'bookings', 
-    'leads', 
+    'users',
+    'listings',
+    'resorts',
+    'bookings',
+    'leads',
     'guide_submissions',
-    'resorts', 
-    'villas',
     'rewards',
     'social_shares',
-    'weather_cache'
+    'weather_cache',
+    'villas'
   ];
-
-  console.log('\nChecking individual tables...');
-
+  
+  const results = {};
+  let allTablesExist = true;
+  
+  console.log('\nChecking specific tables:');
+  
   for (const table of tables) {
     try {
+      // First check if the table exists by trying a basic select
       const { data, error } = await supabase
         .from(table)
-        .select('count')
+        .select('*')
         .limit(1);
-
-      if (error) {
-        console.log(`❌ Table '${table}' error:`, error.message);
+      
+      if (error && error.code === '42P01') {
+        // Table doesn't exist
+        console.log(`❌ Table '${table}' does not exist`);
+        results[table] = { exists: false, error: 'Table does not exist' };
+        allTablesExist = false;
+      } else if (error) {
+        // Other error
+        console.log(`❌ Error accessing table '${table}': ${error.message}`);
+        results[table] = { exists: false, error: error.message };
+        allTablesExist = false;
       } else {
-        console.log(`✅ Table '${table}' exists`);
+        // Table exists, now count rows
+        const { count, error: countError } = await supabase
+          .from(table)
+          .select('*', { count: 'exact', head: true });
+        
+        if (countError) {
+          console.log(`✅ Table '${table}' exists but count failed: ${countError.message}`);
+          results[table] = { exists: true, count: 'unknown' };
+        } else {
+          console.log(`✅ Table '${table}' exists with ${count} rows`);
+          results[table] = { exists: true, count };
+        }
       }
-    } catch (error) {
-      console.log(`❌ Error querying table '${table}':`, error.message);
+    } catch (err) {
+      console.log(`❌ Error checking table '${table}': ${err.message}`);
+      results[table] = { exists: false, error: err.message };
+      allTablesExist = false;
     }
   }
+  
+  console.log('\nTable check summary:');
+  for (const [table, result] of Object.entries(results)) {
+    if (result.exists) {
+      console.log(`✅ ${table}: ${result.count} rows`);
+    } else {
+      console.log(`❌ ${table}: ${result.error}`);
+    }
+  }
+  
+  console.log('\nOverall result:', allTablesExist ? '✅ All tables exist' : '❌ Some tables are missing');
+  
+  return allTablesExist;
 }
 
-checkTables();
+// Run the function if this file is executed directly
+if (require.main === module) {
+  checkTables()
+    .then(result => {
+      if (result) {
+        console.log('\nSUCCESS: Supabase connection and tables verified!');
+        process.exit(0);
+      } else {
+        console.log('\nFAILURE: Supabase tables check failed!');
+        process.exit(1);
+      }
+    })
+    .catch(error => {
+      console.error('Unexpected error:', error);
+      process.exit(1);
+    });
+}

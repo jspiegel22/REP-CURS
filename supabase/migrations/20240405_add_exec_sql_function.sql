@@ -17,7 +17,6 @@ END;
 $$;
 
 -- Grant execute permission to authenticated users
--- Note: In production, you may want to restrict this to specific roles
 ALTER FUNCTION public.exec_sql(text) SECURITY DEFINER;
 REVOKE ALL ON FUNCTION public.exec_sql(text) FROM public;
 GRANT EXECUTE ON FUNCTION public.exec_sql(text) TO service_role;

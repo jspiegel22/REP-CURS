@@ -1,192 +1,223 @@
-// A simple script to apply our SQL migrations to Supabase
+// Apply Supabase migrations directly using the REST API
+require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
 const { createClient } = require('@supabase/supabase-js');
 
-// Create Supabase client using service role key for admin privileges
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
-
-// Define the exec_sql function script
-const createExecSqlFunction = `
--- Function to execute arbitrary SQL (use with caution, requires admin privileges)
-CREATE OR REPLACE FUNCTION public.exec_sql(sql text)
-RETURNS jsonb
-LANGUAGE plpgsql
-SECURITY DEFINER SET search_path = pg_catalog, pg_temp
-AS $$
-BEGIN
-  EXECUTE sql;
-  RETURN jsonb_build_object('success', true);
-EXCEPTION WHEN OTHERS THEN
-  RETURN jsonb_build_object(
-    'success', false,
-    'error', SQLERRM,
-    'detail', SQLSTATE
-  );
-END;
-$$;
-
--- Grant execute permission to authenticated users
-ALTER FUNCTION public.exec_sql(text) SECURITY DEFINER;
-REVOKE ALL ON FUNCTION public.exec_sql(text) FROM public;
-GRANT EXECUTE ON FUNCTION public.exec_sql(text) TO service_role;
-`;
-
+// Function to check if the exec_sql function exists
 async function checkFunctionExists() {
-  try {
-    // Test the function existence by calling it with a simple query
-    const { data, error } = await supabase.rpc('exec_sql', { sql: 'SELECT 1' });
-    return !error;
-  } catch (err) {
+  console.log('Checking if exec_sql function exists...');
+  
+  if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    console.error('Missing Supabase credentials!');
     return false;
   }
-}
-
-async function createFunction() {
+  
+  // Create Supabase client with admin privileges
+  const supabase = createClient(
+    process.env.SUPABASE_URL,
+    process.env.SUPABASE_SERVICE_ROLE_KEY
+  );
+  
   try {
-    console.log('Using SQL API to create exec_sql function...');
-    console.log('SUPABASE_URL:', process.env.SUPABASE_URL);
-    console.log('SERVICE_ROLE_KEY available:', !!process.env.SUPABASE_SERVICE_ROLE_KEY);
-    
-    const response = await fetch(`${process.env.SUPABASE_URL}/rest/v1/sql`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
-        'apiKey': process.env.SUPABASE_SERVICE_ROLE_KEY,
-        'Prefer': 'return=minimal'
-      },
-      body: JSON.stringify({ query: createExecSqlFunction })
+    // Try to use the Postgres RPC API
+    const { data, error } = await supabase.rpc('exec_sql', { 
+      sql: 'SELECT 1 as test' 
     });
     
-    console.log('Response status:', response.status);
-    const responseText = await response.text();
-    console.log('Response body:', responseText);
-    
-    if (!response.ok) {
-      console.error('Error creating function via SQL API:', responseText);
+    if (error) {
+      if (error.message && error.message.includes('function "exec_sql" does not exist')) {
+        console.log('The exec_sql function does not exist yet.');
+        return false;
+      }
+      console.error('Error testing exec_sql function:', error);
       return false;
     }
     
-    console.log('exec_sql function created successfully.');
+    console.log('The exec_sql function exists:', data);
     return true;
   } catch (error) {
-    console.error('Exception creating function:', error);
+    console.error('Error in checkFunctionExists:', error);
     return false;
   }
 }
 
-async function applyMigrationDirectly(sqlFilePath) {
+// Function to create the exec_sql function
+async function createFunction() {
+  console.log('Creating exec_sql function...');
+  
+  if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    console.error('Missing Supabase credentials!');
+    return false;
+  }
+  
   try {
-    const sql = fs.readFileSync(sqlFilePath, 'utf8');
-    console.log(`Applying migration from ${path.basename(sqlFilePath)} using SQL API...`);
+    const functionSqlPath = path.join(__dirname, '..', 'supabase', 'migrations', '20240405_add_exec_sql_function.sql');
     
-    const response = await fetch(`${process.env.SUPABASE_URL}/rest/v1/sql`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
-        'apiKey': process.env.SUPABASE_SERVICE_ROLE_KEY,
-        'Prefer': 'return=minimal'
-      },
-      body: JSON.stringify({ query: sql })
-    });
-    
-    console.log('Response status:', response.status);
-    const responseText = await response.text();
-    console.log('Response body:', responseText);
-    
-    if (!response.ok) {
-      console.error(`Error applying migration from ${path.basename(sqlFilePath)} via SQL API:`, responseText);
+    if (!fs.existsSync(functionSqlPath)) {
+      console.error(`Function SQL file not found at ${functionSqlPath}`);
       return false;
     }
     
-    console.log(`Migration from ${path.basename(sqlFilePath)} applied successfully.`);
-    return true;
-  } catch (err) {
-    console.error(`Failed to apply migration from ${path.basename(sqlFilePath)}:`, err);
+    const functionSql = fs.readFileSync(functionSqlPath, 'utf8');
+    
+    // We'll need to use a raw database connection to create the function
+    // Unfortunately, the Supabase JS client doesn't provide a way to run arbitrary SQL directly
+    // We'll show instructions for manually creating it
+    
+    console.log('\n--- IMPORTANT: You need to manually create the exec_sql function in Supabase SQL Editor ---');
+    console.log('--- Copy the following SQL and execute it in the Supabase SQL Editor ---\n');
+    console.log(functionSql);
+    console.log('\n--- End of SQL ---\n');
+    
+    return false;
+  } catch (error) {
+    console.error('Error in createFunction:', error);
     return false;
   }
 }
 
-async function applyMigrationWithRPC(sqlFilePath) {
+// Function to apply migration directly using a database connection to the Supabase database
+async function applyMigrationDirectly(sqlFilePath) {
+  console.log(`Applying migration directly: ${sqlFilePath}`);
+  
+  const { Pool } = require('pg');
+  
+  if (!process.env.SUPABASE_DB_URL) {
+    console.error('Missing SUPABASE_DB_URL environment variable');
+    return false;
+  }
+  
+  // This requires direct database access to Supabase, which is not typically available
+  // Unless you're using self-hosted Supabase
+  const pool = new Pool({
+    connectionString: process.env.SUPABASE_DB_URL
+  });
+  
   try {
     const sql = fs.readFileSync(sqlFilePath, 'utf8');
-    console.log(`Applying migration from ${path.basename(sqlFilePath)} using RPC...`);
+    await pool.query(sql);
+    console.log(`Successfully applied migration: ${sqlFilePath}`);
+    await pool.end();
+    return true;
+  } catch (error) {
+    console.error(`Error applying migration directly: ${error.message}`);
+    await pool.end();
+    return false;
+  }
+}
+
+// Function to apply migration with RPC
+async function applyMigrationWithRPC(sqlFilePath) {
+  console.log(`Applying migration with RPC: ${sqlFilePath}`);
+  
+  if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    console.error('Missing Supabase credentials!');
+    return false;
+  }
+  
+  // Create Supabase client with admin privileges
+  const supabase = createClient(
+    process.env.SUPABASE_URL,
+    process.env.SUPABASE_SERVICE_ROLE_KEY
+  );
+  
+  try {
+    const sql = fs.readFileSync(sqlFilePath, 'utf8');
     
+    // Use the exec_sql function to execute the SQL
     const { data, error } = await supabase.rpc('exec_sql', { sql });
     
     if (error) {
-      console.error(`Error applying migration from ${path.basename(sqlFilePath)}:`, error);
+      console.error(`Error applying migration with RPC: ${error.message}`);
       return false;
     }
     
-    console.log(`Migration from ${path.basename(sqlFilePath)} applied successfully.`);
+    if (data && !data.success) {
+      console.error(`Migration execution failed: ${data.error}`);
+      return false;
+    }
+    
+    console.log(`Successfully applied migration: ${sqlFilePath}`);
     return true;
-  } catch (err) {
-    console.error(`Failed to apply migration from ${path.basename(sqlFilePath)}:`, err);
+  } catch (error) {
+    console.error(`Error in applyMigrationWithRPC: ${error.message}`);
     return false;
   }
 }
 
+// Apply migrations from the migrations directory
 async function applyMigrations() {
-  // Array of migrations to apply in order
-  const migrations = [
-    path.join(__dirname, '../supabase/migrations/20240405_add_exec_sql_function.sql'),
-    path.join(__dirname, '../supabase/migrations/20250405_initial_schema.sql'),
-    path.join(__dirname, '../supabase/migrations/20250405_initial_data.sql')
-  ];
+  const migrationResults = [];
+  const hasExecSql = await checkFunctionExists();
   
-  let success = true;
-  const functionExists = await checkFunctionExists();
-  
-  // Create exec_sql function if it doesn't exist
-  if (!functionExists) {
-    console.log('exec_sql function does not exist, creating it...');
+  if (!hasExecSql) {
     const created = await createFunction();
     if (!created) {
-      console.log('Could not create exec_sql function. Will apply migrations directly.');
+      console.log('Failed to create exec_sql function. Please create it manually using the SQL above.');
+      return false;
     }
   }
   
-  // Apply migrations
-  for (const migration of migrations) {
-    if (fs.existsSync(migration)) {
-      let migrationSuccess;
-      if (functionExists || (migration.includes('add_exec_sql_function') && await checkFunctionExists())) {
-        migrationSuccess = await applyMigrationWithRPC(migration);
-      } else {
-        migrationSuccess = await applyMigrationDirectly(migration);
-      }
-      
-      if (!migrationSuccess) {
-        success = false;
-        console.error(`Failed to apply migration: ${path.basename(migration)}`);
-      }
-    } else {
-      console.warn(`Migration file not found: ${migration}`);
+  const migrationsDir = path.join(__dirname, '..', 'supabase', 'migrations');
+  
+  if (!fs.existsSync(migrationsDir)) {
+    console.error(`Migrations directory not found at ${migrationsDir}`);
+    return false;
+  }
+  
+  // Get all SQL files except the exec_sql function migration
+  const migrationFiles = fs.readdirSync(migrationsDir)
+    .filter(file => file.endsWith('.sql') && !file.includes('add_exec_sql_function'))
+    .sort(); // Sort by filename to apply in order
+  
+  console.log(`Found ${migrationFiles.length} migration files to apply`);
+  
+  for (const file of migrationFiles) {
+    const filePath = path.join(migrationsDir, file);
+    const success = await applyMigrationWithRPC(filePath);
+    
+    migrationResults.push({
+      file,
+      success
+    });
+    
+    if (!success) {
+      console.error(`Failed to apply migration: ${file}`);
+      break;
     }
   }
   
-  return success;
+  console.log('\nMigration Results:');
+  migrationResults.forEach(result => {
+    console.log(`${result.file}: ${result.success ? 'SUCCESS' : 'FAILED'}`);
+  });
+  
+  return migrationResults.every(result => result.success);
 }
 
-// Run the migrations
-applyMigrations()
-  .then(success => {
-    if (!success) {
-      console.log('If the automatic migration failed, you can manually apply the SQL in the Supabase dashboard:');
-      console.log('1. Go to your Supabase project dashboard');
-      console.log('2. Click on "SQL Editor"');
-      console.log('3. Paste the contents of the migration files one by one');
-      console.log('4. Run the queries');
-    }
-    process.exit(success ? 0 : 1);
-  })
-  .catch(err => {
-    console.error('Unhandled error:', err);
-    process.exit(1);
-  });
+// Run the function if this file is executed directly
+if (require.main === module) {
+  applyMigrations()
+    .then(result => {
+      if (result) {
+        console.log('All migrations applied successfully!');
+        process.exit(0);
+      } else {
+        console.log('Migration failed!');
+        process.exit(1);
+      }
+    })
+    .catch(error => {
+      console.error('Unexpected error:', error);
+      process.exit(1);
+    });
+}
+
+module.exports = { 
+  checkFunctionExists,
+  createFunction,
+  applyMigrationDirectly,
+  applyMigrationWithRPC,
+  applyMigrations
+};
