@@ -135,21 +135,6 @@ async function migrateSchemaToSupabase() {
           console.error('❌ Failed to execute any SQL statements');
           console.log('⚠️ We will still try to check if tables exist (they might have been created earlier)');
         }
-          
-          console.log('✅ exec_sql function created successfully');
-        }
-        
-        // Now execute our schema SQL
-        const { error: execError } = await supabase.rpc('exec_sql', { 
-          sql: sqlSchema 
-        });
-        
-        if (execError) {
-          console.error('❌ Error creating tables via RPC:', execError.message);
-          return false;
-        }
-        
-        console.log('✅ Tables created via RPC method');
       } catch (rpcErr) {
         console.error('❌ Error using RPC method:', rpcErr.message);
         return false;

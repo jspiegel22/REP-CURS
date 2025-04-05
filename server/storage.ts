@@ -1340,12 +1340,9 @@ export class SupabaseStorage implements IStorage {
   }
 }
 
-// Select the appropriate storage implementation based on environment
-// If Supabase is configured and enabled, use it
-// Otherwise, fall back to the database storage
-export const storage = isSupabaseConfigured() && process.env.USE_SUPABASE === 'true'
-  ? new SupabaseStorage()
-  : new DatabaseStorage();
+// Always use the PostgreSQL database storage
+// This provides reliable storage in any environment
+export const storage = new DatabaseStorage();
 
 // Placeholder functions -  replace with actual implementations
 async function retryFailedSync(func: any, data: any) {
