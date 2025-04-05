@@ -1,140 +1,152 @@
-# Supabase Migration Guide
+# Database Migration Guide: Neon PostgreSQL to Supabase
 
-This guide outlines three different approaches to migrate your database schema to Supabase:
+This document outlines the steps for migrating our application's database from Neon PostgreSQL to Supabase. It includes prerequisites, migration steps, verification processes, and troubleshooting tips.
 
-1. **GitHub Integration** - Recommended, automated approach
-2. **Direct PostgreSQL Connection** - Manual but reliable approach
-3. **SQL Editor Manual Execution** - Last resort approach
+## Table of Contents
+
+1. [Prerequisites](#prerequisites)
+2. [Migration Process](#migration-process)
+3. [Verification](#verification)
+4. [Troubleshooting](#troubleshooting)
+5. [Rollback Process](#rollback-process)
 
 ## Prerequisites
 
-Ensure you have the following environment variables set in your `.env` file:
+Before starting the migration, ensure you have:
 
+- [ ] Admin access to both Neon and Supabase projects
+- [ ] Backup of the current Neon PostgreSQL database
+- [ ] All environment variables set correctly:
+  - `DATABASE_URL` (Neon)
+  - `SUPABASE_URL`
+  - `SUPABASE_ANON_KEY`
+  - `SUPABASE_SERVICE_ROLE_KEY`
+
+## Migration Process
+
+### 1. Create a Full Database Backup
+
+Create a backup of the current Neon PostgreSQL database to ensure you can restore if needed:
+
+```bash
+./run-migration.sh
 ```
-SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+
+This script does the following:
+- Creates a backup of the Neon database in the `backups/` directory
+- Fixes any swapped environment variables
+- Runs the migration script to extract schema and transfer data
+- Updates application code to support the Supabase database
+
+### 2. Manual Configuration Steps
+
+If you need to run the migration process manually, follow these steps:
+
+#### A. Create Database Backup
+
+```bash
+mkdir -p backups
+BACKUP_FILE="backups/neon_backup_$(date +"%Y%m%d_%H%M%S").dump"
+PGPASSWORD=$PGPASSWORD pg_dump -h $PGHOST -p $PGPORT -U $PGUSER -d $PGDATABASE -f $BACKUP_FILE
 ```
 
-For the direct PostgreSQL approach, you'll also need:
+#### B. Run Migration Script
 
+```bash
+node migrate-to-supabase.js
 ```
-SUPABASE_PG_URL=postgresql://postgres:password@db.your-project.supabase.co:5432/postgres
+
+#### C. Update Application Configuration
+
+Make sure the following files are updated to support Supabase:
+
+- `server/services/supabase.ts`: Ensures correct Supabase client configuration
+- `server/db.ts`: Supports dynamic database selection based on environment variables
+- `.env`: Add `USE_SUPABASE=true` to enable Supabase as the primary database
+
+#### D. Restart Application
+
+```bash
+npm run dev
 ```
 
-## Option 1: GitHub Integration (Recommended)
+## Verification
 
-Supabase can automatically apply migrations from your GitHub repository.
+After the migration, verify that everything is working correctly:
 
-### Setup
+```bash
+node verify-migration.js
+```
 
-1. Run the setup script:
-   ```
-   node setup-github-integration.js
-   ```
+This script checks:
+- Connectivity to both databases
+- Compares table structures
+- Verifies record counts between Neon and Supabase
+- Generates a report of any inconsistencies
 
-2. In the Supabase Dashboard:
-   - Go to "Settings" > "Integrations"
-   - Connect your GitHub repository
-   - Set migrations path to `supabase/migrations/`
-   - Select the branch to track (typically `main`)
+### Important Tables to Verify:
 
-3. Push changes to GitHub:
-   ```
-   git add supabase/migrations/
-   git commit -m "Add Supabase migrations"
-   git push
-   ```
-
-4. Verify migration success:
-   ```
-   node check-supabase-migration.js
-   ```
-
-## Option 2: Direct PostgreSQL Connection
-
-Connect directly to the Supabase PostgreSQL database and apply migrations.
-
-### Setup
-
-1. Get the PostgreSQL connection string:
-   ```
-   node get-supabase-pg-url.js
-   ```
-   Follow the instructions to add the connection string to your `.env` file.
-
-2. Apply migrations directly:
-   ```
-   node direct-pg-migration.js
-   ```
-
-3. Verify migration success:
-   ```
-   node check-supabase-migration.js
-   ```
-
-## Option 3: SQL Editor Manual Execution
-
-As a last resort, you can manually execute SQL in the Supabase SQL Editor.
-
-### Steps
-
-1. Go to the Supabase Dashboard and select your project
-2. Navigate to "SQL Editor"
-3. Create the exec_sql function:
-   ```sql
-   CREATE OR REPLACE FUNCTION exec_sql(sql_query text)
-   RETURNS SETOF json
-   LANGUAGE plpgsql
-   SECURITY DEFINER
-   AS $$
-   BEGIN
-     RETURN QUERY EXECUTE sql_query;
-   END;
-   $$;
-   ```
-
-4. Copy the contents of `schema.sql` and execute it
-5. Verify tables exist:
-   ```sql
-   SELECT table_name 
-   FROM information_schema.tables 
-   WHERE table_schema = 'public';
-   ```
-
-## Migration Scripts
-
-- `check-supabase-migration.js` - Verifies if tables exist in Supabase
-- `setup-github-integration.js` - Sets up migration files for GitHub integration
-- `get-supabase-pg-url.js` - Instructions for getting the PostgreSQL connection string
-- `direct-pg-migration.js` - Applies migrations directly via PostgreSQL
-- `migrate-combined.js` - Combined approach that tries multiple methods
-- `apply-supabase-migration.js` - Applies migrations via exec_sql function
-- `run-migration.sh` - Shell script to run the migration process
+- `users`
+- `listings`
+- `resorts`
+- `villas`
+- `bookings`
+- `leads`
+- `guide_submissions`
 
 ## Troubleshooting
 
-### Tables Not Showing Up
+### Common Issues
 
-If tables are created in PostgreSQL but not accessible via Supabase:
+1. **Swapped Environment Variables**
+   
+   If Supabase variables are swapped, the migration script attempts to correct this automatically. However, you can manually fix them:
+   ```
+   Correct SUPABASE_URL should start with "https://" 
+   Correct SUPABASE_ANON_KEY should start with "eyJhbGciOi..."
+   ```
 
-1. Check permissions - ensure RLS (Row Level Security) is configured correctly
-2. Try direct SQL queries in SQL Editor to verify table existence
-3. Verify schema is 'public' (default in Supabase)
+2. **Missing Tables in Supabase**
+   
+   If tables are missing after migration, you can create them manually using the SQL schema in `supabase/migrations/`.
 
-### Migration Fails
+3. **Data Migration Failures**
+   
+   Check the error files created during migration for specific batch issues:
+   ```
+   error_batch_${table_name}.json
+   ```
 
-If the migration process fails:
+4. **Foreign Key Constraints**
+   
+   Tables must be created and populated in the correct dependency order. If you see foreign key constraint errors, verify the migration script's topological sort function is working correctly.
 
-1. Check the logs for specific error messages
-2. Try smaller migrations (one table at a time)
-3. Verify your Supabase credentials are correct
-4. Try the direct PostgreSQL approach as it bypasses the API
+## Rollback Process
 
-### GitHub Integration Issues
+If the migration needs to be rolled back:
 
-If GitHub integration isn't working:
+1. Update the `.env` file:
+   ```
+   USE_SUPABASE=false
+   ```
 
-1. Verify the repository connection in Supabase dashboard
-2. Ensure migration files are in the correct location (supabase/migrations/)
-3. Make sure you've pushed to the correct branch
-4. Check GitHub repository permissions
+2. Restart the application:
+   ```bash
+   npm run dev
+   ```
+
+3. The application will fall back to using the Neon PostgreSQL database.
+
+## Future Migrations
+
+For future schema migrations, use the SQL files in the `supabase/migrations/` directory. Add a new file with a timestamp prefix and the SQL changes:
+
+```
+supabase/migrations/20250406_add_new_feature.sql
+```
+
+Apply migrations using:
+
+```bash
+node apply-migration.js --file=supabase/migrations/20250406_add_new_feature.sql
+```
