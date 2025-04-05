@@ -1,4 +1,4 @@
 #!/bin/bash
 
-# Start the proxy server which will in turn start the Next.js app
-node replit-proxy.js
+echo "Starting Cabo San Lucas Travel Platform on port 5000..."
+node start-on-port-5000.js

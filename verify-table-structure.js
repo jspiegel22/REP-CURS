@@ -1,157 +1,123 @@
+#!/usr/bin/env node
+
 require('dotenv').config();
+const { createClient } = require('@supabase/supabase-js');
 const { Pool } = require('pg');
 
+// Get connection info from environment
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
+const SUPABASE_DB_URL = process.env.SUPABASE_DB_URL || process.env.SUPABASE_PG_URL;
+
+console.log('==== Supabase Table Structure Check ====');
+
 async function verifyTableStructure() {
-  console.log('Verifying database table structure...');
-  
-  // Check if required environment variables are set
-  if (!process.env.DATABASE_URL) {
-    console.error('Missing required DATABASE_URL environment variable.');
-    return false;
-  }
-  
-  // Connect to the database
-  const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false }
-  });
-  
   try {
-    console.log('Connecting to database...');
-    const client = await pool.connect();
-    console.log('Connected successfully');
+    // Connect to Supabase via REST API
+    console.log('\n1. Checking Supabase connection via API...');
+    const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
     
-    try {
-      // List tables in the public schema
-      const tablesResult = await client.query(`
-        SELECT table_name 
-        FROM information_schema.tables 
-        WHERE table_schema = 'public'
-        ORDER BY table_name;
-      `);
-      
-      const tables = tablesResult.rows.map(row => row.table_name);
-      console.log(`\nFound ${tables.length} tables in the public schema:`);
-      tables.forEach(table => console.log(`- ${table}`));
-      
-      // Check for stored functions including exec_sql
-      const functionsResult = await client.query(`
-        SELECT routine_name 
-        FROM information_schema.routines 
-        WHERE routine_schema = 'public' AND routine_type = 'FUNCTION'
-        ORDER BY routine_name;
-      `);
-      
-      const functions = functionsResult.rows.map(row => row.routine_name);
-      console.log(`\nFound ${functions.length} functions in the public schema:`);
-      functions.forEach(func => console.log(`- ${func}`));
-      
-      // Check if our expected tables are there
-      const expectedTables = [
-        'users', 'listings', 'resorts', 'bookings', 'leads', 
-        'guide_submissions', 'rewards', 'social_shares', 
-        'weather_cache', 'villas', 'adventures', 'session'
-      ];
-      
-      const missingTables = expectedTables.filter(t => !tables.includes(t));
-      const existingTables = expectedTables.filter(t => tables.includes(t));
-      
-      console.log(`\nExpected tables check:`);
-      console.log(`- Present (${existingTables.length}): ${existingTables.join(', ') || 'none'}`);
-      console.log(`- Missing (${missingTables.length}): ${missingTables.join(', ') || 'none'}`);
-      
-      // Check Supabase configuration
-      await checkSupabaseConfig(client);
-      
-      return true;
-    } finally {
-      client.release();
+    // Get session to verify connection
+    const { data, error } = await supabase.auth.getSession();
+    if (error) {
+      console.error('❌ Supabase API connection error:', error.message);
+      return false;
     }
-  } catch (error) {
-    console.error('Error connecting to database:', error.message);
+    
+    console.log('✅ Supabase API connection successful');
+
+    // Check if we have direct PostgreSQL access
+    console.log('\n2. Checking direct PostgreSQL access...');
+    if (!SUPABASE_DB_URL) {
+      console.log('❌ No SUPABASE_DB_URL or SUPABASE_PG_URL environment variable found');
+      console.log('ℹ️ Will use Supabase REST API only');
+    } else {
+      // Try connecting directly to PostgreSQL
+      const pgClient = await checkSupabaseConfig(new Pool({
+        connectionString: SUPABASE_DB_URL,
+        ssl: { rejectUnauthorized: false }
+      }));
+      
+      if (pgClient) {
+        console.log('✅ PostgreSQL connection successful');
+        
+        // List tables
+        const tableResult = await pgClient.query(`
+          SELECT table_name 
+          FROM information_schema.tables 
+          WHERE table_schema = 'public' 
+          ORDER BY table_name
+        `);
+        
+        if (tableResult.rows.length === 0) {
+          console.log('❌ No tables found in the public schema');
+        } else {
+          console.log(`\nFound ${tableResult.rows.length} tables in the public schema:`);
+          
+          for (const row of tableResult.rows) {
+            // Get column info for each table
+            const columnResult = await pgClient.query(`
+              SELECT column_name, data_type, character_maximum_length, column_default, is_nullable
+              FROM information_schema.columns 
+              WHERE table_schema = 'public' AND table_name = $1
+              ORDER BY ordinal_position
+            `, [row.table_name]);
+            
+            console.log(`\n📋 Table: ${row.table_name} (${columnResult.rows.length} columns)`);
+            
+            // Count rows
+            const countResult = await pgClient.query(`SELECT COUNT(*) FROM "${row.table_name}"`);
+            console.log(`   Records: ${countResult.rows[0].count}`);
+            
+            // Display column information
+            console.log('   Columns:');
+            columnResult.rows.forEach(col => {
+              const type = col.data_type + 
+                (col.character_maximum_length ? `(${col.character_maximum_length})` : '');
+              const nullable = col.is_nullable === 'YES' ? 'NULL' : 'NOT NULL';
+              const defaultVal = col.column_default ? `DEFAULT ${col.column_default}` : '';
+              
+              console.log(`     - ${col.column_name}: ${type} ${nullable} ${defaultVal}`);
+            });
+          }
+        }
+        
+        // Close the client
+        await pgClient.end();
+      }
+    }
+    
+    return true;
+  } catch (err) {
+    console.error('Error verifying table structure:', err);
     return false;
-  } finally {
-    await pool.end();
   }
 }
 
 async function checkSupabaseConfig(client) {
-  console.log('\nChecking Supabase configuration...');
-  
-  // Check if auth schema exists
-  const authSchemaResult = await client.query(`
-    SELECT EXISTS (
-      SELECT FROM information_schema.schemata 
-      WHERE schema_name = 'auth'
-    );
-  `);
-  
-  const authSchemaExists = authSchemaResult.rows[0].exists;
-  console.log(`- Auth schema exists: ${authSchemaExists}`);
-  
-  // Check if storage schema exists
-  const storageSchemaResult = await client.query(`
-    SELECT EXISTS (
-      SELECT FROM information_schema.schemata 
-      WHERE schema_name = 'storage'
-    );
-  `);
-  
-  const storageSchemaExists = storageSchemaResult.rows[0].exists;
-  console.log(`- Storage schema exists: ${storageSchemaExists}`);
-  
-  // Check if RLS is enabled for our tables
-  console.log('\nChecking Row Level Security status:');
-  
-  const rlsResult = await client.query(`
-    SELECT tablename, relrowsecurity
-    FROM pg_tables 
-    JOIN pg_class ON pg_tables.tablename = pg_class.relname
-    WHERE schemaname = 'public' 
-    AND tablename IN (
-      'users', 'listings', 'resorts', 'bookings', 'leads', 
-      'guide_submissions', 'rewards', 'social_shares', 
-      'weather_cache', 'villas', 'adventures', 'session'
-    )
-    ORDER BY tablename;
-  `);
-  
-  rlsResult.rows.forEach(row => {
-    console.log(`- ${row.tablename}: RLS ${row.relrowsecurity ? 'enabled' : 'disabled'}`);
-  });
-  
-  // Check if there are any RLS policies
-  const policiesResult = await client.query(`
-    SELECT tablename, policyname
-    FROM pg_policies
-    WHERE schemaname = 'public'
-    ORDER BY tablename, policyname;
-  `);
-  
-  console.log('\nRow Level Security policies:');
-  if (policiesResult.rows.length === 0) {
-    console.log('- No policies found');
-  } else {
-    policiesResult.rows.forEach(row => {
-      console.log(`- ${row.tablename}: ${row.policyname}`);
-    });
+  try {
+    // Try connecting
+    await client.connect();
+    return client;
+  } catch (err) {
+    console.error('❌ PostgreSQL connection error:', err.message);
+    return null;
   }
 }
 
-// Run if called directly
+// Run if executed directly
 if (require.main === module) {
-  verifyTableStructure()
-    .then(success => {
-      if (success) {
-        console.log('\nVerification completed successfully!');
-        process.exit(0);
-      } else {
-        console.error('\nVerification failed!');
-        process.exit(1);
-      }
-    })
-    .catch(error => {
-      console.error('Unexpected error:', error);
+  verifyTableStructure().then(success => {
+    if (success) {
+      console.log('\n✅ Table structure verification complete!');
+    } else {
+      console.log('\n❌ Table structure verification failed.');
       process.exit(1);
-    });
+    }
+  }).catch(err => {
+    console.error('Error:', err);
+    process.exit(1);
+  });
 }
+
+module.exports = { verifyTableStructure };

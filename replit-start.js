@@ -1,57 +1,40 @@
-// Proxy server for Replit to bridge Next.js (3000) with Replit's expected port (5000)
-const { createServer } = require('http');
+#!/usr/bin/env node
+
+// Script to start the application within Replit's workflow
+console.log('Starting Cabo Travel Platform on port 5000...');
+
+// Set environment variables
+process.env.PORT = '5000';
+
+// Start Next.js
 const { spawn } = require('child_process');
-const { createProxyServer } = require('http-proxy');
-
-// Create a proxy server instance
-const proxy = createProxyServer({});
-
-// Start the Next.js app
-console.log('Starting Next.js application...');
-const nextApp = spawn('npm', ['run', 'dev']);
-
-// Log output from the Next.js process
-nextApp.stdout.on('data', (data) => {
-  console.log(`[Next.js] ${data.toString().trim()}`);
+const nextProcess = spawn('npx', ['next', 'dev', '-p', '5000'], {
+  stdio: 'inherit',
+  env: {
+    ...process.env,
+    PORT: '5000',
+  }
 });
 
-nextApp.stderr.on('data', (data) => {
-  console.error(`[Next.js Error] ${data.toString().trim()}`);
+// Handle errors
+nextProcess.on('error', (error) => {
+  console.error(`Error starting Next.js: ${error.message}`);
+  process.exit(1);
 });
 
-// Create a server that proxies requests to the Next.js app on port 3000
-const server = createServer((req, res) => {
-  // Proxy the request to port 3000
-  proxy.web(req, res, { target: 'http://localhost:3000' }, (err) => {
-    console.error('Proxy error:', err);
-    res.writeHead(500, { 'Content-Type': 'text/plain' });
-    res.end('Proxy error: ' + err.message);
+// Handle unexpected exits
+nextProcess.on('exit', (code) => {
+  if (code !== 0) {
+    console.error(`Next.js exited with code ${code}`);
+    process.exit(code || 1);
+  }
+});
+
+// Handle termination
+['SIGINT', 'SIGTERM'].forEach(signal => {
+  process.on(signal, () => {
+    console.log(`Received ${signal}, shutting down...`);
+    nextProcess.kill();
+    process.exit(0);
   });
-});
-
-// Handle proxy errors
-proxy.on('error', (err, req, res) => {
-  console.error('Proxy error:', err);
-  res.writeHead(500, { 'Content-Type': 'text/plain' });
-  res.end('Proxy error: ' + err.message);
-});
-
-// Listen on port 5000 as expected by Replit
-const PORT = 5000;
-server.listen(PORT, '0.0.0.0', () => {
-  console.log(`Proxy server running at http://0.0.0.0:${PORT}`);
-  console.log(`Forwarding requests to Next.js on port 3000`);
-});
-
-// Handle termination signals
-process.on('SIGINT', () => {
-  console.log('Shutting down...');
-  nextApp.kill();
-  process.exit(0);
-});
-
-process.on('SIGTERM', () => {
-  console.log('Shutting down...');
-  nextApp.kill();
-  process.exit(0);
 });
