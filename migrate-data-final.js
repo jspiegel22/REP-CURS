@@ -5,8 +5,9 @@ async function migrateDataDirect() {
   console.log("Starting direct data migration to Supabase...");
   
   // Check for required environment variables
-  if (!process.env.DATABASE_URL) {
-    console.error("DATABASE_URL not set. Cannot connect to PostgreSQL source");
+  if (!process.env.PGHOST || !process.env.PGPORT || !process.env.PGUSER || 
+      !process.env.PGPASSWORD || !process.env.PGDATABASE) {
+    console.error("PostgreSQL connection parameters not set. Need PGHOST, PGPORT, PGUSER, PGPASSWORD, PGDATABASE");
     return false;
   }
   
@@ -22,9 +23,13 @@ async function migrateDataDirect() {
     { auth: { persistSession: false } }
   );
   
-  // Create PostgreSQL connection
+  // Create PostgreSQL connection using individual parameters
   const sourceClient = new Pool({
-    connectionString: process.env.DATABASE_URL,
+    host: process.env.PGHOST,
+    port: process.env.PGPORT,
+    user: process.env.PGUSER,
+    password: process.env.PGPASSWORD,
+    database: process.env.PGDATABASE,
     ssl: {
       rejectUnauthorized: false
     }
@@ -35,12 +40,13 @@ async function migrateDataDirect() {
   try {
     // Test Postgres connection
     console.log("Testing connection to source database...");
+    console.log(`Connecting to: ${process.env.PGHOST}:${process.env.PGPORT}/${process.env.PGDATABASE}`);
     await sourceClient.query('SELECT NOW()');
     console.log("Source database connection successful");
     
-    // Test Supabase connection
+    // Test Supabase connection - fix the count syntax
     console.log("Testing connection to Supabase...");
-    const { data, error } = await supabase.from('users').select('count(*)');
+    const { data, error } = await supabase.from('users').select('id');
     if (error) throw error;
     console.log("Supabase connection successful");
     
@@ -59,8 +65,7 @@ async function migrateDataDirect() {
     
     // Migrate each table
     for (const tableName of tables) {
-      await migrateTable(sourceClient, tableName);
-      console.log(`✅ Table ${tableName} migrated successfully`);
+      await migrateTable(sourceClient, supabase, tableName);
     }
     
     console.log("✅ Data migration completed successfully");
@@ -74,7 +79,7 @@ async function migrateDataDirect() {
   }
 }
 
-async function migrateTable(sourceClient, tableName) {
+async function migrateTable(sourceClient, supabase, tableName) {
   console.log(`Migrating table: ${tableName}`);
   
   try {
@@ -92,13 +97,6 @@ async function migrateTable(sourceClient, tableName) {
     // Get all records from the source table
     const dataResult = await sourceClient.query(`SELECT * FROM "${tableName}"`);
     const rows = dataResult.rows;
-    
-    // Create Supabase client for batch inserts
-    const supabase = createClient(
-      process.env.SUPABASE_URL, 
-      process.env.SUPABASE_SERVICE_ROLE_KEY,
-      { auth: { persistSession: false } }
-    );
     
     // Process in batches
     const batchSize = 50;
@@ -152,10 +150,11 @@ async function migrateTable(sourceClient, tableName) {
     
     if (successCount < rows.length) {
       console.warn(`⚠️ Only migrated ${successCount} of ${rows.length} records in ${tableName}`);
+    } else {
+      console.log(`✅ Table ${tableName} migrated successfully`);
     }
   } catch (error) {
     console.error(`Error migrating table ${tableName}:`, error);
-    throw error;
   }
 }
 

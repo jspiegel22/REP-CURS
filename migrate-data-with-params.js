@@ -5,8 +5,9 @@ async function migrateDataDirect() {
   console.log("Starting direct data migration to Supabase...");
   
   // Check for required environment variables
-  if (!process.env.DATABASE_URL) {
-    console.error("DATABASE_URL not set. Cannot connect to PostgreSQL source");
+  if (!process.env.PGHOST || !process.env.PGPORT || !process.env.PGUSER || 
+      !process.env.PGPASSWORD || !process.env.PGDATABASE) {
+    console.error("PostgreSQL connection parameters not set. Need PGHOST, PGPORT, PGUSER, PGPASSWORD, PGDATABASE");
     return false;
   }
   
@@ -22,9 +23,13 @@ async function migrateDataDirect() {
     { auth: { persistSession: false } }
   );
   
-  // Create PostgreSQL connection
+  // Create PostgreSQL connection using individual parameters
   const sourceClient = new Pool({
-    connectionString: process.env.DATABASE_URL,
+    host: process.env.PGHOST,
+    port: process.env.PGPORT,
+    user: process.env.PGUSER,
+    password: process.env.PGPASSWORD,
+    database: process.env.PGDATABASE,
     ssl: {
       rejectUnauthorized: false
     }
@@ -35,6 +40,7 @@ async function migrateDataDirect() {
   try {
     // Test Postgres connection
     console.log("Testing connection to source database...");
+    console.log(`Connecting to: ${process.env.PGHOST}:${process.env.PGPORT}/${process.env.PGDATABASE}`);
     await sourceClient.query('SELECT NOW()');
     console.log("Source database connection successful");
     
