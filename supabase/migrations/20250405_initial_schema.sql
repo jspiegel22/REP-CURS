@@ -151,12 +151,7 @@ CREATE TABLE public.guide_submissions (
     form_name text NOT NULL,
     submission_id text NOT NULL,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
-    updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
-    interest_areas jsonb DEFAULT '[]'::jsonb NOT NULL,
-    last_name text,
-    phone text,
-    preferred_contact_method text,
-    form_data jsonb DEFAULT '{}'::jsonb
+    updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP
 );
 
 
