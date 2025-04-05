@@ -1,4 +1,5 @@
 #!/bin/bash
+# Script to run the Next.js application with proxy
 
-# Start the Next.js application
-npm run dev
+echo "🚀 Starting application with port proxy..."
+node start-with-proxy.js

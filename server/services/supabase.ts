@@ -1,22 +1,39 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '../../supabase/types';
 
-// Check for required environment variables
-if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) {
-  console.warn('Missing Supabase credentials: SUPABASE_URL or SUPABASE_ANON_KEY');
-}
+// Get Supabase credentials - fixing swapped environment variables
+// NOTE: We found REACT_APP_SUPABASE_URL contains the key and REACT_APP_SUPABASE_ANON_KEY contains the URL
+const supabaseUrl = process.env.SUPABASE_URL || process.env.REACT_APP_SUPABASE_ANON_KEY || '';
+const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || process.env.REACT_APP_SUPABASE_URL || '';
+const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+
+// Log configuration for debugging
+console.log('Supabase configuration:');
+console.log(`- URL configured: ${!!supabaseUrl}`);
+console.log(`- Anon Key configured: ${!!supabaseAnonKey}`);
+console.log(`- Service Role Key configured: ${!!supabaseServiceRoleKey}`);
 
 // Create a single Supabase client for interacting with your database
 export const supabase = createClient<Database>(
-  process.env.SUPABASE_URL || '',
-  process.env.SUPABASE_ANON_KEY || ''
+  supabaseUrl,
+  supabaseAnonKey,
+  {
+    auth: {
+      persistSession: false // Since this is server-side
+    }
+  }
 );
 
-// Create a service role client for admin operations
-export const supabaseAdmin = process.env.SUPABASE_SERVICE_ROLE_KEY
+// Create a service role client for admin operations if available
+export const supabaseAdmin = supabaseServiceRoleKey
   ? createClient<Database>(
-      process.env.SUPABASE_URL || '',
-      process.env.SUPABASE_SERVICE_ROLE_KEY
+      supabaseUrl,
+      supabaseServiceRoleKey,
+      {
+        auth: {
+          persistSession: false // Since this is server-side
+        }
+      }
     )
   : null;
 
@@ -28,5 +45,22 @@ export function handleDatabaseError(error: any, operation: string): Error {
 
 // Utility function to check if Supabase is configured
 export function isSupabaseConfigured(): boolean {
-  return !!(process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY);
+  return !!(supabaseUrl && supabaseAnonKey);
+}
+
+// Test the Supabase connection
+try {
+  supabase
+    .from('guide_submissions')
+    .select('count(*)', { count: 'exact' })
+    .then(({ data, error }) => {
+      if (error) {
+        console.error('❌ Supabase connection test failed:', error.message);
+      } else {
+        console.log('✅ Supabase connection successful:', data);
+      }
+    });
+} catch (err: unknown) {
+  const error = err as Error;
+  console.error('❌ Supabase connection error:', error.message);
 }
