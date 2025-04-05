@@ -199,4 +199,3 @@ CREATE TABLE IF NOT EXISTS session (
   sess JSON NOT NULL,
   expire TIMESTAMP(6) NOT NULL
 );
-

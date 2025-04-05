@@ -108,8 +108,55 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
         }
       };
       
-      const response = await apiRequest("POST", "/api/guide-submissions", submissionData);
-      return await response.json();
+      // Check if online or offline
+      if (navigator.onLine) {
+        // Online - submit normally
+        const response = await apiRequest("POST", "/api/guide-submissions", submissionData);
+        return await response.json();
+      } else {
+        // Offline - store in IndexedDB for later sync
+        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+          // Get a reference to the service worker
+          const registration = await navigator.serviceWorker.ready;
+          
+          // Create a message channel for communicating with the service worker
+          const messageChannel = new MessageChannel();
+          
+          return new Promise((resolve, reject) => {
+            // Set up message handling
+            messageChannel.port1.onmessage = (event) => {
+              if (event.data.error) {
+                reject(event.data.error);
+              } else {
+                // Return a simulated successful response
+                resolve({
+                  id: submissionData.submissionId,
+                  ...submissionData,
+                  message: "Your guide is ready for download (Offline Mode)",
+                  downloadUrl: "/guides/ultimate-cabo-guide-2025.pdf",
+                  status: "pending_sync",
+                  createdAt: new Date().toISOString()
+                });
+              }
+            };
+            
+            // Post the message to the service worker
+            // Type assertion to help TypeScript understand controller can't be null here
+            if (navigator.serviceWorker.controller) {
+              (navigator.serviceWorker.controller as ServiceWorker).postMessage({
+                type: 'SAVE_FORM',
+                formData: submissionData,
+                endpoint: '/api/guide-submissions'
+              }, [messageChannel.port2]);
+            } else {
+              reject(new Error("Service worker controller not available"));
+            }
+          });
+        } else {
+          // Service worker not available - notify user
+          throw new Error("You appear to be offline. Please try again when you have an internet connection.");
+        }
+      }
     },
     onSuccess: (data) => {
       // If the API returns a specific download URL, use it

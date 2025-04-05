@@ -1,1 +1,108 @@
- 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cabo Travel Guide - Offline</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      background-color: #f5f5f5;
+      color: #2F4F4F;
+    }
+    .container {
+      width: 90%;
+      max-width: 550px;
+      padding: 2rem;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    p {
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+      color: #555;
+    }
+    .logo {
+      margin-bottom: 1.5rem;
+      font-size: 2rem;
+      font-weight: bold;
+      color: #2F4F4F;
+    }
+    .icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      display: block;
+    }
+    .button {
+      display: inline-block;
+      background-color: #2F4F4F;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: 500;
+      margin-top: 1rem;
+      cursor: pointer;
+    }
+    .cached-resources {
+      margin-top: 2rem;
+      padding-top: 1rem;
+      border-top: 1px solid #eee;
+    }
+    .cached-item {
+      background-color: #f8f8f8;
+      padding: 0.5rem;
+      margin: 0.5rem 0;
+      border-radius: 4px;
+      display: block;
+      text-decoration: none;
+      color: #2F4F4F;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">Cabo Travel Guide</div>
+    <span class="icon">🏝️</span>
+    <h1>You're currently offline</h1>
+    <p>It looks like you're not connected to the internet. Some of our features require an active connection, but you can still access cached content.</p>
+    
+    <div class="button" onclick="attemptReconnect()">Try Again</div>
+    
+    <div class="cached-resources">
+      <h2>Available Offline</h2>
+      <a href="/guides/ultimate-cabo-guide-2025.pdf" class="cached-item">Ultimate Cabo Guide 2025</a>
+      <a href="/cabo-travel.mp4" class="cached-item">Cabo Travel Video</a>
+    </div>
+  </div>
+
+  <script>
+    // Function to check if we're back online and reload
+    function attemptReconnect() {
+      if (navigator.onLine) {
+        window.location.reload();
+      } else {
+        alert('Still offline. Please check your internet connection and try again.');
+      }
+    }
+
+    // Also listen for online event to automatically reconnect
+    window.addEventListener('online', () => {
+      window.location.reload();
+    });
+  </script>
+</body>
+</html>
