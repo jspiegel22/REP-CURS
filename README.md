@@ -65,6 +65,105 @@ MAKE_WEBHOOK_URL=https://hook.make.com/...
 - `/api/resorts` - Get resort information
 - `/api/villas` - Get villa information from TrackHS API
 
+## Database Migration to Supabase
+
+The project includes a comprehensive migration script to transition from PostgreSQL to Supabase.
+
+### Prerequisites
+
+The following environment variables must be set for migration:
+
+```
+# PostgreSQL
+DATABASE_URL=postgresql://...
+
+# Supabase 
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_ANON_KEY=eyJh...
+SUPABASE_SERVICE_ROLE_KEY=eyJh...
+
+# Airtable (for field validation)
+AIRTABLE_API_KEY=key...
+AIRTABLE_BASE_ID=app...
+```
+
+### Migration Steps
+
+1. Run the migration script:
+   ```bash
+   bash migrate-to-supabase.sh
+   ```
+
+2. The script performs the following steps:
+   - Validates Airtable field compatibility
+   - Generates SQL migration files
+   - Checks Supabase connection
+   - Creates a custom SQL execution function
+   - Migrates schema and data to Supabase
+   - Configures the application to use Supabase
+   - Verifies data integrity
+
+3. Verification can be performed any time using:
+   ```bash
+   # Check table existence
+   node check-supabase-tables.js
+   
+   # Verify data integrity
+   node scripts/verify-migration-integrity.js
+   
+   # Validate Airtable compatibility
+   node scripts/validate-airtable-fields.js
+   ```
+
 ## License
 
 Copyright © 2025 Cabo Travel Platform. All rights reserved.
+## Database Migration to Supabase
+
+The project includes a comprehensive migration script to transition from PostgreSQL to Supabase.
+
+### Prerequisites
+
+The following environment variables must be set for migration:
+
+```
+# PostgreSQL
+DATABASE_URL=postgresql://...
+
+# Supabase 
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_ANON_KEY=eyJh...
+SUPABASE_SERVICE_ROLE_KEY=eyJh...
+
+# Airtable (for field validation)
+AIRTABLE_API_KEY=key...
+AIRTABLE_BASE_ID=app...
+```
+
+### Migration Steps
+
+1. Run the migration script:
+   ```bash
+   bash migrate-to-supabase.sh
+   ```
+
+2. The script performs the following steps:
+   - Validates Airtable field compatibility
+   - Generates SQL migration files
+   - Checks Supabase connection
+   - Creates a custom SQL execution function
+   - Migrates schema and data to Supabase
+   - Configures the application to use Supabase
+   - Verifies data integrity
+
+3. Verification can be performed any time using:
+   ```bash
+   # Check table existence
+   node check-supabase-tables.js
+   
+   # Verify data integrity
+   node scripts/verify-migration-integrity.js
+   
+   # Validate Airtable compatibility
+   node scripts/validate-airtable-fields.js
+   ```

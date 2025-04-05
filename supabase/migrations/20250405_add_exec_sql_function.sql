@@ -1,25 +1,21 @@
--- Create or update the exec_sql function
--- This function allows executing arbitrary SQL from other functions
-
-CREATE OR REPLACE FUNCTION exec_sql(query text)
-RETURNS TABLE(result JSONB) 
+-- Function to execute arbitrary SQL in Supabase
+-- This is needed for complex operations during and after migration
+CREATE OR REPLACE FUNCTION exec_sql(sql_query text)
+RETURNS SETOF json
 LANGUAGE plpgsql
 SECURITY DEFINER
 AS $$
 BEGIN
-    RETURN QUERY EXECUTE query;
-EXCEPTION WHEN OTHERS THEN
-    RAISE EXCEPTION '%', SQLERRM;
+  RETURN QUERY EXECUTE sql_query;
+EXCEPTION
+  WHEN OTHERS THEN
+    RAISE EXCEPTION 'SQL Error: %', SQLERRM;
 END;
 $$;
 
--- Grant usage rights to authenticated and service_role
--- This is necessary for the migration scripts to work
+-- Add security policies to limit this function to service roles
+-- Revoke execution from public
+REVOKE ALL ON FUNCTION exec_sql(text) FROM PUBLIC;
 
-GRANT EXECUTE ON FUNCTION exec_sql TO authenticated;
-GRANT EXECUTE ON FUNCTION exec_sql TO service_role;
-
--- Set security label to expose the function via API
--- Remove this line if you don't want to allow API access
-
-SECURITY LABEL FOR anon ON FUNCTION exec_sql IS 'FUNCTION';
+-- Comment explaining function use and security implications
+COMMENT ON FUNCTION exec_sql IS 'Executes arbitrary SQL. Use with caution. This function has security definer privileges.';

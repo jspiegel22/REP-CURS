@@ -1,69 +1,97 @@
-// Enable Supabase by setting the USE_SUPABASE environment variable
+/**
+ * Script to enable Supabase as the primary database
+ * This script updates the .env file to set USE_SUPABASE=true
+ */
+
 require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
-const { checkTables } = require('./scripts/direct-migrate-to-supabase');
+const { createClient } = require('@supabase/supabase-js');
 
-async function enableSupabase() {
-  console.log('Checking if Supabase tables exist...');
-  
-  const tablesExist = await checkTables();
-  
-  if (!tablesExist) {
-    console.log('\nSome Supabase tables are missing or inaccessible.');
-    console.log('Please make sure you have migrated your data to Supabase before enabling it.');
-    console.log('Proceeding to enable Supabase anyway, as requested.');
+// Check if Supabase is configured
+function isSupabaseConfigured() {
+  return (
+    process.env.SUPABASE_URL &&
+    process.env.SUPABASE_ANON_KEY &&
+    process.env.SUPABASE_SERVICE_ROLE_KEY
+  );
+}
+
+// Verify Supabase connection
+async function checkSupabaseConnection() {
+  if (!isSupabaseConfigured()) {
+    throw new Error('Supabase environment variables are not set');
   }
-  
-  console.log('Enabling Supabase storage...');
-  
+
+  const supabase = createClient(
+    process.env.SUPABASE_URL,
+    process.env.SUPABASE_SERVICE_ROLE_KEY
+  );
+
   try {
-    const envPath = path.join(__dirname, '.env');
+    const { data, error } = await supabase.from('users').select('id').limit(1);
     
-    if (!fs.existsSync(envPath)) {
-      console.error('.env file not found!');
-      return false;
+    if (error) {
+      throw new Error(`Supabase connection test failed: ${error.message}`);
     }
     
-    let envContent = fs.readFileSync(envPath, 'utf8');
-    
-    // Check if USE_SUPABASE already exists
-    if (envContent.includes('USE_SUPABASE=')) {
-      // Replace the existing value
-      envContent = envContent.replace(/USE_SUPABASE=.*/g, 'USE_SUPABASE=true');
-    } else {
-      // Add the new environment variable
-      envContent += '\nUSE_SUPABASE=true\n';
-    }
-    
-    // Write the updated content back to the .env file
-    fs.writeFileSync(envPath, envContent);
-    
-    console.log('Successfully enabled Supabase storage!');
-    console.log('The application will now use Supabase for database operations.');
-    console.log('You may need to restart your application for the changes to take effect.');
-    
+    console.log('Supabase connection verified successfully');
     return true;
   } catch (error) {
-    console.error('Error enabling Supabase:', error);
+    console.error('Supabase connection test failed:', error.message);
     return false;
   }
 }
 
-// Run the function if this file is executed directly
-if (require.main === module) {
-  enableSupabase()
-    .then(result => {
-      if (result) {
-        console.log('Done!');
-        process.exit(0);
-      } else {
-        console.log('Failed to enable Supabase.');
-        process.exit(1);
-      }
-    })
-    .catch(error => {
-      console.error('Unexpected error:', error);
-      process.exit(1);
-    });
+// Update environment variables to enable Supabase
+async function updateEnvironmentFile() {
+  const envFilePath = path.resolve(process.cwd(), '.env');
+  
+  if (!fs.existsSync(envFilePath)) {
+    throw new Error('.env file not found');
+  }
+  
+  let envContent = fs.readFileSync(envFilePath, 'utf8');
+  
+  // Check if USE_SUPABASE is already set
+  if (envContent.includes('USE_SUPABASE=')) {
+    // Update existing setting
+    envContent = envContent.replace(/USE_SUPABASE=(true|false)/, 'USE_SUPABASE=true');
+  } else {
+    // Add new setting
+    envContent += '\n# Enable Supabase as the primary database\nUSE_SUPABASE=true\n';
+  }
+  
+  // Write updated content back to file
+  fs.writeFileSync(envFilePath, envContent);
+  console.log('.env file updated to enable Supabase');
 }
+
+// Main function
+async function enableSupabase() {
+  try {
+    console.log('Verifying Supabase connection...');
+    const connectionSuccessful = await checkSupabaseConnection();
+    
+    if (!connectionSuccessful) {
+      console.error('Cannot enable Supabase: Connection test failed');
+      process.exit(1);
+    }
+    
+    console.log('Updating environment configuration...');
+    await updateEnvironmentFile();
+    
+    console.log('✅ Supabase has been enabled as the primary database');
+    console.log('You may need to restart your application for changes to take effect');
+  } catch (error) {
+    console.error('Error enabling Supabase:', error.message);
+    process.exit(1);
+  }
+}
+
+// Run the script
+if (require.main === module) {
+  enableSupabase();
+}
+
+module.exports = { enableSupabase, isSupabaseConfigured, checkSupabaseConnection };
