@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="800px" height="450px" viewBox="0 0 800 450" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Cabo San Lucas Video Poster</title>
+    <defs>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-1">
+            <stop stop-color="#2F4F4F" offset="0%"></stop>
+            <stop stop-color="#1F3F3F" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-2">
+            <stop stop-color="#66CDAA" offset="0%"></stop>
+            <stop stop-color="#20B2AA" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="Background" fill="url(#linearGradient-1)" x="0" y="0" width="800" height="450"></rect>
+        
+        <!-- Sun -->
+        <circle id="Sun" fill="#FFA500" cx="600" cy="100" r="60"></circle>
+        <circle id="Sun-Glow" fill="#FFA500" opacity="0.2" cx="600" cy="100" r="90"></circle>
+        
+        <!-- Ocean Waves -->
+        <path d="M0,280 C100,260 200,290 300,270 C400,250 500,280 600,260 C700,240 800,270 800,270 L800,450 L0,450 Z" id="Ocean" fill="url(#linearGradient-2)" opacity="0.8"></path>
+        <path d="M0,300 C100,280 200,310 300,290 C400,270 500,300 600,280 C700,260 800,290 800,290 L800,450 L0,450 Z" id="Ocean-Wave-1" fill="#20B2AA" opacity="0.6"></path>
+        <path d="M0,320 C100,300 200,330 300,310 C400,290 500,320 600,300 C700,280 800,310 800,310 L800,450 L0,450 Z" id="Ocean-Wave-2" fill="#008B8B" opacity="0.4"></path>
+        
+        <!-- Beach -->
+        <path d="M0,350 C150,330 300,360 450,340 C600,320 750,350 800,340 L800,450 L0,450 Z" id="Beach" fill="#F5DEB3"></path>
+        
+        <!-- Mountain Silhouette -->
+        <path d="M400,100 L500,280 L300,280 Z" id="Mountain-1" fill="#1F3F3F"></path>
+        <path d="M150,150 L300,290 L0,290 Z" id="Mountain-2" fill="#2F4F4F"></path>
+        <path d="M650,130 L800,290 L500,290 Z" id="Mountain-3" fill="#1F3F3F"></path>
+        
+        <!-- Palm Tree 1 -->
+        <rect id="Palm-Tree-Trunk-1" fill="#8B4513" x="150" y="300" width="10" height="60"></rect>
+        <path d="M155,300 C155,300 120,270 100,290 C130,280 110,260 90,270 C120,260 120,240 100,230 C130,240 140,220 120,200 C150,220 170,210 170,190 C170,210 190,220 210,200 C190,220 200,240 230,230 C210,240 210,260 240,270 C210,280 200,280 220,290 C190,280 155,300 155,300 Z" id="Palm-Leaves-1" fill="#006400"></path>
+        
+        <!-- Palm Tree 2 -->
+        <rect id="Palm-Tree-Trunk-2" fill="#8B4513" x="650" y="290" width="10" height="70"></rect>
+        <path d="M655,290 C655,290 620,260 600,280 C630,270 610,250 590,260 C620,250 620,230 600,220 C630,230 640,210 620,190 C650,210 670,200 670,180 C670,200 690,210 710,190 C690,210 700,230 730,220 C710,230 710,250 740,260 C710,270 700,270 720,280 C690,270 655,290 655,290 Z" id="Palm-Leaves-2" fill="#006400"></path>
+        
+        <!-- Play Button -->
+        <circle id="Play-Button-Background" fill="#FFFFFF" opacity="0.8" cx="400" cy="225" r="50"></circle>
+        <path d="M385,200 L430,225 L385,250 Z" id="Play-Button-Triangle" fill="#2F4F4F"></path>
+        
+        <!-- Text -->
+        <text id="Title" font-family="Arial, sans-serif" font-size="40" font-weight="bold" fill="#FFFFFF" text-anchor="middle" x="400" y="100">Discover Cabo San Lucas</text>
+        <text id="Subtitle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#FFFFFF" text-anchor="middle" x="400" y="130">Paradise awaits your arrival</text>
+        <text id="Text-Bottom" font-family="Arial, sans-serif" font-size="18" font-weight="normal" fill="#FFFFFF" text-anchor="middle" x="400" y="410">Click to watch your exclusive preview</text>
+    </g>
+</svg>

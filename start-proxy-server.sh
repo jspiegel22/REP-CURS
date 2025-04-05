@@ -1,14 +1,7 @@
 #!/bin/bash
 
-echo "Starting Next.js app in the background..."
-NODE_ENV=production PORT=3000 npm run dev &
-NEXT_PID=$!
+# Kill any running node processes
+pkill -f "node" || true
 
-echo "Waiting for Next.js to start..."
-sleep 5
-
-echo "Starting proxy server..."
-PORT=5000 npx tsx ./proxy-server.ts
-
-# Cleanup
-kill $NEXT_PID
+echo "Starting Express proxy server directly..."
+PORT=5000 NODE_OPTIONS="--max-old-space-size=1024" NODE_ENV=production npx tsx ./proxy-server.ts

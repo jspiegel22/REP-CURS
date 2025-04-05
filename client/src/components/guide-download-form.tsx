@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { FormError } from "@/components/form/FormError";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, Check, Download, X } from "lucide-react";
+import { Loader2, Check, Download, X, Play, Pause, Volume2, VolumeX } from "lucide-react";
 import { z } from "zod";
 import { nanoid } from "nanoid";
 import { useMutation } from "@tanstack/react-query";
@@ -36,7 +36,40 @@ interface GuideDownloadFormProps {
 export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
   const [success, setSuccess] = useState(false);
   const [downloadUrl, setDownloadUrl] = useState("/guides/ultimate-cabo-guide-2025.pdf");
+  const [showVideo, setShowVideo] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const { toast } = useToast();
+
+  // Effect to handle video play/pause
+  useEffect(() => {
+    if (videoRef.current) {
+      if (isPlaying) {
+        videoRef.current.play().catch(e => {
+          console.error("Video play error:", e);
+          setIsPlaying(false);
+        });
+      } else {
+        videoRef.current.pause();
+      }
+    }
+  }, [isPlaying, showVideo]);
+
+  // Effect to handle muting
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.muted = isMuted;
+    }
+  }, [isMuted]);
+
+  const togglePlay = () => {
+    setIsPlaying(!isPlaying);
+  };
+
+  const toggleMute = () => {
+    setIsMuted(!isMuted);
+  };
 
   const {
     register,
@@ -85,7 +118,13 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
       }
       
       setSuccess(true);
+      setShowVideo(true);
       reset();
+      
+      // Auto-play the preview video
+      setTimeout(() => {
+        setIsPlaying(true);
+      }, 500);
       
       // Track the event (could be connected to analytics later)
       try {
@@ -108,18 +147,26 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
   });
 
   const handleClose = () => {
+    // Pause video if playing
+    if (isPlaying) {
+      setIsPlaying(false);
+    }
+    
     onClose();
     setTimeout(() => {
-      if (!isOpen) setSuccess(false);
+      if (!isOpen) {
+        setSuccess(false);
+        setShowVideo(false);
+      }
     }, 300);
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[400px] bg-white rounded-xl p-5 shadow-lg">
+      <DialogContent className="sm:max-w-[500px] bg-white rounded-xl p-5 shadow-lg">
         <button 
           onClick={handleClose}
-          className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+          className="absolute right-3 top-3 text-gray-400 hover:text-gray-600 z-20"
           aria-label="Close"
         >
           <X size={20} />
@@ -132,6 +179,37 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
             </div>
             <h3 className="text-xl font-semibold text-[#2F4F4F] mb-2">Thanks!</h3>
             <p className="text-gray-600 mb-4 text-sm">Your Cabo guide is ready</p>
+            
+            {showVideo && (
+              <div className="relative mb-5 mt-2 rounded-lg overflow-hidden shadow-md">
+                <video 
+                  ref={videoRef}
+                  src="/cabo-travel.mp4"
+                  className="w-full h-auto rounded-lg"
+                  loop
+                  playsInline
+                  poster="/video-poster.svg"
+                ></video>
+                
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3 flex justify-between items-center">
+                  <Button 
+                    onClick={togglePlay} 
+                    variant="ghost" 
+                    className="text-white hover:bg-white/20 h-8 w-8 p-0"
+                  >
+                    {isPlaying ? <Pause size={20} /> : <Play size={20} />}
+                  </Button>
+                  
+                  <Button 
+                    onClick={toggleMute} 
+                    variant="ghost" 
+                    className="text-white hover:bg-white/20 h-8 w-8 p-0"
+                  >
+                    {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
+                  </Button>
+                </div>
+              </div>
+            )}
             
             <a
               href={downloadUrl}

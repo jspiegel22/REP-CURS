@@ -882,11 +882,152 @@ export class SupabaseStorage implements IStorage {
   }
 
   async createBooking(booking: Omit<Booking, "id">): Promise<Booking> {
-    return new DatabaseStorage().createBooking(booking);
+    try {
+      // Format booking data for Supabase
+      const { data, error } = await supabase
+        .from('bookings')
+        .insert({
+          first_name: booking.firstName,
+          last_name: booking.lastName,
+          email: booking.email,
+          phone: booking.phone,
+          preferred_contact_method: booking.preferredContactMethod,
+          preferred_contact_time: booking.preferredContactTime,
+          source: booking.source,
+          status: booking.status,
+          form_name: booking.formName,
+          form_data: booking.formData,
+          notes: booking.notes,
+          ip_address: booking.ipAddress,
+          user_agent: booking.userAgent,
+          referrer: booking.referrer,
+          tags: booking.tags,
+          utm_source: booking.utmSource,
+          utm_medium: booking.utmMedium,
+          utm_campaign: booking.utmCampaign,
+          created_at: booking.createdAt,
+          updated_at: booking.updatedAt,
+          booking_type: booking.bookingType,
+          start_date: booking.startDate,
+          end_date: booking.endDate,
+          guests: booking.guests,
+          total_amount: booking.totalAmount,
+          currency: booking.currency,
+          payment_status: booking.paymentStatus,
+          payment_method: booking.paymentMethod,
+          special_requests: booking.specialRequests,
+          budget: booking.budget,
+          listing_id: booking.listingId
+        })
+        .select()
+        .single();
+
+      if (error) {
+        console.error("Error creating booking in Supabase:", error);
+        throw handleDatabaseError(error, "create booking");
+      }
+
+      if (!data) {
+        throw new Error("No data returned from Supabase");
+      }
+
+      // Format response from snake_case to camelCase
+      return {
+        id: data.id,
+        firstName: data.first_name,
+        lastName: data.last_name,
+        email: data.email,
+        phone: data.phone,
+        preferredContactMethod: data.preferred_contact_method,
+        preferredContactTime: data.preferred_contact_time,
+        source: data.source,
+        status: data.status,
+        formName: data.form_name,
+        formData: data.form_data,
+        notes: data.notes,
+        ipAddress: data.ip_address,
+        userAgent: data.user_agent,
+        referrer: data.referrer,
+        tags: data.tags,
+        utmSource: data.utm_source,
+        utmMedium: data.utm_medium,
+        utmCampaign: data.utm_campaign,
+        createdAt: data.created_at,
+        updatedAt: data.updated_at,
+        bookingType: data.booking_type,
+        startDate: data.start_date,
+        endDate: data.end_date,
+        guests: data.guests,
+        totalAmount: data.total_amount,
+        currency: data.currency,
+        paymentStatus: data.payment_status,
+        paymentMethod: data.payment_method,
+        specialRequests: data.special_requests,
+        budget: data.budget,
+        listingId: data.listing_id,
+        // Add any additional properties needed by the application
+        confirmationCode: booking.confirmationCode
+      };
+    } catch (error) {
+      console.error("Error in createBooking:", error);
+      throw error;
+    }
   }
 
   async getUserBookings(userId: number): Promise<Booking[]> {
-    return new DatabaseStorage().getUserBookings(userId);
+    try {
+      const { data, error } = await supabase
+        .from('bookings')
+        .select('*')
+        .eq('user_id', userId);
+
+      if (error) {
+        console.error("Error fetching user bookings from Supabase:", error);
+        throw handleDatabaseError(error, "get user bookings");
+      }
+
+      // Transform the data from snake_case to camelCase
+      return (data || []).map(booking => ({
+        id: booking.id,
+        firstName: booking.first_name,
+        lastName: booking.last_name,
+        email: booking.email,
+        phone: booking.phone,
+        preferredContactMethod: booking.preferred_contact_method,
+        preferredContactTime: booking.preferred_contact_time,
+        source: booking.source,
+        status: booking.status,
+        formName: booking.form_name,
+        formData: booking.form_data,
+        notes: booking.notes,
+        ipAddress: booking.ip_address,
+        userAgent: booking.user_agent,
+        referrer: booking.referrer,
+        tags: booking.tags,
+        utmSource: booking.utm_source,
+        utmMedium: booking.utm_medium,
+        utmCampaign: booking.utm_campaign,
+        createdAt: booking.created_at,
+        updatedAt: booking.updated_at,
+        bookingType: booking.booking_type,
+        startDate: booking.start_date,
+        endDate: booking.end_date,
+        guests: booking.guests,
+        totalAmount: booking.total_amount,
+        currency: booking.currency,
+        paymentStatus: booking.payment_status,
+        paymentMethod: booking.payment_method,
+        specialRequests: booking.special_requests,
+        budget: booking.budget,
+        listingId: booking.listing_id,
+        // Add any additional properties from the app's schema
+        userId: booking.user_id,
+        confirmationCode: booking.confirmation_code
+      }));
+    } catch (error) {
+      console.error("Error in getUserBookings:", error);
+      throw error;
+    }
   }
 
   async cacheWeather(location: string, data: any): Promise<WeatherCache> {
@@ -910,15 +1051,186 @@ export class SupabaseStorage implements IStorage {
   }
 
   async createLead(lead: Omit<Lead, "id">): Promise<Lead> {
-    return new DatabaseStorage().createLead(lead);
+    try {
+      // Format lead data for Supabase
+      const { data, error } = await supabase
+        .from('leads')
+        .insert({
+          first_name: lead.firstName,
+          last_name: lead.lastName,
+          email: lead.email,
+          phone: lead.phone,
+          preferred_contact_method: lead.preferredContactMethod,
+          preferred_contact_time: lead.preferredContactTime,
+          source: lead.source,
+          status: lead.status,
+          form_name: lead.formName,
+          form_data: lead.formData,
+          notes: lead.notes,
+          ip_address: lead.ipAddress,
+          user_agent: lead.userAgent,
+          referrer: lead.referrer,
+          tags: lead.tags,
+          utm_source: lead.utmSource,
+          utm_medium: lead.utmMedium,
+          utm_campaign: lead.utmCampaign,
+          created_at: lead.createdAt,
+          updated_at: lead.updatedAt,
+          interest_type: lead.interestType,
+          budget: lead.budget,
+          timeline: lead.timeline,
+          priority: lead.priority,
+          assigned_to: lead.assignedTo
+        })
+        .select()
+        .single();
+
+      if (error) {
+        console.error("Error creating lead in Supabase:", error);
+        throw handleDatabaseError(error, "create lead");
+      }
+
+      if (!data) {
+        throw new Error("No data returned from Supabase");
+      }
+
+      // Format response from snake_case to camelCase
+      return {
+        id: data.id,
+        firstName: data.first_name,
+        lastName: data.last_name,
+        email: data.email,
+        phone: data.phone,
+        preferredContactMethod: data.preferred_contact_method,
+        preferredContactTime: data.preferred_contact_time,
+        source: data.source,
+        status: data.status,
+        formName: data.form_name,
+        formData: data.form_data,
+        notes: data.notes,
+        ipAddress: data.ip_address,
+        userAgent: data.user_agent,
+        referrer: data.referrer,
+        tags: data.tags,
+        utmSource: data.utm_source,
+        utmMedium: data.utm_medium,
+        utmCampaign: data.utm_campaign,
+        createdAt: data.created_at,
+        updatedAt: data.updated_at,
+        interestType: data.interest_type,
+        budget: data.budget,
+        timeline: data.timeline,
+        priority: data.priority,
+        assignedTo: data.assigned_to,
+        // Add any additional fields needed by the application
+        trackingId: lead.trackingId
+      };
+    } catch (error) {
+      console.error("Error in createLead:", error);
+      throw error;
+    }
   }
 
   async getBookingsByEmail(email: string): Promise<Booking[]> {
-    return new DatabaseStorage().getBookingsByEmail(email);
+    try {
+      const { data, error } = await supabase
+        .from('bookings')
+        .select('*')
+        .eq('email', email);
+
+      if (error) {
+        console.error("Error fetching bookings by email from Supabase:", error);
+        throw handleDatabaseError(error, "get bookings by email");
+      }
+
+      // Transform the data from snake_case to camelCase
+      return (data || []).map(booking => ({
+        id: booking.id,
+        firstName: booking.first_name,
+        lastName: booking.last_name,
+        email: booking.email,
+        phone: booking.phone,
+        preferredContactMethod: booking.preferred_contact_method,
+        preferredContactTime: booking.preferred_contact_time,
+        source: booking.source,
+        status: booking.status,
+        formName: booking.form_name,
+        formData: booking.form_data,
+        notes: booking.notes,
+        ipAddress: booking.ip_address,
+        userAgent: booking.user_agent,
+        referrer: booking.referrer,
+        tags: booking.tags,
+        utmSource: booking.utm_source,
+        utmMedium: booking.utm_medium,
+        utmCampaign: booking.utm_campaign,
+        createdAt: booking.created_at,
+        updatedAt: booking.updated_at,
+        bookingType: booking.booking_type,
+        startDate: booking.start_date,
+        endDate: booking.end_date,
+        guests: booking.guests,
+        totalAmount: booking.total_amount,
+        currency: booking.currency,
+        paymentStatus: booking.payment_status,
+        paymentMethod: booking.payment_method,
+        specialRequests: booking.special_requests,
+        budget: booking.budget,
+        listingId: booking.listing_id,
+        confirmationCode: booking.confirmation_code
+      }));
+    } catch (error) {
+      console.error("Error in getBookingsByEmail:", error);
+      throw error;
+    }
   }
 
   async getLeadsByEmail(email: string): Promise<Lead[]> {
-    return new DatabaseStorage().getLeadsByEmail(email);
+    try {
+      const { data, error } = await supabase
+        .from('leads')
+        .select('*')
+        .eq('email', email);
+
+      if (error) {
+        console.error("Error fetching leads by email from Supabase:", error);
+        throw handleDatabaseError(error, "get leads by email");
+      }
+
+      // Transform the data from snake_case to camelCase
+      return (data || []).map(lead => ({
+        id: lead.id,
+        firstName: lead.first_name,
+        lastName: lead.last_name,
+        email: lead.email,
+        phone: lead.phone,
+        preferredContactMethod: lead.preferred_contact_method,
+        preferredContactTime: lead.preferred_contact_time,
+        source: lead.source,
+        status: lead.status,
+        formName: lead.form_name,
+        formData: lead.form_data,
+        notes: lead.notes,
+        ipAddress: lead.ip_address,
+        userAgent: lead.user_agent,
+        referrer: lead.referrer,
+        tags: lead.tags,
+        utmSource: lead.utm_source,
+        utmMedium: lead.utm_medium,
+        utmCampaign: lead.utm_campaign,
+        createdAt: lead.created_at,
+        updatedAt: lead.updated_at,
+        interestType: lead.interest_type,
+        budget: lead.budget,
+        timeline: lead.timeline,
+        priority: lead.priority,
+        assignedTo: lead.assigned_to,
+        trackingId: lead.tracking_id
+      }));
+    } catch (error) {
+      console.error("Error in getLeadsByEmail:", error);
+      throw error;
+    }
   }
 
   async getGuideSubmissions(): Promise<any[]> {
@@ -926,11 +1238,105 @@ export class SupabaseStorage implements IStorage {
   }
 
   async getAllBookings(): Promise<Booking[]> {
-    return new DatabaseStorage().getAllBookings();
+    try {
+      const { data, error } = await supabase
+        .from('bookings')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error("Error fetching all bookings from Supabase:", error);
+        throw handleDatabaseError(error, "get all bookings");
+      }
+
+      // Transform the data from snake_case to camelCase
+      return (data || []).map(booking => ({
+        id: booking.id,
+        firstName: booking.first_name,
+        lastName: booking.last_name,
+        email: booking.email,
+        phone: booking.phone,
+        preferredContactMethod: booking.preferred_contact_method,
+        preferredContactTime: booking.preferred_contact_time,
+        source: booking.source,
+        status: booking.status,
+        formName: booking.form_name,
+        formData: booking.form_data,
+        notes: booking.notes,
+        ipAddress: booking.ip_address,
+        userAgent: booking.user_agent,
+        referrer: booking.referrer,
+        tags: booking.tags,
+        utmSource: booking.utm_source,
+        utmMedium: booking.utm_medium,
+        utmCampaign: booking.utm_campaign,
+        createdAt: booking.created_at,
+        updatedAt: booking.updated_at,
+        bookingType: booking.booking_type,
+        startDate: booking.start_date,
+        endDate: booking.end_date,
+        guests: booking.guests,
+        totalAmount: booking.total_amount,
+        currency: booking.currency,
+        paymentStatus: booking.payment_status,
+        paymentMethod: booking.payment_method,
+        specialRequests: booking.special_requests,
+        budget: booking.budget,
+        listingId: booking.listing_id,
+        confirmationCode: booking.confirmation_code
+      }));
+    } catch (error) {
+      console.error("Error in getAllBookings:", error);
+      throw error;
+    }
   }
 
   async getAllLeads(): Promise<Lead[]> {
-    return new DatabaseStorage().getAllLeads();
+    try {
+      const { data, error } = await supabase
+        .from('leads')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error("Error fetching all leads from Supabase:", error);
+        throw handleDatabaseError(error, "get all leads");
+      }
+
+      // Transform the data from snake_case to camelCase
+      return (data || []).map(lead => ({
+        id: lead.id,
+        firstName: lead.first_name,
+        lastName: lead.last_name,
+        email: lead.email,
+        phone: lead.phone,
+        preferredContactMethod: lead.preferred_contact_method,
+        preferredContactTime: lead.preferred_contact_time,
+        source: lead.source,
+        status: lead.status,
+        formName: lead.form_name,
+        formData: lead.form_data,
+        notes: lead.notes,
+        ipAddress: lead.ip_address,
+        userAgent: lead.user_agent,
+        referrer: lead.referrer,
+        tags: lead.tags,
+        utmSource: lead.utm_source,
+        utmMedium: lead.utm_medium,
+        utmCampaign: lead.utm_campaign,
+        createdAt: lead.created_at,
+        updatedAt: lead.updated_at,
+        interestType: lead.interest_type,
+        budget: lead.budget,
+        timeline: lead.timeline,
+        priority: lead.priority,
+        assignedTo: lead.assigned_to,
+        trackingId: lead.tracking_id
+      }));
+    } catch (error) {
+      console.error("Error in getAllLeads:", error);
+      throw error;
+    }
   }
 }
 

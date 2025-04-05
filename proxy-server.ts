@@ -35,7 +35,7 @@ app.use(
 
 const server = createServer(app);
 
-server.listen(PORT, () => {
-  console.log(`Express proxy server running at http://localhost:${PORT}`);
+server.listen(Number(PORT), '0.0.0.0', () => {
+  console.log(`Express proxy server running at http://0.0.0.0:${PORT}`);
   console.log(`Proxying requests to Next.js at http://localhost:${NEXT_PORT}`);
 });
