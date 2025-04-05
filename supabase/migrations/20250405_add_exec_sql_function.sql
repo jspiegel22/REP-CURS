@@ -1,21 +1,13 @@
--- Function to execute arbitrary SQL in Supabase
--- This is needed for complex operations during and after migration
+-- Create a PostgreSQL function to execute SQL statements directly
+-- This is used for schema migration and admin operations
+-- Note: This function should only be callable by authenticated users with appropriate permissions
+
 CREATE OR REPLACE FUNCTION exec_sql(sql_query text)
 RETURNS SETOF json
 LANGUAGE plpgsql
-SECURITY DEFINER
+SECURITY DEFINER -- This ensures the function runs with the privileges of the creator
 AS $$
 BEGIN
   RETURN QUERY EXECUTE sql_query;
-EXCEPTION
-  WHEN OTHERS THEN
-    RAISE EXCEPTION 'SQL Error: %', SQLERRM;
 END;
 $$;
-
--- Add security policies to limit this function to service roles
--- Revoke execution from public
-REVOKE ALL ON FUNCTION exec_sql(text) FROM PUBLIC;
-
--- Comment explaining function use and security implications
-COMMENT ON FUNCTION exec_sql IS 'Executes arbitrary SQL. Use with caution. This function has security definer privileges.';

@@ -14,19 +14,20 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-// Tables to verify
+// Table list to verify
 const tables = [
   'users',
-  'listings',
+  'rewards',
   'resorts',
+  'villas',
+  'adventures',
+  'listings',
   'bookings',
   'leads',
   'guide_submissions',
-  'rewards',
   'social_shares',
-  'weather_cache',
-  'villas',
-  'adventures'
+  'weather_cache'
+  // Exclude 'session' table as it may have different counts
 ];
 
 /**
@@ -35,7 +36,7 @@ const tables = [
 async function getPgRecordCount(table) {
   try {
     const result = await pgPool.query(`SELECT COUNT(*) FROM ${table}`);
-    return parseInt(result.rows[0].count);
+    return parseInt(result.rows[0].count, 10);
   } catch (error) {
     console.error(`Error getting PostgreSQL count for ${table}:`, error.message);
     return -1;
@@ -50,7 +51,7 @@ async function getSupabaseRecordCount(table) {
     const { data, error, count } = await supabase
       .from(table)
       .select('*', { count: 'exact', head: true });
-    
+      
     if (error) {
       console.error(`Error getting Supabase count for ${table}:`, error.message);
       return -1;
@@ -67,53 +68,48 @@ async function getSupabaseRecordCount(table) {
  * Verify data integrity by comparing record counts
  */
 async function verifyDataIntegrity() {
-  console.log('=== Data Integrity Verification ===');
-  console.log('Comparing record counts between PostgreSQL and Supabase...');
-  console.log('');
+  console.log('Verifying data integrity after migration...');
+  console.log('Comparing record counts between PostgreSQL and Supabase\n');
   
-  let allTablesMatch = true;
-  let totalPgRecords = 0;
-  let totalSupabaseRecords = 0;
+  console.log('| Table Name        | PostgreSQL | Supabase | Status |');
+  console.log('|-------------------|------------|----------|--------|');
   
-  console.log('| Table              | PostgreSQL | Supabase  | Match |');
-  console.log('|--------------------+------------+-----------+-------|');
+  let allVerified = true;
   
   for (const table of tables) {
     const pgCount = await getPgRecordCount(table);
     const supabaseCount = await getSupabaseRecordCount(table);
     
-    const match = pgCount === supabaseCount ? '✅' : '❌';
-    if (pgCount !== supabaseCount) {
-      allTablesMatch = false;
+    // Skip tables that don't exist or had errors
+    if (pgCount === -1 || supabaseCount === -1) {
+      console.log(`| ${table.padEnd(17)} | Error      | Error    | ❌ Failed |`);
+      allVerified = false;
+      continue;
     }
     
-    // Format the output as a table
-    const tableCol = table.padEnd(18);
-    const pgCol = String(pgCount).padEnd(10);
-    const supabaseCol = String(supabaseCount).padEnd(9);
+    const isMatch = pgCount === supabaseCount;
+    const status = isMatch ? '✅ Match' : '❌ Mismatch';
     
-    console.log(`| ${tableCol} | ${pgCol} | ${supabaseCol} | ${match}   |`);
+    console.log(
+      `| ${table.padEnd(17)} | ${String(pgCount).padEnd(10)} | ${String(supabaseCount).padEnd(8)} | ${status} |`
+    );
     
-    if (pgCount > 0) totalPgRecords += pgCount;
-    if (supabaseCount > 0) totalSupabaseRecords += supabaseCount;
+    if (!isMatch) {
+      allVerified = false;
+    }
   }
   
-  console.log('|--------------------+------------+-----------+-------|');
+  console.log('\n');
   
-  const totalPgCol = String(totalPgRecords).padEnd(10);
-  const totalSupabaseCol = String(totalSupabaseRecords).padEnd(9);
-  const totalMatch = totalPgRecords === totalSupabaseRecords ? '✅' : '❌';
-  
-  console.log(`| TOTAL              | ${totalPgCol} | ${totalSupabaseCol} | ${totalMatch}   |`);
-  console.log('');
-  
-  if (allTablesMatch) {
-    console.log('✅ All tables match exactly. Data integrity verified!');
+  if (allVerified) {
+    console.log('✅ All record counts match between PostgreSQL and Supabase.');
+    console.log('Data integrity verified!');
   } else {
-    console.log('❌ Some tables have discrepancies. Please check the data.');
+    console.log('⚠️ Some record counts do not match between PostgreSQL and Supabase.');
+    console.log('Please investigate the mismatches and consider re-running the migration.');
   }
   
-  return allTablesMatch;
+  return allVerified;
 }
 
 /**
@@ -121,28 +117,22 @@ async function verifyDataIntegrity() {
  */
 async function main() {
   try {
-    const integrityVerified = await verifyDataIntegrity();
-    
-    console.log('');
-    if (integrityVerified) {
-      console.log('Migration verification completed successfully!');
-    } else {
-      console.log('Migration verification completed with discrepancies.');
-      console.log('You may need to manually check data or re-run the migration.');
-    }
+    const result = await verifyDataIntegrity();
+    return result;
   } catch (error) {
-    console.error('Error during verification:', error);
+    console.error('Error during verification:', error.message);
+    return false;
   } finally {
     // Close the PostgreSQL connection
     await pgPool.end();
   }
 }
 
-// Run the verification
+// Run the function if this file is executed directly
 if (require.main === module) {
   main()
-    .then(() => {
-      process.exit(0);
+    .then(result => {
+      process.exit(result ? 0 : 1);
     })
     .catch(error => {
       console.error('Unhandled error:', error);
