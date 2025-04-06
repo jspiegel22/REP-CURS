@@ -3,5 +3,5 @@
 # Make sure the script is executable 
 chmod +x run.sh
 
-# Start the simple preview server
-node simple-preview.js
+# Use the full express-based proxy server
+node index.js
