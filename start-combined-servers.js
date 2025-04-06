@@ -1,55 +1,55 @@
+/**
+ * Combined server script for Replit
+ * Runs both the Next.js server on port 3000 and proxy on port 5000
+ */
 const { spawn } = require('child_process');
 const path = require('path');
+const fs = require('fs');
 
-// Function to spawn a process and handle its output
+// Keep track of all child processes
+const children = [];
+
 function spawnProcess(command, args, options = {}) {
-  console.log(`Starting: ${command} ${args.join(' ')}`);
-  
-  const proc = spawn(command, args, {
-    stdio: 'pipe',
-    shell: process.platform === 'win32',
+  const child = spawn(command, args, {
+    stdio: 'inherit',
+    shell: true,
     ...options
   });
-
-  // Pipe the process output to our own stdout/stderr
-  proc.stdout.on('data', (data) => {
-    process.stdout.write(`[${options.name || 'Process'}] ${data}`);
+  
+  children.push(child);
+  
+  child.on('error', (error) => {
+    console.error(`Error starting process: ${command}`, error);
   });
-
-  proc.stderr.on('data', (data) => {
-    process.stderr.write(`[${options.name || 'Process'}] ${data}`);
-  });
-
-  // Handle process exit
-  proc.on('exit', (code) => {
-    console.log(`${options.name || 'Process'} exited with code ${code}`);
-  });
-
-  return proc;
+  
+  return child;
 }
 
-// Start Next.js
-const nextProcess = spawnProcess('npm', ['run', 'dev'], { 
-  name: 'Next.js',
-  env: { ...process.env, PORT: 3000 }
-});
-
-// Give Next.js a head start
-setTimeout(() => {
-  // Start Express/Proxy Server
-  const proxyProcess = spawnProcess('ts-node', ['proxy-server.ts'], { 
-    name: 'Express',
-    env: { ...process.env, PORT: 5000 }
+// Handle graceful shutdown
+function shutdown() {
+  console.log('\nShutting down all processes...');
+  
+  // Send SIGTERM to all child processes
+  children.forEach(child => {
+    if (!child.killed) {
+      child.kill();
+    }
   });
+  
+  // Exit this process
+  process.exit(0);
+}
 
-  // Handle graceful shutdown
-  process.on('SIGINT', () => {
-    console.log('Shutting down all servers...');
-    nextProcess.kill();
-    proxyProcess.kill();
-    process.exit(0);
-  });
-}, 2000);
+// Setup signal handlers
+process.on('SIGINT', shutdown);
+process.on('SIGTERM', shutdown);
+process.on('SIGHUP', shutdown);
 
-console.log('Starting both Next.js and Express servers...');
-console.log('Press Ctrl+C to stop all servers');
+console.log('Starting Next.js server on port 3000...');
+spawnProcess('npm', ['run', 'dev']);
+
+console.log('Starting proxy server on port 5000...');
+spawnProcess('node', ['port-5000.js']);
+
+console.log('All servers started. Press Ctrl+C to stop.');
+console.log('Access the application at: https://' + process.env.REPL_SLUG + '.' + process.env.REPL_OWNER + '.repl.co');
