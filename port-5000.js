@@ -6,41 +6,43 @@ const express = require('express');
 const { createProxyMiddleware } = require('http-proxy-middleware');
 const path = require('path');
 
-const app = express();
-const PORT = process.env.PORT || 5000;
+// Configuration
+const PORT = 5000;
 const TARGET = 'http://localhost:3000';
 
-// Configuration for the proxy
-const proxyOptions = {
+// Create Express server
+const app = express();
+
+// Proxy options
+const options = {
   target: TARGET,
   changeOrigin: true,
-  ws: true, // Enable WebSocket proxying
+  ws: true, // proxy websockets
   pathRewrite: {
-    '^/api': '/api', // keep /api paths as is
+    '^/': '/' // remove path prefix if needed
   },
+  // Add error handling
   onError: (err, req, res) => {
-    console.error('Proxy Error:', err);
-    res.writeHead(502, {
-      'Content-Type': 'text/plain',
+    console.error('Proxy error:', err);
+    res.writeHead(500, {
+      'Content-Type': 'text/plain'
     });
-    res.end('Proxy Error: The Next.js server might not be running yet. Please try again in a moment.');
+    res.end('Something went wrong with the proxy.');
   },
-  onProxyRes: (proxyRes, req, res) => {
-    // Log proxy activity (for debugging)
-    if (process.env.DEBUG) {
-      console.log(`[PROXY] ${req.method} ${req.path} -> ${proxyRes.statusCode}`);
-    }
-  },
+  // Log proxy activity
+  onProxyReq: (proxyReq, req, res) => {
+    console.log(`Proxying ${req.method} request to: ${req.url}`);
+  }
 };
 
 // Create the proxy middleware
-const proxy = createProxyMiddleware(proxyOptions);
+const proxy = createProxyMiddleware(options);
 
 // Apply the proxy to all routes
 app.use('/', proxy);
 
-// Start the server
-app.listen(PORT, () => {
-  console.log(`Proxy server running on http://localhost:${PORT}`);
+// Start the server - bind to 0.0.0.0 to make it accessible from outside
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Proxy server running on http://0.0.0.0:${PORT}`);
   console.log(`Forwarding requests to ${TARGET}`);
 });

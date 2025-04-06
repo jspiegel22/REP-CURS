@@ -57,6 +57,7 @@
     "@types/connect-pg-simple": "^7.0.3",
     "@types/express": "^5.0.1",
     "@types/express-session": "^1.18.1",
+    "@types/passport": "^1.0.17",
     "@types/react-helmet": "^6.1.11",
     "airtable": "^0.12.2",
     "axios": "^1.8.3",

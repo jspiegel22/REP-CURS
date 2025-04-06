@@ -7,6 +7,7 @@ import { insertBookingSchema, insertLeadSchema, insertGuideSubmissionSchema, ins
 import { generateSlug } from "@/lib/utils";
 import { nanoid } from "nanoid";
 import passport from "passport";
+import { dualDb } from "./services/dual-db"; // Import our dual-database service
 
 export async function registerRoutes(app: Express): Promise<Server> {
   setupAuth(app);
@@ -50,8 +51,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         processedAt: new Date(), // Mark as processed now
       };
 
-      // Create guide submission in database
-      const submission = await storage.createGuideSubmission(fullSubmissionData);
+      // Create guide submission in database using the dual-database service
+      // This will save to both Supabase and Airtable
+      const submission = await dualDb.submitGuideRequest(fullSubmissionData);
       
       // Log the submission for debugging
       console.log(`✅ Guide submission recorded for ${submission.email} with ID ${submission.submissionId}`);
@@ -80,14 +82,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      // Create booking with confirmed status
-      const booking = await storage.createBooking({
+      // Add booking metadata
+      const bookingWithMeta = {
         ...bookingData.data,
         status: "confirmed", // Set as confirmed immediately
         createdAt: new Date(),
         updatedAt: new Date(),
         confirmationCode: `CABO-${Math.floor(100000 + Math.random() * 900000)}` // Generate a confirmation code
-      });
+      };
+
+      // Create booking in database using the dual-database service
+      // This will save to both Supabase and Airtable
+      const booking = await dualDb.submitBooking(bookingWithMeta);
 
       // Log successful booking
       console.log(`✅ Booking created for ${booking.email}, confirmation: ${booking.confirmationCode}`);
@@ -119,14 +125,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      // Create lead
-      const lead = await storage.createLead({
+      // Add lead metadata
+      const leadWithMeta = {
         ...leadData.data,
         status: "received", // Mark as received immediately
         createdAt: new Date(),
         updatedAt: new Date(),
         trackingId: `LEAD-${Date.now().toString().slice(-6)}` // Generate a tracking ID
-      });
+      };
+
+      // Create lead in database using the dual-database service
+      // This will save to both Supabase and Airtable
+      const lead = await dualDb.submitLead(leadWithMeta);
 
       // Log successful lead creation
       console.log(`✅ Lead created for ${lead.email}, tracking ID: ${lead.trackingId}`);

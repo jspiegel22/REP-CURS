@@ -6,50 +6,55 @@ const { spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs');
 
-// Keep track of all child processes
-const children = [];
+// Store child processes to manage them later
+const processes = [];
 
+// Function to spawn a child process and handle its output
 function spawnProcess(command, args, options = {}) {
-  const child = spawn(command, args, {
-    stdio: 'inherit',
-    shell: true,
+  console.log(`Starting: ${command} ${args.join(' ')}`);
+  
+  const childProcess = spawn(command, args, {
+    stdio: 'pipe',
     ...options
   });
   
-  children.push(child);
-  
-  child.on('error', (error) => {
-    console.error(`Error starting process: ${command}`, error);
+  childProcess.stdout.on('data', (data) => {
+    console.log(`[${command}] ${data.toString().trim()}`);
   });
   
-  return child;
+  childProcess.stderr.on('data', (data) => {
+    console.error(`[${command}] ${data.toString().trim()}`);
+  });
+  
+  childProcess.on('close', (code) => {
+    console.log(`[${command}] process exited with code ${code}`);
+  });
+  
+  processes.push(childProcess);
+  return childProcess;
 }
 
-// Handle graceful shutdown
+// Handle shutdown gracefully
 function shutdown() {
-  console.log('\nShutting down all processes...');
-  
-  // Send SIGTERM to all child processes
-  children.forEach(child => {
-    if (!child.killed) {
-      child.kill();
+  console.log('Shutting down servers...');
+  processes.forEach(process => {
+    if (!process.killed) {
+      process.kill();
     }
   });
-  
-  // Exit this process
   process.exit(0);
 }
 
-// Setup signal handlers
+// Listen for termination signals
 process.on('SIGINT', shutdown);
 process.on('SIGTERM', shutdown);
-process.on('SIGHUP', shutdown);
 
-console.log('Starting Next.js server on port 3000...');
-spawnProcess('npm', ['run', 'dev']);
+// Start Next.js development server (port 3000)
+spawnProcess('npx', ['next', 'dev']);
 
-console.log('Starting proxy server on port 5000...');
+// Start the proxy server (port 5000)
 spawnProcess('node', ['port-5000.js']);
 
-console.log('All servers started. Press Ctrl+C to stop.');
-console.log('Access the application at: https://' + process.env.REPL_SLUG + '.' + process.env.REPL_OWNER + '.repl.co');
+console.log('Both servers are running!');
+console.log('Next.js on port 3000, proxy on port 5000');
+console.log(`App is available at: https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co`);
