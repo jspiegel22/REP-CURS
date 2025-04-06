@@ -2,7 +2,8 @@ import "./polyfills/process";
 import React from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App";
-import "./index.css";
+// Import removed for Next.js compatibility
+// CSS is now loaded in pages/_app.tsx
 
 // Register service worker for offline capabilities
 if ('serviceWorker' in navigator) {

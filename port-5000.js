@@ -2,47 +2,61 @@
  * A simple proxy server that forwards requests from port 5000 to port 3000 (Next.js default)
  * This allows Replit to detect the application properly while Next.js runs on its default port
  */
-const express = require('express');
-const { createProxyMiddleware } = require('http-proxy-middleware');
-const path = require('path');
 
-// Configuration
-const PORT = 5000;
-const TARGET = 'http://localhost:3000';
+const http = require('http');
+const httpProxy = require('http-proxy');
 
-// Create Express server
-const app = express();
+// Create and configure the proxy
+const proxy = httpProxy.createProxyServer({
+  target: 'http://localhost:3000',
+  ws: true // Required for WebSocket support (hot module reloading)
+});
 
-// Proxy options
-const options = {
-  target: TARGET,
-  changeOrigin: true,
-  ws: true, // proxy websockets
-  pathRewrite: {
-    '^/': '/' // remove path prefix if needed
-  },
-  // Add error handling
-  onError: (err, req, res) => {
-    console.error('Proxy error:', err);
-    res.writeHead(500, {
-      'Content-Type': 'text/plain'
-    });
-    res.end('Something went wrong with the proxy.');
-  },
-  // Log proxy activity
-  onProxyReq: (proxyReq, req, res) => {
-    console.log(`Proxying ${req.method} request to: ${req.url}`);
+// Handle proxy errors
+proxy.on('error', (err, req, res) => {
+  console.error('Proxy error:', err);
+  if (res.writeHead) {
+    res.writeHead(500, { 'Content-Type': 'text/plain' });
+    res.end('Proxy error: ' + err.message);
   }
-};
+});
 
-// Create the proxy middleware
-const proxy = createProxyMiddleware(options);
+// Create the server
+const server = http.createServer((req, res) => {
+  // Set CORS headers
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+  
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+    res.writeHead(200);
+    res.end();
+    return;
+  }
+  
+  // Forward the request to Next.js
+  proxy.web(req, res);
+});
 
-// Apply the proxy to all routes
-app.use('/', proxy);
+// Handle WebSocket connections (needed for Next.js hot reloading)
+server.on('upgrade', (req, socket, head) => {
+  proxy.ws(req, socket, head);
+});
 
-// Start the server - bind to 0.0.0.0 to make it accessible from outside
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Proxy server running on http://0.0.0.0:${PORT}`);
-  console.log(`Forwarding requests to ${TARGET}`);
+// Start the proxy server
+server.listen(5000, '0.0.0.0', () => {
+  console.log('Proxy server running on port 5000');
+  console.log('Forwarding requests to Next.js on port 3000');
+});
+
+// Ensure the process stays alive
+setInterval(() => {}, 1000 * 60 * 60);
+
+// Handle clean shutdown
+process.on('SIGINT', () => {
+  server.close(() => {
+    console.log('Proxy server shut down');
+    process.exit(0);
+  });
 });

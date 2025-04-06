@@ -1,34 +1,36 @@
 /**
- * Replit startup script
- * This script starts the application on port 5000 which is required by Replit
+ * Replit workflow starter - Executes automatically when "Start application" runs
+ * This script runs next dev and our proxy together to ensure the app works in Replit
  */
+
+// Import required modules
 const { spawn } = require('child_process');
 
-console.log('Starting Next.js application for Replit on port 5000...');
+// Start the development server with the proxy
+console.log('Starting Cabo Travel Guide application...');
 
-// Spawn Next.js on port 5000
-const nextProcess = spawn('npx', ['next', 'dev', '-p', '5000'], {
-  stdio: 'inherit',
-  shell: true,
-  env: { ...process.env, PORT: '5000' }
-});
-
-// Handle errors
-nextProcess.on('error', (err) => {
-  console.error('Failed to start Next.js:', err);
-  process.exit(1);
+// We run the node script directly as this is what will be executed by the workflow
+const proc = spawn('node', ['start-dev.js'], {
+  stdio: 'inherit',  // Ensure we see all output
+  env: process.env   // Pass all environment variables
 });
 
 // Handle process exit
-nextProcess.on('close', (code) => {
-  console.log(`Next.js process exited with code ${code}`);
+proc.on('exit', (code) => {
+  console.log(`start-dev.js exited with code ${code}`);
   process.exit(code);
+});
+
+// Handle errors
+proc.on('error', (err) => {
+  console.error('Failed to start application:', err);
+  process.exit(1);
 });
 
 // Handle termination signals
 function shutdown() {
-  console.log('Shutting down gracefully...');
-  nextProcess.kill();
+  console.log('Shutting down application...');
+  proc.kill();
   process.exit(0);
 }
 

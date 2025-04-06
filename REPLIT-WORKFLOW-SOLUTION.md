@@ -1,52 +1,95 @@
-# Replit Workflow Solution for Cabo Travel Guide
+# Replit Workflow Solution
 
-Due to the unique challenges of the Replit environment, we've created a custom solution for running our application properly.
+## The Problem
 
-## Current Setup
+Next.js applications default to running on port 3000, but Replit requires applications to be accessible on port 5000 for proper integration with its platform.
 
-1. **Hybrid Architecture**: 
-   - Next.js app for API routes and data access
-   - Vite-powered React application for the frontend
+## Solution Overview
 
-2. **Port Conflicts**: 
-   - Next.js runs on port 3000 (default)
-   - Replit requires applications to run on port 5000
+We've implemented several solutions to address this port mismatch:
 
-## Solutions Implemented
+### 1. Direct Proxy (direct-proxy.js)
 
-### Custom Proxy Server
-
-We've implemented a lightweight proxy server in `direct-proxy.js` that:
-- Listens on port 5000 (Replit's required port)
-- Forwards all requests to the Next.js server on port 3000
+A lightweight proxy server that:
+- Listens on port 5000
+- Forwards all requests to the Next.js application on port 3000
+- Handles WebSocket connections for hot module reloading
 - Adds proper CORS headers
-- Handles error conditions gracefully
 
-### Run Script
+### 2. Simple Proxy with Next.js Starter (simple-proxy.js)
 
-The `run.sh` script orchestrates:
-1. Starting the Next.js server in the background
-2. Waiting for Next.js to be ready
-3. Starting the proxy server on port 5000 to make the app visible in Replit
+A combined script that:
+- Starts the Next.js application on port 3000
+- Creates a proxy server on port 5000
+- Forwards all traffic
+- Handles graceful shutdown
 
-### Redirects in Next.js Configuration
+### 3. Enhanced Development Starter (start-on-port-5000.js)
 
-We've updated `next.config.js` to:
-- Add proper CORS headers
-- Configure rewrites for the Vite application
-- Allow proper communication between components
+A more robust solution that:
+- Starts Next.js on port 3000
+- Waits for Next.js to be ready before starting the proxy
+- Provides detailed logging
+- Handles error cases
+- Properly shuts down both servers on termination
 
-## How to Run the Application
+### 4. Lightweight Port 5000 Solution (port-5000.js)
 
-1. **Via Workflow**: 
-   - The "Start application" workflow runs Next.js
-   - In a separate terminal, run `node direct-proxy.js`
+A minimal proxy implementation that:
+- Forwards HTTP requests from port 5000 to 3000
+- Handles WebSocket connections
+- Provides error handling
 
-2. **Direct Method**:
-   - Run `chmod +x run.sh && ./run.sh` to start both servers
+### 5. Run on Port 5000 Script (run-on-5000.js)
 
-## Tips for Development
+Another implementation that:
+- Launches Next.js using npm run dev
+- Sets up a proxy on port 5000
+- Uses setTimeout to ensure Next.js has time to start
 
-- Use `?port=3000` query parameter in the Replit URL to access the app directly
-- When making changes to the frontend, only restart the Vite part
-- When changing API routes, restart the entire application
+## Recommended Approach
+
+For most cases, we recommend using `run-on-5000.js` as it provides:
+- Simple, clean implementation
+- Reliable forwarding
+- Proper error handling
+- Graceful shutdown
+
+## Usage
+
+To use our port solution:
+
+1. Ensure the workflow is set to run the script:
+   ```
+   node run-on-5000.js
+   ```
+
+2. When the application starts, you'll see output like:
+   ```
+   Starting Next.js application...
+   Proxy server running on port 5000
+   Forwarding requests to Next.js on port 3000
+   Access your app at: https://your-repl-name.username.repl.co
+   ```
+
+3. The application should now be accessible through Replit's interface.
+
+## Troubleshooting
+
+If you encounter issues:
+
+- Check that port 5000 is not already in use
+- Verify that Next.js can start normally on port 3000
+- Look for proxy error messages in the console
+- Ensure all dependencies are installed (http-proxy is required)
+
+## Implementation Details
+
+The proxy solutions use the following key components:
+
+1. `http-proxy` package for request forwarding
+2. WebSocket handling for hot module reloading support
+3. CORS headers for cross-origin requests
+4. Graceful shutdown handlers for clean process termination
+
+These implementations avoid modifying the core Next.js configuration while ensuring compatibility with Replit's requirements.

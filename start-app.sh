@@ -1,4 +1,5 @@
 #!/bin/bash
 
-echo "Starting Cabo San Lucas Travel Platform on port 5000..."
-node start-on-port-5000.js
+# Start the development server with the Replit proxy
+echo "Starting application on port 5000..."
+node replit-start.js
