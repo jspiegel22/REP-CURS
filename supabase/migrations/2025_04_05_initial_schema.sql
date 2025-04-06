@@ -922,3 +922,4 @@ CREATE POLICY weather_cache_policy ON public.weather_cache USING (true) WITH CHE
 -- PostgreSQL database dump complete
 --
 
+-- dummy change
