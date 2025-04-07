@@ -27,7 +27,7 @@ localPort = 5001
 externalPort = 3002
 
 [workflows]
-runButton = "Project"
+runButton = "Start application"
 
 [[workflows.workflow]]
 name = "Project"
@@ -41,6 +41,7 @@ args = "Start application"
 [[workflows.workflow]]
 name = "Start application"
 author = "agent"
+mode = "sequential"
 
 [workflows.workflow.metadata]
 agentRequireRestartOnSave = false
@@ -50,5 +51,4 @@ task = "packager.installForAll"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "npm run dev"
-waitForPort = 5000
+args = "node replit-entry.js"

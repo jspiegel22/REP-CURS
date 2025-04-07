@@ -5,31 +5,57 @@
  * It also dynamically detects which port Next.js is running on
  */
 
-const { spawn } = require('child_process');
 const http = require('http');
-const httpProxy = require('http-proxy');
+const { spawn } = require('child_process');
+const net = require('net');
+const fs = require('fs').promises;
 
-// Constants
-let NEXT_PORT = 3000; // This will be updated dynamically if needed
-const POSSIBLE_PORTS = [3000, 3001, 3002, 3003, 3004, 3005];
-const PROXY_PORT = 5000;
-
-// Setup proxy server first - this needs to be available immediately
-console.log('🚀 Starting Replit proxy server on port 5000...');
-
-// Create a proxy server instance with a default target
-// We'll update this dynamically when we detect the actual Next.js port
-const proxy = httpProxy.createProxyServer({
-  target: `http://localhost:${NEXT_PORT}`,
-  ws: true,
-  autoRewrite: true
-});
-
-// Handle proxy errors
-proxy.on('error', (err, req, res) => {
-  console.error('Proxy error:', err.message);
+// Create a log file to help with debugging
+async function logMessage(message) {
+  const timestamp = new Date().toISOString();
+  const logLine = `[${timestamp}] ${message}\n`;
   
-  if (res && !res.headersSent) {
+  console.log(message);
+  
+  try {
+    await fs.appendFile('replit-log.txt', logLine);
+  } catch (err) {
+    console.error('Error writing to log file:', err);
+  }
+}
+
+logMessage('📢 Starting Replit entry script...');
+
+// Default Next.js port
+let nextJsPort = 3000;
+
+// Create a proxy server that will forward requests to the Next.js server
+const server = http.createServer((req, res) => {
+  logMessage(`📨 Forwarding request: ${req.method} ${req.url}`);
+  
+  // Create options for the proxy request
+  const options = {
+    hostname: 'localhost',
+    port: nextJsPort,
+    path: req.url,
+    method: req.method,
+    headers: req.headers
+  };
+  
+  // Create the proxy request
+  const proxyReq = http.request(options, (proxyRes) => {
+    // Copy the status code and headers
+    res.writeHead(proxyRes.statusCode, proxyRes.headers);
+    
+    // Pipe the response data
+    proxyRes.pipe(res);
+  });
+  
+  // Handle proxy request errors
+  proxyReq.on('error', (e) => {
+    logMessage(`❌ Proxy error: ${e.message}`);
+    
+    // Send a nice error page
     res.writeHead(502, { 'Content-Type': 'text/html' });
     res.end(`
       <html>
@@ -39,208 +65,158 @@ proxy.on('error', (err, req, res) => {
             body { font-family: system-ui, sans-serif; padding: 2rem; text-align: center; line-height: 1.6; }
             .container { max-width: 600px; margin: 0 auto; }
             .spinner { display: inline-block; width: 50px; height: 50px; border: 3px solid rgba(0,0,0,.1); 
-                       border-radius: 50%; border-top-color: #2563eb; animation: spin 1s ease-in-out infinite; }
+                      border-radius: 50%; border-top-color: #2563eb; animation: spin 1s ease-in-out infinite; }
             @keyframes spin { to { transform: rotate(360deg); } }
           </style>
+          <meta http-equiv="refresh" content="5">
         </head>
         <body>
           <div class="container">
             <div class="spinner"></div>
             <h1>Application is starting...</h1>
-            <p>Please wait a moment while the Next.js server initializes.</p>
+            <p>Please wait a moment while the Cabo Travel Guide application initializes.</p>
             <p>This page will automatically refresh in 5 seconds.</p>
-            <p><small>Current target port: ${NEXT_PORT}</small></p>
-            <script>setTimeout(() => { window.location.reload(); }, 5000);</script>
           </div>
         </body>
       </html>
     `);
-  }
-});
-
-// Create the HTTP server for the proxy
-const server = http.createServer((req, res) => {
-  // Log request for debugging
-  console.log(`[Proxy] ${req.method} ${req.url}`);
+  });
   
-  // Add CORS headers
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+  // Handle client request errors
+  req.on('error', (e) => {
+    logMessage(`❌ Client request error: ${e.message}`);
+    proxyReq.destroy();
+  });
   
-  // Handle OPTIONS requests for CORS
-  if (req.method === 'OPTIONS') {
-    res.writeHead(200);
-    res.end();
-    return;
-  }
-  
-  // Forward request to Next.js
-  proxy.web(req, res);
+  // Forward the request body
+  req.pipe(proxyReq);
 });
 
-// Handle WebSocket requests
-server.on('upgrade', (req, socket, head) => {
-  proxy.ws(req, socket, head);
-});
-
-// Open port 5000 immediately - this is critical for Replit to detect the app
-server.listen(PROXY_PORT, () => {
-  console.log(`✅ Proxy server running on port ${PROXY_PORT}`);
-});
-
-// Function to update proxy target
+// Function to update the proxy target port
 function updateProxyTarget(port) {
-  NEXT_PORT = port;
-  proxy.options.target = `http://localhost:${port}`;
-  console.log(`🔄 Updated proxy target to port ${port}`);
+  if (port !== nextJsPort) {
+    nextJsPort = port;
+    logMessage(`⚙️ Updated proxy target to port ${nextJsPort}`);
+  }
 }
+
+// Listen on port 5000 immediately
+server.listen(5000, () => {
+  logMessage('🚀 Proxy server running on port 5000');
+});
 
 // Function to detect which port Next.js is running on
 async function detectNextJsPort() {
-  // Give Next.js time to start and print its port info
-  await new Promise(resolve => setTimeout(resolve, 5000));
+  // Common Next.js ports to check
+  const portsToCheck = [3000, 3001, 3002, 8080];
   
-  // Check each possible port to see if Next.js is running there
-  for (const port of POSSIBLE_PORTS) {
+  for (const port of portsToCheck) {
     try {
-      console.log(`🔍 Checking if Next.js is running on port ${port}...`);
+      // Try to connect to the port
+      const socket = new net.Socket();
       
-      // Create a promise that resolves when we get a response
-      const checkPort = new Promise((resolve, reject) => {
-        const req = http.get(`http://localhost:${port}/api/health`, (res) => {
-          let data = '';
-          
-          res.on('data', chunk => {
-            data += chunk;
-          });
-          
-          res.on('end', () => {
-            if (res.statusCode === 200) {
-              console.log(`✅ Found Next.js running on port ${port}`);
-              resolve(port);
-            } else {
-              reject(new Error(`Received status code ${res.statusCode}`));
-            }
-          });
+      const connectPromise = new Promise((resolve, reject) => {
+        socket.connect(port, 'localhost', () => {
+          socket.destroy();
+          resolve(true);
         });
         
-        req.on('error', (err) => {
-          reject(err);
-        });
-        
-        req.setTimeout(1000, () => {
-          req.destroy();
-          reject(new Error('Request timed out'));
+        socket.on('error', () => {
+          socket.destroy();
+          resolve(false);
         });
       });
       
-      // Wait for the port check with a timeout
-      try {
-        const detectedPort = await checkPort;
-        updateProxyTarget(detectedPort);
-        return true;
-      } catch (err) {
-        console.log(`Port ${port} check failed: ${err.message}`);
-        // Continue to next port
+      const isConnected = await connectPromise;
+      
+      if (isConnected) {
+        logMessage(`✅ Detected Next.js running on port ${port}`);
+        updateProxyTarget(port);
+        return port;
       }
-    } catch (error) {
-      console.log(`Error checking port ${port}: ${error.message}`);
-      // Continue to next port
+    } catch (err) {
+      logMessage(`⚠️ Error checking port ${port}: ${err.message}`);
     }
   }
   
-  console.log(`⚠️ Could not detect Next.js port, defaulting to ${NEXT_PORT}`);
-  return false;
+  logMessage('⚠️ Could not detect Next.js port, using default (3000)');
+  return 3000;
 }
 
-// Now start Next.js
-console.log('📦 Starting Next.js development server...');
+// Handle cleanup when the process exits
+function cleanup() {
+  logMessage('🛑 Shutting down servers...');
+  
+  if (nextProcess) {
+    logMessage('👋 Stopping Next.js process');
+    nextProcess.kill();
+  }
+  
+  server.close(() => {
+    logMessage('👋 Proxy server closed');
+    process.exit(0);
+  });
+}
+
+// Start Next.js
+logMessage('📦 Starting Next.js development server...');
 
 const nextProcess = spawn('npm', ['run', 'dev'], {
-  stdio: 'pipe',
+  stdio: ['inherit', 'pipe', 'pipe'],
   shell: true
 });
 
-// Handle Next.js output
+// Pass through Next.js logs
 nextProcess.stdout.on('data', (data) => {
-  const output = data.toString().trim();
-  console.log(`[Next.js] ${output}`);
+  const output = data.toString();
+  process.stdout.write(output);
   
-  // Check if the output contains port information
-  const portMatch = output.match(/localhost:(\d+)/);
-  if (portMatch && portMatch[1]) {
-    const detectedPort = parseInt(portMatch[1], 10);
-    if (detectedPort !== NEXT_PORT) {
-      updateProxyTarget(detectedPort);
+  // Look for the "ready" message to detect when Next.js is running
+  if (output.includes('ready') && output.includes('http://localhost:')) {
+    // Extract the port from the output
+    const match = output.match(/http:\/\/localhost:(\d+)/);
+    if (match && match[1]) {
+      const port = parseInt(match[1], 10);
+      updateProxyTarget(port);
     }
   }
 });
 
 nextProcess.stderr.on('data', (data) => {
-  const output = data.toString().trim();
-  console.error(`[Next.js Error] ${output}`);
-  
-  // Also check stderr for port information (Next.js outputs to stderr sometimes)
-  const portMatch = output.match(/trying (\d+) instead/);
-  if (portMatch && portMatch[1]) {
-    const detectedPort = parseInt(portMatch[1], 10);
-    if (detectedPort !== NEXT_PORT) {
-      updateProxyTarget(detectedPort);
-    }
-  }
+  process.stderr.write(data);
 });
 
 // Handle Next.js exit
 nextProcess.on('exit', (code) => {
-  console.error(`❌ Next.js process exited with code ${code}`);
-  console.log('⚙️ Keeping proxy server running to show error messages...');
+  logMessage(`⚠️ Next.js process exited with code ${code}`);
+  logMessage('⚙️ Keeping proxy server running to show error messages...');
 });
 
-// Graceful shutdown
-function cleanup() {
-  console.log('🛑 Shutting down...');
+// Try to detect the port after a delay
+async function detectWithRetries() {
+  // Wait a moment before checking
+  await new Promise(resolve => setTimeout(resolve, 5000));
   
-  // Kill child processes
-  if (nextProcess) {
-    nextProcess.kill();
+  let retries = 5;
+  while (retries > 0) {
+    const port = await detectNextJsPort();
+    if (port) {
+      updateProxyTarget(port);
+      return;
+    }
+    
+    // Wait between retries
+    await new Promise(resolve => setTimeout(resolve, 3000));
+    retries--;
   }
   
-  // Close the proxy server
-  server.close(() => {
-    console.log('👋 Goodbye!');
-    process.exit(0);
-  });
+  logMessage('⚠️ Failed to detect Next.js port after several attempts');
 }
 
-// Handle termination signals
+// Start detection
+detectWithRetries();
+
+// Set up cleanup handlers
 process.on('SIGINT', cleanup);
 process.on('SIGTERM', cleanup);
-
-// Try to detect Next.js port after starting with retries
-async function detectWithRetries() {
-  let retries = 0;
-  const maxRetries = 5;
-  
-  const attemptDetection = async () => {
-    console.log(`Attempt ${retries + 1}/${maxRetries} to detect Next.js port...`);
-    const success = await detectNextJsPort();
-    
-    if (!success && retries < maxRetries) {
-      retries++;
-      console.log(`Waiting before retry ${retries}...`);
-      // Wait longer between retries
-      await new Promise(resolve => setTimeout(resolve, 3000));
-      return attemptDetection();
-    }
-    
-    if (!success) {
-      console.log('Failed to detect Next.js port after maximum retries. Using default port 3000.');
-    }
-  };
-  
-  await attemptDetection();
-}
-
-// Start port detection
-detectWithRetries();
+process.on('exit', cleanup);

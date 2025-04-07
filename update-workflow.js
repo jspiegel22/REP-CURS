@@ -1,27 +1,34 @@
 /**
- * Update Replit Workflow
- * This script provides instructions for updating the Replit workflow command manually
+ * This script provides instructions for updating the Replit workflow configuration.
+ * The web application requires port 5000 to be configured in the workflow.
  */
 
 console.log(`
-==========================================================================================
-IMPORTANT: Please update your Replit workflow manually by following these steps:
-==========================================================================================
+=====================================================
+  HOW TO FIX WORKFLOW CONFIGURATION IN REPLIT UI
+=====================================================
 
-1. Go to the "▶ Run" button at the top of the Replit interface
-2. Click on the gear icon (⚙️) next to the Run button
-3. In the "Commands" section, find "Start application" 
-4. Change the command from "npm run dev" to "node replit-entry.js"
-5. Click "Done" to save your changes
-6. Click the "▶ Run" button to restart your application
+Your application is running correctly, but the Replit workflow 
+needs to be configured to wait for port 5000 for the webview to work properly.
 
-This will ensure your app runs correctly on Replit by:
-- Properly handling port forwarding from port 5000 (Replit's expected port) to port 3000 (Next.js)
-- Ensuring your app is visible in the web preview
-- Allowing both the frontend and API to function correctly
+Follow these steps to update the workflow configuration:
 
-==========================================================================================
+1. Go to the "Workflows" tab in the left sidebar of the Replit IDE
+2. Click on the "Start application" workflow
+3. Click the "Edit" button (pencil icon)
+4. Find the "wait_for_port" field and set it to 5000
+5. Click "Save" to apply the changes
+6. Restart the workflow
+
+This will ensure that Replit waits for your application to start 
+on port 5000 before showing the webview.
+
+Your guide submission forms should then be accessible at:
+- /test-form
+- /test-submission
+
+And the guide PDF at:
+- /guides/ultimate-cabo-guide-2025.pdf
+
+=====================================================
 `);
-
-// Exit after displaying the message
-process.exit(0);
