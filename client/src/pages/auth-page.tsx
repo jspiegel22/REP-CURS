@@ -17,7 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BeachIcon, LockIcon, UserIcon } from "lucide-react";
+import { Palmtree, LockIcon, UserIcon } from "lucide-react";
 import SEO from "@/components/SEO";
 
 // Extend the insert schema to add validation
@@ -87,7 +87,7 @@ export default function AuthPage() {
           <Card className="w-full max-w-md">
             <CardHeader className="space-y-1">
               <div className="flex items-center justify-center mb-2">
-                <BeachIcon className="h-10 w-10 text-primary" />
+                <Palmtree className="h-10 w-10 text-primary" />
               </div>
               <CardTitle className="text-2xl text-center">Welcome to Cabo Travel Guide</CardTitle>
               <CardDescription className="text-center">

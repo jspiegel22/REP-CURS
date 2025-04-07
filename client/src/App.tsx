@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import Footer from "@/components/footer";
 import NotFound from "@/pages/not-found";
 import HomePage from "@/pages/home-page";
+import AuthPage from "@/pages/auth-page";
 import ResortsLanding from "@/pages/resorts-landing";
 import ResortDetail from "@/pages/resort-detail";
 import VillasLanding from "@/pages/villas-landing";
@@ -28,6 +29,7 @@ import WorkWithUsPage from "@/pages/work-with-us";
 import NavigationBar from "./components/navigation-bar";
 import { ChatButton } from "./components/chat-button";
 import { AuthProvider, useAuth } from "@/hooks/use-auth";
+import { ProtectedRoute } from "@/lib/protected-route";
 import AdminDashboard from "@/pages/admin";
 import AdminLoginPage from "@/pages/admin/login";
 
@@ -63,6 +65,7 @@ function Router() {
         Switch,
         null,
         React.createElement(Route, { path: "/", component: HomePage }),
+        React.createElement(Route, { path: "/auth", component: AuthPage }),
         React.createElement(Route, { path: "/admin/login", component: AdminLoginPage }),
         React.createElement(Route, { 
           path: "/admin",
@@ -72,6 +75,8 @@ function Router() {
             React.createElement(AdminDashboard)
           )
         }),
+        
+        // Public routes
         React.createElement(Route, { path: "/blog", component: BlogIndex }),
         React.createElement(Route, { path: "/blog/:slug", component: BlogDetail }),
         React.createElement(Route, { path: "/resorts", component: ResortsLanding }),
@@ -85,15 +90,41 @@ function Router() {
         React.createElement(Route, { path: "/adventures/whale-watching", component: AdventuresLanding }),
         React.createElement(Route, { path: "/restaurants", component: RestaurantsPage }),
         React.createElement(Route, { path: "/restaurants/:id", component: RestaurantDetails }),
-        React.createElement(Route, { path: "/group-trips/family", component: FamilyTripsPage }),
-        React.createElement(Route, { path: "/group-trips/bachelor-bachelorette", component: BachelorBachelorettePage }),
-        React.createElement(Route, { path: "/group-trips/luxury-concierge", component: LuxuryConcierge }),
-        React.createElement(Route, { path: "/group-trips/influencer", component: InfluencerPage }),
-        React.createElement(Route, { path: "/weddings", component: WeddingsPage }),
-        React.createElement(Route, { path: "/real-estate", component: RealEstatePage }),
-        React.createElement(Route, { path: "/events", component: EventsPage }),
         React.createElement(Route, { path: "/guides", component: GuidesPage }),
-        React.createElement(Route, { path: "/work-with-us", component: WorkWithUsPage }),
+        
+        // Routes that require authentication
+        React.createElement(ProtectedRoute, { 
+          path: "/group-trips/family", 
+          component: FamilyTripsPage 
+        }),
+        React.createElement(ProtectedRoute, { 
+          path: "/group-trips/bachelor-bachelorette", 
+          component: BachelorBachelorettePage 
+        }),
+        React.createElement(ProtectedRoute, { 
+          path: "/group-trips/luxury-concierge", 
+          component: LuxuryConcierge 
+        }),
+        React.createElement(ProtectedRoute, { 
+          path: "/group-trips/influencer", 
+          component: InfluencerPage 
+        }),
+        React.createElement(ProtectedRoute, { 
+          path: "/weddings", 
+          component: WeddingsPage 
+        }),
+        React.createElement(ProtectedRoute, { 
+          path: "/real-estate", 
+          component: RealEstatePage 
+        }),
+        React.createElement(ProtectedRoute, { 
+          path: "/events", 
+          component: EventsPage 
+        }),
+        React.createElement(ProtectedRoute, { 
+          path: "/work-with-us", 
+          component: WorkWithUsPage 
+        }),
         
         // Test page for guide submission
         React.createElement(Route, { path: "/test-guide-submission", component: () => 
@@ -112,9 +143,10 @@ function Router() {
           )
         }),
         
-        // Stripe checkout routes
-        React.createElement(Route, { path: "/checkout/:listingId", component: () => 
-          React.createElement(
+        // Protected checkout routes
+        React.createElement(ProtectedRoute, { 
+          path: "/checkout/:listingId", 
+          component: () => React.createElement(
             Suspense, 
             { 
               fallback: React.createElement(
@@ -128,8 +160,9 @@ function Router() {
             React.createElement(React.lazy(() => import('@/pages/checkout-page')))
           )
         }),
-        React.createElement(Route, { path: "/booking-confirmation", component: () => 
-          React.createElement(
+        React.createElement(ProtectedRoute, { 
+          path: "/booking-confirmation", 
+          component: () => React.createElement(
             Suspense, 
             { 
               fallback: React.createElement(
@@ -144,6 +177,7 @@ function Router() {
           )
         }),
         
+        // 404 route
         React.createElement(Route, { component: NotFound })
       )
     ),

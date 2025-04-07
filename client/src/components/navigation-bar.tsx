@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import { Menu, ShoppingCart, X } from "lucide-react";
+import { LogIn, LogOut, Menu, ShoppingCart, User, X } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { SiTiktok, SiInstagram, SiWhatsapp, SiFacebook, SiPinterest, SiYoutube } from "react-icons/si";
+import { useAuth } from "@/hooks/use-auth";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -155,6 +156,7 @@ const socialLinks = [
 
 const NavigationBar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { user, logoutMutation } = useAuth();
 
   return (
     <nav className="bg-white border-b border-gray-200">
@@ -229,8 +231,43 @@ const NavigationBar = () => {
                       ))}
                     </div>
 
-                    {/* Social Links */}
+                    {/* Auth and Social Links */}
                     <div className="mt-3 pt-3 border-t border-gray-200">
+                      {/* Auth Buttons */}
+                      <div className="flex justify-center mb-3">
+                        {user ? (
+                          <div className="flex gap-3">
+                            <Button 
+                              variant="outline" 
+                              className="text-[#2F4F4F] flex items-center gap-2"
+                              onClick={() => setIsOpen(false)}
+                            >
+                              <User size={16} />
+                              Profile
+                            </Button>
+                            <Button 
+                              variant="outline" 
+                              className="text-[#2F4F4F] flex items-center gap-2"
+                              onClick={() => {
+                                logoutMutation.mutate();
+                                setIsOpen(false);
+                              }}
+                            >
+                              <LogOut size={16} />
+                              Logout
+                            </Button>
+                          </div>
+                        ) : (
+                          <Link href="/auth" onClick={() => setIsOpen(false)}>
+                            <Button variant="outline" className="text-[#2F4F4F] flex items-center gap-2">
+                              <LogIn size={16} />
+                              Login / Register
+                            </Button>
+                          </Link>
+                        )}
+                      </div>
+                      
+                      {/* Social Links */}
                       <div className="flex justify-center space-x-6">
                         {socialLinks.map((social) => (
                           <a
@@ -371,8 +408,29 @@ const NavigationBar = () => {
             </NavigationMenu>
           </div>
 
-          {/* Cart Button */}
-          <div className="flex items-center justify-end">
+          {/* Cart and Auth Buttons */}
+          <div className="flex items-center justify-end space-x-2">
+            {user ? (
+              <>
+                <Button variant="ghost" className="text-[#2F4F4F] p-2">
+                  <User className="h-5 w-5" />
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  className="text-[#2F4F4F] p-2"
+                  onClick={() => logoutMutation.mutate()}
+                >
+                  <LogOut className="h-5 w-5" />
+                </Button>
+              </>
+            ) : (
+              <Link href="/auth">
+                <Button variant="ghost" className="text-[#2F4F4F] p-2">
+                  <LogIn className="h-5 w-5" />
+                </Button>
+              </Link>
+            )}
+            
             <Button variant="ghost" className="text-[#2F4F4F] p-2">
               <ShoppingCart className="h-6 w-6" />
             </Button>
