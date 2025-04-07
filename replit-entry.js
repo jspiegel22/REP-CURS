@@ -99,25 +99,54 @@ function updateProxyTarget(port) {
 // Function to detect which port Next.js is running on
 async function detectNextJsPort() {
   // Give Next.js time to start and print its port info
-  await new Promise(resolve => setTimeout(resolve, 3000));
+  await new Promise(resolve => setTimeout(resolve, 5000));
   
   // Check each possible port to see if Next.js is running there
   for (const port of POSSIBLE_PORTS) {
     try {
-      const req = http.get(`http://localhost:${port}/api/health`, (res) => {
-        if (res.statusCode === 200) {
-          updateProxyTarget(port);
-          return true;
-        }
+      console.log(`🔍 Checking if Next.js is running on port ${port}...`);
+      
+      // Create a promise that resolves when we get a response
+      const checkPort = new Promise((resolve, reject) => {
+        const req = http.get(`http://localhost:${port}/api/health`, (res) => {
+          let data = '';
+          
+          res.on('data', chunk => {
+            data += chunk;
+          });
+          
+          res.on('end', () => {
+            if (res.statusCode === 200) {
+              console.log(`✅ Found Next.js running on port ${port}`);
+              resolve(port);
+            } else {
+              reject(new Error(`Received status code ${res.statusCode}`));
+            }
+          });
+        });
+        
+        req.on('error', (err) => {
+          reject(err);
+        });
+        
+        req.setTimeout(1000, () => {
+          req.destroy();
+          reject(new Error('Request timed out'));
+        });
       });
       
-      req.on('error', () => {
-        // This port didn't work, try the next one
-      });
-      
-      req.setTimeout(500);
+      // Wait for the port check with a timeout
+      try {
+        const detectedPort = await checkPort;
+        updateProxyTarget(detectedPort);
+        return true;
+      } catch (err) {
+        console.log(`Port ${port} check failed: ${err.message}`);
+        // Continue to next port
+      }
     } catch (error) {
-      // Ignore errors and try the next port
+      console.log(`Error checking port ${port}: ${error.message}`);
+      // Continue to next port
     }
   }
   
@@ -188,5 +217,30 @@ function cleanup() {
 process.on('SIGINT', cleanup);
 process.on('SIGTERM', cleanup);
 
-// Try to detect Next.js port after starting
-detectNextJsPort();
+// Try to detect Next.js port after starting with retries
+async function detectWithRetries() {
+  let retries = 0;
+  const maxRetries = 5;
+  
+  const attemptDetection = async () => {
+    console.log(`Attempt ${retries + 1}/${maxRetries} to detect Next.js port...`);
+    const success = await detectNextJsPort();
+    
+    if (!success && retries < maxRetries) {
+      retries++;
+      console.log(`Waiting before retry ${retries}...`);
+      // Wait longer between retries
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      return attemptDetection();
+    }
+    
+    if (!success) {
+      console.log('Failed to detect Next.js port after maximum retries. Using default port 3000.');
+    }
+  };
+  
+  await attemptDetection();
+}
+
+// Start port detection
+detectWithRetries();
