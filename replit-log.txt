@@ -164,3 +164,88 @@
 [2025-04-07T20:15:42.178Z] 🚀 Proxy server running on port 5000
 [2025-04-07T20:15:43.359Z] 📨 Forwarding request: GET /_next/webpack-hmr
 [2025-04-07T20:15:47.179Z] ✅ Detected Next.js running on port 3000
+[2025-04-07T20:19:10.054Z] 📨 Forwarding request: GET /
+[2025-04-07T20:19:13.039Z] 📨 Forwarding request: GET /_next/static/chunks/react-refresh.js
+[2025-04-07T20:19:13.235Z] 📨 Forwarding request: GET /_next/static/chunks/webpack.js
+[2025-04-07T20:19:13.334Z] 📨 Forwarding request: GET /_next/static/chunks/main.js
+[2025-04-07T20:19:13.371Z] 📨 Forwarding request: GET /_next/static/chunks/pages/_app.js
+[2025-04-07T20:19:13.474Z] 📨 Forwarding request: GET /_next/static/chunks/pages/index.js
+[2025-04-07T20:19:13.488Z] 📨 Forwarding request: GET /_next/static/development/_buildManifest.js
+[2025-04-07T20:19:13.533Z] 📨 Forwarding request: GET /_next/static/development/_ssgManifest.js
+[2025-04-07T20:19:14.012Z] 📨 Forwarding request: GET /_next/static/development/_devMiddlewareManifest.json
+[2025-04-07T20:19:14.136Z] 📨 Forwarding request: GET /_next/static/development/_devPagesManifest.json
+[2025-04-07T20:19:14.229Z] 📨 Forwarding request: GET /_next/static/chunks/pages/client.js
+[2025-04-07T20:19:14.293Z] 📨 Forwarding request: GET /_next/webpack-hmr
+[2025-04-07T20:19:21.652Z] 📨 Forwarding request: GET /_next/static/chunks/pages/_error.js
+[2025-04-07T20:19:26.155Z] 📨 Forwarding request: POST /__nextjs_original-stack-frames
+[2025-04-07T20:23:16.063Z] 📨 Forwarding request: GET /_next/webpack-hmr
+[2025-04-07T20:27:18.202Z] 📨 Forwarding request: GET /_next/webpack-hmr
+[2025-04-07T20:31:20.171Z] 📨 Forwarding request: GET /_next/webpack-hmr
+[2025-04-07T20:35:22.180Z] 📨 Forwarding request: GET /_next/webpack-hmr
+[2025-04-07T20:39:23.148Z] 📨 Forwarding request: GET /_next/webpack-hmr
+[2025-04-07T20:43:29.119Z] 📨 Forwarding request: GET /_next/webpack-hmr
+[2025-04-07T20:46:19.475Z] 🛑 Shutting down servers...
+[2025-04-07T20:46:19.475Z] 👋 Stopping Next.js process
+[2025-04-07T20:46:19.476Z] ⚠️ Next.js process exited with code null
+[2025-04-07T20:46:19.476Z] ⚙️ Keeping proxy server running to show error messages...
+[2025-04-07T20:46:22.758Z] 📢 Starting Replit entry script...
+[2025-04-07T20:46:22.764Z] 📦 Starting Next.js development server...
+[2025-04-07T20:46:22.769Z] 🚀 Proxy server running on port 5000
+[2025-04-07T20:46:27.777Z] ✅ Detected Next.js running on port 3000
+[2025-04-07T20:46:27.895Z] 📨 Forwarding request: GET /_next/webpack-hmr
+[2025-04-07T20:47:52.234Z] 📨 Forwarding request: GET /api/health
+[2025-04-07T20:48:00.667Z] 🛑 Shutting down servers...
+[2025-04-07T20:48:00.667Z] 👋 Stopping Next.js process
+[2025-04-07T20:48:00.668Z] ⚠️ Next.js process exited with code null
+[2025-04-07T20:48:00.669Z] ⚙️ Keeping proxy server running to show error messages...
+[2025-04-07T20:48:03.840Z] 📢 Starting Replit entry script...
+[2025-04-07T20:48:03.845Z] 📦 Starting Next.js development server...
+[2025-04-07T20:48:03.849Z] 🚀 Proxy server running on port 5000
+[2025-04-07T20:48:08.454Z] 📨 Forwarding request: GET /
+[2025-04-07T20:48:08.850Z] ✅ Detected Next.js running on port 3000
+[2025-04-07T20:48:09.113Z] 📨 Forwarding request: GET /_next/webpack-hmr
+[2025-04-07T20:48:15.023Z] 📨 Forwarding request: GET /test-form
+[2025-04-07T20:48:26.281Z] 📨 Forwarding request: POST /api/guide-submissions
+[2025-04-07T20:48:31.005Z] 📨 Forwarding request: POST /api/guide-submissions
+[2025-04-07T20:48:39.953Z] 📨 Forwarding request: POST /api/guide-submissions
+[2025-04-07T20:48:43.718Z] 📨 Forwarding request: HEAD /guides/ultimate-cabo-guide-2025.pdf
+[2025-04-07T20:50:14.997Z] 📨 Forwarding request: GET /
+[2025-04-07T20:50:15.613Z] 📨 Forwarding request: GET /_next/static/chunks/react-refresh.js
+[2025-04-07T20:50:15.810Z] 📨 Forwarding request: GET /_next/static/chunks/webpack.js
+[2025-04-07T20:50:15.868Z] 📨 Forwarding request: GET /_next/static/chunks/main.js
+[2025-04-07T20:50:15.917Z] 📨 Forwarding request: GET /_next/static/chunks/pages/_app.js
+[2025-04-07T20:50:15.918Z] 📨 Forwarding request: GET /_next/static/development/_buildManifest.js
+[2025-04-07T20:50:15.974Z] 📨 Forwarding request: GET /_next/static/chunks/pages/index.js
+[2025-04-07T20:50:16.008Z] 📨 Forwarding request: GET /_next/static/development/_ssgManifest.js
+[2025-04-07T20:50:16.190Z] 📨 Forwarding request: GET /_next/static/development/_devMiddlewareManifest.json
+[2025-04-07T20:50:16.326Z] 📨 Forwarding request: GET /_next/static/development/_devPagesManifest.json
+[2025-04-07T20:50:16.415Z] 📨 Forwarding request: GET /_next/static/chunks/pages/client.js
+[2025-04-07T20:50:16.499Z] 📨 Forwarding request: GET /_next/webpack-hmr
+[2025-04-07T20:50:25.891Z] 📨 Forwarding request: GET /_next/static/chunks/pages/_error.js
+[2025-04-07T20:50:30.640Z] 📨 Forwarding request: POST /__nextjs_original-stack-frames
+[2025-04-07T20:54:17.461Z] 📨 Forwarding request: GET /_next/webpack-hmr
+[2025-04-07T20:55:21.183Z] 📨 Forwarding request: GET /
+[2025-04-07T20:55:21.880Z] 📨 Forwarding request: GET /_next/static/chunks/react-refresh.js
+[2025-04-07T20:55:22.065Z] 📨 Forwarding request: GET /_next/static/chunks/webpack.js
+[2025-04-07T20:55:22.075Z] 📨 Forwarding request: GET /_next/static/chunks/main.js
+[2025-04-07T20:55:22.156Z] 📨 Forwarding request: GET /_next/static/chunks/pages/index.js
+[2025-04-07T20:55:22.213Z] 📨 Forwarding request: GET /_next/static/chunks/pages/_app.js
+[2025-04-07T20:55:22.246Z] 📨 Forwarding request: GET /_next/static/development/_buildManifest.js
+[2025-04-07T20:55:22.334Z] 📨 Forwarding request: GET /_next/static/development/_ssgManifest.js
+[2025-04-07T20:55:22.643Z] 📨 Forwarding request: GET /_next/static/development/_devMiddlewareManifest.json
+[2025-04-07T20:55:22.960Z] 📨 Forwarding request: GET /_next/webpack-hmr
+[2025-04-07T20:55:23.004Z] 📨 Forwarding request: GET /_next/static/development/_devPagesManifest.json
+[2025-04-07T20:55:23.095Z] 📨 Forwarding request: GET /_next/static/chunks/pages/client.js
+[2025-04-07T20:55:23.310Z] 📨 Forwarding request: GET /_next/static/chunks/_pages-dir-browser_client_src_main_tsx.js
+[2025-04-07T20:55:25.425Z] 📨 Forwarding request: GET /api/user
+[2025-04-07T20:58:17.010Z] 🛑 Shutting down servers...
+[2025-04-07T20:58:17.010Z] 👋 Stopping Next.js process
+[2025-04-07T20:58:17.011Z] ⚠️ Next.js process exited with code null
+[2025-04-07T20:58:17.011Z] ⚙️ Keeping proxy server running to show error messages...
+[2025-04-07T20:58:20.278Z] 📢 Starting Replit entry script...
+[2025-04-07T20:58:20.282Z] 📦 Starting Next.js development server...
+[2025-04-07T20:58:20.288Z] 🚀 Proxy server running on port 5000
+[2025-04-07T20:58:21.496Z] 📨 Forwarding request: GET /_next/webpack-hmr
+[2025-04-07T20:58:21.519Z] ❌ Proxy error: connect ECONNREFUSED 127.0.0.1:3000
+[2025-04-07T20:58:22.864Z] 📨 Forwarding request: GET /_next/webpack-hmr
+[2025-04-07T20:58:25.289Z] ✅ Detected Next.js running on port 3000

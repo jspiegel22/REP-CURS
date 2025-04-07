@@ -1,95 +1,52 @@
 # Replit Workflow Solution
 
-## The Problem
+If you're having issues with the webview not displaying your app correctly in Replit, follow these steps to fix it:
 
-Next.js applications default to running on port 3000, but Replit requires applications to be accessible on port 5000 for proper integration with its platform.
+## Option 1: Use replit-direct.js (Recommended)
 
-## Solution Overview
-
-We've implemented several solutions to address this port mismatch:
-
-### 1. Direct Proxy (direct-proxy.js)
-
-A lightweight proxy server that:
-- Listens on port 5000
-- Forwards all requests to the Next.js application on port 3000
-- Handles WebSocket connections for hot module reloading
-- Adds proper CORS headers
-
-### 2. Simple Proxy with Next.js Starter (simple-proxy.js)
-
-A combined script that:
-- Starts the Next.js application on port 3000
-- Creates a proxy server on port 5000
-- Forwards all traffic
-- Handles graceful shutdown
-
-### 3. Enhanced Development Starter (start-on-port-5000.js)
-
-A more robust solution that:
-- Starts Next.js on port 3000
-- Waits for Next.js to be ready before starting the proxy
-- Provides detailed logging
-- Handles error cases
-- Properly shuts down both servers on termination
-
-### 4. Lightweight Port 5000 Solution (port-5000.js)
-
-A minimal proxy implementation that:
-- Forwards HTTP requests from port 5000 to 3000
-- Handles WebSocket connections
-- Provides error handling
-
-### 5. Run on Port 5000 Script (run-on-5000.js)
-
-Another implementation that:
-- Launches Next.js using npm run dev
-- Sets up a proxy on port 5000
-- Uses setTimeout to ensure Next.js has time to start
-
-## Recommended Approach
-
-For most cases, we recommend using `run-on-5000.js` as it provides:
-- Simple, clean implementation
-- Reliable forwarding
-- Proper error handling
-- Graceful shutdown
-
-## Usage
-
-To use our port solution:
-
-1. Ensure the workflow is set to run the script:
+1. Open the **Shell** tab in Replit
+2. Stop any running processes with `Ctrl+C`
+3. Run the direct proxy script:
    ```
-   node run-on-5000.js
+   node replit-direct.js
    ```
+4. Wait a moment for Next.js to start up
+5. Your app will be available immediately on port 5000
 
-2. When the application starts, you'll see output like:
-   ```
-   Starting Next.js application...
-   Proxy server running on port 5000
-   Forwarding requests to Next.js on port 3000
-   Access your app at: https://your-repl-name.username.repl.co
-   ```
+## Option 2: Update Replit Workflow (Permanent Solution)
 
-3. The application should now be accessible through Replit's interface.
+1. Click on the **Tools** menu in the top navigation bar
+2. Select **Workflows**
+3. Find the "Start application" workflow
+4. Edit the workflow task that runs the script
+5. Replace:
+   ```
+   node replit-entry.js
+   ```
+   With:
+   ```
+   node replit-direct.js
+   ```
+6. Add a "wait_for_port" property with value 5000
+7. Save your changes
+8. Restart the workflow by clicking the "Run" button
+
+## Option 3: Add a new workflow
+
+1. Click on the **Tools** menu 
+2. Select **Workflows**
+3. Create a new workflow named "Reliable Server"
+4. Add a shell.exec task with:
+   ```
+   node replit-direct.js
+   ```
+5. Add wait_for_port: 5000
+6. Save and run this workflow
 
 ## Troubleshooting
 
-If you encounter issues:
+If you're still having issues:
 
-- Check that port 5000 is not already in use
-- Verify that Next.js can start normally on port 3000
-- Look for proxy error messages in the console
-- Ensure all dependencies are installed (http-proxy is required)
-
-## Implementation Details
-
-The proxy solutions use the following key components:
-
-1. `http-proxy` package for request forwarding
-2. WebSocket handling for hot module reloading support
-3. CORS headers for cross-origin requests
-4. Graceful shutdown handlers for clean process termination
-
-These implementations avoid modifying the core Next.js configuration while ensuring compatibility with Replit's requirements.
+1. Run `node monitor-app.js` to check if your ports and services are working correctly
+2. Try opening your app in a new browser tab rather than using the webview
+3. Check the console logs for any errors
