@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -91,6 +91,16 @@ export function GuideDownloadForm({
     },
   });
 
+  // State to store the current path
+  const [currentPath, setCurrentPath] = useState('/');
+  
+  // Get the current path safely only on the client side
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setCurrentPath(window.location.pathname);
+    }
+  }, []);
+
   // Handle form submission
   const onSubmit = async (data: FormValues) => {
     setIsSubmitting(true);
@@ -104,7 +114,7 @@ export function GuideDownloadForm({
         ...data,
         submissionId,
         formName: 'guide_download',
-        source: window.location.pathname,
+        source: currentPath,
         status: 'pending',
         tags: ['guide-download', 'website']
       };

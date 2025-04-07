@@ -3,7 +3,6 @@ import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
-import { HelmetProvider } from 'react-helmet-async';
 import Footer from "@/components/footer";
 import NotFound from "@/pages/not-found";
 import HomePage from "@/pages/home-page";
@@ -155,17 +154,13 @@ function Router() {
 
 function App() {
   return React.createElement(
-    HelmetProvider,
-    null,
+    QueryClientProvider,
+    { client: queryClient },
     React.createElement(
-      QueryClientProvider,
-      { client: queryClient },
-      React.createElement(
-        AuthProvider,
-        null,
-        React.createElement(Router),
-        React.createElement(Toaster)
-      )
+      AuthProvider,
+      null,
+      React.createElement(Router),
+      React.createElement(Toaster)
     )
   );
 }

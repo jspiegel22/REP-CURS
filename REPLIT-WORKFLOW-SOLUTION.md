@@ -1,52 +1,87 @@
-# Replit Workflow Solution
+# Replit Workflow Solution Guide
 
-If you're having issues with the webview not displaying your app correctly in Replit, follow these steps to fix it:
+## Current Changes Implemented
 
-## Option 1: Use replit-direct.js (Recommended)
+We've made several improvements to address the client-side rendering issues:
 
-1. Open the **Shell** tab in Replit
-2. Stop any running processes with `Ctrl+C`
-3. Run the direct proxy script:
+1. **Enhanced Client Wrapper Component:**
+   - Created a more robust client-wrapper with proper error handling
+   - Implemented dynamic imports with `{ ssr: false }` for all components with browser-specific code
+   - Added proper loading and error states to provide better UX
+
+2. **Removed Type Errors in Components:**
+   - Fixed social-share component button size props to use valid values
+   - Addressed known type issues that were being flagged by TypeScript
+
+3. **Added Safe Navigation Component:**
+   - Created a new `SafeNavigation` utility component that wraps Wouter's Link
+   - Ensures navigation only happens after component is mounted in the browser
+   - Prevents SSR issues related to window/location references
+
+## Loading Issues & Solutions
+
+The main issue affecting the loading of the application was related to browser/window references during server-side rendering. This was causing hydration mismatches and errors that prevented the app from fully loading.
+
+Our solution implements the following pattern:
+
+1. Dynamic imports with `ssr: false` for components with browser code
+2. Client-side only rendering for sections that need browser APIs
+3. Safe conditional rendering with mounted state checks
+4. Error boundaries to gracefully handle failures
+
+## Next Steps for Complete Website Functionality
+
+1. **Implement throughout other components:**
+   - Replace standard `Link` components with `SafeNavigation` where needed
+   - Ensure any code using `window` is only executed after component mount
+
+2. **Optimize First Load Experience:**
+   - Add skeleton loaders where appropriate
+   - Pre-load critical data to reduce content shifting
+
+3. **Debug Remaining Issues:**
+   - Use the browser console to identify and fix any remaining errors
+   - Address type errors in the home-page component related to Villa data
+
+## Usage Instructions
+
+When creating new components or modifying existing ones:
+
+1. **For components that use browser APIs:**
+   ```tsx
+   // Use the useEffect + isMounted pattern
+   const [isMounted, setIsMounted] = useState(false);
+   
+   useEffect(() => {
+     setIsMounted(true);
+   }, []);
+   
+   // Only access window/browser APIs after mount
+   useEffect(() => {
+     if (isMounted) {
+       // Safe to use window, navigator, etc.
+     }
+   }, [isMounted]);
    ```
-   node replit-direct.js
-   ```
-4. Wait a moment for Next.js to start up
-5. Your app will be available immediately on port 5000
 
-## Option 2: Update Replit Workflow (Permanent Solution)
-
-1. Click on the **Tools** menu in the top navigation bar
-2. Select **Workflows**
-3. Find the "Start application" workflow
-4. Edit the workflow task that runs the script
-5. Replace:
+2. **For navigation links:**
+   ```tsx
+   // Import the safe navigation component
+   import { SafeNavigation } from '@/components/safe-navigation';
+   
+   // Use instead of direct Link
+   <SafeNavigation to="/path">
+     Link Text
+   </SafeNavigation>
    ```
-   node replit-entry.js
-   ```
-   With:
-   ```
-   node replit-direct.js
-   ```
-6. Add a "wait_for_port" property with value 5000
-7. Save your changes
-8. Restart the workflow by clicking the "Run" button
 
-## Option 3: Add a new workflow
-
-1. Click on the **Tools** menu 
-2. Select **Workflows**
-3. Create a new workflow named "Reliable Server"
-4. Add a shell.exec task with:
+3. **For dynamic imports:**
+   ```tsx
+   // Import with ssr: false for browser-dependent components
+   const BrowserComponent = dynamic(() => import('./path'), { 
+     ssr: false,
+     loading: () => <LoadingPlaceholder />
+   });
    ```
-   node replit-direct.js
-   ```
-5. Add wait_for_port: 5000
-6. Save and run this workflow
 
-## Troubleshooting
-
-If you're still having issues:
-
-1. Run `node monitor-app.js` to check if your ports and services are working correctly
-2. Try opening your app in a new browser tab rather than using the webview
-3. Check the console logs for any errors
+By following these patterns, we can ensure the application loads reliably in the Replit environment while maintaining all functionality.

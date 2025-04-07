@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { generateSlug } from "@/lib/utils";
-import { Villa, parseVillaData } from "@/types/villa";
+import { parseVillaData } from "@/types/villa";
 import { VillaCard } from "@/components/villa-card";
 import { ChevronRight, ArrowDown } from "lucide-react";
 import { SiTiktok, SiInstagram, SiWhatsapp, SiFacebook, SiPinterest, SiYoutube } from "react-icons/si";
@@ -20,6 +20,7 @@ https://www.cabovillas.com/properties.asp?PID=441,https://www.cabovillas.com/Pro
 https://www.cabovillas.com/properties.asp?PID=456,https://www.cabovillas.com/Properties/Villas/Villa_Lorena/FULL/Villa_Lorena-1.jpg?width=486,CABO SAN LUCAS,Villa Lorena,Comfortable Villa with Wonderful Pacific Ocea...,4.5-Star Deluxe Villa,,4,3.5,10
 https://www.cabovillas.com/properties.asp?PID=603,https://www.cabovillas.com/Properties/Villas/Villa_Esencia_Del_Mar/FULL/Villa_Esencia_Del_Mar-1.jpg?width=486,CABO SAN LUCAS,Villa Esencia Del Mar,Breathtaking Ocean Views & Modern Luxury,5.5-Star Luxury Villa,,4,3.5,10`;
 
+// Parse villa data and convert to compatible format with DBVilla
 const villas = parseVillaData(villaData);
 
 const featuredResorts = [
@@ -174,13 +175,19 @@ export default function HomePage() {
               {/* Embedded Video Section */}
               <div className="mt-8 rounded-2xl overflow-hidden shadow-2xl">
                 <div className="relative w-full pt-[56.25%] bg-black">
-                  <iframe
-                    src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&enablejsapi=1&origin=${window.location.origin}&iv_load_policy=3&fs=0&color=white&disablekb=1&hl=en&cc_load_policy=0&cc_lang_pref=en&widget_referrer=${window.location.href}&version=3&autohide=1&title=0&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&enablejsapi=1&origin=${window.location.origin}&iv_load_policy=3&fs=0&color=white&disablekb=1&hl=en&cc_load_policy=0&cc_lang_pref=en&widget_referrer=${window.location.href}&version=3&autohide=1&title=0&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&enablejsapi=1&origin=${window.location.origin}&iv_load_policy=3&fs=0&color=white&disablekb=1&hl=en&cc_load_policy=0&cc_lang_pref=en&widget_referrer=${window.location.href}&version=3&autohide=1&title=0`}
-                    className="absolute top-0 left-0 w-full h-full pointer-events-none"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    title="Cabo Experience"
-                    frameBorder="0"
-                  />
+                  {typeof window !== 'undefined' ? (
+                    <iframe
+                      src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1`}
+                      className="absolute top-0 left-0 w-full h-full pointer-events-none"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      title="Cabo Experience"
+                      frameBorder="0"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 bg-gray-800 flex items-center justify-center">
+                      <p className="text-white">Loading video...</p>
+                    </div>
+                  )}
                   {/* Black overlay with reduced opacity */}
                   <div className="absolute inset-0 bg-black/15 pointer-events-none" />
                 </div>
@@ -253,38 +260,39 @@ export default function HomePage() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {sampleBlogs.map((blog, index) => (
-                <Link 
+                <div 
                   key={blog.id} 
-                  href={`/blog/${blog.slug}`}
                   className={`block ${index === 2 ? 'hidden md:block' : ''}`}
                 >
-                  <a className="group block">
-                    <div className="relative aspect-[16/9] rounded-lg overflow-hidden mb-4">
-                      <img
-                        src={blog.imageUrl}
-                        alt={blog.title}
-                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                        loading="lazy"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-3 text-sm text-gray-600">
-                        <span>{format(new Date(blog.date), 'MMM d, yyyy')}</span>
-                        <span>•</span>
-                        <span>{blog.readTime}</span>
+                  <div className="group block">
+                    <Link href={`/blog/${blog.slug}`}>
+                      <div className="relative aspect-[16/9] rounded-lg overflow-hidden mb-4">
+                        <img
+                          src={blog.imageUrl}
+                          alt={blog.title}
+                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                          loading="lazy"
+                        />
                       </div>
-                      <h3 className="text-xl font-semibold group-hover:text-[#2F4F4F] transition-colors">
-                        {blog.title}
-                      </h3>
-                      <p className="text-gray-600 line-clamp-2">{blog.excerpt}</p>
-                      <div className="pt-2 flex items-center gap-2 text-sm">
-                        <span className="text-[#2F4F4F] font-medium">{blog.author}</span>
-                        <span>in</span>
-                        <span className="text-[#2F4F4F] font-medium">{blog.category}</span>
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-3 text-sm text-gray-600">
+                          <span>{format(new Date(blog.date), 'MMM d, yyyy')}</span>
+                          <span>•</span>
+                          <span>{blog.readTime}</span>
+                        </div>
+                        <h3 className="text-xl font-semibold group-hover:text-[#2F4F4F] transition-colors">
+                          {blog.title}
+                        </h3>
+                        <p className="text-gray-600 line-clamp-2">{blog.excerpt}</p>
+                        <div className="pt-2 flex items-center gap-2 text-sm">
+                          <span className="text-[#2F4F4F] font-medium">{blog.author}</span>
+                          <span>in</span>
+                          <span className="text-[#2F4F4F] font-medium">{blog.category}</span>
+                        </div>
                       </div>
-                    </div>
-                  </a>
-                </Link>
+                    </Link>
+                  </div>
+                </div>
               ))}
             </div>
           </div>

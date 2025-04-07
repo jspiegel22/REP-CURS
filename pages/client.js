@@ -1,41 +1,34 @@
 import React from 'react';
+import Head from 'next/head';
+import dynamic from 'next/dynamic';
+import NavigationBar from '../client/src/components/navigation-bar';
+import Footer from '../client/src/components/footer';
 
-// This page will be used to serve our client application
-export default function ClientApp() {
-  React.useEffect(() => {
-    // Import the client application code
-    import('../client/src/main.tsx').catch(err => {
-      console.error('Error loading client application:', err);
-    });
-  }, []);
-
-  return (
-    <div id="root">
-      {/* Our client application will be mounted here */}
-      <div style={{ 
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh',
-        flexDirection: 'column'
-      }}>
-        <h1>Loading Cabo Travel Guide...</h1>
-        <div style={{ 
-          marginTop: '20px',
-          width: '50px',
-          height: '50px',
-          border: '5px solid #f3f3f3',
-          borderTop: '5px solid #3498db',
-          borderRadius: '50%',
-          animation: 'spin 1s linear infinite'
-        }} />
-        <style jsx>{`
-          @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
-        `}</style>
+// Dynamically import the App component with no SSR
+const ClientApp = dynamic(() => import('../client/src/App'), { 
+  ssr: false,
+  loading: () => (
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="p-8 text-center">
+        <h1 className="text-3xl font-bold mb-4">Loading Cabo Travel Guide...</h1>
+        <div className="mx-auto mt-4 w-12 h-12 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin"></div>
       </div>
     </div>
+  )
+});
+
+export default function ClientPage() {
+  return (
+    <>
+      <Head>
+        <title>Cabo Travel Guide - Find Villas, Resorts & More</title>
+        <meta name="description" content="Discover the best villas, resorts, restaurants and adventures in Cabo San Lucas. Book your perfect vacation with our comprehensive travel guide." />
+        <link rel="stylesheet" href="/client/src/index.css" />
+      </Head>
+      
+      <div id="client-app">
+        <ClientApp />
+      </div>
+    </>
   );
 }
