@@ -27,7 +27,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       status: "ok",
       timestamp: new Date().toISOString(),
       uptime: process.uptime(),
-      message: "Cabo Travel Platform API is running"
+      message: "Cabo Travel Platform API is running",
+      port: {
+        running: process.env.PORT || 3000,
+        replit: 5000,
+        proxy: "Active"
+      }
     });
   });
 
