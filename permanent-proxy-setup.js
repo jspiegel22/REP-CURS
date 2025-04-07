@@ -1,4 +1,32 @@
 /**
+ * Permanent Proxy Setup Script
+ * 
+ * This script helps set up a reliable proxy for Replit that starts immediately.
+ * Run this script once with: node permanent-proxy-setup.js
+ * 
+ * It creates a modified version of replit-entry.js that will automatically
+ * use the direct proxy method for more reliable connections.
+ */
+
+const fs = require('fs');
+const path = require('path');
+
+// Backup the original entry file if needed
+function backupOriginalFile() {
+  const entryPath = path.join(__dirname, 'replit-entry.js');
+  const backupPath = path.join(__dirname, 'replit-entry.backup.js');
+  
+  if (fs.existsSync(entryPath) && !fs.existsSync(backupPath)) {
+    console.log('📂 Creating backup of original entry file...');
+    fs.copyFileSync(entryPath, backupPath);
+    console.log('✅ Backup created: replit-entry.backup.js');
+  }
+}
+
+// Replace the entry file with one that uses the direct proxy
+function updateEntryFile() {
+  const entryPath = path.join(__dirname, 'replit-entry.js');
+  const directProxyCode = `/**
  * IMPROVED REPLIT ENTRY POINT
  * This script has been modified for more reliable connections
  * Modified by: permanent-proxy-setup.js
@@ -12,7 +40,7 @@ const fs = require('fs');
 async function logMessage(message) {
   console.log(message);
   // Also log to a file for debugging
-  fs.appendFileSync('replit-log.txt', `${new Date().toISOString()}: ${message}\n`);
+  fs.appendFileSync('replit-log.txt', \`\${new Date().toISOString()}: \${message}\\n\`);
 }
 
 // Cleanup function to handle process exit
@@ -37,12 +65,12 @@ async function startNextJS() {
   
   // Log any errors from the Next.js process
   nextProcess.on('error', (err) => {
-    logMessage(`❌ Error starting Next.js: ${err.message}`);
+    logMessage(\`❌ Error starting Next.js: \${err.message}\`);
   });
   
   // Handle Next.js process exit
   nextProcess.on('exit', (code) => {
-    logMessage(`⚠️ Next.js process exited with code ${code}`);
+    logMessage(\`⚠️ Next.js process exited with code \${code}\`);
   });
   
   return nextProcess;
@@ -69,7 +97,7 @@ async function startProxy() {
     proxyReq.on('error', (e) => {
       // If Next.js isn't running yet, return a simple loading page
       res.writeHead(503, { 'Content-Type': 'text/html' });
-      res.end(`
+      res.end(\`
         <!DOCTYPE html>
         <html>
         <head>
@@ -89,7 +117,7 @@ async function startProxy() {
           <p><small>Status: Next.js server is starting. Please wait...</small></p>
         </body>
         </html>
-      `);
+      \`);
     });
     
     req.pipe(proxyReq, { end: true });
@@ -113,10 +141,42 @@ async function main() {
     const nextProcess = await startNextJS();
     
   } catch (error) {
-    logMessage(`❌ Error in main process: ${error.message}`);
+    logMessage(\`❌ Error in main process: \${error.message}\`);
     cleanup();
   }
 }
 
 // Start everything
 main();
+`;
+
+  console.log('📝 Updating entry file with direct proxy implementation...');
+  fs.writeFileSync(entryPath, directProxyCode);
+  console.log('✅ Updated replit-entry.js with improved direct proxy implementation');
+}
+
+// Main function
+async function setup() {
+  console.log('🔧 Setting up permanent proxy solution...');
+  
+  try {
+    // Create backup first
+    backupOriginalFile();
+    
+    // Then update the entry file
+    updateEntryFile();
+    
+    console.log('✨ Permanent proxy setup complete!');
+    console.log('👉 Your application will now use the direct proxy method every time it starts.');
+    console.log('👉 Next steps:');
+    console.log('   1. Restart your workflow from the Replit interface');
+    console.log('   2. Your application will be available on port 5000');
+    console.log('   3. To revert these changes, rename replit-entry.backup.js to replit-entry.js');
+  } catch (error) {
+    console.error('❌ Error during setup:', error.message);
+    process.exit(1);
+  }
+}
+
+// Run the setup
+setup();
