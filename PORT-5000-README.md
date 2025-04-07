@@ -1,4 +1,4 @@
-# Port 5000 Solution for Replit
+# Replit Port 5000 Solution
 
 ## Problem
 
@@ -45,23 +45,21 @@ Similar to the simple proxy but with different timing mechanisms:
 - Creates a proxy server after a short delay
 - Uses 0.0.0.0 binding for proper network access
 
-## Using the Solution
+## How to Use
 
-1. For manual running (outside of workflow):
-   - Run `node simple-proxy.js` directly in the terminal
-   
-2. For workflow configuration (important note):
-   - Due to Replit's workflow timing constraints, we can't use the workflow to run the proxy script directly
-   - Instead, you must manually run the script after the workflow has been started
-   - The workflow will start Next.js, but it won't establish the proxy connection
+For Replit, use the simple-proxy.js solution:
 
-3. When running `node simple-proxy.js`, the script will:
-   - Start Next.js on port 3000
-   - Start a proxy on port 5000
-   - Output the application URL
-   - Allow Replit to detect your application
+1. Install the http-proxy package:
+   ```
+   npm install http-proxy
+   ```
 
-4. When you access the Replit URL, you'll be connecting through the proxy to your Next.js application.
+2. Run the script directly:
+   ```
+   node simple-proxy.js
+   ```
+
+3. For workflows, modify the configuration to run this script
 
 ## Troubleshooting
 
@@ -80,17 +78,3 @@ The proxy solution uses:
 - Node.js child_process for starting Next.js
 - Standard HTTP server for handling incoming requests
 - WebSocket proxying for live reload functionality
-
-## Requirements
-
-- http-proxy npm package (`npm install http-proxy`)
-- Node.js environment (provided by Replit)
-- Next.js application configured with `npm run dev` script
-
-## Modifying the Solution
-
-If you need to modify the proxy behavior:
-
-- Adjust timeouts in the scripts if Next.js takes longer to start
-- Modify CORS headers if you're experiencing cross-origin issues
-- Change binding addresses if needed for your specific network setup

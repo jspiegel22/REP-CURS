@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -95,6 +95,56 @@ function Router() {
         React.createElement(Route, { path: "/events", component: EventsPage }),
         React.createElement(Route, { path: "/guides", component: GuidesPage }),
         React.createElement(Route, { path: "/work-with-us", component: WorkWithUsPage }),
+        
+        // Test page for guide submission
+        React.createElement(Route, { path: "/test-guide-submission", component: () => 
+          React.createElement(
+            Suspense, 
+            { 
+              fallback: React.createElement(
+                "div", 
+                { className: "flex justify-center items-center min-h-screen" },
+                React.createElement("div", { 
+                  className: "animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" 
+                })
+              ) 
+            },
+            React.createElement(React.lazy(() => import('@/pages/test-guide-submission')))
+          )
+        }),
+        
+        // Stripe checkout routes
+        React.createElement(Route, { path: "/checkout/:listingId", component: () => 
+          React.createElement(
+            Suspense, 
+            { 
+              fallback: React.createElement(
+                "div", 
+                { className: "flex justify-center items-center min-h-screen" },
+                React.createElement("div", { 
+                  className: "animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" 
+                })
+              ) 
+            },
+            React.createElement(React.lazy(() => import('@/pages/checkout-page')))
+          )
+        }),
+        React.createElement(Route, { path: "/booking-confirmation", component: () => 
+          React.createElement(
+            Suspense, 
+            { 
+              fallback: React.createElement(
+                "div", 
+                { className: "flex justify-center items-center min-h-screen" },
+                React.createElement("div", { 
+                  className: "animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" 
+                })
+              ) 
+            },
+            React.createElement(React.lazy(() => import('@/pages/booking-confirmation-page')))
+          )
+        }),
+        
         React.createElement(Route, { component: NotFound })
       )
     ),

@@ -8,9 +8,28 @@ import { generateSlug } from "@/lib/utils";
 import { nanoid } from "nanoid";
 import passport from "passport";
 import { dualDb } from "./services/dual-db"; // Import our dual-database service
+import Stripe from "stripe";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   setupAuth(app);
+  
+  // Initialize Stripe with the secret key
+  if (!process.env.STRIPE_SECRET_KEY) {
+    console.error("Missing STRIPE_SECRET_KEY environment variable");
+  }
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
+    apiVersion: "2023-10-16",
+  });
+  
+  // Health check endpoint
+  app.get("/api/health", (req, res) => {
+    res.status(200).json({
+      status: "ok",
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      message: "Cabo Travel Platform API is running"
+    });
+  });
 
   // Simplified guide submission endpoint without external service dependencies
   app.post("/api/guide-submissions", async (req, res) => {
@@ -322,6 +341,112 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } catch (error) {
         console.error("Error creating admin user:", error);
       }
+    }
+  });
+  
+  // Stripe payment endpoints
+  app.post("/api/create-payment-intent", async (req, res) => {
+    try {
+      // Extract the payment amount from the request
+      const { amount, listingId, bookingDetails } = req.body;
+      
+      if (!amount || amount < 1) {
+        return res.status(400).json({ message: "Invalid payment amount" });
+      }
+      
+      // Create a payment intent with the specified amount
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: Math.round(amount * 100), // Convert to cents
+        currency: "usd",
+        metadata: {
+          listingId: listingId?.toString() || "",
+          bookingType: bookingDetails?.bookingType || "direct",
+          guestName: bookingDetails?.firstName || ""
+        }
+      });
+      
+      // Return the client secret to the frontend
+      res.status(200).json({
+        clientSecret: paymentIntent.client_secret,
+        paymentIntentId: paymentIntent.id
+      });
+    } catch (error: any) {
+      console.error("Stripe payment intent error:", error);
+      res.status(500).json({ 
+        message: "Error creating payment intent", 
+        error: error.message 
+      });
+    }
+  });
+  
+  // Endpoint to retrieve payment status
+  app.get("/api/payment/:paymentIntentId", async (req, res) => {
+    try {
+      const { paymentIntentId } = req.params;
+      
+      if (!paymentIntentId) {
+        return res.status(400).json({ message: "Payment intent ID is required" });
+      }
+      
+      // Retrieve the payment intent from Stripe
+      const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+      
+      res.status(200).json({
+        status: paymentIntent.status,
+        amount: paymentIntent.amount / 100, // Convert cents to dollars
+        metadata: paymentIntent.metadata
+      });
+    } catch (error: any) {
+      console.error("Error retrieving payment:", error);
+      res.status(500).json({ 
+        message: "Error retrieving payment status", 
+        error: error.message 
+      });
+    }
+  });
+  
+  // Endpoint to handle successful payments and record bookings
+  app.post("/api/complete-payment", async (req, res) => {
+    try {
+      const { paymentIntentId, bookingDetails } = req.body;
+      
+      if (!paymentIntentId || !bookingDetails) {
+        return res.status(400).json({ message: "Payment intent ID and booking details are required" });
+      }
+      
+      // Retrieve the payment intent from Stripe to confirm payment
+      const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+      
+      if (paymentIntent.status !== "succeeded") {
+        return res.status(400).json({ message: "Payment has not been completed" });
+      }
+      
+      // Create a booking record with payment information
+      const bookingWithPayment = {
+        ...bookingDetails,
+        paymentIntentId: paymentIntentId,
+        paymentAmount: paymentIntent.amount / 100,
+        paymentStatus: "paid",
+        status: "confirmed",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        confirmationCode: `CABOPAY-${Math.floor(100000 + Math.random() * 900000)}`
+      };
+      
+      // Save booking to the database
+      const booking = await dualDb.submitBooking(bookingWithPayment);
+      
+      res.status(201).json({
+        booking,
+        message: "Payment successful and booking confirmed",
+        confirmationCode: booking.confirmationCode
+      });
+    } catch (error: any) {
+      console.error("Payment completion error:", error);
+      res.status(500).json({ 
+        message: "Error completing payment process", 
+        error: error.message 
+      });
     }
   });
 

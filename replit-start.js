@@ -1,38 +1,84 @@
 /**
- * Replit workflow starter - Executes automatically when "Start application" runs
- * This script runs next dev and our proxy together to ensure the app works in Replit
+ * Replit starter script with timing control
+ * Starts Next.js and then launches the proxy server
  */
 
-// Import required modules
 const { spawn } = require('child_process');
+const { execSync } = require('child_process');
 
-// Start the development server with the proxy
-console.log('Starting Cabo Travel Guide application...');
-
-// We run the node script directly as this is what will be executed by the workflow
-const proc = spawn('node', ['start-dev.js'], {
-  stdio: 'inherit',  // Ensure we see all output
-  env: process.env   // Pass all environment variables
-});
-
-// Handle process exit
-proc.on('exit', (code) => {
-  console.log(`start-dev.js exited with code ${code}`);
-  process.exit(code);
-});
-
-// Handle errors
-proc.on('error', (err) => {
-  console.error('Failed to start application:', err);
-  process.exit(1);
-});
-
-// Handle termination signals
-function shutdown() {
-  console.log('Shutting down application...');
-  proc.kill();
-  process.exit(0);
+// Check if Next.js is already running
+try {
+  const check = execSync('lsof -i:3000 -t').toString().trim();
+  if (check) {
+    console.log('Next.js is already running on port 3000. Killing process...');
+    execSync(`kill -9 ${check}`);
+  }
+} catch (error) {
+  // No process running on port 3000
 }
 
-process.on('SIGINT', shutdown);
-process.on('SIGTERM', shutdown);
+// Check if proxy is already running
+try {
+  const check = execSync('lsof -i:5000 -t').toString().trim();
+  if (check) {
+    console.log('Proxy is already running on port 5000. Killing process...');
+    execSync(`kill -9 ${check}`);
+  }
+} catch (error) {
+  // No process running on port 5000
+}
+
+console.log('Starting Next.js...');
+
+// Start Next.js
+const nextProcess = spawn('npm', ['run', 'dev'], {
+  stdio: 'inherit',
+  env: { ...process.env, PORT: 3000 },
+});
+
+console.log(`Next.js started (PID: ${nextProcess.pid})`);
+
+// Give Next.js time to start (10 seconds)
+console.log('Waiting for Next.js to initialize (10 seconds)...');
+
+// Start proxy after delay
+setTimeout(() => {
+  console.log('Starting proxy server...');
+  
+  // Use the direct-proxy.js we created earlier
+  const proxyProcess = spawn('node', ['direct-proxy.js'], {
+    stdio: 'inherit',
+  });
+  
+  console.log(`Proxy server started (PID: ${proxyProcess.pid})`);
+  
+  // Handle shutdown
+  function shutdown() {
+    console.log('Shutting down services...');
+    
+    if (proxyProcess && proxyProcess.pid) {
+      try {
+        process.kill(proxyProcess.pid);
+        console.log(`Proxy process (PID: ${proxyProcess.pid}) terminated`);
+      } catch (err) {
+        console.error(`Failed to kill proxy process: ${err.message}`);
+      }
+    }
+    
+    if (nextProcess && nextProcess.pid) {
+      try {
+        process.kill(nextProcess.pid);
+        console.log(`Next.js process (PID: ${nextProcess.pid}) terminated`);
+      } catch (err) {
+        console.error(`Failed to kill Next.js process: ${err.message}`);
+      }
+    }
+    
+    process.exit(0);
+  }
+  
+  // Set up signal handlers
+  process.on('SIGINT', shutdown);
+  process.on('SIGTERM', shutdown);
+  
+}, 10000); // 10 second delay
