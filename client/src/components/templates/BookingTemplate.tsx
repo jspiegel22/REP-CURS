@@ -441,16 +441,21 @@ export default function BookingTemplate({
       <footer className="bg-[#2F4F4F] text-white pt-16 pb-8 mt-16">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-            {/* Column 1 - About Us & Contact Info */}
+            {/* Column 1 - Plan Your Trip & Partner With Us */}
             <div>
-              <h3 className="text-xl font-bold mb-4">About Us</h3>
-              <p className="text-gray-300 mb-6">Your premier destination for luxury travel experiences in Cabo San Lucas.</p>
-              
-              <h3 className="text-xl font-bold mb-4">Contact</h3>
+              <h3 className="text-xl font-bold mb-4">Plan Your Trip</h3>
+              <ul className="space-y-2 mb-6">
+                <li><Link href="/guides">Travel Guides</Link></li>
+                <li><Link href="/guides/bachelorette">Bachelor/ette</Link></li>
+                <li><Link href="/guides/weddings">Wedding Planning</Link></li>
+                <li><Link href="/guides/real-estate">Real Estate</Link></li>
+              </ul>
+
+              <h3 className="text-xl font-bold mb-4">Partner With Us</h3>
               <ul className="space-y-2">
-                <li>Email: info@cabotravels.com</li>
-                <li>Phone: +1 (888) 123-4567</li>
-                <li>WhatsApp: +52 624 244 6303</li>
+                <li><Link href="/work-with-us">Work with Us</Link></li>
+                <li><Link href="/group-trips/influencer">For Influencers</Link></li>
+                <li><Link href="/weddings">Wedding Planning</Link></li>
               </ul>
             </div>
 
@@ -472,21 +477,16 @@ export default function BookingTemplate({
               </ul>
             </div>
 
-            {/* Column 3 - Plan Your Trip & Partner With Us */}
+            {/* Column 3 - About Us & Contact Info */}
             <div>
-              <h3 className="text-xl font-bold mb-4">Plan Your Trip</h3>
-              <ul className="space-y-2 mb-6">
-                <li><Link href="/guides">Travel Guides</Link></li>
-                <li><Link href="/guides/bachelorette">Bachelor/ette</Link></li>
-                <li><Link href="/guides/weddings">Wedding Planning</Link></li>
-                <li><Link href="/guides/real-estate">Real Estate</Link></li>
-              </ul>
-
-              <h3 className="text-xl font-bold mb-4">Partner With Us</h3>
+              <h3 className="text-xl font-bold mb-4">About Us</h3>
+              <p className="text-gray-300 mb-6">Your premier destination for luxury travel experiences in Cabo San Lucas.</p>
+              
+              <h3 className="text-xl font-bold mb-4">Contact</h3>
               <ul className="space-y-2">
-                <li><Link href="/work-with-us">Work with Us</Link></li>
-                <li><Link href="/group-trips/influencer">For Influencers</Link></li>
-                <li><Link href="/weddings">Wedding Planning</Link></li>
+                <li>Email: info@cabotravels.com</li>
+                <li>Phone: +1 (888) 123-4567</li>
+                <li>WhatsApp: +52 624 244 6303</li>
               </ul>
             </div>
           </div>
