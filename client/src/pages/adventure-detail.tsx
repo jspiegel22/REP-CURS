@@ -13,8 +13,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ProductFooter } from "@/components/product-footer";
 import { RewardsPanel } from "@/components/rewards-panel";
 import { SocialShare } from "@/components/social-share";
-import { WeatherModule } from "@/components/weather-module";
-import { useRouter } from 'next/router';
+
+// Removed next/router import
 import SEO, { generateAdventureSchema } from "@/components/SEO";
 
 // Import complete CSV data
@@ -84,7 +84,7 @@ export default function AdventureDetail() {
     message: "",
     showMobileCTA: false
   });
-  const router = useRouter();
+  // const router = useRouter(); // removed router
 
   // Add scroll event handler
   useEffect(() => {
@@ -118,13 +118,13 @@ export default function AdventureDetail() {
   return (
     <>
       <SEO
-        title={`${adventure.title} - ${adventure.type} Adventure in ${adventure.location} | Cabo Adventures`}
-        description={`Experience ${adventure.title}, an exciting ${adventure.type} adventure in ${adventure.location}. ${adventure.description} Book your adventure today!`}
+        title={`${adventure.title} - Adventure in Cabo San Lucas | Cabo Adventures`}
+        description={`Experience ${adventure.title}, an exciting adventure in Cabo San Lucas. Book your adventure today!`}
         canonicalUrl={`https://cabo-adventures.com/adventures/${adventure.id}`}
         schema={generateAdventureSchema(adventure)}
         openGraph={{
-          title: `${adventure.title} - ${adventure.type} Adventure in ${adventure.location}`,
-          description: adventure.description,
+          title: `${adventure.title} - Adventure in Cabo San Lucas`,
+          description: `Join us for this amazing ${adventure.duration} adventure in Cabo San Lucas.`,
           image: adventure.imageUrl,
           url: `https://cabo-adventures.com/adventures/${adventure.id}`
         }}
@@ -179,7 +179,7 @@ export default function AdventureDetail() {
                 <div className="flex items-center gap-2 bg-white rounded-lg p-2 shadow-sm">
                   <Button
                     variant="outline"
-                    size="icon"
+                    size="sm"
                     className="hover:bg-[#2F4F4F]/10"
                     onClick={() => setFormData(prev => ({
                       ...prev,
@@ -193,7 +193,7 @@ export default function AdventureDetail() {
                   </span>
                   <Button
                     variant="outline"
-                    size="icon"
+                    size="sm"
                     className="hover:bg-[#2F4F4F]/10"
                     onClick={() => setFormData(prev => ({
                       ...prev,
@@ -409,7 +409,7 @@ export default function AdventureDetail() {
                 <div className="flex items-center gap-2 bg-white rounded-lg p-2 shadow-sm">
                   <Button
                     variant="outline"
-                    size="icon"
+                    size="sm"
                     className="hover:bg-[#2F4F4F]/10"
                     onClick={() => setFormData(prev => ({
                       ...prev,
@@ -423,7 +423,7 @@ export default function AdventureDetail() {
                   </span>
                   <Button
                     variant="outline"
-                    size="icon"
+                    size="sm"
                     className="hover:bg-[#2F4F4F]/10"
                     onClick={() => setFormData(prev => ({
                       ...prev,
@@ -542,7 +542,7 @@ export default function AdventureDetail() {
               <div className="flex items-center gap-1 bg-gray-50 rounded-lg px-2 py-1">
                 <Button
                   variant="ghost"
-                  size="icon"
+                  size="sm"
                   className="h-6 w-6"
                   onClick={() => setFormData(prev => ({
                     ...prev,
@@ -556,7 +556,7 @@ export default function AdventureDetail() {
                 </span>
                 <Button
                   variant="ghost"
-                  size="icon"
+                  size="sm"
                   className="h-6 w-6"
                   onClick={() => setFormData(prev => ({
                     ...prev,
@@ -582,7 +582,7 @@ export default function AdventureDetail() {
             </div>
           </div>
         </div>
-        <WeatherModule />
+
       </div>
     </>
   );

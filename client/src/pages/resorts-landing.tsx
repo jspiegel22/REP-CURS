@@ -4,7 +4,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Star, MapPin, Search } from "lucide-react";
 import { Link } from "wouter";
 import { generateSlug, generateResortSlug } from "@/lib/utils"; //Import generateResortSlug
-import Footer from "@/components/footer";
 import { resorts } from "@/data/resorts";
 import SEO from "@/components/SEO";
 import {
@@ -219,7 +218,6 @@ export default function ResortsLanding() {
           </div>
         </div>
       </main>
-      <Footer />
     </div>
   );
 }

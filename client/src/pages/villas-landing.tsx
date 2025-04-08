@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Loader2 } from "lucide-react";
 import { VillaCard } from "@/components/villa-card";
-import Footer from "@/components/footer";
 import type { Villa } from "@shared/schema";
 import { useQuery } from "@tanstack/react-query";
 
@@ -146,8 +145,6 @@ export default function VillasLanding() {
           </div>
         </div>
       </main>
-
-      <Footer />
     </div>
   );
 }
