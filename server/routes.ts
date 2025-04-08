@@ -7,6 +7,11 @@ import { insertBookingSchema, insertLeadSchema, insertGuideSubmissionSchema, ins
 import { generateSlug } from "@/lib/utils";
 import { nanoid } from "nanoid";
 import passport from "passport";
+import { 
+  sendLeadWebhook, 
+  sendBookingWebhook, 
+  sendGuideRequestWebhook 
+} from './services/webhookClient';
 
 export async function registerRoutes(app: Express): Promise<Server> {
   setupAuth(app);
@@ -55,6 +60,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
             console.error("Error in background processing:", error);
           });
       });
+      
+      // Send webhook notification (non-blocking)
+      sendGuideRequestWebhook(submission)
+        .then(result => {
+          if (result.status === 'success') {
+            console.log(`Guide request webhook sent. Tracking ID: ${result.tracking_id}`);
+          } else {
+            console.warn(`Guide request webhook warning: ${result.message}`);
+          }
+        })
+        .catch(error => {
+          console.error("Error sending guide request webhook:", error);
+        });
 
       res.status(201).json(submission);
     } catch (error) {
@@ -104,6 +122,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
             console.error("Error sending booking confirmation email:", error);
           });
       });
+      
+      // Send webhook notification (non-blocking)
+      sendBookingWebhook(booking)
+        .then(result => {
+          if (result.status === 'success') {
+            console.log(`Booking webhook sent. Tracking ID: ${result.tracking_id}`);
+          } else {
+            console.warn(`Booking webhook warning: ${result.message}`);
+          }
+        })
+        .catch(error => {
+          console.error("Error sending booking webhook:", error);
+        });
 
       res.status(201).json(booking);
     } catch (error) {
@@ -143,6 +174,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
           .then(() => console.log(`Lead synced to Airtable for ${lead.email}`))
           .catch(error => console.error("Error syncing lead to Airtable:", error));
       });
+      
+      // Send webhook notification (non-blocking)
+      sendLeadWebhook(lead)
+        .then(result => {
+          if (result.status === 'success') {
+            console.log(`Lead webhook sent. Tracking ID: ${result.tracking_id}`);
+          } else {
+            console.warn(`Lead webhook warning: ${result.message}`);
+          }
+        })
+        .catch(error => {
+          console.error("Error sending lead webhook:", error);
+        });
 
       res.status(201).json(lead);
     } catch (error) {
@@ -299,6 +343,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching leads:", error);
       res.status(500).json({ message: "Failed to fetch leads" });
+    }
+  });
+  
+  // Admin routes for webhook management
+  app.get("/api/admin/webhooks", requireAdmin, async (req, res) => {
+    try {
+      const { listWebhooks } = await import('./services/webhookClient');
+      const webhooks = await listWebhooks();
+      res.json(webhooks);
+    } catch (error) {
+      console.error("Error fetching webhooks:", error);
+      res.status(500).json({ message: "Failed to fetch webhooks" });
+    }
+  });
+  
+  app.post("/api/admin/webhooks", requireAdmin, async (req, res) => {
+    try {
+      const { setupWebhook } = await import('./services/webhookClient');
+      const webhook = await setupWebhook(req.body);
+      res.status(201).json(webhook);
+    } catch (error) {
+      console.error("Error creating webhook:", error);
+      res.status(500).json({ message: "Failed to create webhook" });
+    }
+  });
+  
+  app.get("/api/admin/webhook-deliveries", requireAdmin, async (req, res) => {
+    try {
+      const { listWebhookDeliveries } = await import('./services/webhookClient');
+      const deliveries = await listWebhookDeliveries({
+        limit: parseInt(req.query.limit as string) || 100,
+        event_type: req.query.event_type as string,
+        webhook_id: req.query.webhook_id ? parseInt(req.query.webhook_id as string) : undefined,
+        success: req.query.success === 'true'
+      });
+      res.json(deliveries);
+    } catch (error) {
+      console.error("Error fetching webhook deliveries:", error);
+      res.status(500).json({ message: "Failed to fetch webhook deliveries" });
+    }
+  });
+  
+  app.post("/api/admin/webhook-retry/:id", requireAdmin, async (req, res) => {
+    try {
+      const { retryWebhook } = await import('./services/webhookClient');
+      const result = await retryWebhook(parseInt(req.params.id));
+      res.json(result);
+    } catch (error) {
+      console.error("Error retrying webhook:", error);
+      res.status(500).json({ message: "Failed to retry webhook" });
     }
   });
 
