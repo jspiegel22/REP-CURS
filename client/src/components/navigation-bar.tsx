@@ -1,10 +1,9 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Link } from "wouter";
-import { LogIn, LogOut, Menu, ShoppingCart, User, X } from "lucide-react";
+import Link from "next/link";
+import { Menu, ShoppingCart, X } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { SiTiktok, SiInstagram, SiWhatsapp, SiFacebook, SiPinterest, SiYoutube } from "react-icons/si";
-import { useAuth } from "@/hooks/use-auth";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -14,101 +13,93 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 
-const mainMenuItems = [
-  {
-    title: "STAYS",
-    href: "/stays",
-    image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811"
-  },
-  {
-    title: "ADVENTURES",
-    href: "/adventures",
-    image: "https://images.unsplash.com/photo-1605281317010-fe5ffe798166"
-  },
-  {
-    title: "GROUP TRIPS",
-    href: "/group-trips",
-    image: "https://images.unsplash.com/photo-1541956064527-8ec10ac76c31"
-  },
-  {
-    title: "BLOG",
-    href: "/blog",
-    image: "https://images.unsplash.com/photo-1569263979104-865ab7cd8d13"
-  }
-];
-
 const stays = [
   {
     title: "Luxury Villas",
-    href: "/villas",
+    href: "/stays/villas",
     description: "Exclusive private villas with stunning ocean views",
     image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811"
   },
   {
     title: "Resorts",
-    href: "/resorts",
+    href: "/stays/resorts",
     description: "World-class resorts and hotels",
     image: "https://images.unsplash.com/photo-1582719508461-905c673771fd"
-  },
-  {
-    title: "Real Estate",
-    href: "/real-estate",
-    description: "Find your dream property in Cabo",
-    image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c"
   }
 ];
 
 const adventures = [
   {
-    title: "All Adventures",
-    href: "/adventures",
-    description: "Explore all our exciting adventures",
+    title: "Water Activities",
+    href: "/adventures/water",
+    description: "Snorkeling, diving & more",
+    image: "https://images.unsplash.com/photo-1564543331-0b5aa2eda2ce"
+  },
+  {
+    title: "Land Adventures",
+    href: "/adventures/land",
+    description: "ATV tours & desert expeditions",
+    image: "https://images.unsplash.com/photo-1525186402429-b4ff38bedec6"
+  },
+  {
+    title: "Luxury Experiences",
+    href: "/adventures/luxury",
+    description: "Private yacht charters & exclusive tours",
     image: "https://images.unsplash.com/photo-1569263979104-865ab7cd8d13"
-  },
-  {
-    title: "ATV Tours",
-    href: "/adventures/atv",
-    description: "Thrilling desert and mountain adventures",
-    image: "https://images.unsplash.com/photo-1623176035122-4e07bc19bab7"
-  },
-  {
-    title: "Private Yachts",
-    href: "/adventures/private-yachts",
-    description: "Luxury yacht charters and experiences",
-    image: "https://images.unsplash.com/photo-1605281317010-fe5ffe798166"
-  },
-  {
-    title: "Whale Watching",
-    href: "/adventures/whale-watching",
-    description: "Unforgettable whale watching experiences",
-    image: "https://images.unsplash.com/photo-1570481662006-a3a1374699e8"
   }
 ];
 
 const groupTrips = [
   {
-    title: "Family Trips",
-    href: "/group-trips/family",
-    description: "Create lasting memories with your loved ones",
-    image: "https://images.unsplash.com/photo-1602002418816-5c0aeef426aa"
+    title: "Bachelor Parties",
+    href: "/group-trips/bachelor",
+    description: "Unforgettable celebrations for the groom-to-be",
+    image: "https://images.unsplash.com/photo-1541956064527-8ec10ac76c31"
   },
   {
-    title: "Bachelor/Bachelorette",
-    href: "/group-trips/bachelor-bachelorette",
-    description: "Unforgettable celebration packages",
-    image: "https://images.unsplash.com/photo-1541956064527-8ec10ac76c31"
+    title: "Bachelorette Parties",
+    href: "/group-trips/bachelorette",
+    description: "Perfect celebrations for the bride-to-be",
+    image: "https://images.unsplash.com/photo-1517457373958-b7bdd4587205"
+  },
+  {
+    title: "Family Trips",
+    href: "/group-trips/family",
+    description: "Memorable vacations for the whole family",
+    image: "https://images.unsplash.com/photo-1517673132405-a56a62b18caf"
   },
   {
     title: "Luxury Concierge",
     href: "/group-trips/luxury-concierge",
-    description: "Personalized VIP experiences",
-    image: "https://images.unsplash.com/photo-1590073242678-70ee3fc28e8e"
+    description: "Tailored experiences for discerning travelers",
+    image: "https://images.unsplash.com/photo-1563911302283-d2bc129e7570"
   },
   {
     title: "Influencer Trips",
     href: "/group-trips/influencer",
-    description: "Special packages for content creators",
-    image: "https://images.unsplash.com/photo-1611162617474-5b21e879e113"
+    description: "Curated experiences for content creators",
+    image: "https://images.unsplash.com/photo-1569263979104-865ab7cd8d13"
+  }
+];
+
+const eats = [
+  {
+    title: "Restaurants",
+    href: "/eats/restaurants",
+    description: "Fine dining & local favorites",
+    image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4"
+  },
+  {
+    title: "Bars & Nightlife",
+    href: "/eats/bars",
+    description: "Best bars & clubs in Cabo",
+    image: "https://images.unsplash.com/photo-1514933651103-005eec06c04b"
+  },
+  {
+    title: "Beach Clubs",
+    href: "/eats/beach-clubs",
+    description: "Luxury beach clubs & day parties",
+    image: "https://images.unsplash.com/photo-1519046904884-53103b34b206"
   }
 ];
 
@@ -156,288 +147,260 @@ const socialLinks = [
 
 const NavigationBar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { user, logoutMutation } = useAuth();
 
   return (
-    <nav className="bg-white border-b border-gray-200">
-      <div className="container mx-auto px-4">
-        <div className="h-16 flex items-center">
-          {/* Mobile Menu */}
-          <div className="md:hidden">
-            <Sheet open={isOpen} onOpenChange={setIsOpen}>
-              <SheetTrigger asChild>
-                <Button variant="ghost" className="text-[#2F4F4F] p-2">
-                  <Menu className="h-6 w-6" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="left" className="w-[85vw] bg-white p-0">
-                <nav className="flex flex-col h-full overflow-y-auto">
-                  {/* Mobile Menu Grid */}
-                  <div className="p-3">
-                    {/* Main Categories */}
-                    <div className="grid grid-cols-1 gap-2">
-                      {[...stays.filter(item => item.title !== "Real Estate"), ...adventures].map((item) => (
-                        <Link key={item.href} href={item.href} className="block group">
-                          <div className="relative h-32 rounded-lg overflow-hidden">
-                            <img
-                              src={item.image}
-                              alt={item.title}
-                              className="w-full h-full object-cover"
-                              loading="lazy"
-                            />
-                            <div className="absolute inset-0 bg-black/50 flex items-center">
-                              <span className="text-white text-xl font-semibold px-4">{item.title}</span>
-                            </div>
-                          </div>
-                        </Link>
-                      ))}
-                    </div>
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-16 items-center">
+        <Link href="/" className="mr-6 flex items-center space-x-2">
+          <span className="font-bold">@cabo</span>
+        </Link>
 
-                    {/* Group Trips */}
-                    <div className="grid grid-cols-2 gap-2 mt-2">
-                      {groupTrips.map((item) => (
-                        <Link key={item.href} href={item.href} className="block group">
-                          <div className="relative aspect-square rounded-lg overflow-hidden">
-                            <img
-                              src={item.image}
-                              alt={item.title}
-                              className="w-full h-full object-cover"
-                              loading="lazy"
-                            />
-                            <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-center p-2">
-                              <span className="text-white text-sm font-semibold px-1">{item.title}</span>
-                            </div>
-                          </div>
-                        </Link>
-                      ))}
-                    </div>
-
-                    {/* Additional Pages */}
-                    <div className="grid grid-cols-3 gap-2 mt-2">
-                      {[...moreMenuItems].slice(0, 6).map((item) => (
-                        <Link key={item.href} href={item.href} className="block group">
-                          <div className="relative aspect-square rounded-lg overflow-hidden">
-                            <img
-                              src={item.image}
-                              alt={item.title}
-                              className="w-full h-full object-cover"
-                              loading="lazy"
-                            />
-                            <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-center p-2">
-                              <span className="text-white text-xs font-semibold px-1">{item.title}</span>
-                            </div>
-                          </div>
-                        </Link>
-                      ))}
-                    </div>
-
-                    {/* Auth and Social Links */}
-                    <div className="mt-3 pt-3 border-t border-gray-200">
-                      {/* Auth Buttons */}
-                      <div className="flex justify-center mb-3">
-                        {user ? (
-                          <div className="flex gap-3">
-                            <Button 
-                              variant="outline" 
-                              className="text-[#2F4F4F] flex items-center gap-2"
-                              onClick={() => setIsOpen(false)}
-                            >
-                              <User size={16} />
-                              Profile
-                            </Button>
-                            <Button 
-                              variant="outline" 
-                              className="text-[#2F4F4F] flex items-center gap-2"
-                              onClick={() => {
-                                logoutMutation.mutate();
-                                setIsOpen(false);
-                              }}
-                            >
-                              <LogOut size={16} />
-                              Logout
-                            </Button>
-                          </div>
-                        ) : (
-                          <Link href="/auth" onClick={() => setIsOpen(false)}>
-                            <Button variant="outline" className="text-[#2F4F4F] flex items-center gap-2">
-                              <LogIn size={16} />
-                              Login / Register
-                            </Button>
-                          </Link>
-                        )}
-                      </div>
-                      
-                      {/* Social Links */}
-                      <div className="flex justify-center space-x-6">
-                        {socialLinks.map((social) => (
-                          <a
-                            key={social.label}
-                            href={social.href}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-[#2F4F4F] hover:text-[#1F3F3F] transition-colors"
-                          >
-                            <social.icon size={20} />
-                          </a>
-                        ))}
-                      </div>
-                    </div>
+        <NavigationMenu className="hidden md:flex">
+          <NavigationMenuList>
+            <NavigationMenuItem>
+              <NavigationMenuTrigger>STAYS</NavigationMenuTrigger>
+              <NavigationMenuContent>
+                <div className="grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
+                  <div className="row-span-3">
+                    <NavigationMenuLink asChild>
+                      <Link
+                        className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
+                        href="/stays"
+                      >
+                        <div className="mb-2 mt-4 text-lg font-medium">
+                          Find Your Perfect Stay
+                        </div>
+                        <p className="text-sm leading-tight text-muted-foreground">
+                          Choose from our curated selection of luxury villas and world-class resorts.
+                        </p>
+                      </Link>
+                    </NavigationMenuLink>
                   </div>
-                </nav>
-              </SheetContent>
-            </Sheet>
-          </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    {stays.map((item) => (
+                      <NavigationMenuLink key={item.title} asChild>
+                        <Link
+                          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                          href={item.href}
+                        >
+                          <div className="text-sm font-medium leading-none">{item.title}</div>
+                          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                            {item.description}
+                          </p>
+                        </Link>
+                      </NavigationMenuLink>
+                    ))}
+                  </div>
+                </div>
+              </NavigationMenuContent>
+            </NavigationMenuItem>
 
-          {/* Logo */}
-          <div className="flex-1 flex justify-center md:justify-start">
-            <Link href="/" className="text-2xl font-bold text-[#2F4F4F] hover:text-[#1F3F3F]">
-              @cabo
-            </Link>
-          </div>
+            <NavigationMenuItem>
+              <NavigationMenuTrigger>ADVENTURES</NavigationMenuTrigger>
+              <NavigationMenuContent>
+                <div className="grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
+                  <div className="row-span-3">
+                    <NavigationMenuLink asChild>
+                      <Link
+                        className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
+                        href="/adventures"
+                      >
+                        <div className="mb-2 mt-4 text-lg font-medium">
+                          Discover Cabo Adventures
+                        </div>
+                        <p className="text-sm leading-tight text-muted-foreground">
+                          Experience the best activities and tours in Cabo San Lucas.
+                        </p>
+                      </Link>
+                    </NavigationMenuLink>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    {adventures.map((item) => (
+                      <NavigationMenuLink key={item.title} asChild>
+                        <Link
+                          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                          href={item.href}
+                        >
+                          <div className="text-sm font-medium leading-none">{item.title}</div>
+                          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                            {item.description}
+                          </p>
+                        </Link>
+                      </NavigationMenuLink>
+                    ))}
+                  </div>
+                </div>
+              </NavigationMenuContent>
+            </NavigationMenuItem>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-4 flex-1 justify-center">
-            <NavigationMenu>
-              <NavigationMenuList>
-                {/* Stays Menu */}
-                <NavigationMenuItem>
-                  <NavigationMenuTrigger className="text-[#2F4F4F] bg-transparent text-sm">STAYS</NavigationMenuTrigger>
-                  <NavigationMenuContent>
-                    <ul className="grid w-[600px] gap-3 p-4">
-                      {stays.filter(item => item.title !== "Real Estate").map((item) => (
-                        <li key={item.href}>
-                          <NavigationMenuLink asChild>
-                            <Link href={item.href} className="flex gap-4 select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                              <img src={item.image} alt={item.title} className="w-24 h-16 object-cover rounded" />
-                              <div>
-                                <div className="text-sm font-medium leading-none">{item.title}</div>
-                                <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-1">{item.description}</p>
-                              </div>
-                            </Link>
-                          </NavigationMenuLink>
-                        </li>
-                      ))}
-                    </ul>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
+            <NavigationMenuItem>
+              <NavigationMenuTrigger>GROUP TRIPS</NavigationMenuTrigger>
+              <NavigationMenuContent>
+                <div className="grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
+                  <div className="row-span-3">
+                    <NavigationMenuLink asChild>
+                      <Link
+                        className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
+                        href="/group-trips"
+                      >
+                        <div className="mb-2 mt-4 text-lg font-medium">
+                          Plan Your Group Trip
+                        </div>
+                        <p className="text-sm leading-tight text-muted-foreground">
+                          Specialized experiences for bachelor parties, family trips, and more.
+                        </p>
+                      </Link>
+                    </NavigationMenuLink>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    {groupTrips.map((item) => (
+                      <NavigationMenuLink key={item.title} asChild>
+                        <Link
+                          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                          href={item.href}
+                        >
+                          <div className="text-sm font-medium leading-none">{item.title}</div>
+                          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                            {item.description}
+                          </p>
+                        </Link>
+                      </NavigationMenuLink>
+                    ))}
+                  </div>
+                </div>
+              </NavigationMenuContent>
+            </NavigationMenuItem>
 
-                {/* Adventures Menu */}
-                <NavigationMenuItem>
-                  <NavigationMenuTrigger className="text-[#2F4F4F] bg-transparent text-sm">ADVENTURES</NavigationMenuTrigger>
-                  <NavigationMenuContent>
-                    <ul className="grid w-[600px] gap-3 p-4">
-                      {adventures.map((item) => (
-                        <li key={item.href}>
-                          <NavigationMenuLink asChild>
-                            <Link href={item.href} className="flex gap-4 select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                              <img src={item.image} alt={item.title} className="w-24 h-16 object-cover rounded" />
-                              <div>
-                                <div className="text-sm font-medium leading-none">{item.title}</div>
-                                <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-1">{item.description}</p>
-                              </div>
-                            </Link>
-                          </NavigationMenuLink>
-                        </li>
-                      ))}
-                    </ul>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
+            <NavigationMenuItem>
+              <NavigationMenuTrigger>EATS</NavigationMenuTrigger>
+              <NavigationMenuContent>
+                <div className="grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
+                  <div className="row-span-3">
+                    <NavigationMenuLink asChild>
+                      <Link
+                        className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
+                        href="/eats"
+                      >
+                        <div className="mb-2 mt-4 text-lg font-medium">
+                          Discover Cabo's Food Scene
+                        </div>
+                        <p className="text-sm leading-tight text-muted-foreground">
+                          From fine dining to local favorites, explore the best places to eat and drink.
+                        </p>
+                      </Link>
+                    </NavigationMenuLink>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    {eats.map((item) => (
+                      <NavigationMenuLink key={item.title} asChild>
+                        <Link
+                          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                          href={item.href}
+                        >
+                          <div className="text-sm font-medium leading-none">{item.title}</div>
+                          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                            {item.description}
+                          </p>
+                        </Link>
+                      </NavigationMenuLink>
+                    ))}
+                  </div>
+                </div>
+              </NavigationMenuContent>
+            </NavigationMenuItem>
 
-                {/* Group Trips Menu */}
-                <NavigationMenuItem>
-                  <NavigationMenuTrigger className="text-[#2F4F4F] bg-transparent text-sm">GROUP TRIPS</NavigationMenuTrigger>
-                  <NavigationMenuContent>
-                    <ul className="grid w-[600px] gap-3 p-4">
-                      {groupTrips.map((item) => (
-                        <li key={item.href}>
-                          <NavigationMenuLink asChild>
-                            <Link href={item.href} className="flex gap-4 select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                              <img src={item.image} alt={item.title} className="w-24 h-16 object-cover rounded" />
-                              <div>
-                                <div className="text-sm font-medium leading-none">{item.title}</div>
-                                <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-1">{item.description}</p>
-                              </div>
-                            </Link>
-                          </NavigationMenuLink>
-                        </li>
-                      ))}
-                    </ul>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
-
-                {/* Eats Link */}
-                <NavigationMenuItem>
-                  <NavigationMenuLink asChild>
-                    <Link href="/restaurants" className="text-[#2F4F4F] hover:text-[#1F3F3F] px-4 py-2 text-sm uppercase">
-                      EATS
-                    </Link>
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
-
-                {/* Blog Link */}
-                <NavigationMenuItem>
-                  <NavigationMenuLink asChild>
-                    <Link href="/blog" className="text-[#2F4F4F] hover:text-[#1F3F3F] px-4 py-2 text-sm uppercase">
-                      BLOG
-                    </Link>
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
-
-                {/* More Menu */}
-                <NavigationMenuItem>
-                  <NavigationMenuTrigger className="text-[#2F4F4F] bg-transparent text-sm">MORE</NavigationMenuTrigger>
-                  <NavigationMenuContent>
-                    <ul className="grid w-[600px] grid-cols-2 gap-3 p-4">
-                      {[...moreMenuItems].map((item) => (
-                        <li key={item.href}>
-                          <NavigationMenuLink asChild>
-                            <Link href={item.href} className="flex gap-4 select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                              <img src={item.image} alt={item.title} className="w-24 h-16 object-cover rounded" />
-                              <div>
-                                <div className="text-sm font-medium leading-none">{item.title}</div>
-                                <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-1">{item.description}</p>
-                              </div>
-                            </Link>
-                          </NavigationMenuLink>
-                        </li>
-                      ))}
-                    </ul>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
-              </NavigationMenuList>
-            </NavigationMenu>
-          </div>
-
-          {/* Cart and Auth Buttons */}
-          <div className="flex items-center justify-end space-x-2">
-            {user ? (
-              <>
-                <Button variant="ghost" className="text-[#2F4F4F] p-2">
-                  <User className="h-5 w-5" />
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  className="text-[#2F4F4F] p-2"
-                  onClick={() => logoutMutation.mutate()}
-                >
-                  <LogOut className="h-5 w-5" />
-                </Button>
-              </>
-            ) : (
-              <Link href="/auth">
-                <Button variant="ghost" className="text-[#2F4F4F] p-2">
-                  <LogIn className="h-5 w-5" />
-                </Button>
+            <NavigationMenuItem>
+              <Link href="/blog" className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-transparent px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50">
+                BLOG
               </Link>
-            )}
-            
-            <Button variant="ghost" className="text-[#2F4F4F] p-2">
-              <ShoppingCart className="h-6 w-6" />
-            </Button>
-          </div>
+            </NavigationMenuItem>
+
+            <NavigationMenuItem>
+              <NavigationMenuTrigger>MORE</NavigationMenuTrigger>
+              <NavigationMenuContent>
+                <div className="grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
+                  <div className="row-span-3">
+                    <NavigationMenuLink asChild>
+                      <Link
+                        className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
+                        href="/more"
+                      >
+                        <div className="mb-2 mt-4 text-lg font-medium">
+                          More Resources
+                        </div>
+                        <p className="text-sm leading-tight text-muted-foreground">
+                          Additional information and services to enhance your Cabo experience.
+                        </p>
+                      </Link>
+                    </NavigationMenuLink>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    {moreMenuItems.map((item) => (
+                      <NavigationMenuLink key={item.title} asChild>
+                        <Link
+                          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                          href={item.href}
+                        >
+                          <div className="text-sm font-medium leading-none">{item.title}</div>
+                          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                            {item.description}
+                          </p>
+                        </Link>
+                      </NavigationMenuLink>
+                    ))}
+                  </div>
+                </div>
+              </NavigationMenuContent>
+            </NavigationMenuItem>
+          </NavigationMenuList>
+        </NavigationMenu>
+
+        <div className="flex flex-1 items-center justify-end space-x-4">
+          <Link href="/cart" className="relative">
+            <span className="sr-only">Cart</span>
+            <ShoppingCart className="h-6 w-6" />
+            <span className="absolute -top-2 -right-2 h-5 w-5 rounded-full bg-primary text-xs text-primary-foreground flex items-center justify-center">
+              0
+            </span>
+          </Link>
+
+          <Sheet open={isOpen} onOpenChange={setIsOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="md:hidden">
+                <Menu className="h-6 w-6" />
+                <span className="sr-only">Toggle menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-[300px] sm:w-[400px]">
+              <nav className="flex flex-col gap-4">
+                <Link href="/stays" className="text-lg font-medium">STAYS</Link>
+                <Link href="/adventures" className="text-lg font-medium">ADVENTURES</Link>
+                <Link href="/group-trips" className="text-lg font-medium">GROUP TRIPS</Link>
+                <Link href="/eats" className="text-lg font-medium">EATS</Link>
+                <Link href="/blog" className="text-lg font-medium">BLOG</Link>
+                <Link href="/more" className="text-lg font-medium">MORE</Link>
+              </nav>
+              <div className="mt-8">
+                <h3 className="text-sm font-medium mb-4">Follow Us</h3>
+                <div className="flex gap-4">
+                  {socialLinks.map((link) => (
+                    <a
+                      key={link.label}
+                      href={link.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-muted-foreground hover:text-foreground"
+                    >
+                      <link.icon className="h-5 w-5" />
+                    </a>
+                  ))}
+                </div>
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
-    </nav>
+    </header>
   );
 };
 

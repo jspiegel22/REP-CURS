@@ -1,34 +1,28 @@
-import { Villa } from "@shared/schema";
 import { Card, CardContent } from "@/components/ui/card";
-import { generateVillaSlug } from "@/lib/utils";
+import Link from "next/link";
 import { MapPin, Star } from "lucide-react";
-import { SafeNavigation } from "@/components/safe-navigation";
 
-/**
- * VillaCard Component
- * 
- * This component displays a villa card with image, name, location, and other details.
- * It uses the SafeNavigation component to handle client-side navigation safely without nested <a> tags.
- * It accepts a Partial<Villa> to handle both local data and database-sourced villas with different schemas.
- */
+interface Villa {
+  name: string;
+  location: string;
+  imageUrl: string;
+  bedrooms: number;
+  maxGuests: number;
+  pricePerNight: string;
+}
+
 interface VillaCardProps {
-  villa: Partial<Villa>;
+  villa: Villa;
   className?: string;
 }
 
 export function VillaCard({ villa, className = "" }: VillaCardProps) {
-  // Ensure we have mandatory properties with fallbacks
-  const name = villa.name || "Luxury Villa";
-  const location = villa.location || "Cabo San Lucas";
-  const imageUrl = villa.imageUrl || "https://images.unsplash.com/photo-1566073771259-6a8506099945";
-  const bedrooms = villa.bedrooms || 4;
-  const maxGuests = villa.maxGuests || 8;
-  const displayPrice = villa.pricePerNight || "$500+";
+  const { name, location, imageUrl, bedrooms, maxGuests, pricePerNight } = villa;
   
   return (
     <div className={`block transition-transform hover:scale-[1.02] ${className}`}>
-      <SafeNavigation 
-        to={`/villas/${generateVillaSlug(name)}`}
+      <Link 
+        href={`/villas/${name.toLowerCase().replace(/\s+/g, '-')}`}
         className="block"
       >
         <Card className="cursor-pointer hover:shadow-lg transition-shadow duration-200">
@@ -58,11 +52,11 @@ export function VillaCard({ villa, className = "" }: VillaCardProps) {
               {bedrooms} BR • Up to {maxGuests} guests
             </div>
             <div className="mt-2 text-sm font-semibold">
-              {displayPrice} per night
+              {pricePerNight} per night
             </div>
           </CardContent>
         </Card>
-      </SafeNavigation>
+      </Link>
     </div>
   );
 }

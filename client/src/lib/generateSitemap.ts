@@ -1,76 +1,111 @@
-import { restaurants } from '@/data/restaurants';
-import { villas } from '@/data/villas';
-import { adventures } from '@/data/adventures';
+import { createClient } from '@supabase/supabase-js';
 
-const BASE_URL = 'https://cabo-adventures.com';
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
-export function generateSitemap() {
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+export async function generateSitemap() {
+  const baseUrl = 'https://cabo.is';
+
+  // Static pages
   const staticPages = [
-    '',
-    '/restaurants',
-    '/villas',
-    '/adventures',
-    '/about',
-    '/contact',
-    '/blog'
+    {
+      url: `${baseUrl}/`,
+      lastmod: new Date().toISOString(),
+      changefreq: 'daily',
+      priority: 1.0,
+    },
+    {
+      url: `${baseUrl}/stays`,
+      lastmod: new Date().toISOString(),
+      changefreq: 'daily',
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/stays/villas`,
+      lastmod: new Date().toISOString(),
+      changefreq: 'daily',
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/stays/resorts`,
+      lastmod: new Date().toISOString(),
+      changefreq: 'daily',
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/adventures`,
+      lastmod: new Date().toISOString(),
+      changefreq: 'daily',
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/adventures/water`,
+      lastmod: new Date().toISOString(),
+      changefreq: 'daily',
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/adventures/land`,
+      lastmod: new Date().toISOString(),
+      changefreq: 'daily',
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/adventures/luxury`,
+      lastmod: new Date().toISOString(),
+      changefreq: 'daily',
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/eats`,
+      lastmod: new Date().toISOString(),
+      changefreq: 'daily',
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/eats/restaurants`,
+      lastmod: new Date().toISOString(),
+      changefreq: 'daily',
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/eats/bars`,
+      lastmod: new Date().toISOString(),
+      changefreq: 'daily',
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/eats/beach-clubs`,
+      lastmod: new Date().toISOString(),
+      changefreq: 'daily',
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/blog`,
+      lastmod: new Date().toISOString(),
+      changefreq: 'weekly',
+      priority: 0.7,
+    },
   ];
 
-  const restaurantPages = restaurants.map(restaurant => ({
-    url: `${BASE_URL}/restaurants/${restaurant.id}`,
-    lastmod: new Date().toISOString(),
-    changefreq: 'daily',
-    priority: 0.8
-  }));
-
-  const villaPages = villas.map(villa => ({
-    url: `${BASE_URL}/villas/${villa.id}`,
-    lastmod: new Date().toISOString(),
-    changefreq: 'daily',
-    priority: 0.8
-  }));
-
-  const adventurePages = adventures.map(adventure => ({
-    url: `${BASE_URL}/adventures/${adventure.id}`,
-    lastmod: new Date().toISOString(),
-    changefreq: 'daily',
-    priority: 0.8
-  }));
-
-  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+  // Generate XML
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
     <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-      ${staticPages.map(page => `
-        <url>
-          <loc>${BASE_URL}${page}</loc>
-          <lastmod>${new Date().toISOString()}</lastmod>
-          <changefreq>weekly</changefreq>
-          <priority>${page === '' ? '1.0' : '0.9'}</priority>
-        </url>
-      `).join('')}
-      ${restaurantPages.map(page => `
+      ${staticPages
+        .map(
+          (page) => `
         <url>
           <loc>${page.url}</loc>
-          <lastmod>${page.lastmod}</lastmod>
-          <changefreq>${page.changefreq}</changefreq>
-          <priority>${page.priority}</priority>
+          ${page.lastmod ? `<lastmod>${page.lastmod}</lastmod>` : ''}
+          ${page.changefreq ? `<changefreq>${page.changefreq}</changefreq>` : ''}
+          ${page.priority ? `<priority>${page.priority}</priority>` : ''}
         </url>
-      `).join('')}
-      ${villaPages.map(page => `
-        <url>
-          <loc>${page.url}</loc>
-          <lastmod>${page.lastmod}</lastmod>
-          <changefreq>${page.changefreq}</changefreq>
-          <priority>${page.priority}</priority>
-        </url>
-      `).join('')}
-      ${adventurePages.map(page => `
-        <url>
-          <loc>${page.url}</loc>
-          <lastmod>${page.lastmod}</lastmod>
-          <changefreq>${page.changefreq}</changefreq>
-          <priority>${page.priority}</priority>
-        </url>
-      `).join('')}
+      `
+        )
+        .join('')}
     </urlset>`;
 
-  return sitemap;
+  return xml;
 } 

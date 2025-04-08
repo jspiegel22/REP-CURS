@@ -1,84 +1,59 @@
-import { Link } from "wouter";
-import { SiInstagram, SiFacebook, SiWhatsapp, SiPinterest, SiYoutube, SiTiktok } from "react-icons/si";
+import Link from 'next/link';
+import { Facebook, Instagram, Twitter } from 'lucide-react';
 
-export default function Footer() {
+export function Footer() {
   return (
-    <footer className="bg-[#2F4F4F] text-white pt-16 pb-8">
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+    <footer className="bg-gray-900 text-white">
+      <div className="container mx-auto px-4 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
-            <h3 className="text-xl font-bold mb-4">About Us</h3>
-            <p className="text-gray-300">Your premier destination for luxury travel experiences in Cabo San Lucas.</p>
+            <h3 className="text-xl font-bold mb-4">@cabo</h3>
+            <p className="text-gray-400">Your ultimate guide to experiencing the best of Cabo San Lucas.</p>
+            <div className="flex space-x-4 mt-4">
+              <a href="https://instagram.com/cabo" className="hover:text-primary">
+                <Instagram className="w-5 h-5" />
+              </a>
+              <a href="https://facebook.com/cabo" className="hover:text-primary">
+                <Facebook className="w-5 h-5" />
+              </a>
+              <a href="https://twitter.com/cabo" className="hover:text-primary">
+                <Twitter className="w-5 h-5" />
+              </a>
+            </div>
           </div>
+          
           <div>
-            <h3 className="text-xl font-bold mb-4">Stays</h3>
+            <h4 className="font-semibold mb-4">Explore</h4>
             <ul className="space-y-2">
-              <li><Link href="/villas">Luxury Villas</Link></li>
-              <li><Link href="/resorts">Resorts & Hotels</Link></li>
-              <li><Link href="/real-estate">Real Estate</Link></li>
+              <li><Link href="/villas" className="text-gray-400 hover:text-white">Luxury Villas</Link></li>
+              <li><Link href="/adventures" className="text-gray-400 hover:text-white">Adventures</Link></li>
+              <li><Link href="/dining" className="text-gray-400 hover:text-white">Fine Dining</Link></li>
+              <li><Link href="/nightlife" className="text-gray-400 hover:text-white">Nightlife</Link></li>
             </ul>
           </div>
+          
           <div>
-            <h3 className="text-xl font-bold mb-4">Activities</h3>
+            <h4 className="font-semibold mb-4">Information</h4>
             <ul className="space-y-2">
-              <li><Link href="/adventures">Adventures</Link></li>
-              <li><Link href="/adventures/luxury-sailing">Luxury Yachts</Link></li>
-              <li><Link href="/restaurants">Restaurants</Link></li>
-              <li><Link href="/events">Local Events</Link></li>
+              <li><Link href="/about" className="text-gray-400 hover:text-white">About Us</Link></li>
+              <li><Link href="/contact" className="text-gray-400 hover:text-white">Contact</Link></li>
+              <li><Link href="/faq" className="text-gray-400 hover:text-white">FAQ</Link></li>
+              <li><Link href="/blog" className="text-gray-400 hover:text-white">Blog</Link></li>
             </ul>
           </div>
+          
           <div>
-            <h3 className="text-xl font-bold mb-4">Plan Your Trip</h3>
+            <h4 className="font-semibold mb-4">Legal</h4>
             <ul className="space-y-2">
-              <li><Link href="/guides">Travel Guides</Link></li>
-              <li><Link href="/group-trips/bachelor-bachelorette">Bachelor/ette</Link></li>
-              <li><Link href="/group-trips/luxury-concierge">Luxury Concierge</Link></li>
-              <li><Link href="/group-trips/family">Family Trips</Link></li>
-            </ul>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-          <div>
-            <h3 className="text-xl font-bold mb-4">Contact</h3>
-            <ul className="space-y-2">
-              <li>Email: info@cabotravels.com</li>
-              <li>Phone: +1 (888) 123-4567</li>
-              <li>WhatsApp: +52 624 244 6303</li>
-            </ul>
-          </div>
-          <div>
-            <h3 className="text-xl font-bold mb-4">Partner With Us</h3>
-            <ul className="space-y-2">
-              <li><Link href="/work-with-us">Work with Us</Link></li>
-              <li><Link href="/group-trips/influencer">For Influencers</Link></li>
-              <li><Link href="/weddings">Wedding Planning</Link></li>
+              <li><Link href="/privacy" className="text-gray-400 hover:text-white">Privacy Policy</Link></li>
+              <li><Link href="/terms" className="text-gray-400 hover:text-white">Terms of Service</Link></li>
+              <li><Link href="/cancellation" className="text-gray-400 hover:text-white">Cancellation Policy</Link></li>
             </ul>
           </div>
         </div>
-
-        <div className="border-t border-white/20 pt-8">
-          <div className="flex justify-center space-x-6 mb-4">
-            <a href="https://www.tiktok.com/@atcabo" target="_blank" rel="noopener noreferrer" className="text-white hover:text-[#F5F5DC] transition-colors">
-              <SiTiktok size={24} />
-            </a>
-            <a href="https://instagram.com/cabo" target="_blank" rel="noopener noreferrer" className="text-white hover:text-[#F5F5DC] transition-colors">
-              <SiInstagram size={24} />
-            </a>
-            <a href="https://www.youtube.com/@atCabo" target="_blank" rel="noopener noreferrer" className="text-white hover:text-[#F5F5DC] transition-colors">
-              <SiYoutube size={24} />
-            </a>
-            <a href="https://wa.me/526242446303" target="_blank" rel="noopener noreferrer" className="text-white hover:text-[#F5F5DC] transition-colors">
-              <SiWhatsapp size={24} />
-            </a>
-            <a href="https://www.facebook.com/cabosanlucasbaja" target="_blank" rel="noopener noreferrer" className="text-white hover:text-[#F5F5DC] transition-colors">
-              <SiFacebook size={24} />
-            </a>
-            <a href="https://www.pinterest.com/instacabo/" target="_blank" rel="noopener noreferrer" className="text-white hover:text-[#F5F5DC] transition-colors">
-              <SiPinterest size={24} />
-            </a>
-          </div>
-          <p className="text-center text-sm text-gray-300">&copy; {new Date().getFullYear()} Cabo Travels. All rights reserved.</p>
+        
+        <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
+          <p>&copy; {new Date().getFullYear()} @cabo. All rights reserved.</p>
         </div>
       </div>
     </footer>

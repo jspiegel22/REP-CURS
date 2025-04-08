@@ -28,28 +28,12 @@ import GuidesPage from "@/pages/guides";
 import WorkWithUsPage from "@/pages/work-with-us";
 import NavigationBar from "./components/navigation-bar";
 import { ChatButton } from "./components/chat-button";
-import { AuthProvider, useAuth } from "@/hooks/use-auth";
-import { ProtectedRoute } from "@/lib/protected-route";
+// Authentication removed
 import AdminDashboard from "@/pages/admin";
 import AdminLoginPage from "@/pages/admin/login";
 
-function ProtectedAdminRoute({ children }: { children: React.ReactNode }) {
-  const { user, isLoading } = useAuth();
-  
-  if (isLoading) {
-    return React.createElement(
-      "div", 
-      { className: "flex justify-center items-center min-h-screen" },
-      React.createElement("div", { 
-        className: "animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" 
-      })
-    );
-  }
-  
-  if (!user || user.role !== "admin") {
-    return React.createElement(AdminLoginPage);
-  }
-  
+// Simple placeholder component for admin features - no auth
+function SimpleAdminRoute({ children }: { children: React.ReactNode }) {
   return React.createElement(React.Fragment, null, children);
 }
 
@@ -70,7 +54,7 @@ function Router() {
         React.createElement(Route, { 
           path: "/admin",
           children: () => React.createElement(
-            ProtectedAdminRoute,
+            SimpleAdminRoute,
             null,
             React.createElement(AdminDashboard)
           )
@@ -92,36 +76,36 @@ function Router() {
         React.createElement(Route, { path: "/restaurants/:id", component: RestaurantDetails }),
         React.createElement(Route, { path: "/guides", component: GuidesPage }),
         
-        // Routes that require authentication
-        React.createElement(ProtectedRoute, { 
+        // All routes are now public
+        React.createElement(Route, { 
           path: "/group-trips/family", 
           component: FamilyTripsPage 
         }),
-        React.createElement(ProtectedRoute, { 
+        React.createElement(Route, { 
           path: "/group-trips/bachelor-bachelorette", 
           component: BachelorBachelorettePage 
         }),
-        React.createElement(ProtectedRoute, { 
+        React.createElement(Route, { 
           path: "/group-trips/luxury-concierge", 
           component: LuxuryConcierge 
         }),
-        React.createElement(ProtectedRoute, { 
+        React.createElement(Route, { 
           path: "/group-trips/influencer", 
           component: InfluencerPage 
         }),
-        React.createElement(ProtectedRoute, { 
+        React.createElement(Route, { 
           path: "/weddings", 
           component: WeddingsPage 
         }),
-        React.createElement(ProtectedRoute, { 
+        React.createElement(Route, { 
           path: "/real-estate", 
           component: RealEstatePage 
         }),
-        React.createElement(ProtectedRoute, { 
+        React.createElement(Route, { 
           path: "/events", 
           component: EventsPage 
         }),
-        React.createElement(ProtectedRoute, { 
+        React.createElement(Route, { 
           path: "/work-with-us", 
           component: WorkWithUsPage 
         }),
@@ -143,8 +127,8 @@ function Router() {
           )
         }),
         
-        // Protected checkout routes
-        React.createElement(ProtectedRoute, { 
+        // Public checkout routes
+        React.createElement(Route, { 
           path: "/checkout/:listingId", 
           component: () => React.createElement(
             Suspense, 
@@ -160,7 +144,7 @@ function Router() {
             React.createElement(React.lazy(() => import('@/pages/checkout-page')))
           )
         }),
-        React.createElement(ProtectedRoute, { 
+        React.createElement(Route, { 
           path: "/booking-confirmation", 
           component: () => React.createElement(
             Suspense, 
@@ -190,9 +174,7 @@ function App() {
   return React.createElement(
     QueryClientProvider,
     { client: queryClient },
-    React.createElement(
-      AuthProvider,
-      null,
+    React.createElement(React.Fragment, null,
       React.createElement(Router),
       React.createElement(Toaster)
     )
