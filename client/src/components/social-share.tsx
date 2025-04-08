@@ -3,7 +3,6 @@ import { toast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { SiWhatsapp, SiFacebook, SiX, SiPinterest } from "react-icons/si";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { useEffect, useState } from "react";
 
 interface SocialShareProps {
   listingId: number;
@@ -13,24 +12,11 @@ interface SocialShareProps {
 
 export function SocialShare({ listingId, title, imageUrl }: SocialShareProps) {
   const { user } = useAuth();
-  const [currentUrl, setCurrentUrl] = useState("");
-  
-  // Set the current URL only on the client side
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setCurrentUrl(window.location.href);
-    }
-  }, []);
 
   const handleShare = async (platform: string) => {
-    // If we're not on the client side or currentUrl hasn't been set yet, do nothing
-    if (typeof window === 'undefined' || !currentUrl) {
-      return;
-    }
-    
     let shareUrl = "";
     const encodedTitle = encodeURIComponent(title);
-    const encodedUrl = encodeURIComponent(currentUrl);
+    const encodedUrl = encodeURIComponent(window.location.href);
     const encodedImage = encodeURIComponent(imageUrl);
 
     switch (platform) {
@@ -76,33 +62,33 @@ export function SocialShare({ listingId, title, imageUrl }: SocialShareProps) {
     <div className="flex gap-2">
       <Button
         variant="outline"
-        size="sm"
+        size="icon"
         onClick={() => handleShare("whatsapp")}
-        className="hover:text-green-500 h-9 w-9 p-0"
+        className="hover:text-green-500"
       >
         <SiWhatsapp className="h-4 w-4" />
       </Button>
       <Button
         variant="outline"
-        size="sm"
+        size="icon"
         onClick={() => handleShare("facebook")}
-        className="hover:text-blue-600 h-9 w-9 p-0"
+        className="hover:text-blue-600"
       >
         <SiFacebook className="h-4 w-4" />
       </Button>
       <Button
         variant="outline"
-        size="sm"
+        size="icon"
         onClick={() => handleShare("twitter")}
-        className="hover:text-sky-400 h-9 w-9 p-0"
+        className="hover:text-sky-400"
       >
         <SiX className="h-4 w-4" />
       </Button>
       <Button
         variant="outline"
-        size="sm"
+        size="icon"
         onClick={() => handleShare("pinterest")}
-        className="hover:text-red-600 h-9 w-9 p-0"
+        className="hover:text-red-600"
       >
         <SiPinterest className="h-4 w-4" />
       </Button>

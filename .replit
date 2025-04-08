@@ -11,47 +11,11 @@ run = ["sh", "-c", "npm start"]
 build = ["sh", "-c", "npm run build"]
 
 [[ports]]
-localPort = 3000
-externalPort = 3000
-
-[[ports]]
-localPort = 3001
-externalPort = 3001
-
-[[ports]]
-localPort = 3002
-externalPort = 3003
-
-[[ports]]
-localPort = 3003
-externalPort = 4200
-
-[[ports]]
-localPort = 3004
-externalPort = 5000
-
-[[ports]]
-localPort = 3005
-externalPort = 5173
-
-[[ports]]
-localPort = 3006
-externalPort = 6000
-
-[[ports]]
-localPort = 3007
-externalPort = 6800
-
-[[ports]]
 localPort = 5000
 externalPort = 80
 
-[[ports]]
-localPort = 5001
-externalPort = 3002
-
 [workflows]
-runButton = "Start application"
+runButton = "Project"
 
 [[workflows.workflow]]
 name = "Project"
@@ -65,7 +29,6 @@ args = "Start application"
 [[workflows.workflow]]
 name = "Start application"
 author = "agent"
-mode = "sequential"
 
 [workflows.workflow.metadata]
 agentRequireRestartOnSave = false
@@ -75,4 +38,5 @@ task = "packager.installForAll"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "node replit-entry.js"
+args = "npm run dev"
+waitForPort = 5000

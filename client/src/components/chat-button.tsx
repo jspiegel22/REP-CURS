@@ -4,11 +4,14 @@ import { Button } from "@/components/ui/button";
 export function ChatButton() {
   return (
     <Button
-      onClick={() => window.open('https://chat.cabo.is', '_blank')}
-      className="rounded-full w-12 h-12 bg-primary hover:bg-primary/90 text-white shadow-lg"
-      aria-label="Open chat"
+      size="icon"
+      className="fixed bottom-24 right-6 h-12 w-12 rounded-full shadow-lg bg-[#2F4F4F] hover:bg-[#2F4F4F]/90 text-white z-50"
+      onClick={() => {
+        // Add chat functionality here
+        console.log('Chat button clicked');
+      }}
     >
-      <MessageCircle className="w-6 h-6" />
+      <MessageCircle className="h-6 w-6" />
     </Button>
   );
 }

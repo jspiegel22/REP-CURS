@@ -93,6 +93,23 @@ function Integrations() {
             </Button>
           </div>
         </div>
+        
+        <div className="bg-white p-6 rounded-lg shadow">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="text-xl font-bold">Slack</h3>
+              <p className="text-muted-foreground">Connect to Slack for notifications</p>
+            </div>
+            <div className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium">
+              Not Connected
+            </div>
+          </div>
+          <div className="border-t pt-4">
+            <Button variant="outline" size="sm">
+              Connect
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
   );

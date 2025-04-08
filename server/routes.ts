@@ -7,55 +7,28 @@ import { insertBookingSchema, insertLeadSchema, insertGuideSubmissionSchema, ins
 import { generateSlug } from "@/lib/utils";
 import { nanoid } from "nanoid";
 import passport from "passport";
-import { dualDb } from "./services/dual-db"; // Import our dual-database service
-import Stripe from "stripe";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   setupAuth(app);
-  
-  // Initialize Stripe with the secret key
-  if (!process.env.STRIPE_SECRET_KEY) {
-    console.error("Missing STRIPE_SECRET_KEY environment variable");
-  }
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
-    apiVersion: "2023-10-16",
-  });
-  
-  // Health check endpoint
-  app.get("/api/health", (req, res) => {
-    res.status(200).json({
-      status: "ok",
-      timestamp: new Date().toISOString(),
-      uptime: process.uptime(),
-      message: "Cabo Travel Platform API is running",
-      port: {
-        running: process.env.PORT || 3000,
-        replit: 5000,
-        proxy: "Active"
-      }
-    });
-  });
 
-  // Simplified guide submission endpoint without external service dependencies
+  // Add guide submission endpoint with Airtable integration and email sending
   app.post("/api/guide-submissions", async (req, res) => {
     try {
-      // Create a simpler validator with only essential fields
-      const simpleGuideSubmissionSchema = z.object({
-        firstName: z.string().min(1, "First name is required"),
-        email: z.string().email("Invalid email address"),
+      // Create a custom validator that extends the base schema but allows additional fields
+      const extendedGuideSubmissionSchema = insertGuideSubmissionSchema.extend({
+        // Add the new fields that we're collecting from the form
+        lastName: z.string().optional().nullable(),
         phone: z.string().optional().nullable(),
-        guideType: z.string().default("Ultimate Cabo Guide 2025"),
-        source: z.string().default("website"),
-        status: z.string().default("completed"), // Mark as completed by default
-        formName: z.string().default("guide-download"),
-        submissionId: z.string().optional(),
+        preferredContactMethod: z.enum(["Email", "Phone", "Either"]).default("Email"),
         tags: z.array(z.string()).optional(),
+        interestAreas: z.array(z.string()).optional(),
       });
       
       // Validate request body
-      const submissionData = simpleGuideSubmissionSchema.safeParse({
+      const submissionData = extendedGuideSubmissionSchema.safeParse({
         ...req.body,
         submissionId: req.body.submissionId || nanoid(),
+        // No need to set createdAt and updatedAt as they have database defaults
       });
 
       if (!submissionData.success) {
@@ -65,36 +38,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      // Add empty values for fields that are in the DB schema but not in form
-      const fullSubmissionData = {
-        ...submissionData.data,
-        lastName: null,
-        preferredContactMethod: "Email",
-        interestAreas: ["Travel Guide"],
-        downloadLink: "/guides/ultimate-cabo-guide-2025.pdf", // Static guide link
-        processedAt: new Date(), // Mark as processed now
-      };
+      // Create guide submission in database
+      const submission = await storage.createGuideSubmission(submissionData.data);
 
-      // Create guide submission in database using the dual-database service
-      // This will save to both Supabase and Airtable
-      const submission = await dualDb.submitGuideRequest(fullSubmissionData);
-      
-      // Log the submission for debugging
-      console.log(`✅ Guide submission recorded for ${submission.email} with ID ${submission.submissionId}`);
-
-      res.status(201).json({
-        ...submission,
-        // Additional info for the frontend if needed
-        message: "Your guide is ready for download",
-        downloadUrl: submission.downloadLink || "/guides/ultimate-cabo-guide-2025.pdf"
+      // Process the submission for Airtable & email (non-blocking)
+      import('./services/guideSubmissions').then(({ processGuideSubmission }) => {
+        processGuideSubmission(submission)
+          .then(success => {
+            if (success) {
+              console.log(`Guide submission successfully processed for ${submission.email}`);
+            } else {
+              console.error(`Failed to process guide submission for ${submission.email}`);
+            }
+          })
+          .catch(error => {
+            console.error("Error in background processing:", error);
+          });
       });
+
+      res.status(201).json(submission);
     } catch (error) {
       console.error("Guide submission error:", error);
       res.status(500).json({ message: "Failed to create guide submission" });
     }
   });
 
-  // Simplified booking endpoint without external service dependencies
+  // Booking endpoint with Airtable integration and email confirmation
   app.post("/api/bookings", async (req, res) => {
     try {
       // Validate request body
@@ -106,73 +75,76 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      // Add booking metadata
-      const bookingWithMeta = {
+      // Create booking
+      const booking = await storage.createBooking({
         ...bookingData.data,
-        status: "confirmed", // Set as confirmed immediately
+        status: "pending",
         createdAt: new Date(),
-        updatedAt: new Date(),
-        confirmationCode: `CABO-${Math.floor(100000 + Math.random() * 900000)}` // Generate a confirmation code
-      };
-
-      // Create booking in database using the dual-database service
-      // This will save to both Supabase and Airtable
-      const booking = await dualDb.submitBooking(bookingWithMeta);
-
-      // Log successful booking
-      console.log(`✅ Booking created for ${booking.email}, confirmation: ${booking.confirmationCode}`);
-      
-      res.status(201).json({
-        ...booking,
-        message: "Your booking has been confirmed.",
-        details: {
-          confirmationNumber: booking.confirmationCode,
-          confirmedAt: new Date().toISOString()
-        }
+        updatedAt: new Date()
       });
+
+      // Send confirmation email and sync to Airtable (non-blocking)
+      import('./services/airtable').then(({ syncBookingToAirtable, retryFailedSync }) => {
+        retryFailedSync(syncBookingToAirtable, booking)
+          .then(() => console.log(`Booking synced to Airtable for ${booking.email}`))
+          .catch(error => console.error("Error syncing booking to Airtable:", error));
+      });
+
+      import('./services/emailService').then(({ sendEmail, createBookingConfirmationEmail }) => {
+        const emailOptions = createBookingConfirmationEmail(booking);
+        sendEmail(emailOptions)
+          .then(success => {
+            if (success) {
+              console.log(`Booking confirmation email sent to ${booking.email}`);
+            } else {
+              console.error(`Failed to send booking confirmation email to ${booking.email}`);
+            }
+          })
+          .catch(error => {
+            console.error("Error sending booking confirmation email:", error);
+          });
+      });
+
+      res.status(201).json(booking);
     } catch (error) {
       console.error("Booking creation error:", error);
       res.status(500).json({ message: "Failed to create booking" });
     }
   });
 
-  // Simplified lead form submission endpoint
+  // Lead form submission endpoint with Airtable integration
   app.post("/api/leads", async (req, res) => {
     try {
+      console.log('Received lead submission:', req.body); // Debug log
+
       // Validate request body
       const leadData = insertLeadSchema.safeParse(req.body);
       if (!leadData.success) {
-        console.log('Lead validation failed:', leadData.error.errors);
+        console.log('Lead validation failed:', leadData.error.errors); // Debug log
         return res.status(400).json({ 
           message: "Invalid lead data",
           errors: leadData.error.errors 
         });
       }
 
-      // Add lead metadata
-      const leadWithMeta = {
+      // Create lead
+      const lead = await storage.createLead({
         ...leadData.data,
-        status: "received", // Mark as received immediately
+        status: "new",
         createdAt: new Date(),
-        updatedAt: new Date(),
-        trackingId: `LEAD-${Date.now().toString().slice(-6)}` // Generate a tracking ID
-      };
-
-      // Create lead in database using the dual-database service
-      // This will save to both Supabase and Airtable
-      const lead = await dualDb.submitLead(leadWithMeta);
-
-      // Log successful lead creation
-      console.log(`✅ Lead created for ${lead.email}, tracking ID: ${lead.trackingId}`);
-      
-      res.status(201).json({
-        ...lead,
-        message: "Thank you! Your inquiry has been received.",
-        details: {
-          trackingId: lead.trackingId,
-          receivedAt: new Date().toISOString()
-        }
+        updatedAt: new Date()
       });
+
+      console.log('Lead created successfully:', lead); // Debug log
+
+      // Sync to Airtable (non-blocking)
+      import('./services/airtable').then(({ syncLeadToAirtable, retryFailedSync }) => {
+        retryFailedSync(syncLeadToAirtable, lead)
+          .then(() => console.log(`Lead synced to Airtable for ${lead.email}`))
+          .catch(error => console.error("Error syncing lead to Airtable:", error));
+      });
+
+      res.status(201).json(lead);
     } catch (error) {
       console.error("Lead creation error:", error);
       res.status(500).json({ message: "Failed to create lead" });
@@ -346,112 +318,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } catch (error) {
         console.error("Error creating admin user:", error);
       }
-    }
-  });
-  
-  // Stripe payment endpoints
-  app.post("/api/create-payment-intent", async (req, res) => {
-    try {
-      // Extract the payment amount from the request
-      const { amount, listingId, bookingDetails } = req.body;
-      
-      if (!amount || amount < 1) {
-        return res.status(400).json({ message: "Invalid payment amount" });
-      }
-      
-      // Create a payment intent with the specified amount
-      const paymentIntent = await stripe.paymentIntents.create({
-        amount: Math.round(amount * 100), // Convert to cents
-        currency: "usd",
-        metadata: {
-          listingId: listingId?.toString() || "",
-          bookingType: bookingDetails?.bookingType || "direct",
-          guestName: bookingDetails?.firstName || ""
-        }
-      });
-      
-      // Return the client secret to the frontend
-      res.status(200).json({
-        clientSecret: paymentIntent.client_secret,
-        paymentIntentId: paymentIntent.id
-      });
-    } catch (error: any) {
-      console.error("Stripe payment intent error:", error);
-      res.status(500).json({ 
-        message: "Error creating payment intent", 
-        error: error.message 
-      });
-    }
-  });
-  
-  // Endpoint to retrieve payment status
-  app.get("/api/payment/:paymentIntentId", async (req, res) => {
-    try {
-      const { paymentIntentId } = req.params;
-      
-      if (!paymentIntentId) {
-        return res.status(400).json({ message: "Payment intent ID is required" });
-      }
-      
-      // Retrieve the payment intent from Stripe
-      const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
-      
-      res.status(200).json({
-        status: paymentIntent.status,
-        amount: paymentIntent.amount / 100, // Convert cents to dollars
-        metadata: paymentIntent.metadata
-      });
-    } catch (error: any) {
-      console.error("Error retrieving payment:", error);
-      res.status(500).json({ 
-        message: "Error retrieving payment status", 
-        error: error.message 
-      });
-    }
-  });
-  
-  // Endpoint to handle successful payments and record bookings
-  app.post("/api/complete-payment", async (req, res) => {
-    try {
-      const { paymentIntentId, bookingDetails } = req.body;
-      
-      if (!paymentIntentId || !bookingDetails) {
-        return res.status(400).json({ message: "Payment intent ID and booking details are required" });
-      }
-      
-      // Retrieve the payment intent from Stripe to confirm payment
-      const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
-      
-      if (paymentIntent.status !== "succeeded") {
-        return res.status(400).json({ message: "Payment has not been completed" });
-      }
-      
-      // Create a booking record with payment information
-      const bookingWithPayment = {
-        ...bookingDetails,
-        paymentIntentId: paymentIntentId,
-        paymentAmount: paymentIntent.amount / 100,
-        paymentStatus: "paid",
-        status: "confirmed",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        confirmationCode: `CABOPAY-${Math.floor(100000 + Math.random() * 900000)}`
-      };
-      
-      // Save booking to the database
-      const booking = await dualDb.submitBooking(bookingWithPayment);
-      
-      res.status(201).json({
-        booking,
-        message: "Payment successful and booking confirmed",
-        confirmationCode: booking.confirmationCode
-      });
-    } catch (error: any) {
-      console.error("Payment completion error:", error);
-      res.status(500).json({ 
-        message: "Error completing payment process", 
-        error: error.message 
-      });
     }
   });
 

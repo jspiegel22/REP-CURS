@@ -1,67 +1,137 @@
-import Link from 'next/link';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Link } from "wouter";
 
-const categories = [
+const luxuryResorts = [
   {
-    title: 'Luxury Villas',
-    description: 'Exclusive beachfront properties',
-    image: 'https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf',
-    href: '/stays/villas'
+    title: "Four Seasons Resort",
+    image: "https://images.unsplash.com/photo-1582719508461-905c673771fd?ixlib=rb-4.0.3",
+    path: "/resorts/four-seasons",
   },
   {
-    title: 'Water Activities',
-    description: 'Snorkeling, diving & more',
-    image: 'https://images.unsplash.com/photo-1564543331-0b5aa2eda2ce',
-    href: '/adventures/water'
-  },
-  {
-    title: 'Land Adventures',
-    description: 'ATV tours & desert expeditions',
-    image: 'https://images.unsplash.com/photo-1525186402429-b4ff38bedec6',
-    href: '/adventures/land'
-  },
-  {
-    title: 'Fine Dining',
-    description: 'World-class restaurants',
-    image: 'https://images.unsplash.com/photo-1559339352-11d035aa65de',
-    href: '/eats/restaurants'
-  },
-  {
-    title: 'Nightlife',
-    description: 'Bars, clubs & entertainment',
-    image: 'https://images.unsplash.com/photo-1566417713940-fe7c737a9ef2',
-    href: '/eats/bars'
-  },
-  {
-    title: 'Beach Clubs',
-    description: 'Day clubs & beach parties',
-    image: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874',
-    href: '/eats/beach-clubs'
+    title: "Waldorf Astoria",
+    image: "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?ixlib=rb-4.0.3",
+    path: "/resorts/waldorf-astoria",
   }
 ];
 
-export function CategoryGrid() {
+const oceanAdventures = [
+  {
+    title: "Sunset Sailing",
+    image: "https://images.unsplash.com/photo-1564351943427-3d61951984e9?ixlib=rb-4.0.3",
+    path: "/adventure/luxury-cabo-sailing",
+  },
+  {
+    title: "Whale Watching",
+    image: "https://images.unsplash.com/photo-1570482606740-a0b0c6b3e8b6?ixlib=rb-4.0.3",
+    path: "/adventure/whale-watching",
+  },
+  {
+    title: "Scuba Diving",
+    image: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3",
+    path: "/adventures",
+  }
+];
+
+const digitalGuides = [
+  {
+    title: "Adventure Guide",
+    image: "https://images.unsplash.com/photo-1533760881669-80db4d7b341c?w=800",
+    path: "/guides/adventures",
+  },
+  {
+    title: "Local Tips",
+    image: "https://images.unsplash.com/photo-1563461660947-507ef49e9c47?w=800",
+    path: "/guides/local-tips",
+  },
+  {
+    title: "Restaurant Guide",
+    image: "https://images.unsplash.com/photo-1578474846511-04ba529f0b88?w=800",
+    path: "/guides/restaurants",
+  },
+  {
+    title: "Beach Guide",
+    image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800",
+    path: "/guides/beaches",
+  }
+];
+
+export default function CategoryGrid() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {categories.map((category) => (
-        <Link 
-          key={category.title}
-          href={category.href}
-          className="group relative overflow-hidden rounded-lg aspect-[4/3]"
-        >
-          <img
-            src={category.image}
-            alt={category.title}
-            className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-            loading="lazy"
-            decoding="async"
-          />
-          <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors duration-300" />
-          <div className="absolute inset-0 p-6 flex flex-col justify-end text-white">
-            <h3 className="text-xl font-semibold mb-1">{category.title}</h3>
-            <p className="text-sm text-white/90">{category.description}</p>
-          </div>
-        </Link>
-      ))}
+    <div className="space-y-12 py-8">
+      {/* Luxury Resorts Section */}
+      <section>
+        <h2 className="text-2xl font-semibold mb-6">Luxury Resorts</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {luxuryResorts.map((resort) => (
+            <Link key={resort.title} href={resort.path}>
+              <Card className="cursor-pointer hover:shadow-lg transition-shadow">
+                <CardHeader className="p-0">
+                  <div className="aspect-video relative">
+                    <img
+                      src={resort.image}
+                      alt={resort.title}
+                      className="absolute inset-0 w-full h-full object-cover rounded-t-lg"
+                    />
+                  </div>
+                </CardHeader>
+                <CardContent className="p-4">
+                  <CardTitle className="text-xl">{resort.title}</CardTitle>
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* Ocean Adventures Section */}
+      <section>
+        <h2 className="text-2xl font-semibold mb-6">Ocean Adventures</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {oceanAdventures.map((adventure) => (
+            <Link key={adventure.title} href={adventure.path}>
+              <Card className="cursor-pointer hover:shadow-lg transition-shadow">
+                <CardHeader className="p-0">
+                  <div className="aspect-video relative">
+                    <img
+                      src={adventure.image}
+                      alt={adventure.title}
+                      className="absolute inset-0 w-full h-full object-cover rounded-t-lg"
+                    />
+                  </div>
+                </CardHeader>
+                <CardContent className="p-4">
+                  <CardTitle className="text-xl">{adventure.title}</CardTitle>
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* Digital Guides Section */}
+      <section>
+        <h2 className="text-2xl font-semibold mb-6">Digital Guides</h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {digitalGuides.map((guide) => (
+            <Link key={guide.title} href={guide.path}>
+              <Card className="cursor-pointer hover:shadow-lg transition-shadow">
+                <CardHeader className="p-0">
+                  <div className="aspect-square relative">
+                    <img
+                      src={guide.image}
+                      alt={guide.title}
+                      className="absolute inset-0 w-full h-full object-cover rounded-t-lg"
+                    />
+                  </div>
+                </CardHeader>
+                <CardContent className="p-4">
+                  <CardTitle className="text-lg">{guide.title}</CardTitle>
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }

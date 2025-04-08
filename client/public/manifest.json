@@ -1,65 +1,35 @@
 {
-  "name": "Cabo Adventures - Luxury Travel",
-  "short_name": "Cabo Adventures",
-  "description": "Book luxury villas, resorts, and adventures in Cabo San Lucas",
+  "name": "Cabo Adventures",
+  "short_name": "Cabo",
+  "description": "Discover the best adventures, restaurants, and villas in Cabo San Lucas",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#2F4F4F",
   "icons": [
     {
-      "src": "/favicon-16x16.png",
-      "sizes": "16x16",
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/favicon-32x32.png",
-      "sizes": "32x32",
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
       "type": "image/png"
-    },
-    {
-      "src": "/apple-touch-icon.png",
-      "sizes": "180x180",
-      "type": "image/png"
-    },
-    {
-      "src": "/safari-pinned-tab.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "maskable"
     }
   ],
-  "shortcuts": [
-    {
-      "name": "Villas",
-      "url": "/villas",
-      "description": "Browse luxury villas"
-    },
-    {
-      "name": "Resorts",
-      "url": "/resorts",
-      "description": "Explore top resorts"
-    },
-    {
-      "name": "Adventures",
-      "url": "/adventures",
-      "description": "Discover exciting activities"
-    }
-  ],
+  "orientation": "portrait",
+  "categories": ["travel", "tourism", "lifestyle"],
+  "lang": "en-US",
+  "dir": "ltr",
+  "prefer_related_applications": false,
   "screenshots": [
     {
-      "src": "/screenshots/home.jpg",
+      "src": "/screenshots/home.png",
       "sizes": "1280x720",
-      "type": "image/jpeg",
-      "form_factor": "wide",
-      "label": "Homescreen of Cabo Adventures"
-    },
-    {
-      "src": "/screenshots/mobile.jpg",
-      "sizes": "720x1280",
-      "type": "image/jpeg",
-      "form_factor": "narrow",
-      "label": "Mobile view of Cabo Adventures"
+      "type": "image/png",
+      "platform": "wide",
+      "label": "Home page of Cabo Adventures"
     }
   ]
-}
+} 

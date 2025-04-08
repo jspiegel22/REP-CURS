@@ -1,21 +1,8 @@
-const { Pool } = require('@neondatabase/serverless');
-const { createClient } = require('@supabase/supabase-js');
-const dotenv = require('dotenv');
-const fs = require('fs');
-const path = require('path');
+import { Pool } from '@neondatabase/serverless';
+import { createClient } from '@supabase/supabase-js';
+import * as dotenv from 'dotenv';
 
 dotenv.config();
-
-// Check for required environment variables
-if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
-  console.error('Missing required Supabase credentials. Please set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY');
-  process.exit(1);
-}
-
-if (!process.env.NEON_DATABASE_URL && !process.env.DATABASE_URL) {
-  console.error('Missing required database URL. Please set NEON_DATABASE_URL or DATABASE_URL');
-  process.exit(1);
-}
 
 const tables = [
   'users',
@@ -30,48 +17,14 @@ const tables = [
   'weather_cache'
 ];
 
-async function migrateSchema() {
-  console.log('Migrating schema...');
-  
-  // Read the SQL migration file
-  const schemaSQL = fs.readFileSync(
-    path.join(__dirname, '../supabase/migrations/20240403_initial_schema.sql'),
-    'utf8'
-  );
-
-  // Connect to Supabase
-  const supabase = createClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_ROLE_KEY
-  );
-
-  try {
-    // Execute the schema migration
-    const { error } = await supabase.rpc('exec_sql', { sql: schemaSQL });
-    
-    if (error) {
-      console.error('Error migrating schema:', error);
-      throw error;
-    }
-    
-    console.log('Schema migration completed successfully');
-  } catch (error) {
-    console.error('Schema migration failed:', error);
-    throw error;
-  }
-}
-
 async function migrateData() {
-  console.log('Migrating data...');
-  
   // Connect to Neon
-  const dbUrl = process.env.NEON_DATABASE_URL || process.env.DATABASE_URL;
-  const neonPool = new Pool({ connectionString: dbUrl });
+  const neonPool = new Pool({ connectionString: process.env.NEON_DATABASE_URL });
   
   // Connect to Supabase
   const supabase = createClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_ROLE_KEY
+    process.env.SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
 
   try {
@@ -98,62 +51,12 @@ async function migrateData() {
       }
     }
 
-    console.log('Data migration completed successfully');
+    console.log('Migration completed successfully');
   } catch (error) {
-    console.error('Data migration failed:', error);
-    throw error;
+    console.error('Migration failed:', error);
   } finally {
     await neonPool.end();
   }
 }
 
-async function setupWebhooks() {
-  console.log('Setting up webhooks...');
-  
-  // Read the webhooks SQL file
-  const webhooksSQL = fs.readFileSync(
-    path.join(__dirname, '../supabase/migrations/20240403_webhooks.sql'),
-    'utf8'
-  );
-
-  // Connect to Supabase
-  const supabase = createClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_ROLE_KEY
-  );
-
-  try {
-    // Execute the webhooks setup
-    const { error } = await supabase.rpc('exec_sql', { sql: webhooksSQL });
-    
-    if (error) {
-      console.error('Error setting up webhooks:', error);
-      throw error;
-    }
-    
-    console.log('Webhooks setup completed successfully');
-  } catch (error) {
-    console.error('Webhooks setup failed:', error);
-    throw error;
-  }
-}
-
-async function main() {
-  try {
-    // Step 1: Migrate schema
-    await migrateSchema();
-    
-    // Step 2: Migrate data
-    await migrateData();
-    
-    // Step 3: Setup webhooks
-    await setupWebhooks();
-    
-    console.log('Migration completed successfully!');
-  } catch (error) {
-    console.error('Migration failed:', error);
-    process.exit(1);
-  }
-}
-
-main(); 
+migrateData(); 

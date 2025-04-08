@@ -1,82 +1,48 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
 
 interface YouTubeBackgroundProps {
   videoId: string;
   fallbackImage: string;
 }
 
-declare global {
-  interface Window {
-    YT: any;
-    onYouTubeIframeAPIReady: () => void;
-  }
-}
-
 export function YouTubeBackground({ videoId, fallbackImage }: YouTubeBackgroundProps) {
-  const playerRef = useRef<any>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    // Load the IFrame Player API code asynchronously
-    const tag = document.createElement('script');
-    tag.src = 'https://www.youtube.com/iframe_api';
-    const firstScriptTag = document.getElementsByTagName('script')[0];
-    firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
-
-    // Create an <iframe> (and YouTube player) after the API code downloads
-    window.onYouTubeIframeAPIReady = () => {
-      playerRef.current = new window.YT.Player('youtube-player', {
-        videoId: videoId,
-        playerVars: {
-          autoplay: 1,
-          controls: 0,
-          disablekb: 1,
-          enablejsapi: 1,
-          fs: 0,
-          loop: 1,
-          modestbranding: 1,
-          playsinline: 1,
-          rel: 0,
-          showinfo: 0,
-          mute: 1,
-        },
-        events: {
-          onReady: (event: any) => {
-            event.target.playVideo();
-          },
-          onStateChange: (event: any) => {
-            if (event.data === window.YT.PlayerState.ENDED) {
-              event.target.playVideo();
-            }
-          },
-        },
-      });
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
     };
 
-    // Clean up
-    return () => {
-      if (playerRef.current) {
-        playerRef.current.destroy();
-      }
-    };
-  }, [videoId]);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   return (
     <div className="absolute inset-0 w-full h-full overflow-hidden">
-      <div 
-        ref={containerRef}
-        className="relative w-full h-full"
-        style={{ 
-          backgroundImage: `url(${fallbackImage})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        }}
-      >
+      {/* Desktop YouTube Video */}
+      {!isMobile && (
+        <div className="absolute inset-0 w-full h-full">
+          <iframe
+            src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1`}
+            className="absolute top-50% left-50% transform -translate-x-1/2 -translate-y-1/2 w-[200%] h-[200%] pointer-events-none"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
+        </div>
+      )}
+
+      {/* Mobile Fallback Image */}
+      {isMobile && (
         <div 
-          id="youtube-player"
-          className="absolute inset-0 w-full h-full pointer-events-none"
+          className="absolute inset-0 w-full h-full bg-cover bg-center"
+          style={{ backgroundImage: `url(${fallbackImage})` }}
         />
-      </div>
+      )}
+
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-black/30" />
     </div>
   );
 } 

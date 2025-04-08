@@ -1,193 +1,138 @@
-import React, { useState, useEffect } from 'react';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { apiRequest } from '@/lib/queryClient';
-import { useToast } from '@/hooks/use-toast';
-import { CheckCircle2, Loader2 } from 'lucide-react';
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from '@/components/ui/select';
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { FormError } from "@/components/form/FormError";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2, Check } from "lucide-react";
+import { z } from "zod";
+import { nanoid } from "nanoid";
+import { useMutation } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 
-// Define the form schema with Zod
+// Enhanced form schema with additional fields
 const formSchema = z.object({
-  firstName: z.string().min(2, { message: 'First name is required' }),
-  email: z.string().email({ message: 'Valid email is required' }),
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().optional(),
+  email: z.string().email("Invalid email address").min(1, "Email is required"),
   phone: z.string().optional(),
-  preferredContactMethod: z.enum(['email', 'phone', 'both']),
-  guideType: z.string().min(1, { message: 'Please select a guide type' }),
-  interestAreas: z.array(z.string()).min(1, { 
-    message: 'Please select at least one area of interest' 
-  }),
+  preferredContactMethod: z.enum(["Email", "Phone", "Either"]).default("Email"),
+  interestAreas: z.array(z.string()).default([]),
 });
 
-type FormValues = z.infer<typeof formSchema>;
-
-const interestOptions = [
-  { id: 'villas', label: 'Vacation Villas' },
-  { id: 'resorts', label: 'Resorts & Hotels' },
-  { id: 'activities', label: 'Activities & Excursions' },
-  { id: 'restaurants', label: 'Restaurants & Dining' },
-  { id: 'transportation', label: 'Transportation' },
-  { id: 'events', label: 'Events & Nightlife' },
-];
-
-const guideOptions = [
-  { value: 'Ultimate Cabo Guide 2025', label: 'Ultimate Cabo Guide 2025' },
-  { value: 'Cabo Family Travel Guide', label: 'Cabo Family Travel Guide' },
-  { value: 'Luxury Villa Guide', label: 'Luxury Villa Guide' },
-  { value: 'Adventure Activities Guide', label: 'Adventure Activities Guide' },
-];
+type FormData = z.infer<typeof formSchema>;
 
 interface GuideDownloadFormProps {
   isOpen: boolean;
   onClose: () => void;
-  preSelectedGuide?: string;
 }
 
-export function GuideDownloadForm({ 
-  isOpen, 
-  onClose,
-  preSelectedGuide
-}: GuideDownloadFormProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [downloadLink, setDownloadLink] = useState('');
+export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
+  const [success, setSuccess] = useState(false);
   const { toast } = useToast();
 
-  // Initialize the form with default values
-  const form = useForm<FormValues>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset
+  } = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       firstName: '',
+      lastName: '',
       email: '',
       phone: '',
-      preferredContactMethod: 'email',
-      guideType: preSelectedGuide || '',
-      interestAreas: [],
-    },
+      preferredContactMethod: 'Email',
+      interestAreas: []
+    }
   });
 
-  // State to store the current path
-  const [currentPath, setCurrentPath] = useState('/');
-  
-  // Get the current path safely only on the client side
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setCurrentPath(window.location.pathname);
-    }
-  }, []);
-
-  // Handle form submission
-  const onSubmit = async (data: FormValues) => {
-    setIsSubmitting(true);
-    
-    try {
-      // Generate a unique submission ID
-      const submissionId = `guide-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;
-      
-      // Prepare the data
+  const submitMutation = useMutation({
+    mutationFn: async (data: FormData) => {
       const submissionData = {
-        ...data,
-        submissionId,
-        formName: 'guide_download',
-        source: currentPath,
-        status: 'pending',
-        tags: ['guide-download', 'website']
+        firstName: data.firstName,
+        lastName: data.lastName || '',
+        email: data.email,
+        phone: data.phone || '',
+        preferredContactMethod: data.preferredContactMethod,
+        guideType: "Cabo San Lucas Travel Guide",
+        source: "website",
+        status: "pending" as const,
+        formName: "guide-download",
+        submissionId: nanoid(),
+        tags: ["Guide Request", "Website"],
+        interestAreas: data.interestAreas.length > 0 ? data.interestAreas : ["Travel Guide"],
       };
       
-      // Submit to API
-      const response = await apiRequest('POST', '/api/guide-submissions', submissionData);
-      const result = await response.json();
-      
-      if (result.downloadLink) {
-        setDownloadLink(result.downloadLink);
-        setIsSuccess(true);
-        toast({
-          title: "Guide Request Successful!",
-          description: "Your guide is ready to download.",
-        });
-      } else {
-        toast({
-          title: "Request Received",
-          description: "We'll email your guide shortly.",
-        });
-        // Close the dialog after a short delay if no immediate download
-        setTimeout(() => {
-          onClose();
-        }, 3000);
-      }
-    } catch (error) {
-      console.error('Submission error:', error);
+      const response = await apiRequest("POST", "/api/guide-submissions", submissionData);
+      return await response.json();
+    },
+    onSuccess: () => {
+      setSuccess(true);
+      reset();
+      toast({
+        title: "Guide Request Submitted",
+        description: "Your guide is ready to download!",
+      });
+    },
+    onError: (error) => {
+      console.error("Form submission error:", error);
       toast({
         title: "Submission Failed",
-        description: "Please try again or contact us directly.",
+        description: "There was a problem processing your request. Please try again.",
         variant: "destructive",
       });
-    } finally {
-      setIsSubmitting(false);
     }
+  });
+
+  const onSubmit = async (data: FormData) => {
+    console.log("Form submission started with data:", data);
+    submitMutation.mutate(data);
   };
 
-  // Reset form state when dialog closes
   const handleClose = () => {
-    if (!isSubmitting) {
-      setIsSuccess(false);
-      form.reset();
-      onClose();
-    }
+    onClose();
+    // Reset state after dialog is closed
+    setTimeout(() => {
+      if (!isOpen) {
+        setSuccess(false);
+      }
+    }, 300);
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md md:max-w-lg">
-        {isSuccess ? (
-          <div className="flex flex-col items-center justify-center py-8">
-            <CheckCircle2 className="w-16 h-16 text-green-500 mb-4" />
-            <h2 className="text-xl font-bold mb-4">Your Guide is Ready!</h2>
-            <p className="text-center mb-6 text-gray-600">
-              Thank you for your interest in Cabo San Lucas. Click the button below to download your guide.
-            </p>
-            <Button 
-              className="w-full sm:w-auto bg-green-600 hover:bg-green-700"
-              asChild
-            >
-              <a 
-                href={downloadLink} 
-                download 
+      <DialogContent className="sm:max-w-[425px] bg-white rounded-2xl p-6 shadow-xl">
+        {success ? (
+          <div className="space-y-6">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Check className="w-8 h-8 text-green-500" />
+              </div>
+              <h3 className="text-xl font-semibold text-[#2F4F4F] mb-2">Thank You!</h3>
+              <p className="text-gray-600 mb-4">Your guide is ready to download</p>
+              <a
+                href="https://drive.google.com/file/d/1iM6eeb5P5aKLcSiE1ZI_7Vu3XsJqgOs6/view?usp=sharing"
                 target="_blank"
                 rel="noopener noreferrer"
+                className="inline-block bg-[#2F4F4F] text-white px-6 py-3 rounded-xl hover:bg-[#1F3F3F] transition-colors mb-4"
               >
-                Download Guide
+                Download Guide Now
               </a>
-            </Button>
-            <Button 
-              variant="outline" 
-              className="mt-4 w-full sm:w-auto"
+            </div>
+            <Button
               onClick={handleClose}
+              className="w-full bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white"
             >
               Close
             </Button>
@@ -195,192 +140,161 @@ export function GuideDownloadForm({
         ) : (
           <>
             <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-[#2F4F4F]">
-                Request Your Free Cabo Guide
-              </DialogTitle>
+              <DialogTitle className="text-2xl font-bold text-[#2F4F4F]">Get Your Free Guide</DialogTitle>
               <DialogDescription className="text-gray-600">
-                Complete the form below to receive your complimentary guide to Cabo's finest experiences.
+                Enter your details below to receive your free guide to Cabo's best experiences.
               </DialogDescription>
             </DialogHeader>
-            
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <FormField
-                  control={form.control}
-                  name="firstName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter your name" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 mt-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="firstName" className="text-[#2F4F4F]">First Name*</Label>
+                  <Input
+                    id="firstName"
+                    {...register("firstName")}
+                    disabled={submitMutation.isPending}
+                    placeholder="Your first name"
+                    className="border-gray-300 focus:border-[#2F4F4F] focus:ring-[#2F4F4F]"
+                  />
+                  {errors.firstName && (
+                    <FormError message={errors.firstName.message ?? "First name is required"} />
                   )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input placeholder="email@example.com" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="phone"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Phone (Optional)</FormLabel>
-                      <FormControl>
-                        <Input placeholder="(555) 123-4567" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="preferredContactMethod"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Preferred Contact Method</FormLabel>
-                      <FormControl>
-                        <RadioGroup
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                          className="flex flex-row gap-4"
-                        >
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="email" id="email" />
-                            <label htmlFor="email" className="text-sm">Email</label>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="phone" id="phone" />
-                            <label htmlFor="phone" className="text-sm">Phone</label>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="both" id="both" />
-                            <label htmlFor="both" className="text-sm">Both</label>
-                          </div>
-                        </RadioGroup>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="guideType"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Which Guide Would You Like?</FormLabel>
-                      <Select 
-                        onValueChange={field.onChange} 
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a guide" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {guideOptions.map((option) => (
-                            <SelectItem 
-                              key={option.value} 
-                              value={option.value}
-                            >
-                              {option.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="interestAreas"
-                  render={() => (
-                    <FormItem>
-                      <FormLabel>What Are You Interested In?</FormLabel>
-                      <div className="grid grid-cols-2 gap-2 mt-2">
-                        {interestOptions.map((option) => (
-                          <FormField
-                            key={option.id}
-                            control={form.control}
-                            name="interestAreas"
-                            render={({ field }) => {
-                              return (
-                                <FormItem
-                                  key={option.id}
-                                  className="flex flex-row items-start space-x-2 space-y-0"
-                                >
-                                  <FormControl>
-                                    <Checkbox
-                                      checked={field.value?.includes(option.id)}
-                                      onCheckedChange={(checked) => {
-                                        return checked
-                                          ? field.onChange([...field.value, option.id])
-                                          : field.onChange(
-                                              field.value?.filter(
-                                                (value) => value !== option.id
-                                              )
-                                            )
-                                      }}
-                                    />
-                                  </FormControl>
-                                  <FormLabel className="text-sm font-normal cursor-pointer">
-                                    {option.label}
-                                  </FormLabel>
-                                </FormItem>
-                              )
-                            }}
-                          />
-                        ))}
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <div className="pt-2 flex justify-end gap-2">
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    onClick={handleClose}
-                    disabled={isSubmitting}
-                  >
-                    Cancel
-                  </Button>
-                  <Button 
-                    type="submit" 
-                    className="bg-[#2F4F4F] hover:bg-[#1F3F3F]"
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Submitting...
-                      </>
-                    ) : (
-                      'Get Guide'
-                    )}
-                  </Button>
                 </div>
-              </form>
-            </Form>
+
+                <div className="space-y-2">
+                  <Label htmlFor="lastName" className="text-[#2F4F4F]">Last Name</Label>
+                  <Input
+                    id="lastName"
+                    {...register("lastName")}
+                    disabled={submitMutation.isPending}
+                    placeholder="Your last name"
+                    className="border-gray-300 focus:border-[#2F4F4F] focus:ring-[#2F4F4F]"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-[#2F4F4F]">Email*</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  {...register("email")}
+                  disabled={submitMutation.isPending}
+                  placeholder="your@email.com"
+                  className="border-gray-300 focus:border-[#2F4F4F] focus:ring-[#2F4F4F]"
+                />
+                {errors.email && (
+                  <FormError message={errors.email.message ?? "Valid email is required"} />
+                )}
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="phone" className="text-[#2F4F4F]">Phone Number</Label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  {...register("phone")}
+                  disabled={submitMutation.isPending}
+                  placeholder="(123) 456-7890"
+                  className="border-gray-300 focus:border-[#2F4F4F] focus:ring-[#2F4F4F]"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="preferredContactMethod" className="text-[#2F4F4F]">Preferred Contact Method</Label>
+                <select
+                  id="preferredContactMethod"
+                  {...register("preferredContactMethod")}
+                  disabled={submitMutation.isPending}
+                  className="w-full p-2 border border-gray-300 rounded-md focus:border-[#2F4F4F] focus:ring-[#2F4F4F]"
+                >
+                  <option value="Email">Email</option>
+                  <option value="Phone">Phone</option>
+                  <option value="Either">Either</option>
+                </select>
+              </div>
+              
+              <div className="space-y-2">
+                <Label className="text-[#2F4F4F]">What are you interested in?</Label>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="interest-villas"
+                      value="Villas"
+                      {...register("interestAreas")}
+                      className="rounded border-gray-300 text-[#2F4F4F] focus:ring-[#2F4F4F]"
+                    />
+                    <Label htmlFor="interest-villas" className="text-sm font-normal">Luxury Villas</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="interest-resorts"
+                      value="Resorts"
+                      {...register("interestAreas")}
+                      className="rounded border-gray-300 text-[#2F4F4F] focus:ring-[#2F4F4F]"
+                    />
+                    <Label htmlFor="interest-resorts" className="text-sm font-normal">Resorts</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="interest-activities"
+                      value="Activities"
+                      {...register("interestAreas")}
+                      className="rounded border-gray-300 text-[#2F4F4F] focus:ring-[#2F4F4F]"
+                    />
+                    <Label htmlFor="interest-activities" className="text-sm font-normal">Activities</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="interest-restaurants"
+                      value="Restaurants"
+                      {...register("interestAreas")}
+                      className="rounded border-gray-300 text-[#2F4F4F] focus:ring-[#2F4F4F]"
+                    />
+                    <Label htmlFor="interest-restaurants" className="text-sm font-normal">Restaurants</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="interest-concierge"
+                      value="Concierge"
+                      {...register("interestAreas")}
+                      className="rounded border-gray-300 text-[#2F4F4F] focus:ring-[#2F4F4F]"
+                    />
+                    <Label htmlFor="interest-concierge" className="text-sm font-normal">Concierge</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="interest-weddings"
+                      value="Weddings"
+                      {...register("interestAreas")}
+                      className="rounded border-gray-300 text-[#2F4F4F] focus:ring-[#2F4F4F]"
+                    />
+                    <Label htmlFor="interest-weddings" className="text-sm font-normal">Weddings</Label>
+                  </div>
+                </div>
+              </div>
+
+              <Button
+                type="submit"
+                disabled={submitMutation.isPending}
+                className="w-full bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white py-6 text-lg"
+              >
+                {submitMutation.isPending ? (
+                  <>
+                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                    Submitting...
+                  </>
+                ) : (
+                  "Get Guide Now"
+                )}
+              </Button>
+            </form>
           </>
         )}
       </DialogContent>

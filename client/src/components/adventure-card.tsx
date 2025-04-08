@@ -1,20 +1,8 @@
+import { Adventure } from "@/types/adventure";
 import { Card, CardContent } from "@/components/ui/card";
-import Link from "next/link";
+import { Link } from "wouter";
 import { Badge } from "@/components/ui/badge";
 import { Clock, Users } from "lucide-react";
-
-interface Adventure {
-  title: string;
-  slug: string;
-  imageUrl: string;
-  category?: string;
-  duration: string;
-  minAge: number;
-  currentPrice: string;
-  originalPrice?: string;
-  rating?: number;
-  discount?: string;
-}
 
 interface AdventureCardProps {
   adventure: Adventure;
@@ -22,15 +10,13 @@ interface AdventureCardProps {
 
 export function AdventureCard({ adventure }: AdventureCardProps) {
   return (
-    <Link href={`/adventures/${adventure.slug}`}>
+    <Link href={`/adventure/${adventure.slug}`}>
       <Card className="cursor-pointer hover:shadow-lg transition-shadow duration-200">
         <div className="aspect-[4/3] relative overflow-hidden rounded-t-lg">
           <img
             src={adventure.imageUrl}
             alt={adventure.title}
             className="object-cover w-full h-full"
-            loading="lazy"
-            decoding="async"
           />
           {adventure.discount && (
             <div className="absolute top-2 right-2 bg-primary/90 text-primary-foreground px-2 py-1 rounded-full text-xs">
@@ -54,12 +40,12 @@ export function AdventureCard({ adventure }: AdventureCardProps) {
             </div>
             <div className="flex items-center gap-1">
               <Users className="w-4 h-4" />
-              <span>Min. age {adventure.minAge}</span>
+              <span>Min. {adventure.minAge}</span>
             </div>
           </div>
           <div className="flex items-baseline gap-2">
             <span className="text-lg font-bold">{adventure.currentPrice}</span>
-            {adventure.originalPrice && adventure.originalPrice !== adventure.currentPrice && (
+            {adventure.originalPrice !== adventure.currentPrice && (
               <span className="text-sm text-muted-foreground line-through">
                 {adventure.originalPrice}
               </span>
@@ -68,7 +54,7 @@ export function AdventureCard({ adventure }: AdventureCardProps) {
           {adventure.rating && (
             <div className="mt-2 text-sm">
               <span className="text-yellow-400">{"★".repeat(Math.floor(adventure.rating))}</span>
-              <span className="ml-1 text-muted-foreground">{adventure.rating.toFixed(1)}/5</span>
+              <span className="ml-1 text-muted-foreground">{adventure.rating}/5</span>
             </div>
           )}
         </CardContent>

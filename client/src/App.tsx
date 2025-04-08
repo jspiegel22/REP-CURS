@@ -1,12 +1,11 @@
-import React, { Suspense } from "react";
 import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
+import { HelmetProvider } from 'react-helmet-async';
 import Footer from "@/components/footer";
 import NotFound from "@/pages/not-found";
 import HomePage from "@/pages/home-page";
-import AuthPage from "@/pages/auth-page";
 import ResortsLanding from "@/pages/resorts-landing";
 import ResortDetail from "@/pages/resort-detail";
 import VillasLanding from "@/pages/villas-landing";
@@ -28,156 +27,84 @@ import GuidesPage from "@/pages/guides";
 import WorkWithUsPage from "@/pages/work-with-us";
 import NavigationBar from "./components/navigation-bar";
 import { ChatButton } from "./components/chat-button";
-// Authentication removed
+import { AuthProvider, useAuth } from "@/hooks/use-auth";
 import AdminDashboard from "@/pages/admin";
 import AdminLoginPage from "@/pages/admin/login";
 
-// Simple placeholder component for admin features - no auth
-function SimpleAdminRoute({ children }: { children: React.ReactNode }) {
-  return React.createElement(React.Fragment, null, children);
+function ProtectedAdminRoute({ children }: { children: React.ReactNode }) {
+  const { user, isLoading } = useAuth();
+  
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
+      </div>
+    );
+  }
+  
+  if (!user || user.role !== "admin") {
+    return <AdminLoginPage />;
+  }
+  
+  return <>{children}</>;
 }
 
 function Router() {
-  return React.createElement(
-    "div", 
-    { className: "min-h-screen bg-background flex flex-col" },
-    React.createElement(NavigationBar),
-    React.createElement(
-      "div", 
-      { className: "flex-grow" },
-      React.createElement(
-        Switch,
-        null,
-        React.createElement(Route, { path: "/", component: HomePage }),
-        React.createElement(Route, { path: "/auth", component: AuthPage }),
-        React.createElement(Route, { path: "/admin/login", component: AdminLoginPage }),
-        React.createElement(Route, { 
-          path: "/admin",
-          children: () => React.createElement(
-            SimpleAdminRoute,
-            null,
-            React.createElement(AdminDashboard)
-          )
-        }),
-        
-        // Public routes
-        React.createElement(Route, { path: "/blog", component: BlogIndex }),
-        React.createElement(Route, { path: "/blog/:slug", component: BlogDetail }),
-        React.createElement(Route, { path: "/resorts", component: ResortsLanding }),
-        React.createElement(Route, { path: "/resorts/:slug", component: ResortDetail }),
-        React.createElement(Route, { path: "/villas", component: VillasLanding }),
-        React.createElement(Route, { path: "/villas/:slug", component: VillaDetail }),
-        React.createElement(Route, { path: "/adventures", component: AdventuresLanding }),
-        React.createElement(Route, { path: "/adventures/:slug", component: AdventureDetail }),
-        React.createElement(Route, { path: "/adventures/atv", component: AdventuresLanding }),
-        React.createElement(Route, { path: "/adventures/private-yachts", component: AdventuresLanding }),
-        React.createElement(Route, { path: "/adventures/whale-watching", component: AdventuresLanding }),
-        React.createElement(Route, { path: "/restaurants", component: RestaurantsPage }),
-        React.createElement(Route, { path: "/restaurants/:id", component: RestaurantDetails }),
-        React.createElement(Route, { path: "/guides", component: GuidesPage }),
-        
-        // All routes are now public
-        React.createElement(Route, { 
-          path: "/group-trips/family", 
-          component: FamilyTripsPage 
-        }),
-        React.createElement(Route, { 
-          path: "/group-trips/bachelor-bachelorette", 
-          component: BachelorBachelorettePage 
-        }),
-        React.createElement(Route, { 
-          path: "/group-trips/luxury-concierge", 
-          component: LuxuryConcierge 
-        }),
-        React.createElement(Route, { 
-          path: "/group-trips/influencer", 
-          component: InfluencerPage 
-        }),
-        React.createElement(Route, { 
-          path: "/weddings", 
-          component: WeddingsPage 
-        }),
-        React.createElement(Route, { 
-          path: "/real-estate", 
-          component: RealEstatePage 
-        }),
-        React.createElement(Route, { 
-          path: "/events", 
-          component: EventsPage 
-        }),
-        React.createElement(Route, { 
-          path: "/work-with-us", 
-          component: WorkWithUsPage 
-        }),
-        
-        // Test page for guide submission
-        React.createElement(Route, { path: "/test-guide-submission", component: () => 
-          React.createElement(
-            Suspense, 
-            { 
-              fallback: React.createElement(
-                "div", 
-                { className: "flex justify-center items-center min-h-screen" },
-                React.createElement("div", { 
-                  className: "animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" 
-                })
-              ) 
-            },
-            React.createElement(React.lazy(() => import('@/pages/test-guide-submission')))
-          )
-        }),
-        
-        // Public checkout routes
-        React.createElement(Route, { 
-          path: "/checkout/:listingId", 
-          component: () => React.createElement(
-            Suspense, 
-            { 
-              fallback: React.createElement(
-                "div", 
-                { className: "flex justify-center items-center min-h-screen" },
-                React.createElement("div", { 
-                  className: "animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" 
-                })
-              ) 
-            },
-            React.createElement(React.lazy(() => import('@/pages/checkout-page')))
-          )
-        }),
-        React.createElement(Route, { 
-          path: "/booking-confirmation", 
-          component: () => React.createElement(
-            Suspense, 
-            { 
-              fallback: React.createElement(
-                "div", 
-                { className: "flex justify-center items-center min-h-screen" },
-                React.createElement("div", { 
-                  className: "animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" 
-                })
-              ) 
-            },
-            React.createElement(React.lazy(() => import('@/pages/booking-confirmation-page')))
-          )
-        }),
-        
-        // 404 route
-        React.createElement(Route, { component: NotFound })
-      )
-    ),
-    React.createElement(Footer),
-    React.createElement(ChatButton)
+  return (
+    <div className="min-h-screen bg-background flex flex-col">
+      <NavigationBar />
+      <div className="flex-grow">
+        <Switch>
+          <Route path="/" component={HomePage} />
+          <Route path="/admin/login" component={AdminLoginPage} />
+          <Route path="/admin">
+            {() => (
+              <ProtectedAdminRoute>
+                <AdminDashboard />
+              </ProtectedAdminRoute>
+            )}
+          </Route>
+          <Route path="/blog" component={BlogIndex} />
+          <Route path="/blog/:slug" component={BlogDetail} />
+          <Route path="/resorts" component={ResortsLanding} />
+          <Route path="/resorts/:slug" component={ResortDetail} />
+          <Route path="/villas" component={VillasLanding} />
+          <Route path="/villas/:slug" component={VillaDetail} />
+          <Route path="/adventures" component={AdventuresLanding} />
+          <Route path="/adventures/:slug" component={AdventureDetail} />
+          <Route path="/adventures/atv" component={AdventuresLanding} />
+          <Route path="/adventures/private-yachts" component={AdventuresLanding} />
+          <Route path="/adventures/whale-watching" component={AdventuresLanding} />
+          <Route path="/restaurants" component={RestaurantsPage} />
+          <Route path="/restaurants/:id" component={RestaurantDetails} />
+          <Route path="/group-trips/family" component={FamilyTripsPage} />
+          <Route path="/group-trips/bachelor-bachelorette" component={BachelorBachelorettePage} />
+          <Route path="/group-trips/luxury-concierge" component={LuxuryConcierge} />
+          <Route path="/group-trips/influencer" component={InfluencerPage} />
+          <Route path="/weddings" component={WeddingsPage} />
+          <Route path="/real-estate" component={RealEstatePage} />
+          <Route path="/events" component={EventsPage} />
+          <Route path="/guides" component={GuidesPage} />
+          <Route path="/work-with-us" component={WorkWithUsPage} />
+          <Route component={NotFound} />
+        </Switch>
+      </div>
+      <Footer />
+      <ChatButton />
+    </div>
   );
 }
 
 function App() {
-  return React.createElement(
-    QueryClientProvider,
-    { client: queryClient },
-    React.createElement(React.Fragment, null,
-      React.createElement(Router),
-      React.createElement(Toaster)
-    )
+  return (
+    <HelmetProvider>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <Router />
+          <Toaster />
+        </AuthProvider>
+      </QueryClientProvider>
+    </HelmetProvider>
   );
 }
 

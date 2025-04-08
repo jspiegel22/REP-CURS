@@ -1,22 +1,4 @@
-import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-
-/**
- * SEO Component
- * 
- * Problem Solved:
- * react-helmet-async attempts to access document.head during server-side rendering,
- * which causes errors with the error "Cannot read properties of undefined (reading 'add')".
- * 
- * Solution:
- * - Uses react-helmet-async which is initialized at the app level with HelmetProvider
- * - Still uses a client-side only pattern with useState and useEffect for safety
- * - Only renders the Helmet component after the component has mounted
- * - Returns null during server-side rendering
- * 
- * This prevents the react-helmet-async from executing during SSR while
- * still providing SEO benefits for search engines that execute JavaScript.
- */
 
 interface SEOProps {
   title: string;
@@ -50,75 +32,57 @@ export default function SEO({
   language = 'en',
   alternateLanguages = {}
 }: SEOProps) {
-  const [isMounted, setIsMounted] = useState(false);
-  
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  // Use safe values to prevent errors
   const siteName = '@cabo';
   const defaultImage = 'https://cabo.is/og-image.jpg';
   const siteUrl = 'https://cabo.is';
 
-  // Don't render anything during SSR to prevent react-helmet errors
-  if (!isMounted) {
-    return null;
-  }
+  return (
+    <Helmet>
+      {/* Basic Meta Tags */}
+      <title>{title}</title>
+      <meta name="description" content={description} />
+      <meta name="keywords" content={keywords.join(', ')} />
+      <meta name="robots" content={robots} />
+      <meta name="language" content={language} />
+      {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
 
-  // Add try-catch to prevent runtime errors
-  try {
-    return (
-      <Helmet>
-        {/* Basic Meta Tags */}
-        <title>{title}</title>
-        <meta name="description" content={description} />
-        <meta name="keywords" content={keywords.join(', ')} />
-        <meta name="robots" content={robots} />
-        <meta name="language" content={language} />
-        {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+      {/* Open Graph Meta Tags */}
+      <meta property="og:site_name" content={siteName} />
+      <meta property="og:title" content={openGraph?.title || title} />
+      <meta property="og:description" content={openGraph?.description || description} />
+      <meta property="og:image" content={openGraph?.image || defaultImage} />
+      <meta property="og:url" content={openGraph?.url || canonicalUrl || siteUrl} />
+      <meta property="og:type" content="website" />
+      <meta property="og:locale" content="en_US" />
 
-        {/* Open Graph Meta Tags */}
-        <meta property="og:site_name" content={siteName} />
-        <meta property="og:title" content={openGraph?.title || title} />
-        <meta property="og:description" content={openGraph?.description || description} />
-        <meta property="og:image" content={openGraph?.image || defaultImage} />
-        <meta property="og:url" content={openGraph?.url || canonicalUrl || siteUrl} />
-        <meta property="og:type" content="website" />
-        <meta property="og:locale" content="en_US" />
+      {/* Twitter Card Meta Tags */}
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:site" content="@cabo" />
+      <meta name="twitter:creator" content="@cabo" />
+      <meta name="twitter:title" content={title} />
+      <meta name="twitter:description" content={description} />
+      <meta name="twitter:image" content={openGraph?.image || defaultImage} />
 
-        {/* Twitter Card Meta Tags */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:site" content="@cabo" />
-        <meta name="twitter:creator" content="@cabo" />
-        <meta name="twitter:title" content={title} />
-        <meta name="twitter:description" content={description} />
-        <meta name="twitter:image" content={openGraph?.image || defaultImage} />
+      {/* Mobile Meta Tags */}
+      <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+      <meta name="theme-color" content="#2F4F4F" />
+      <meta name="apple-mobile-web-app-capable" content="yes" />
+      <meta name="apple-mobile-web-app-status-bar-style" content="black" />
 
-        {/* Mobile Meta Tags */}
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
-        <meta name="theme-color" content="#2F4F4F" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+      {/* Alternate Language Links */}
+      {Object.entries(alternateLanguages).map(([lang, url]) => (
+        <link key={lang} rel="alternate" hrefLang={lang} href={url} />
+      ))}
+      <link rel="alternate" hrefLang="x-default" href={canonicalUrl || siteUrl} />
 
-        {/* Alternate Language Links */}
-        {Object.entries(alternateLanguages).map(([lang, url]) => (
-          <link key={lang} rel="alternate" hrefLang={lang} href={url} />
-        ))}
-        <link rel="alternate" hrefLang="x-default" href={canonicalUrl || siteUrl} />
-
-        {/* Schema.org Markup */}
-        {schema && (
-          <script type="application/ld+json">
-            {JSON.stringify(schema)}
-          </script>
-        )}
-      </Helmet>
-    );
-  } catch (error) {
-    console.error('Error rendering SEO component:', error);
-    return null;
-  }
+      {/* Schema.org Markup */}
+      {schema && (
+        <script type="application/ld+json">
+          {JSON.stringify(schema)}
+        </script>
+      )}
+    </Helmet>
+  );
 }
 
 // Schema Generator Functions
