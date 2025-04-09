@@ -1,11 +1,12 @@
 /**
- * Webhook Client for Cabo website
- * This client provides methods to send lead, booking, and guide request events to the webhook server.
- * It also provides admin methods to manage webhooks and view delivery history.
+ * Webhook integration client for the Cabo website
+ * This client allows for sending data to external services like Airtable, Zapier, etc.
  */
 
-const WEBHOOK_API_URL = process.env.WEBHOOK_API_URL || 'http://localhost:8000/api';
+// Define webhook API URL
+const WEBHOOK_API_URL = import.meta.env.VITE_WEBHOOK_API_URL || 'http://localhost:8000/api';
 
+// Lead data interface
 export interface LeadData {
   first_name: string;
   last_name?: string;
@@ -19,6 +20,7 @@ export interface LeadData {
   tags?: string[];
 }
 
+// Booking data interface
 export interface BookingData {
   first_name: string;
   last_name?: string;
@@ -34,6 +36,7 @@ export interface BookingData {
   tags?: string[];
 }
 
+// Guide request data interface
 export interface GuideRequestData {
   first_name: string;
   last_name?: string;
@@ -46,12 +49,9 @@ export interface GuideRequestData {
 }
 
 /**
- * Send a lead event to the webhook server
- * 
- * @param leadData Lead data to send
- * @returns Promise with the response
+ * Send lead data to webhook service
  */
-export async function sendLeadWebhook(leadData: LeadData): Promise<{ tracking_id: string }> {
+export async function sendLeadWebhook(leadData: LeadData): Promise<{ status: string; tracking_id: string }> {
   try {
     const response = await fetch(`${WEBHOOK_API_URL}/leads/webhook`, {
       method: 'POST',
@@ -70,19 +70,16 @@ export async function sendLeadWebhook(leadData: LeadData): Promise<{ tracking_id
     return await response.json();
   } catch (error) {
     console.error('Error sending lead webhook:', error);
-    // Save to local storage for offline recovery
+    // Save for offline processing
     saveToOfflineQueue('lead', leadData);
     throw error;
   }
 }
 
 /**
- * Send a booking event to the webhook server
- * 
- * @param bookingData Booking data to send
- * @returns Promise with the response
+ * Send booking data to webhook service
  */
-export async function sendBookingWebhook(bookingData: BookingData): Promise<{ tracking_id: string }> {
+export async function sendBookingWebhook(bookingData: BookingData): Promise<{ status: string; tracking_id: string }> {
   try {
     const response = await fetch(`${WEBHOOK_API_URL}/bookings/webhook`, {
       method: 'POST',
@@ -101,19 +98,16 @@ export async function sendBookingWebhook(bookingData: BookingData): Promise<{ tr
     return await response.json();
   } catch (error) {
     console.error('Error sending booking webhook:', error);
-    // Save to local storage for offline recovery
+    // Save for offline processing
     saveToOfflineQueue('booking', bookingData);
     throw error;
   }
 }
 
 /**
- * Send a guide request event to the webhook server
- * 
- * @param guideData Guide request data to send
- * @returns Promise with the response
+ * Send guide request data to webhook service
  */
-export async function sendGuideRequestWebhook(guideData: GuideRequestData): Promise<{ tracking_id: string }> {
+export async function sendGuideRequestWebhook(guideData: GuideRequestData): Promise<{ status: string; tracking_id: string }> {
   try {
     const response = await fetch(`${WEBHOOK_API_URL}/guides/webhook`, {
       method: 'POST',
@@ -132,13 +126,13 @@ export async function sendGuideRequestWebhook(guideData: GuideRequestData): Prom
     return await response.json();
   } catch (error) {
     console.error('Error sending guide request webhook:', error);
-    // Save to local storage for offline recovery
+    // Save for offline processing
     saveToOfflineQueue('guide', guideData);
     throw error;
   }
 }
 
-// Offline support
+// Interface for queued webhook data
 interface QueuedWebhook {
   type: 'lead' | 'booking' | 'guide';
   data: LeadData | BookingData | GuideRequestData;
@@ -146,15 +140,9 @@ interface QueuedWebhook {
 }
 
 /**
- * Save a webhook event to the offline queue
- * 
- * @param type Type of webhook event
- * @param data Event data
+ * Save webhook data to local storage for offline processing
  */
-function saveToOfflineQueue(
-  type: 'lead' | 'booking' | 'guide', 
-  data: LeadData | BookingData | GuideRequestData
-): void {
+function saveToOfflineQueue(type: 'lead' | 'booking' | 'guide', data: any): void {
   try {
     // Get existing queue from localStorage
     const queueStr = localStorage.getItem('webhook_queue');
@@ -176,10 +164,7 @@ function saveToOfflineQueue(
 }
 
 /**
- * Process and send all queued webhook events
- * This should be called when the app comes back online
- * 
- * @returns Promise that resolves when all queued events have been processed
+ * Process all queued webhook data when back online
  */
 export async function processOfflineQueue(): Promise<void> {
   try {
@@ -235,82 +220,27 @@ if (typeof window !== 'undefined') {
   });
 }
 
-// Admin webhook management methods
-
-/**
- * Webhook target interface
- */
-export interface WebhookTarget {
-  id?: number;
+// Setup dashboard util functions
+export async function setupWebhook(webhookData: {
   name: string;
-  url: string;
+  url: string; 
   service_type: string;
   auth_header?: string;
-  is_active: boolean;
   events: string[];
-  created_at?: string;
-  updated_at?: string;
-}
-
-/**
- * Webhook delivery interface
- */
-export interface WebhookDelivery {
-  id: number;
-  webhook_id: number;
-  webhook_name?: string;
-  webhook_url?: string;
-  event: string;
-  payload: any;
-  response_status?: number;
-  response_body?: string;
-  attempts: number;
-  success: boolean;
-  created_at: string;
-}
-
-/**
- * List all registered webhooks
- */
-export async function listWebhooks(): Promise<WebhookTarget[]> {
-  try {
-    const response = await fetch(`${WEBHOOK_API_URL}/webhooks`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      }
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Error listing webhooks:', errorText);
-      throw new Error(`Failed to list webhooks: ${response.status} ${response.statusText}`);
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Error listing webhooks:', error);
-    throw error;
-  }
-}
-
-/**
- * Setup a new webhook or update an existing one
- */
-export async function setupWebhook(webhook: WebhookTarget): Promise<WebhookTarget> {
+  is_active?: boolean;
+}): Promise<any> {
   try {
     const response = await fetch(`${WEBHOOK_API_URL}/webhooks/setup`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(webhook),
+      body: JSON.stringify(webhookData),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Error setting up webhook:', errorText);
-      throw new Error(`Failed to setup webhook: ${response.status} ${response.statusText}`);
+      throw new Error(`Failed to setup webhook: ${errorText}`);
     }
 
     return await response.json();
@@ -320,68 +250,33 @@ export async function setupWebhook(webhook: WebhookTarget): Promise<WebhookTarge
   }
 }
 
-/**
- * Interface for webhook delivery filtering options
- */
-export interface WebhookDeliveriesFilter {
-  limit?: number;
-  event_type?: string;
-  webhook_id?: number;
-  success?: boolean;
-}
-
-/**
- * List webhook delivery history with filtering options
- */
-export async function listWebhookDeliveries(filter: WebhookDeliveriesFilter = {}): Promise<WebhookDelivery[]> {
+export async function listWebhooks(): Promise<any[]> {
   try {
-    // Build query string from filter options
-    const params = new URLSearchParams();
-    if (filter.limit) params.append('limit', filter.limit.toString());
-    if (filter.event_type) params.append('event_type', filter.event_type);
-    if (filter.webhook_id) params.append('webhook_id', filter.webhook_id.toString());
-    if (filter.success !== undefined) params.append('success', filter.success.toString());
+    const response = await fetch(`${WEBHOOK_API_URL}/webhooks`);
     
-    const queryString = params.toString() ? `?${params.toString()}` : '';
-    
-    const response = await fetch(`${WEBHOOK_API_URL}/admin/webhook-deliveries${queryString}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      }
-    });
-
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Error listing webhook deliveries:', errorText);
-      throw new Error(`Failed to list webhook deliveries: ${response.status} ${response.statusText}`);
+      throw new Error(`Failed to list webhooks: ${errorText}`);
     }
-
+    
     return await response.json();
   } catch (error) {
-    console.error('Error listing webhook deliveries:', error);
+    console.error('Error listing webhooks:', error);
     throw error;
   }
 }
 
-/**
- * Retry a failed webhook delivery
- */
-export async function retryWebhook(deliveryId: number): Promise<{status: string; message: string}> {
+export async function retryWebhook(deliveryId: number): Promise<any> {
   try {
     const response = await fetch(`${WEBHOOK_API_URL}/admin/webhook-retry/${deliveryId}`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      }
     });
-
+    
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Error retrying webhook:', errorText);
-      throw new Error(`Failed to retry webhook: ${response.status} ${response.statusText}`);
+      throw new Error(`Failed to retry webhook: ${errorText}`);
     }
-
+    
     return await response.json();
   } catch (error) {
     console.error('Error retrying webhook:', error);

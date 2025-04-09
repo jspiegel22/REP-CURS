@@ -18,6 +18,8 @@ import { nanoid } from "nanoid";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+// Import guide request webhook function
+import { sendGuideRequestWebhook } from "@/lib/webhooks";
 
 // Simplified form schema with just the essential fields
 const formSchema = z.object({
@@ -69,8 +71,36 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
         interestAreas: ["Travel Guide"], // Default interest area
       };
       
+      // Submit to our main API
       const response = await apiRequest("POST", "/api/guide-submissions", submissionData);
-      return await response.json();
+      const result = await response.json();
+      
+      // Also send to webhook system (in background, don't await)
+      try {
+        sendGuideRequestWebhook({
+          first_name: data.firstName,
+          last_name: '', 
+          email: data.email,
+          phone: data.phone || undefined,
+          guide_type: "Cabo San Lucas Travel Guide",
+          interest_areas: ["Travel Guide"],
+          form_data: {
+            source: "website",
+            formName: "guide-download",
+            preferredContactMethod: 'Email',
+          },
+          tags: ["Guide Request", "Website"]
+        }).catch(error => {
+          console.error("Webhook submission error:", error);
+          // Don't show toast here - the main submission was successful
+          // This is just a fallback integration
+        });
+      } catch (webhookError) {
+        console.error("Error sending to webhook:", webhookError);
+        // Don't fail the main flow if webhook fails
+      }
+      
+      return result;
     },
     onSuccess: () => {
       setSuccess(true);
