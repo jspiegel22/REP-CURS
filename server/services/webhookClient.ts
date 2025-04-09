@@ -27,7 +27,14 @@ export async function sendLeadWebhook(leadData: any): Promise<WebhookResponse> {
     const data = {
       ...leadData,
       tracking_id: leadData.tracking_id || nanoid(),
-      webhook_type: 'lead' // Add webhook type to help in Make.com routing
+      webhook_type: 'lead', // Add webhook type to help in Make.com routing
+      // Make sure tags are a string not an array for Airtable compatibility
+      tags: typeof leadData.tags === 'string' ? leadData.tags : (
+        Array.isArray(leadData.tags) ? leadData.tags.join(', ') : ''
+      ),
+      // Extract preferredContactMethod from either direct property or from formData
+      preferred_contact_method: leadData.preferredContactMethod || 
+                              (leadData.formData?.preferredContactMethod) || 'Email'
     };
     
     // Try direct Make.com webhook first if configured
@@ -89,7 +96,14 @@ export async function sendBookingWebhook(bookingData: any): Promise<WebhookRespo
     const data = {
       ...bookingData,
       tracking_id: bookingData.tracking_id || nanoid(),
-      webhook_type: 'booking' // Add webhook type to help in Make.com routing
+      webhook_type: 'booking', // Add webhook type to help in Make.com routing
+      // Make sure tags are a string not an array for Airtable compatibility
+      tags: typeof bookingData.tags === 'string' ? bookingData.tags : (
+        Array.isArray(bookingData.tags) ? bookingData.tags.join(', ') : ''
+      ),
+      // Extract preferredContactMethod from either direct property or from formData
+      preferred_contact_method: bookingData.preferredContactMethod || 
+                              (bookingData.formData?.preferredContactMethod) || 'Email'
     };
     
     // Try direct Make.com webhook first if configured
@@ -154,14 +168,16 @@ export async function sendGuideRequestWebhook(guideData: any): Promise<WebhookRe
       email: guideData.email,
       phone: guideData.phone || undefined,
       guide_type: guideData.guideType,
-      interest_areas: Array.isArray(guideData.interestAreas) ? guideData.interestAreas : [],
+      interest_areas: typeof guideData.interestAreas === 'string' ? guideData.interestAreas : 'Travel Guide',
+      // Extract preferredContactMethod from either direct property or from formData
+      preferred_contact_method: guideData.preferredContactMethod || 
+                               (guideData.formData?.preferredContactMethod) || 'Email',
       form_data: {
         source: guideData.source || 'website',
         formName: guideData.formName || 'guide-download',
-        preferredContactMethod: guideData.preferredContactMethod || 'Email',
         submissionId: guideData.submissionId,
       },
-      tags: Array.isArray(guideData.tags) ? guideData.tags : [],
+      tags: typeof guideData.tags === 'string' ? guideData.tags : 'Guide Request, Website',
       tracking_id: guideData.tracking_id || nanoid(),
       webhook_type: 'guide' // Add webhook type to help in Make.com routing
     };

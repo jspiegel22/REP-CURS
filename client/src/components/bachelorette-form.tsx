@@ -84,7 +84,7 @@ export function BacheloretteForm({ isOpen, onClose }: BacheloretteFormProps) {
           eventType: "Bachelorette Party",
           preferredContactMethod: 'Email' // Move to formData so it doesn't conflict with DB schema
         },
-        tags: ["Bachelorette Party", "Group Travel", "Event Planning"],
+        tags: "Bachelorette Party, Group Travel, Event Planning",
         submissionId: nanoid(),
       };
       

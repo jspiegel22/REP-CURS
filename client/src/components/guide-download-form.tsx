@@ -64,8 +64,8 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
         status: "pending" as const,
         formName: "guide-download",
         submissionId: nanoid(),
-        tags: ["Guide Request", "Website"],
-        interestAreas: ["Travel Guide"], // Default interest area
+        tags: "Guide Request, Website",
+        interestAreas: "Travel Guide", // Default interest area
         formData: {
           preferredContactMethod: 'Email' // Move to formData to avoid schema conflicts
         }

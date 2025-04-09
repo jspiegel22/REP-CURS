@@ -23,7 +23,7 @@ curl -X POST https://hook.us1.make.com/pomqcmt82c39t3x4mxdpzl4hc4eshhn2 \
       "specialRequests": "We would like to do a yacht party and VIP club access",
       "eventType": "Bachelorette Party"
     },
-    "tags": ["Bachelorette Party", "Group Travel", "Event Planning"],
+    "tags": "Bachelorette Party, Group Travel, Event Planning",
     "webhook_type": "lead"
   }'
 

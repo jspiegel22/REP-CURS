@@ -107,7 +107,7 @@ export function VillaBookingForm({ isOpen, onClose, villaName = "Luxury Villa", 
         },
         specialRequests: data.specialRequests,
         submissionId: nanoid(),
-        tags: ["Villa Booking", "Direct Booking"]
+        tags: "Villa Booking, Direct Booking"
       };
       
       // Submit to server API
