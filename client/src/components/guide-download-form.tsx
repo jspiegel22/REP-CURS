@@ -73,56 +73,11 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
       const response = await apiRequest("POST", "/api/guide-submissions", submissionData);
       const result = await response.json();
       
-      // Instead of using the webhook library directly, we'll use our direct Make.com webhook
-      // if it's configured in the environment
-      try {
-        // Hard-code the Make.com webhook URL to ensure it works in development
-        const makeWebhookUrl = 'https://hook.us1.make.com/pomqcmt82c39t3x4mxdpzl4hc4eshhn2';
-        
-        console.log("Attempting direct Make.com webhook submission for guide");
-        
-        // Format data in the format expected by Make.com (snake_case)
-        // This matches the test data format we verified with test_direct_make_webhook.sh
-        const webhookData = {
-          first_name: data.firstName,
-          last_name: '', 
-          email: data.email,
-          phone: data.phone || '',
-          guide_type: "Cabo San Lucas Travel Guide",
-          interest_areas: ["Travel Guide"],
-          form_data: {
-            source: "website",
-            formName: "guide-download",
-            preferredContactMethod: 'Email',
-            submissionId: submissionData.submissionId,
-          },
-          tags: ["Guide Request", "Website"],
-          tracking_id: submissionData.submissionId
-        };
-        
-        // Log the webhook data for debugging
-        console.log("Make.com webhook data:", webhookData);
-        
-        // Use fetch directly - don't await to keep form submission fast
-        fetch(makeWebhookUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(webhookData),
-        }).then(response => {
-          if (response.ok) {
-            console.log("Make.com webhook sent successfully!");
-          } else {
-            console.warn("Make.com webhook returned non-200 response:", response.status);
-          }
-        }).catch(error => {
-          console.error("Make.com webhook error:", error);
-        });
-      } catch (webhookError) {
-        console.error("Error preparing webhook data:", webhookError);
-        // Don't fail the main flow if webhook fails
-      }
+      // We're no longer sending the webhook directly from the client
+      // The server will handle sending the webhook to Make.com for better reliability and security
+      console.log("Submission sent to server, which will forward to Make.com webhook");
+      
+      // No client-side webhook call here - server handles it now
       
       return result;
     },
