@@ -26,10 +26,26 @@ export async function sendLeadWebhook(leadData: any): Promise<WebhookResponse> {
     // Add tracking ID if not present
     const data = {
       ...leadData,
-      tracking_id: leadData.tracking_id || nanoid()
+      tracking_id: leadData.tracking_id || nanoid(),
+      webhook_type: 'lead' // Add webhook type to help in Make.com routing
     };
     
-    // Contact webhook API
+    // Try direct Make.com webhook first if configured
+    try {
+      if (process.env.MAKE_WEBHOOK_URL) {
+        console.log("Using direct Make.com webhook:", process.env.MAKE_WEBHOOK_URL);
+        await axios.post(process.env.MAKE_WEBHOOK_URL, data);
+        return {
+          status: 'success',
+          tracking_id: data.tracking_id,
+          message: 'Sent directly to Make.com'
+        };
+      }
+    } catch (directError: any) {
+      console.warn("Direct Make.com webhook failed, falling back to API:", directError.message);
+    }
+    
+    // Fall back to webhook API
     const response = await axios.post(`${WEBHOOK_API_URL}/leads/webhook`, data);
     
     return {
@@ -39,6 +55,11 @@ export async function sendLeadWebhook(leadData: any): Promise<WebhookResponse> {
     };
   } catch (error: any) {
     console.error('Error sending lead webhook:', error.message);
+    
+    // Log detailed error info for debugging
+    if (error.response) {
+      console.error(`Status: ${error.response.status}, Response:`, error.response.data);
+    }
     
     // Return error response but don't throw - we don't want to break the main flow
     return {
@@ -59,10 +80,26 @@ export async function sendBookingWebhook(bookingData: any): Promise<WebhookRespo
     // Add tracking ID if not present
     const data = {
       ...bookingData,
-      tracking_id: bookingData.tracking_id || nanoid()
+      tracking_id: bookingData.tracking_id || nanoid(),
+      webhook_type: 'booking' // Add webhook type to help in Make.com routing
     };
     
-    // Contact webhook API
+    // Try direct Make.com webhook first if configured
+    try {
+      if (process.env.MAKE_WEBHOOK_URL) {
+        console.log("Using direct Make.com webhook:", process.env.MAKE_WEBHOOK_URL);
+        await axios.post(process.env.MAKE_WEBHOOK_URL, data);
+        return {
+          status: 'success',
+          tracking_id: data.tracking_id,
+          message: 'Sent directly to Make.com'
+        };
+      }
+    } catch (directError: any) {
+      console.warn("Direct Make.com webhook failed, falling back to API:", directError.message);
+    }
+    
+    // Fall back to webhook API
     const response = await axios.post(`${WEBHOOK_API_URL}/bookings/webhook`, data);
     
     return {
@@ -72,6 +109,11 @@ export async function sendBookingWebhook(bookingData: any): Promise<WebhookRespo
     };
   } catch (error: any) {
     console.error('Error sending booking webhook:', error.message);
+    
+    // Log detailed error info for debugging
+    if (error.response) {
+      console.error(`Status: ${error.response.status}, Response:`, error.response.data);
+    }
     
     // Return error response but don't throw - we don't want to break the main flow
     return {
@@ -104,7 +146,8 @@ export async function sendGuideRequestWebhook(guideData: any): Promise<WebhookRe
         submissionId: guideData.submissionId,
       },
       tags: Array.isArray(guideData.tags) ? guideData.tags : [],
-      tracking_id: guideData.tracking_id || nanoid()
+      tracking_id: guideData.tracking_id || nanoid(),
+      webhook_type: 'guide' // Add webhook type to help in Make.com routing
     };
     
     // Try direct Make.com webhook first if configured

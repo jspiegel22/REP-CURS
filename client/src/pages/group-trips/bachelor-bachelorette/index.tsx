@@ -6,7 +6,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
-import Footer from "@/components/footer";
 
 const formSchema = z.object({
   firstName: z.string().min(2, "Please enter your first name"),
@@ -238,8 +237,6 @@ export default function BachelorBachelorettePage() {
           </div>
         </div>
       </div>
-
-      <Footer />
     </div>
   );
 }
