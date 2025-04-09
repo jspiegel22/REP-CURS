@@ -34,15 +34,23 @@ export async function sendLeadWebhook(leadData: any): Promise<WebhookResponse> {
     try {
       if (process.env.MAKE_WEBHOOK_URL) {
         console.log("Using direct Make.com webhook:", process.env.MAKE_WEBHOOK_URL);
-        await axios.post(process.env.MAKE_WEBHOOK_URL, data);
+        console.log("Lead webhook payload:", JSON.stringify(data, null, 2));
+        const response = await axios.post(process.env.MAKE_WEBHOOK_URL, data);
+        console.log("Make.com webhook response:", response.status, response.statusText);
         return {
           status: 'success',
           tracking_id: data.tracking_id,
           message: 'Sent directly to Make.com'
         };
+      } else {
+        console.warn("MAKE_WEBHOOK_URL environment variable is not set!");
       }
     } catch (directError: any) {
-      console.warn("Direct Make.com webhook failed, falling back to API:", directError.message);
+      console.error("Direct Make.com webhook failed:", directError.message);
+      if (directError.response) {
+        console.error(`Status: ${directError.response.status}, Response:`, directError.response.data);
+      }
+      console.warn("Falling back to API");
     }
     
     // Fall back to webhook API
@@ -88,15 +96,23 @@ export async function sendBookingWebhook(bookingData: any): Promise<WebhookRespo
     try {
       if (process.env.MAKE_WEBHOOK_URL) {
         console.log("Using direct Make.com webhook:", process.env.MAKE_WEBHOOK_URL);
-        await axios.post(process.env.MAKE_WEBHOOK_URL, data);
+        console.log("Booking webhook payload:", JSON.stringify(data, null, 2));
+        const response = await axios.post(process.env.MAKE_WEBHOOK_URL, data);
+        console.log("Make.com webhook response:", response.status, response.statusText);
         return {
           status: 'success',
           tracking_id: data.tracking_id,
           message: 'Sent directly to Make.com'
         };
+      } else {
+        console.warn("MAKE_WEBHOOK_URL environment variable is not set!");
       }
     } catch (directError: any) {
-      console.warn("Direct Make.com webhook failed, falling back to API:", directError.message);
+      console.error("Direct Make.com booking webhook failed:", directError.message);
+      if (directError.response) {
+        console.error(`Status: ${directError.response.status}, Response:`, directError.response.data);
+      }
+      console.warn("Falling back to API");
     }
     
     // Fall back to webhook API
@@ -154,15 +170,23 @@ export async function sendGuideRequestWebhook(guideData: any): Promise<WebhookRe
     try {
       if (process.env.MAKE_WEBHOOK_URL) {
         console.log("Using direct Make.com webhook:", process.env.MAKE_WEBHOOK_URL);
-        await axios.post(process.env.MAKE_WEBHOOK_URL, data);
+        console.log("Guide webhook payload:", JSON.stringify(data, null, 2));
+        const response = await axios.post(process.env.MAKE_WEBHOOK_URL, data);
+        console.log("Make.com webhook response:", response.status, response.statusText);
         return {
           status: 'success',
           tracking_id: data.tracking_id,
           message: 'Sent directly to Make.com'
         };
+      } else {
+        console.warn("MAKE_WEBHOOK_URL environment variable is not set!");
       }
     } catch (directError: any) {
-      console.warn("Direct Make.com webhook failed, falling back to API:", directError.message);
+      console.error("Direct Make.com guide webhook failed:", directError.message);
+      if (directError.response) {
+        console.error(`Status: ${directError.response.status}, Response:`, directError.response.data);
+      }
+      console.warn("Falling back to API");
     }
     
     // Fall back to webhook API
