@@ -126,9 +126,8 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
               <h3 className="text-xl font-semibold text-[#2F4F4F] mb-2">Thank You!</h3>
               <p className="text-gray-600 mb-4">Your guide is ready to download</p>
               <a
-                href="https://drive.google.com/file/d/1iM6eeb5P5aKLcSiE1ZI_7Vu3XsJqgOs6/view?usp=sharing"
-                target="_blank"
-                rel="noopener noreferrer"
+                href="/cabo-travel.pdf"
+                download="Cabo-San-Lucas-Travel-Guide.pdf"
                 className="inline-block bg-[#2F4F4F] text-white px-6 py-3 rounded-xl hover:bg-[#1F3F3F] transition-colors mb-4"
               >
                 Download Guide Now

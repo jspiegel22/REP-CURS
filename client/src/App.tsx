@@ -25,6 +25,7 @@ import RealEstatePage from "@/pages/real-estate";
 import EventsPage from "@/pages/events";
 import GuidesPage from "@/pages/guides";
 import WorkWithUsPage from "@/pages/work-with-us";
+import TestFormsPage from "@/pages/test-forms";
 import NavigationBar from "./components/navigation-bar";
 import { ChatButton } from "./components/chat-button";
 import { AuthProvider, useAuth } from "@/hooks/use-auth";
@@ -86,6 +87,7 @@ function Router() {
           <Route path="/events" component={EventsPage} />
           <Route path="/guides" component={GuidesPage} />
           <Route path="/work-with-us" component={WorkWithUsPage} />
+          <Route path="/test-forms" component={TestFormsPage} />
           <Route component={NotFound} />
         </Switch>
       </div>

@@ -52,6 +52,10 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
 }
 
 export function createGuideDownloadEmail(firstName: string, email: string, guideType: string): EmailOptions {
+  // Get the base URL dynamically from environment or use a default
+  const baseUrl = process.env.BASE_URL || 'https://cabovillas.replit.app';
+  const downloadUrl = `${baseUrl}/cabo-travel.pdf`;
+  
   return {
     to: email,
     subject: `Your ${guideType} is here!`,
@@ -63,8 +67,9 @@ export function createGuideDownloadEmail(firstName: string, email: string, guide
         <p>Thank you for requesting our ${guideType}. We're excited to help you plan your perfect Cabo San Lucas vacation!</p>
         <p>You can download your guide by clicking the button below:</p>
         <div style="text-align: center; margin: 30px 0;">
-          <a href="https://drive.google.com/file/d/1iM6eeb5P5aKLcSiE1ZI_7Vu3XsJqgOs6/view?usp=sharing" 
-             style="background-color: #2F4F4F; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold;">
+          <a href="${downloadUrl}" 
+             style="background-color: #2F4F4F; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold;"
+             download="Cabo-San-Lucas-Travel-Guide.pdf">
             Download Your Guide
           </a>
         </div>
@@ -72,7 +77,14 @@ export function createGuideDownloadEmail(firstName: string, email: string, guide
         <p>Enjoy planning your Cabo adventure!</p>
         <p>Warm regards,<br>The @cabo Team</p>
       </div>
-    `
+    `,
+    attachments: [
+      {
+        filename: 'Cabo-San-Lucas-Travel-Guide.pdf',
+        path: './client/public/cabo-travel.pdf',
+        contentType: 'application/pdf'
+      }
+    ]
   };
 }
 
