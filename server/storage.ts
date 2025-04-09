@@ -4,6 +4,7 @@ import { users, listings, bookings, rewards, socialShares, weatherCache, resorts
 import type { User, InsertUser, Listing, Booking, Reward, SocialShare, WeatherCache, Resort, Villa, Lead, InsertLead } from "@shared/schema";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
+import { nanoid } from "nanoid";
 import { generateResortSlug } from "../client/src/lib/utils";
 
 interface IStorage {
@@ -56,77 +57,107 @@ export class DatabaseStorage implements IStorage {
     try {
       console.log("Creating guide submission with data:", submission);
       
-      // Store tags in the form_data to avoid the column missing error
+      // Store form data as JSON with all the additional fields
       const formData = {
         ...(submission.formData || {}),
-        // Store tags in the form data instead of a separate column
-        _tags: Array.isArray(submission.tags) ? submission.tags : []
+        // Store tags in the form data 
+        _tags: Array.isArray(submission.tags) ? submission.tags : [],
+        // Additional fields from Airtable mapping
+        submission_type: "Guide Request",
+        priority: "Normal",
+        download_link: "https://drive.google.com/file/d/1iM6eeb5P5aKLcSiE1ZI_7Vu3XsJqgOs6/view?usp=sharing",
+        interest_type: submission.guideType || "Cabo Travel Guide"
       };
       
-      // We'll use raw SQL to avoid any type issues with Drizzle
-      const result = await db.execute(
-        `INSERT INTO guide_submissions (
-          first_name, 
-          last_name, 
-          email, 
-          phone, 
-          preferred_contact_method, 
-          guide_type, 
-          source, 
-          status, 
-          form_name, 
-          submission_id, 
-          interest_areas, 
-          form_data
-        ) VALUES (
-          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12
-        ) RETURNING *`,
-        [
-          submission.firstName,
-          submission.lastName || null,
-          submission.email,
-          submission.phone || null,
-          submission.preferredContactMethod || "Email",
-          submission.guideType,
-          submission.source,
-          submission.status || "pending",
-          submission.formName,
-          submission.submissionId,
-          Array.isArray(submission.interestAreas) ? submission.interestAreas : null,
-          formData
-        ]
-      );
+      // Format interest areas as a string if it's an array for Airtable compatibility
+      const interestAreasJson = Array.isArray(submission.interestAreas) 
+        ? JSON.stringify(submission.interestAreas)
+        : JSON.stringify([submission.interestAreas || "Travel Guide"]);
+      
+      // Use an insert with object matching our schema column names
+      const result = await db.insert(guideSubmissions).values({
+        firstName: submission.firstName,
+        lastName: submission.lastName || '',
+        email: submission.email,
+        phone: submission.phone || '',
+        preferredContactMethod: submission.preferredContactMethod || "Email",
+        guideType: submission.guideType || "Cabo San Lucas Travel Guide",
+        source: submission.source || "website",
+        status: submission.status || "pending",
+        formName: submission.formName || "guide-download",
+        submissionId: submission.submissionId || nanoid(),
+        interestAreas: submission.interestAreas ? 
+            (Array.isArray(submission.interestAreas) ? 
+             submission.interestAreas : [submission.interestAreas]) : 
+            ["Travel Guide"],
+        formData: formData
+      }).returning();
 
-      const newSubmission = result.rows[0];
+      const [newSubmission] = result;
       
       // Transform snake_case back to camelCase for the response
+      // Direct return of newSubmission since it's already in camelCase format
       const formattedSubmission = {
         id: newSubmission.id,
-        firstName: newSubmission.first_name,
-        lastName: newSubmission.last_name,
+        firstName: newSubmission.firstName,
+        lastName: newSubmission.lastName,
         email: newSubmission.email,
         phone: newSubmission.phone,
-        preferredContactMethod: newSubmission.preferred_contact_method,
-        guideType: newSubmission.guide_type,
+        preferredContactMethod: newSubmission.preferredContactMethod,
+        guideType: newSubmission.guideType,
         source: newSubmission.source,
         status: newSubmission.status,
-        formName: newSubmission.form_name,
-        submissionId: newSubmission.submission_id,
-        interestAreas: newSubmission.interest_areas,
-        // Extract tags from form_data
-        tags: newSubmission.form_data?._tags || [],
-        formData: newSubmission.form_data,
-        createdAt: newSubmission.created_at,
-        updatedAt: newSubmission.updated_at
+        formName: newSubmission.formName,
+        submissionId: newSubmission.submissionId,
+        interestAreas: newSubmission.interestAreas,
+        // Extract tags from formData
+        tags: formData._tags || [],
+        formData: newSubmission.formData,
+        createdAt: newSubmission.createdAt,
+        updatedAt: newSubmission.updatedAt
       };
 
       console.log("Successfully created guide submission:", formattedSubmission);
       
-      // IMPORTANT: Even if the main submission is successful, we should still try to 
-      // send this submission to our webhook system for Make.com integration
+      // Send to Make.com webhook if configured
       try {
-        console.log("Now sending to webhook system in the background...");
-        // This will be handled in the controller, not here
+        if (process.env.MAKE_WEBHOOK_URL) {
+          console.log("Sending guide request to Make.com webhook");
+          
+          // Format the data according to Airtable column structure
+          const webhookData = {
+            "First Name": submission.firstName,
+            "Last Name": submission.lastName || '',
+            "Email": submission.email,
+            "Phone": submission.phone || '',
+            "Preferred Contact Method": submission.preferredContactMethod || "Email",
+            "Preferred Contact Time": "Any",
+            "Submission Type": "Guide Request",
+            "Status": "New",
+            "Priority": "Normal",
+            "Interest Type": submission.guideType || "Cabo Travel Guide",
+            "Guide Type": submission.guideType || "Cabo San Lucas Travel Guide",
+            "Interest Areas": Array.isArray(submission.interestAreas) 
+              ? submission.interestAreas.join(", ") 
+              : (submission.interestAreas || "Travel Guide"),
+            "Form Name": submission.formName || "guide-download",
+            "Source Page": submission.source || "website",
+            "Form Data": JSON.stringify(formData),
+            "Submission ID": submission.submissionId,
+            "Created At": new Date().toISOString(),
+            "Download Link": "https://drive.google.com/file/d/1iM6eeb5P5aKLcSiE1ZI_7Vu3XsJqgOs6/view?usp=sharing",
+            "Tags": Array.isArray(submission.tags) ? submission.tags.join(", ") : "Guide Request, Website"
+          };
+          
+          // Send to Make.com in the background
+          fetch(process.env.MAKE_WEBHOOK_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(webhookData)
+          }).catch(err => {
+            console.warn("Background Make.com webhook error:", err);
+          });
+        }
       } catch (webhookError) {
         console.error("Failed to send to webhook, but submission was saved:", webhookError);
         // Don't fail the main request if webhook sending fails

@@ -80,21 +80,32 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
         if (makeWebhookUrl) {
           console.log("Attempting direct Make.com webhook submission for guide");
           
-          // Format data for webhook 
+          // Format data according to Airtable column structure
           const webhookData = {
-            first_name: data.firstName,
-            last_name: '', 
-            email: data.email,
-            phone: data.phone || undefined,
-            guide_type: "Cabo San Lucas Travel Guide",
-            interest_areas: ["Travel Guide"],
-            form_data: {
+            "First Name": data.firstName,
+            "Last Name": '', 
+            "Email": data.email,
+            "Phone": data.phone || '',
+            "Preferred Contact Method": 'Email',
+            "Preferred Contact Time": "Any",
+            "Submission Type": "Guide Request",
+            "Status": "New",
+            "Priority": "Normal",
+            "Interest Type": "Cabo Travel Guide",
+            "Guide Type": "Cabo San Lucas Travel Guide",
+            "Interest Areas": "Travel Guide",
+            "Form Name": "guide-download",
+            "Source Page": "website",
+            "Form Data": JSON.stringify({
               source: "website",
               formName: "guide-download",
               preferredContactMethod: 'Email',
               submissionId: submissionData.submissionId,
-            },
-            tags: ["Guide Request", "Website"]
+            }),
+            "Submission ID": submissionData.submissionId,
+            "Created At": new Date().toISOString(),
+            "Download Link": "https://drive.google.com/file/d/1iM6eeb5P5aKLcSiE1ZI_7Vu3XsJqgOs6/view?usp=sharing",
+            "Tags": "Guide Request, Website"
           };
           
           // Use fetch directly - don't await to keep form submission fast
