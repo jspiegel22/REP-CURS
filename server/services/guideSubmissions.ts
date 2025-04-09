@@ -1,13 +1,15 @@
 import { GuideSubmission } from '@shared/schema';
 import { sendEmail, createGuideDownloadEmail } from './emailService';
-import { retryFailedSync, syncGuideSubmissionToAirtable } from './airtable';
+// Import commented out as we're now using Make.com webhook instead
+// import { retryFailedSync, syncGuideSubmissionToAirtable } from './airtable';
 
 export async function processGuideSubmission(submission: GuideSubmission): Promise<boolean> {
   try {
-    // Step 1: Sync to Airtable
-    await retryFailedSync(syncGuideSubmissionToAirtable, submission);
+    // Step 1: Skip Airtable sync (now using Make.com webhook instead)
+    // Airtable sync commented out to avoid authorization errors
+    // await retryFailedSync(syncGuideSubmissionToAirtable, submission);
     
-    // Step 2: Send confirmation email
+    // Send confirmation email
     const emailOptions = createGuideDownloadEmail(
       submission.firstName,
       submission.email,

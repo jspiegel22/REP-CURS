@@ -64,7 +64,6 @@ export class DatabaseStorage implements IStorage {
         _tags: Array.isArray(submission.tags) ? submission.tags : [],
         // Additional fields from Airtable mapping
         submission_type: "Guide Request",
-        priority: "Normal",
         download_link: "https://drive.google.com/file/d/1iM6eeb5P5aKLcSiE1ZI_7Vu3XsJqgOs6/view?usp=sharing",
         interest_type: submission.guideType || "Cabo Travel Guide"
       };
@@ -74,21 +73,23 @@ export class DatabaseStorage implements IStorage {
         ? JSON.stringify(submission.interestAreas)
         : JSON.stringify([submission.interestAreas || "Travel Guide"]);
       
-      // Use an insert with object matching our schema column names
+      // Only include columns that actually exist in the database
+      // Use camelCase field names matching the schema definition in shared/schema.ts
       const result = await db.insert(guideSubmissions).values({
-        firstName: submission.firstName,
-        lastName: submission.lastName || '',
+        firstName: submission.first_name || submission.firstName,
+        lastName: submission.last_name || submission.lastName || '',
         email: submission.email,
         phone: submission.phone || '',
-        preferredContactMethod: submission.preferredContactMethod || "Email",
-        guideType: submission.guideType || "Cabo San Lucas Travel Guide",
+        preferredContactMethod: submission.preferred_contact_method || submission.preferredContactMethod || "Email",
+        guideType: submission.guide_type || submission.guideType || "Cabo San Lucas Travel Guide",
         source: submission.source || "website",
         status: submission.status || "pending",
-        formName: submission.formName || "guide-download",
-        submissionId: submission.submissionId || nanoid(),
-        interestAreas: submission.interestAreas ? 
-            (Array.isArray(submission.interestAreas) ? 
-             submission.interestAreas : [submission.interestAreas]) : 
+        formName: submission.form_name || submission.formName || "guide-download",
+        submissionId: submission.submission_id || submission.submissionId || nanoid(),
+        interestAreas: submission.interest_areas || submission.interestAreas ? 
+            (Array.isArray(submission.interest_areas || submission.interestAreas) ? 
+             (submission.interest_areas || submission.interestAreas) : 
+             [(submission.interest_areas || submission.interestAreas)]) : 
             ["Travel Guide"],
         formData: formData
       }).returning();
@@ -126,26 +127,28 @@ export class DatabaseStorage implements IStorage {
           
           // Format the data according to Airtable column structure
           const webhookData = {
-            "First Name": submission.firstName,
-            "Last Name": submission.lastName || '',
+            "First Name": submission.first_name || submission.firstName,
+            "Last Name": submission.last_name || submission.lastName || '',
             "Email": submission.email,
             "Phone": submission.phone || '',
-            "Preferred Contact Method": submission.preferredContactMethod || "Email",
-            "Preferred Contact Time": "Any",
+            "Preferred Contact Method": submission.preferred_contact_method || submission.preferredContactMethod || "Email",
             "Submission Type": "Guide Request",
             "Status": "New",
-            "Priority": "Normal",
-            "Interest Type": submission.guideType || "Cabo Travel Guide",
-            "Guide Type": submission.guideType || "Cabo San Lucas Travel Guide",
-            "Interest Areas": Array.isArray(submission.interestAreas) 
-              ? submission.interestAreas.join(", ") 
-              : (submission.interestAreas || "Travel Guide"),
-            "Form Name": submission.formName || "guide-download",
-            "Source Page": submission.source || "website",
-            "Form Data": JSON.stringify(formData),
-            "Submission ID": submission.submissionId,
-            "Created At": new Date().toISOString(),
+            "Notes": "Guide download request",
+            "Interest Type": submission.guide_type || submission.guideType || "Cabo Travel Guide",
+            "Guide Type": submission.guide_type || submission.guideType || "Cabo San Lucas Travel Guide",
+            "Interest Areas": Array.isArray(submission.interest_areas || submission.interestAreas) 
+              ? (submission.interest_areas || submission.interestAreas).join(", ") 
+              : (submission.interest_areas || submission.interestAreas || "Travel Guide"),
             "Download Link": "https://drive.google.com/file/d/1iM6eeb5P5aKLcSiE1ZI_7Vu3XsJqgOs6/view?usp=sharing",
+            "Source Page": submission.source || "website",
+            "Form Name": submission.form_name || submission.formName || "guide-download",
+            "Form Data": JSON.stringify(formData),
+            "Submission ID": submission.submission_id || submission.submissionId,
+            "Created At": new Date().toISOString(),
+            "Last Modified": new Date().toISOString(),
+            "User Agent": submission.user_agent || submission.userAgent || "",
+            "Referrer": submission.referrer || "",
             "Tags": Array.isArray(submission.tags) ? submission.tags.join(", ") : "Guide Request, Website"
           };
           

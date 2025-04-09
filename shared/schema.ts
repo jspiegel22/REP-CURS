@@ -52,7 +52,8 @@ const commonFields = {
   email: text("email").notNull(),
   phone: text("phone"),
   preferredContactMethod: text("preferred_contact_method"),
-  preferredContactTime: text("preferred_contact_time"),
+  // Note: preferred_contact_time is in the schema but doesn't exist in DB
+  // preferredContactTime: text("preferred_contact_time"),
   source: text("source").notNull(),
   status: text("status").notNull(),
   formName: text("form_name"),
@@ -99,16 +100,23 @@ export const leads = pgTable("leads", {
   assignedTo: text("assigned_to"),
 });
 
-// Enhanced guide submissions table
+// Guide submissions table matching the actual database schema
 export const guideSubmissions = pgTable("guide_submissions", {
-  ...commonFields,
+  id: serial("id").primaryKey(),
+  firstName: text("first_name").notNull(),
+  lastName: text("last_name"),
+  email: text("email").notNull(),
+  phone: text("phone"),
+  preferredContactMethod: text("preferred_contact_method"),
   guideType: text("guide_type").notNull(),
-  interestAreas: text("interest_areas").array(),
-  travelDates: text("travel_dates"),
-  numberOfTravelers: integer("number_of_travelers"),
-  downloadLink: text("download_link"),
-  processedAt: timestamp("processed_at"),
-  submissionId: text("submission_id").notNull().unique(),
+  source: text("source").notNull(),
+  status: text("status").notNull().default("pending"),
+  formName: text("form_name").notNull(),
+  submissionId: text("submission_id").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+  interestAreas: jsonb("interest_areas").notNull().default([]),
+  formData: jsonb("form_data"),
 });
 
 export const rewards = pgTable("rewards", {
@@ -223,18 +231,18 @@ export type InsertGuideSubmission = z.infer<typeof insertGuideSubmissionSchema>;
 
 // Add this new table definition after the existing tables
 export const guideFormSchema = z.object({
-  firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().optional().nullable(),
+  first_name: z.string().min(1, "First name is required"),
+  last_name: z.string().optional().nullable(),
   email: z.string().email("Invalid email address"),
   phone: z.string().optional().nullable(),
-  preferredContactMethod: z.enum(["Email", "Phone", "Either"]).default("Email"),
-  guideType: z.string().default("Ultimate Cabo Guide 2025"),
+  preferred_contact_method: z.enum(["Email", "Phone", "Either"]).default("Email"),
+  guide_type: z.string().default("Ultimate Cabo Guide 2025"),
   source: z.string().default("website"),
-  formName: z.string().default("guide_download"),
+  form_name: z.string().default("guide_download"),
   status: z.enum(["pending", "sent", "failed"]).default("pending"),
-  interestAreas: z.array(z.string()).optional(),
+  interest_areas: z.array(z.string()).optional(),
   tags: z.array(z.string()).optional(),
-  formData: z.record(z.any()).optional()
+  form_data: z.record(z.any()).optional()
 });
 
 export type GuideFormData = z.infer<typeof guideFormSchema>;

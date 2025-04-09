@@ -14,6 +14,18 @@ import {
 } from './services/webhookClient';
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Webhook check endpoint
+  app.get("/api/guides/check-webhook", (req, res) => {
+    const makeWebhookUrl = process.env.MAKE_WEBHOOK_URL;
+    const viteWebhookUrl = process.env.VITE_MAKE_WEBHOOK_URL;
+    
+    res.json({
+      webhookConfigured: !!makeWebhookUrl,
+      webhookUrl: makeWebhookUrl ? makeWebhookUrl.substring(0, 20) + "..." : "Not set",
+      clientWebhookConfigured: !!viteWebhookUrl,
+      status: makeWebhookUrl ? "ready" : "not configured"
+    });
+  });
   setupAuth(app);
 
   // Add guide submission endpoint with Airtable integration and email sending
@@ -22,17 +34,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Create a custom validator that extends the base schema but allows additional fields
       const extendedGuideSubmissionSchema = insertGuideSubmissionSchema.extend({
         // Add the new fields that we're collecting from the form
-        lastName: z.string().optional().nullable(),
+        last_name: z.string().optional().nullable(),
         phone: z.string().optional().nullable(),
-        preferredContactMethod: z.enum(["Email", "Phone", "Either"]).default("Email"),
+        preferred_contact_method: z.enum(["Email", "Phone", "Either"]).default("Email"),
         tags: z.array(z.string()).optional(),
-        interestAreas: z.array(z.string()).optional(),
+        interest_areas: z.array(z.string()).optional(),
       });
       
       // Validate request body
       const submissionData = extendedGuideSubmissionSchema.safeParse({
         ...req.body,
-        submissionId: req.body.submissionId || nanoid(),
+        submission_id: req.body.submission_id || req.body.submissionId || nanoid(),
         // No need to set createdAt and updatedAt as they have database defaults
       });
 

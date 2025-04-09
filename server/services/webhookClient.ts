@@ -3,6 +3,11 @@
 import axios from 'axios';
 import { nanoid } from 'nanoid';
 
+// Hardcode the webhook URL to ensure it's available
+// This should match the value in .env
+process.env.MAKE_WEBHOOK_URL = 'https://hook.us1.make.com/pomqcmt82c39t3x4mxdpzl4hc4eshhn2';
+process.env.VITE_MAKE_WEBHOOK_URL = 'https://hook.us1.make.com/pomqcmt82c39t3x4mxdpzl4hc4eshhn2';
+
 const WEBHOOK_API_URL = process.env.WEBHOOK_API_URL || 'http://localhost:8000/api';
 
 interface WebhookResponse {
