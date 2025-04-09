@@ -18,8 +18,6 @@ import { nanoid } from "nanoid";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-// Import guide request webhook function
-import { sendGuideRequestWebhook } from "@/lib/webhooks";
 
 // Simplified form schema with just the essential fields
 const formSchema = z.object({
@@ -75,28 +73,51 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
       const response = await apiRequest("POST", "/api/guide-submissions", submissionData);
       const result = await response.json();
       
-      // Also send to webhook system (in background, don't await)
+      // Instead of using the webhook library directly, we'll use our direct Make.com webhook
+      // if it's configured in the environment
       try {
-        sendGuideRequestWebhook({
-          first_name: data.firstName,
-          last_name: '', 
-          email: data.email,
-          phone: data.phone || undefined,
-          guide_type: "Cabo San Lucas Travel Guide",
-          interest_areas: ["Travel Guide"],
-          form_data: {
-            source: "website",
-            formName: "guide-download",
-            preferredContactMethod: 'Email',
-          },
-          tags: ["Guide Request", "Website"]
-        }).catch(error => {
-          console.error("Webhook submission error:", error);
-          // Don't show toast here - the main submission was successful
-          // This is just a fallback integration
-        });
+        const makeWebhookUrl = import.meta.env.VITE_MAKE_WEBHOOK_URL;
+        if (makeWebhookUrl) {
+          console.log("Attempting direct Make.com webhook submission for guide");
+          
+          // Format data for webhook 
+          const webhookData = {
+            first_name: data.firstName,
+            last_name: '', 
+            email: data.email,
+            phone: data.phone || undefined,
+            guide_type: "Cabo San Lucas Travel Guide",
+            interest_areas: ["Travel Guide"],
+            form_data: {
+              source: "website",
+              formName: "guide-download",
+              preferredContactMethod: 'Email',
+              submissionId: submissionData.submissionId,
+            },
+            tags: ["Guide Request", "Website"]
+          };
+          
+          // Use fetch directly - don't await to keep form submission fast
+          fetch(makeWebhookUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(webhookData),
+          }).then(response => {
+            if (response.ok) {
+              console.log("Make.com webhook sent successfully!");
+            } else {
+              console.warn("Make.com webhook returned non-200 response:", response.status);
+            }
+          }).catch(error => {
+            console.error("Make.com webhook error:", error);
+          });
+        } else {
+          console.log("No Make.com webhook URL found in environment");
+        }
       } catch (webhookError) {
-        console.error("Error sending to webhook:", webhookError);
+        console.error("Error preparing webhook data:", webhookError);
         // Don't fail the main flow if webhook fails
       }
       

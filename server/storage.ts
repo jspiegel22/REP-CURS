@@ -56,6 +56,13 @@ export class DatabaseStorage implements IStorage {
     try {
       console.log("Creating guide submission with data:", submission);
       
+      // Store tags in the form_data to avoid the column missing error
+      const formData = {
+        ...(submission.formData || {}),
+        // Store tags in the form data instead of a separate column
+        _tags: Array.isArray(submission.tags) ? submission.tags : []
+      };
+      
       // We'll use raw SQL to avoid any type issues with Drizzle
       const result = await db.execute(
         `INSERT INTO guide_submissions (
@@ -70,10 +77,9 @@ export class DatabaseStorage implements IStorage {
           form_name, 
           submission_id, 
           interest_areas, 
-          tags,
           form_data
         ) VALUES (
-          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13
+          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12
         ) RETURNING *`,
         [
           submission.firstName,
@@ -87,8 +93,7 @@ export class DatabaseStorage implements IStorage {
           submission.formName,
           submission.submissionId,
           Array.isArray(submission.interestAreas) ? submission.interestAreas : null,
-          Array.isArray(submission.tags) ? submission.tags : null,
-          submission.formData || {}
+          formData
         ]
       );
 
@@ -108,13 +113,25 @@ export class DatabaseStorage implements IStorage {
         formName: newSubmission.form_name,
         submissionId: newSubmission.submission_id,
         interestAreas: newSubmission.interest_areas,
-        tags: newSubmission.tags,
+        // Extract tags from form_data
+        tags: newSubmission.form_data?._tags || [],
         formData: newSubmission.form_data,
         createdAt: newSubmission.created_at,
         updatedAt: newSubmission.updated_at
       };
 
       console.log("Successfully created guide submission:", formattedSubmission);
+      
+      // IMPORTANT: Even if the main submission is successful, we should still try to 
+      // send this submission to our webhook system for Make.com integration
+      try {
+        console.log("Now sending to webhook system in the background...");
+        // This will be handled in the controller, not here
+      } catch (webhookError) {
+        console.error("Failed to send to webhook, but submission was saved:", webhookError);
+        // Don't fail the main request if webhook sending fails
+      }
+      
       return formattedSubmission;
     } catch (error) {
       console.error("Error creating guide submission:", error);

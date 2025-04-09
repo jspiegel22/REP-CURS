@@ -106,8 +106,41 @@ export async function sendBookingWebhook(bookingData: BookingData): Promise<{ st
 
 /**
  * Send guide request data to webhook service
+ * 
+ * This function tries multiple approaches:
+ * 1. First it attempts to use direct Make.com webhook if configured
+ * 2. Falls back to webhooks API if direct fails
+ * 3. Stores data in local queue for offline processing as final fallback
  */
 export async function sendGuideRequestWebhook(guideData: GuideRequestData): Promise<{ status: string; tracking_id: string }> {
+  // Try direct Make.com integration first
+  const makeWebhookUrl = import.meta.env.VITE_MAKE_WEBHOOK_URL;
+  if (makeWebhookUrl) {
+    try {
+      console.log("Attempting direct Make.com webhook submission");
+      const response = await fetch(makeWebhookUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(guideData),
+      });
+
+      if (response.ok) {
+        console.log("Direct Make.com webhook successful!");
+        return { 
+          status: 'success', 
+          tracking_id: guideData.form_data?.submissionId || `guide_${Date.now()}`
+        };
+      } else {
+        console.warn("Direct Make.com webhook failed, falling back to API");
+      }
+    } catch (directError) {
+      console.warn("Error with direct Make.com webhook, falling back to API:", directError);
+    }
+  }
+  
+  // Fallback to webhooks API
   try {
     const response = await fetch(`${WEBHOOK_API_URL}/guides/webhook`, {
       method: 'POST',
@@ -128,7 +161,11 @@ export async function sendGuideRequestWebhook(guideData: GuideRequestData): Prom
     console.error('Error sending guide request webhook:', error);
     // Save for offline processing
     saveToOfflineQueue('guide', guideData);
-    throw error;
+    // Return success anyway so the user experience isn't affected
+    return { 
+      status: 'queued', 
+      tracking_id: guideData.form_data?.submissionId || `guide_${Date.now()}`
+    };
   }
 }
 
