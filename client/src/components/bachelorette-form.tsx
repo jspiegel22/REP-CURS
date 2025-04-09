@@ -72,7 +72,6 @@ export function BacheloretteForm({ isOpen, onClose }: BacheloretteFormProps) {
         lastName: data.lastName || '',
         email: data.email,
         phone: data.phone || '',
-        preferredContactMethod: 'Email' as const,
         interestType: "group_trip" as const,
         budget: data.budget,
         timeline: data.timeline,
@@ -83,6 +82,7 @@ export function BacheloretteForm({ isOpen, onClose }: BacheloretteFormProps) {
           groupSize: data.groupSize,
           specialRequests: data.specialRequests,
           eventType: "Bachelorette Party",
+          preferredContactMethod: 'Email' // Move to formData so it doesn't conflict with DB schema
         },
         tags: ["Bachelorette Party", "Group Travel", "Event Planning"],
         submissionId: nanoid(),

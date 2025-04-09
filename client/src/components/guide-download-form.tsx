@@ -59,7 +59,6 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
         lastName: '', // Not collected anymore but required by API
         email: data.email,
         phone: data.phone || '',
-        preferredContactMethod: 'Email' as const, // Default to email
         guideType: "Cabo San Lucas Travel Guide",
         source: "website",
         status: "pending" as const,
@@ -67,6 +66,9 @@ export function GuideDownloadForm({ isOpen, onClose }: GuideDownloadFormProps) {
         submissionId: nanoid(),
         tags: ["Guide Request", "Website"],
         interestAreas: ["Travel Guide"], // Default interest area
+        formData: {
+          preferredContactMethod: 'Email' // Move to formData to avoid schema conflicts
+        }
       };
       
       // Submit to our main API

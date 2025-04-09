@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# Test script to send data directly to Make.com webhook
-# This bypasses the app completely to test if the webhook works
+# Test script to send a bachelorette party form submission directly to the API
+# This helps test the webhook functionality without going through the UI
 
-echo "Sending test data directly to Make.com webhook..."
+echo "Sending test bachelorette party form submission..."
 
-curl -X POST https://hook.us1.make.com/pomqcmt82c39t3x4mxdpzl4hc4eshhn2 \
+curl -X POST http://localhost:5000/api/leads \
   -H "Content-Type: application/json" \
   -d '{
     "firstName": "Test",
@@ -23,8 +23,7 @@ curl -X POST https://hook.us1.make.com/pomqcmt82c39t3x4mxdpzl4hc4eshhn2 \
       "specialRequests": "We would like to do a yacht party and VIP club access",
       "eventType": "Bachelorette Party"
     },
-    "tags": ["Bachelorette Party", "Group Travel", "Event Planning"],
-    "webhook_type": "lead"
+    "tags": ["Bachelorette Party", "Group Travel", "Event Planning"]
   }'
 
-echo "Direct webhook test completed. Check Make.com for the event."
+echo "Test submission completed."
