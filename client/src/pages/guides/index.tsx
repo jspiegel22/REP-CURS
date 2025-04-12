@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Download } from "lucide-react";
-import Footer from "@/components/footer";
 import SEO, { generateGuideSchema } from "@/components/SEO";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { GuideDownloadForm } from "@/components/guide-download-form";
@@ -161,7 +160,6 @@ export default function GuidesPage() {
           </div>
         </section>
       </main>
-      <Footer />
       
       {/* Guide Download Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={handleDialogClose}>

@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Star, Home, TrendingUp, MapPin, Download } from "lucide-react";
-import Footer from "@/components/footer";
 import SEO from "@/components/SEO";
 import { GuideDownloadForm } from "@/components/guide-download-form";
 
@@ -205,7 +204,6 @@ export default function RealEstatePage() {
           </div>
         </section>
       </main>
-      <Footer />
     </div>
   );
 }
