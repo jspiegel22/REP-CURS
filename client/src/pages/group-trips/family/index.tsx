@@ -75,15 +75,55 @@ export default function FamilyTripsPage() {
 
   const onSubmit = async (data: FormData) => {
     try {
+      console.log("Form submission started with data:", data);
+      
+      // Prepare the payload for Make.com webhook
+      const payload = {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        phone: data.phone,
+        interestType: 'family_trip',
+        source: 'website',
+        status: 'new',
+        budget: data.budget || '$5000-$10000',
+        timeline: `${data.checkIn} to ${data.checkOut}`,
+        tags: "Family Trip, Group Travel",
+        formName: 'family-trip',
+        formData: {
+          numberOfChildren: data.children,
+          notes: data.notes,
+          checkIn: data.checkIn,
+          checkOut: data.checkOut,
+          preferredContactMethod: 'Email'
+        }
+      };
+      
+      // Send the data to our API which will forward to Make.com webhook
+      const response = await fetch('/api/leads', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to submit form. Please try again.');
+      }
+      
+      console.log("Submission sent to server, which will forward to Make.com webhook");
+      
       toast({
         title: "Thanks for your interest!",
         description: "We'll be in touch shortly to plan your perfect family vacation.",
       });
       form.reset();
     } catch (error: any) {
+      console.error("Form submission error:", error);
       toast({
         title: "Something went wrong",
-        description: error.message,
+        description: error.message || "Failed to submit form. Please try again.",
         variant: "destructive",
       });
     }

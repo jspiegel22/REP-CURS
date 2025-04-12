@@ -11,7 +11,8 @@ import { Download, Loader2 } from "lucide-react";
 
 // Form schema for guide download form
 const formSchema = z.object({
-  name: z.string().min(2, "Please enter your name"),
+  firstName: z.string().min(2, "Please enter your first name"),
+  lastName: z.string().min(2, "Please enter your last name"),
   email: z.string().email("Please enter a valid email"),
   phone: z.string().optional(),
   investmentLevel: z.string().optional(),
@@ -47,7 +48,8 @@ export function GuideDownloadForm({
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
+      firstName: "",
+      lastName: "",
       email: "",
       phone: "",
       investmentLevel: "",
@@ -63,8 +65,8 @@ export function GuideDownloadForm({
       
       // Prepare the payload for Make.com webhook
       const payload = {
-        firstName: data.name.split(' ')[0],
-        lastName: data.name.includes(' ') ? data.name.split(' ').slice(1).join(' ') : '',
+        firstName: data.firstName,
+        lastName: data.lastName,
         email: data.email,
         phone: data.phone || '',
         guideType: guideType,
@@ -134,13 +136,25 @@ export function GuideDownloadForm({
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Input 
-                {...form.register("name")} 
-                placeholder="Your Name" 
+                {...form.register("firstName")} 
+                placeholder="First Name" 
                 className={`${backgroundColor} ${textColor} w-full`}
                 disabled={isSubmitting}
               />
-              {form.formState.errors.name && (
-                <p className="text-red-500 text-xs mt-1">{form.formState.errors.name.message}</p>
+              {form.formState.errors.firstName && (
+                <p className="text-red-500 text-xs mt-1">{form.formState.errors.firstName.message}</p>
+              )}
+            </div>
+            
+            <div>
+              <Input 
+                {...form.register("lastName")} 
+                placeholder="Last Name" 
+                className={`${backgroundColor} ${textColor} w-full`}
+                disabled={isSubmitting}
+              />
+              {form.formState.errors.lastName && (
+                <p className="text-red-500 text-xs mt-1">{form.formState.errors.lastName.message}</p>
               )}
             </div>
             
@@ -162,15 +176,6 @@ export function GuideDownloadForm({
                 {...form.register("phone")} 
                 type="tel" 
                 placeholder="Phone (Optional)" 
-                className={`${backgroundColor} ${textColor} w-full`}
-                disabled={isSubmitting}
-              />
-            </div>
-            
-            <div>
-              <Input 
-                {...form.register("investmentLevel")} 
-                placeholder="Budget Range (Optional)" 
                 className={`${backgroundColor} ${textColor} w-full`}
                 disabled={isSubmitting}
               />
