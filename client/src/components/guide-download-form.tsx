@@ -5,7 +5,8 @@ import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 import { Download, Loader2 } from "lucide-react";
 
 // Form schema for guide download form
@@ -14,7 +15,7 @@ const formSchema = z.object({
   email: z.string().email("Please enter a valid email"),
   phone: z.string().optional(),
   investmentLevel: z.string().optional(),
-  agentInterest: z.string().optional(),
+  agentInterest: z.boolean().optional().default(false),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -50,7 +51,7 @@ export function GuideDownloadForm({
       email: "",
       phone: "",
       investmentLevel: "",
-      agentInterest: "",
+      agentInterest: false,
     }
   });
 
@@ -175,21 +176,21 @@ export function GuideDownloadForm({
               />
             </div>
             
-            <div className="col-span-2 mb-2">
-              <Select
-                onValueChange={(value) => form.setValue("agentInterest", value)}
-                value={form.watch("agentInterest")}
+            <div className="col-span-2 flex items-center space-x-2 my-2">
+              <Checkbox 
+                id="agentInterest"
+                checked={form.watch("agentInterest")}
+                onCheckedChange={(checked) => {
+                  form.setValue("agentInterest", checked === true);
+                }}
                 disabled={isSubmitting}
+              />
+              <Label 
+                htmlFor="agentInterest" 
+                className="text-sm font-medium leading-none cursor-pointer"
               >
-                <SelectTrigger className={`${backgroundColor} ${textColor} w-full`}>
-                  <SelectValue placeholder="Interested in speaking with an agent?" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="yes">Yes, I'd like to speak with an agent</SelectItem>
-                  <SelectItem value="no">No, just send me the guide</SelectItem>
-                  <SelectItem value="maybe">Maybe later</SelectItem>
-                </SelectContent>
-              </Select>
+                I'd like to speak with a real estate agent about properties
+              </Label>
             </div>
           </div>
         ) : (
@@ -228,7 +229,7 @@ export function GuideDownloadForm({
         
         <Button 
           type="submit" 
-          className={`w-full gap-2 ${guideType === "Real Estate" ? "bg-white hover:bg-gray-100 text-[#2F4F4F] border border-[#2F4F4F]" : "bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white"}`}
+          className={`w-full gap-2 ${guideType === "Real Estate" ? "bg-orange-600 hover:bg-orange-700 text-white font-semibold" : "bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white"}`}
           disabled={isSubmitting}
         >
           {isSubmitting ? (

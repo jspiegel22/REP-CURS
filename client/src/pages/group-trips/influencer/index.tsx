@@ -1,4 +1,5 @@
-import { Calendar, Users, Heart, Star, ChevronRight, Camera, Wifi, Globe } from "lucide-react";
+import { Calendar, Users, Heart, Star, ChevronRight, Camera, Wifi, Globe, Loader2 } from "lucide-react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -25,11 +26,13 @@ type FormData = z.infer<typeof formSchema>;
 
 export default function InfluencerPage() {
   const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
   });
 
   const onSubmit = async (data: FormData) => {
+    setIsSubmitting(true);
     try {
       console.log("Form submission started with data:", data);
       
@@ -273,10 +276,20 @@ export default function InfluencerPage() {
                 </div>
                 <Button 
                   type="submit" 
+                  disabled={isSubmitting}
                   className="w-full mt-4 bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white py-4 md:py-6 text-base md:text-lg flex items-center justify-center gap-2"
                 >
-                  Submit Application
-                  <ChevronRight className="w-5 h-5" />
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                      Submitting...
+                    </>
+                  ) : (
+                    <>
+                      Submit Application
+                      <ChevronRight className="w-5 h-5" />
+                    </>
+                  )}
                 </Button>
               </form>
             </div>

@@ -148,11 +148,11 @@ export default function GuidesPage() {
                     <h3 className="text-xl font-semibold mb-2">{guide.title}</h3>
                     <p className="text-gray-600 mb-4">{guide.description}</p>
                     <Button 
-                      className="w-full gap-2"
+                      className="w-full gap-2 bg-orange-600 hover:bg-orange-700 text-white font-semibold py-6 text-lg shadow-md"
                       onClick={() => handleDownloadClick(guide)}
                     >
-                      <Download className="h-4 w-4" />
-                      Download Guide
+                      <Download className="h-5 w-5" />
+                      Download Free Guide
                     </Button>
                   </div>
                 </Card>
