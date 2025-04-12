@@ -181,6 +181,15 @@ export function GuideDownloadForm({
               />
             </div>
             
+            <div>
+              <Input 
+                {...form.register("investmentLevel")} 
+                placeholder="Investment Budget (Optional)" 
+                className={`${backgroundColor} ${textColor} w-full`}
+                disabled={isSubmitting}
+              />
+            </div>
+            
             <div className="col-span-2 flex items-center space-x-2 my-2">
               <Checkbox 
                 id="agentInterest"
@@ -201,31 +210,54 @@ export function GuideDownloadForm({
         ) : (
           // Standard layout for other guide types
           <>
-            <Input 
-              {...form.register("name")} 
-              placeholder="Your Name" 
-              className={`${backgroundColor} ${textColor}`}
-              disabled={isSubmitting}
-            />
-            {form.formState.errors.name && (
-              <p className="text-red-500 text-sm mt-1">{form.formState.errors.name.message}</p>
-            )}
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <div>
+                <Input 
+                  {...form.register("firstName")} 
+                  placeholder="First Name" 
+                  className={`${backgroundColor} ${textColor}`}
+                  disabled={isSubmitting}
+                />
+                {form.formState.errors.firstName && (
+                  <p className="text-red-500 text-sm mt-1">{form.formState.errors.firstName.message}</p>
+                )}
+              </div>
+              
+              <div>
+                <Input 
+                  {...form.register("lastName")} 
+                  placeholder="Last Name" 
+                  className={`${backgroundColor} ${textColor}`}
+                  disabled={isSubmitting}
+                />
+                {form.formState.errors.lastName && (
+                  <p className="text-red-500 text-sm mt-1">{form.formState.errors.lastName.message}</p>
+                )}
+              </div>
+            </div>
             
             <Input 
               {...form.register("email")} 
               type="email" 
               placeholder="Email Address" 
-              className={`${backgroundColor} ${textColor}`}
+              className={`${backgroundColor} ${textColor} mb-4`}
               disabled={isSubmitting}
             />
             {form.formState.errors.email && (
-              <p className="text-red-500 text-sm mt-1">{form.formState.errors.email.message}</p>
+              <p className="text-red-500 text-sm mt-1 mb-2">{form.formState.errors.email.message}</p>
             )}
             
             <Input 
               {...form.register("phone")} 
               type="tel" 
               placeholder="Phone (Optional)" 
+              className={`${backgroundColor} ${textColor} mb-4`}
+              disabled={isSubmitting}
+            />
+            
+            <Input 
+              {...form.register("investmentLevel")} 
+              placeholder="Budget Range (Optional)" 
               className={`${backgroundColor} ${textColor}`}
               disabled={isSubmitting}
             />

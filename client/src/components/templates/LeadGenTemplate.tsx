@@ -17,7 +17,8 @@ import { Check, Calendar, Star } from "lucide-react";
 
 // Enhanced schema for lead generation forms
 const leadFormSchema = z.object({
-  name: z.string().min(2, "Please enter your name"),
+  firstName: z.string().min(2, "Please enter your first name"),
+  lastName: z.string().min(2, "Please enter your last name"),
   email: z.string().email("Please enter a valid email"),
   phone: z.string().min(10, "Please enter a valid phone number"),
   numberOfPeople: z.string().min(1, "Please indicate group size"),
@@ -75,7 +76,8 @@ export function LeadGenTemplate({
   const form = useForm<LeadFormData>({
     resolver: zodResolver(leadFormSchema),
     defaultValues: {
-      name: "",
+      firstName: "",
+      lastName: "",
       email: "",
       phone: "",
       numberOfPeople: "",
@@ -90,8 +92,8 @@ export function LeadGenTemplate({
       
       // Prepare the payload for Make.com webhook
       const payload = {
-        firstName: data.name.split(' ')[0],
-        lastName: data.name.includes(' ') ? data.name.substring(data.name.indexOf(' ') + 1) : '',
+        firstName: data.firstName,
+        lastName: data.lastName,
         email: data.email,
         phone: data.phone,
         interestType: title.toLowerCase().includes('family') ? 'family_trip' : 
@@ -100,6 +102,7 @@ export function LeadGenTemplate({
                      title.toLowerCase().includes('estate') ? 'real_estate' :
                      'group_trip', // Default category
         source: 'website',
+        status: 'new',
         budget: Number(data.numberOfPeople) <= 3 ? '$2000-$5000' : 
                 Number(data.numberOfPeople) <= 7 ? '$5000-$10000' : '$10000+',
         timeline: data.preferredDates,
@@ -255,19 +258,34 @@ export function LeadGenTemplate({
                     onSubmit={form.handleSubmit(onSubmit)}
                     className="space-y-6"
                   >
-                    <FormField
-                      control={form.control}
-                      name="name"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Full Name</FormLabel>
-                          <FormControl>
-                            <Input {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="firstName"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>First Name</FormLabel>
+                            <FormControl>
+                              <Input {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="lastName"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Last Name</FormLabel>
+                            <FormControl>
+                              <Input {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
 
                     <FormField
                       control={form.control}
