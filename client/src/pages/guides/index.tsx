@@ -1,8 +1,11 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Download } from "lucide-react";
 import Footer from "@/components/footer";
 import SEO, { generateGuideSchema } from "@/components/SEO";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { GuideDownloadForm } from "@/components/guide-download-form";
 
 // Sample guides data
 const guides = [
@@ -51,6 +54,20 @@ const guides = [
 ];
 
 export default function GuidesPage() {
+  const [selectedGuide, setSelectedGuide] = useState<(typeof guides)[0] | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  
+  const handleDownloadClick = (guide: typeof guides[0]) => {
+    setSelectedGuide(guide);
+    setIsDialogOpen(true);
+  };
+  
+  const handleDialogClose = () => {
+    setIsDialogOpen(false);
+    // Give time for animation to complete before clearing selection
+    setTimeout(() => setSelectedGuide(null), 300);
+  };
+  
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <SEO
@@ -130,7 +147,10 @@ export default function GuidesPage() {
                   <div className="p-6">
                     <h3 className="text-xl font-semibold mb-2">{guide.title}</h3>
                     <p className="text-gray-600 mb-4">{guide.description}</p>
-                    <Button className="w-full gap-2">
+                    <Button 
+                      className="w-full gap-2"
+                      onClick={() => handleDownloadClick(guide)}
+                    >
                       <Download className="h-4 w-4" />
                       Download Guide
                     </Button>
@@ -142,6 +162,30 @@ export default function GuidesPage() {
         </section>
       </main>
       <Footer />
+      
+      {/* Guide Download Dialog */}
+      <Dialog open={isDialogOpen} onOpenChange={handleDialogClose}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>
+              {selectedGuide ? selectedGuide.title : "Download Guide"}
+            </DialogTitle>
+            <DialogDescription>
+              Enter your information to receive your free guide via email.
+            </DialogDescription>
+          </DialogHeader>
+          
+          {selectedGuide && (
+            <GuideDownloadForm 
+              guideType={selectedGuide.type}
+              tags={`Guide Request, ${selectedGuide.type}, Website`}
+              title=""
+              buttonText={`Get ${selectedGuide.title}`}
+              onSuccessCallback={handleDialogClose}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
