@@ -86,16 +86,58 @@ export function LeadGenTemplate({
 
   const onSubmit = async (data: LeadFormData) => {
     try {
-      // Handle form submission
+      console.log("Form submission started with data:", data);
+      
+      // Prepare the payload for Make.com webhook
+      const payload = {
+        firstName: data.name.split(' ')[0],
+        lastName: data.name.includes(' ') ? data.name.substring(data.name.indexOf(' ') + 1) : '',
+        email: data.email,
+        phone: data.phone,
+        interestType: title.toLowerCase().includes('family') ? 'family_trip' : 
+                     title.toLowerCase().includes('wedding') ? 'wedding' :
+                     title.toLowerCase().includes('luxury') ? 'concierge' :
+                     title.toLowerCase().includes('estate') ? 'real_estate' :
+                     'group_trip', // Default category
+        source: 'website',
+        budget: parseInt(data.numberOfPeople) < 4 ? '$2000-$5000' : 
+                parseInt(data.numberOfPeople) < 8 ? '$5000-$10000' : '$10000+',
+        timeline: data.preferredDates,
+        tags: title, // Use the page title as tag
+        formName: title.toLowerCase().replace(/[^a-z0-9]/g, '-'),
+        formData: {
+          numberOfPeople: data.numberOfPeople,
+          message: data.message,
+          preferredDates: data.preferredDates,
+          preferredContactMethod: 'Email',
+        }
+      };
+      
+      // Send the data to our API which will forward to Make.com webhook
+      const response = await fetch('/api/leads', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to submit form. Please try again.');
+      }
+      
+      console.log("Submission sent to server, which will forward to Make.com webhook");
+      
       toast({
         title: "Thanks for your interest!",
         description: "We'll be in touch with you shortly.",
       });
       form.reset();
     } catch (error: any) {
+      console.error("Form submission error:", error);
       toast({
         title: "Something went wrong",
-        description: error.message,
+        description: error.message || "Failed to submit form. Please try again.",
         variant: "destructive",
       });
     }

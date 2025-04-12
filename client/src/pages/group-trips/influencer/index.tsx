@@ -31,15 +31,57 @@ export default function InfluencerPage() {
 
   const onSubmit = async (data: FormData) => {
     try {
+      console.log("Form submission started with data:", data);
+      
+      // Prepare the payload for Make.com webhook
+      const payload = {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        phone: data.phone,
+        interestType: 'influencer',
+        source: 'website',
+        budget: data.followers.includes('k') || data.followers.includes('K') || 
+                parseInt(data.followers) > 10000 ? '$10000+' : '$5000-$10000',
+        timeline: `${data.checkIn} to ${data.checkOut}`,
+        tags: 'Influencer, Content Creation',
+        formName: 'influencer-partnership',
+        formData: {
+          socialHandle: data.socialHandle,
+          platform: data.platform,
+          followers: data.followers,
+          checkIn: data.checkIn,
+          checkOut: data.checkOut,
+          notes: data.notes,
+          preferredContactMethod: 'Email',
+        }
+      };
+      
+      // Send the data to our API which will forward to Make.com webhook
+      const response = await fetch('/api/leads', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to submit form. Please try again.');
+      }
+      
+      console.log("Submission sent to server, which will forward to Make.com webhook");
+      
       toast({
         title: "Thanks for your interest!",
         description: "Our influencer partnerships team will be in touch shortly.",
       });
       form.reset();
     } catch (error: any) {
+      console.error("Form submission error:", error);
       toast({
         title: "Something went wrong",
-        description: error.message,
+        description: error.message || "Failed to submit form. Please try again.",
         variant: "destructive",
       });
     }
