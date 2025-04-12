@@ -23,7 +23,13 @@ curl -X POST http://localhost:5000/api/leads \
       "specialRequests": "We would like to do a yacht party and VIP club access",
       "eventType": "Bachelorette Party"
     },
-    "tags": ["Bachelorette Party", "Group Travel", "Event Planning"]
+    "tags": "Bachelorette Party, Group Travel, Event Planning",
+    "formData": {
+      "groupSize": "8",
+      "specialRequests": "We would like to do a yacht party and VIP club access",
+      "eventType": "Bachelorette Party",
+      "preferredContactMethod": "Email"
+    }
   }'
 
 echo "Test submission completed."

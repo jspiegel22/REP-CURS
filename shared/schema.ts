@@ -51,9 +51,7 @@ const commonFields = {
   lastName: text("last_name"),
   email: text("email").notNull(),
   phone: text("phone"),
-  preferredContactMethod: text("preferred_contact_method"),
-  // Note: preferred_contact_time is in the schema but doesn't exist in DB
-  // preferredContactTime: text("preferred_contact_time"),
+  // Removed preferred contact fields as requested
   source: text("source").notNull(),
   status: text("status").notNull(),
   formName: text("form_name"),
@@ -62,7 +60,7 @@ const commonFields = {
   ipAddress: text("ip_address"),
   userAgent: text("user_agent"),
   referrer: text("referrer"),
-  tags: text("tags").array(),
+  tags: text("tags"),
   utmSource: text("utm_source"),
   utmMedium: text("utm_medium"),
   utmCampaign: text("utm_campaign"),
@@ -107,7 +105,6 @@ export const guideSubmissions = pgTable("guide_submissions", {
   lastName: text("last_name"),
   email: text("email").notNull(),
   phone: text("phone"),
-  preferredContactMethod: text("preferred_contact_method"),
   guideType: text("guide_type").notNull(),
   source: text("source").notNull(),
   status: text("status").notNull().default("pending"),
@@ -115,7 +112,7 @@ export const guideSubmissions = pgTable("guide_submissions", {
   submissionId: text("submission_id").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
-  interestAreas: jsonb("interest_areas").notNull().default([]),
+  interestAreas: text("interest_areas"),
   formData: jsonb("form_data"),
 });
 
@@ -170,16 +167,28 @@ export const insertListingSchema = createInsertSchema(listings);
 export const insertRewardSchema = createInsertSchema(rewards);
 export const insertSocialShareSchema = createInsertSchema(socialShares);
 
-export const insertLeadSchema = createInsertSchema(leads).omit({
+// Create a base schema from the table definition
+const baseLeadSchema = createInsertSchema(leads).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
 });
 
-export const insertGuideSubmissionSchema = createInsertSchema(guideSubmissions).omit({
+// Create a custom schema that overrides the tags field to be a string
+export const insertLeadSchema = baseLeadSchema.extend({
+  tags: z.string().optional(),
+});
+
+// Create a base schema from the table definition
+const baseGuideSubmissionSchema = createInsertSchema(guideSubmissions).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
+});
+
+// Create a custom schema that ensures interest_areas is a string
+export const insertGuideSubmissionSchema = baseGuideSubmissionSchema.extend({
+  interestAreas: z.string().optional(),
 });
 
 // Types for TypeScript
@@ -235,13 +244,12 @@ export const guideFormSchema = z.object({
   last_name: z.string().optional().nullable(),
   email: z.string().email("Invalid email address"),
   phone: z.string().optional().nullable(),
-  preferred_contact_method: z.enum(["Email", "Phone", "Either"]).default("Email"),
   guide_type: z.string().default("Ultimate Cabo Guide 2025"),
   source: z.string().default("website"),
   form_name: z.string().default("guide_download"),
   status: z.enum(["pending", "sent", "failed"]).default("pending"),
-  interest_areas: z.array(z.string()).optional(),
-  tags: z.array(z.string()).optional(),
+  interest_areas: z.string().optional(),
+  tags: z.string().optional(),
   form_data: z.record(z.any()).optional()
 });
 

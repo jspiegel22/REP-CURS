@@ -31,20 +31,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Add guide submission endpoint with Airtable integration and email sending
   app.post("/api/guide-submissions", async (req, res) => {
     try {
-      // Create a custom validator that extends the base schema but allows additional fields
-      const extendedGuideSubmissionSchema = insertGuideSubmissionSchema.extend({
-        // Add the new fields that we're collecting from the form
-        last_name: z.string().optional().nullable(),
+      console.log("Guide submission received:", req.body);
+      // Create a direct schema without using drizzle-zod to avoid validation conflicts
+      const directGuideSubmissionSchema = z.object({
+        firstName: z.string(),
+        lastName: z.string().optional().nullable(),
+        email: z.string().email(),
         phone: z.string().optional().nullable(),
-        preferred_contact_method: z.enum(["Email", "Phone", "Either"]).default("Email"),
-        tags: z.array(z.string()).optional(),
-        interest_areas: z.array(z.string()).optional(),
+        guideType: z.string(),
+        source: z.string(),
+        status: z.string(),
+        formName: z.string(),
+        submissionId: z.string(),
+        interestAreas: z.string().optional(),
+        tags: z.string().optional(),
+        formData: z.record(z.any()).optional()
       });
       
       // Validate request body
-      const submissionData = extendedGuideSubmissionSchema.safeParse({
+      const submissionData = directGuideSubmissionSchema.safeParse({
         ...req.body,
-        submission_id: req.body.submission_id || req.body.submissionId || nanoid(),
+        submissionId: req.body.submissionId || req.body.submission_id || nanoid(),
         // No need to set createdAt and updatedAt as they have database defaults
       });
 
