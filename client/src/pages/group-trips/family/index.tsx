@@ -292,7 +292,6 @@ export default function FamilyTripsPage() {
         </div>
       </div>
 
-      <Footer />
     </div>
   );
 }

@@ -389,7 +389,6 @@ export default function LuxuryConcierge() {
         </div>
       </div>
 
-      <Footer />
     </div>
   );
 }

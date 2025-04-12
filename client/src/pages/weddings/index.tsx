@@ -313,7 +313,6 @@ export default function WeddingsPage() {
         </div>
       </div>
 
-      <Footer />
     </div>
   );
 }
