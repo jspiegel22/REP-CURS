@@ -41,6 +41,7 @@ export default function InfluencerPage() {
         phone: data.phone,
         interestType: 'influencer',
         source: 'website',
+        status: 'new',
         budget: data.followers.includes('k') || data.followers.includes('K') || 
                 parseInt(data.followers) > 10000 ? '$10000+' : '$5000-$10000',
         timeline: `${data.checkIn} to ${data.checkOut}`,
@@ -283,7 +284,6 @@ export default function InfluencerPage() {
         </div>
       </div>
 
-      <Footer />
     </div>
   );
 }

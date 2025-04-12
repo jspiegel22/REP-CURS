@@ -40,6 +40,7 @@ export default function WeddingsPage() {
         phone: data.phone,
         interestType: "wedding",
         source: "website",
+        status: "new",
         budget: data.budget || "$10000+",
         timeline: data.date,
         tags: "Wedding, Event Planning",

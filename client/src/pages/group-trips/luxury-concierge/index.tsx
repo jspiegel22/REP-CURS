@@ -63,6 +63,7 @@ export default function LuxuryConcierge() {
         phone: data.phone,
         interestType: "concierge",
         source: "website",
+        status: "new",
         budget: data.budget || "$10000+",
         timeline: `${data.checkIn} to ${data.checkOut}`,
         tags: "Luxury, Concierge, VIP",

@@ -5,6 +5,7 @@ import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Download, Loader2 } from "lucide-react";
 
 // Form schema for guide download form
@@ -13,6 +14,7 @@ const formSchema = z.object({
   email: z.string().email("Please enter a valid email"),
   phone: z.string().optional(),
   investmentLevel: z.string().optional(),
+  agentInterest: z.string().optional(),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -48,6 +50,7 @@ export function GuideDownloadForm({
       email: "",
       phone: "",
       investmentLevel: "",
+      agentInterest: "",
     }
   });
 
@@ -65,11 +68,13 @@ export function GuideDownloadForm({
         phone: data.phone || '',
         guideType: guideType,
         source: "website",
+        status: "pending",
         interestAreas: guideType,
         tags: tags,
         formName: `${guideType.toLowerCase().replace(/\s+/g, '-')}-guide`,
         formData: {
           investmentLevel: data.investmentLevel,
+          agentInterest: data.agentInterest,
           preferredContactMethod: 'Email',
           requestType: 'Guide Download'
         }
@@ -123,47 +128,107 @@ export function GuideDownloadForm({
     <div className={`${className}`}>
       {title && <h3 className="text-lg font-semibold mb-4">{title}</h3>}
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <Input 
-          {...form.register("name")} 
-          placeholder="Your Name" 
-          className={`${backgroundColor} ${textColor}`}
-          disabled={isSubmitting}
-        />
-        {form.formState.errors.name && (
-          <p className="text-red-500 text-sm mt-1">{form.formState.errors.name.message}</p>
-        )}
-        
-        <Input 
-          {...form.register("email")} 
-          type="email" 
-          placeholder="Email Address" 
-          className={`${backgroundColor} ${textColor}`}
-          disabled={isSubmitting}
-        />
-        {form.formState.errors.email && (
-          <p className="text-red-500 text-sm mt-1">{form.formState.errors.email.message}</p>
-        )}
-        
-        <Input 
-          {...form.register("phone")} 
-          type="tel" 
-          placeholder="Phone (Optional)" 
-          className={`${backgroundColor} ${textColor}`}
-          disabled={isSubmitting}
-        />
-        
-        {guideType === "Real Estate" && (
-          <Input 
-            {...form.register("investmentLevel")} 
-            placeholder="Investment Level (Optional)" 
-            className={`${backgroundColor} ${textColor}`}
-            disabled={isSubmitting}
-          />
+        {guideType === "Real Estate" ? (
+          // 2x2 layout for Real Estate
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Input 
+                {...form.register("name")} 
+                placeholder="Your Name" 
+                className={`${backgroundColor} ${textColor} w-full`}
+                disabled={isSubmitting}
+              />
+              {form.formState.errors.name && (
+                <p className="text-red-500 text-xs mt-1">{form.formState.errors.name.message}</p>
+              )}
+            </div>
+            
+            <div>
+              <Input 
+                {...form.register("email")} 
+                type="email" 
+                placeholder="Email Address" 
+                className={`${backgroundColor} ${textColor} w-full`}
+                disabled={isSubmitting}
+              />
+              {form.formState.errors.email && (
+                <p className="text-red-500 text-xs mt-1">{form.formState.errors.email.message}</p>
+              )}
+            </div>
+            
+            <div>
+              <Input 
+                {...form.register("phone")} 
+                type="tel" 
+                placeholder="Phone (Optional)" 
+                className={`${backgroundColor} ${textColor} w-full`}
+                disabled={isSubmitting}
+              />
+            </div>
+            
+            <div>
+              <Input 
+                {...form.register("investmentLevel")} 
+                placeholder="Budget Range (Optional)" 
+                className={`${backgroundColor} ${textColor} w-full`}
+                disabled={isSubmitting}
+              />
+            </div>
+            
+            <div className="col-span-2 mb-2">
+              <Select
+                onValueChange={(value) => form.setValue("agentInterest", value)}
+                value={form.watch("agentInterest")}
+                disabled={isSubmitting}
+              >
+                <SelectTrigger className={`${backgroundColor} ${textColor} w-full`}>
+                  <SelectValue placeholder="Interested in speaking with an agent?" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="yes">Yes, I'd like to speak with an agent</SelectItem>
+                  <SelectItem value="no">No, just send me the guide</SelectItem>
+                  <SelectItem value="maybe">Maybe later</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        ) : (
+          // Standard layout for other guide types
+          <>
+            <Input 
+              {...form.register("name")} 
+              placeholder="Your Name" 
+              className={`${backgroundColor} ${textColor}`}
+              disabled={isSubmitting}
+            />
+            {form.formState.errors.name && (
+              <p className="text-red-500 text-sm mt-1">{form.formState.errors.name.message}</p>
+            )}
+            
+            <Input 
+              {...form.register("email")} 
+              type="email" 
+              placeholder="Email Address" 
+              className={`${backgroundColor} ${textColor}`}
+              disabled={isSubmitting}
+            />
+            {form.formState.errors.email && (
+              <p className="text-red-500 text-sm mt-1">{form.formState.errors.email.message}</p>
+            )}
+            
+            <Input 
+              {...form.register("phone")} 
+              type="tel" 
+              placeholder="Phone (Optional)" 
+              className={`${backgroundColor} ${textColor}`}
+              disabled={isSubmitting}
+            />
+          </>
         )}
         
         <Button 
           type="submit" 
-          className="w-full gap-2 bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white"
+          className={`w-full gap-2 ${guideType === "Real Estate" ? "bg-white hover:bg-gray-100 text-[#2F4F4F] border border-[#2F4F4F]" : "bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white"}`}
           disabled={isSubmitting}
         >
           {isSubmitting ? (
