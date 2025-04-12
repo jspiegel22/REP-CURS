@@ -172,27 +172,51 @@ function generateSubmissionId(submission: Lead | Booking | GuideSubmission): str
 
 /**
  * Generate comma-separated tags for categorization
+ * IMPORTANT: Only use standardized tags that are pre-configured in Airtable
+ * Do NOT pass user-provided tags directly to Airtable as it will reject new options
  */
 function generateTags(submission: Lead | Booking | GuideSubmission): string {
+  // First tag is ALWAYS the submission type - this is what Make.com uses for routing
   const tags = [getSubmissionType(submission)];
   
+  // Second tag is the specific category based on submission type
   if (isBooking(submission)) {
-    // Add booking-specific tags
-    tags.push(submission.bookingType); // villa, resort, adventure, etc.
+    // Add booking-specific category
+    tags.push(capitalizeFirstLetter(submission.bookingType)); // Villa, Resort, Adventure, etc.
   } else if (isGuideSubmission(submission)) {
-    // Add guide-specific tags
-    tags.push(submission.guideType); // e.g., "Ultimate Cabo Guide 2025"
+    // Add standard guide category tag - do NOT use user-submitted guide type directly
+    tags.push("Travel Guide");
   } else if ('interestType' in submission) {
-    // Add lead-specific tags
-    tags.push((submission as Lead).interestType); // villa, resort, adventure, wedding, etc.
+    // Add lead-specific category - convert to display format
+    const interestType = (submission as Lead).interestType;
+    if (interestType === "villa") tags.push("Villa Rental");
+    else if (interestType === "resort") tags.push("Resort Stay");
+    else if (interestType === "adventure") tags.push("Adventure");
+    else if (interestType === "wedding") tags.push("Wedding");
+    else if (interestType === "group_trip") tags.push("Group Trip");
+    else if (interestType === "influencer") tags.push("Influencer");
+    else if (interestType === "concierge") tags.push("Concierge");
+    else tags.push(capitalizeFirstLetter(interestType));
   }
   
-  // Add any custom tags from the submission
-  if ((submission as any).tags && Array.isArray((submission as any).tags)) {
-    tags.push(...(submission as any).tags);
+  // Add "Website" tag for all submissions that come from the website
+  if ((submission as any).source === "website") {
+    tags.push("Website");
   }
+  
+  // Note: We intentionally don't add custom user tags here since Airtable
+  // will reject them unless they're already configured as select options
   
   return tags.join(', ');
+}
+
+// Helper function to capitalize first letter of each word
+function capitalizeFirstLetter(text: string): string {
+  if (!text) return '';
+  return text
+    .split('_')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
 }
 
 // Export type-specific sync functions for backward compatibility
