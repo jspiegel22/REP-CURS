@@ -1,8 +1,127 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { Star, Home, TrendingUp, MapPin, Download } from "lucide-react";
 import Footer from "@/components/footer";
 import SEO from "@/components/SEO";
+import { useToast } from "@/hooks/use-toast";
+
+// Form schema for real estate guide form
+const formSchema = z.object({
+  name: z.string().min(2, "Please enter your name"),
+  email: z.string().email("Please enter a valid email"),
+  phone: z.string().optional(),
+  investmentLevel: z.string().optional(),
+});
+
+type FormData = z.infer<typeof formSchema>;
+
+// Real Estate Guide Form Component
+function RealEstateGuideForm() {
+  const { toast } = useToast();
+  const form = useForm<FormData>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      phone: "",
+      investmentLevel: "",
+    }
+  });
+
+  const onSubmit = async (data: FormData) => {
+    try {
+      console.log("Real estate form submission started with data:", data);
+      
+      // Prepare the payload for Make.com webhook
+      const payload = {
+        firstName: data.name.split(' ')[0],
+        lastName: data.name.includes(' ') ? data.name.split(' ').slice(1).join(' ') : '',
+        email: data.email,
+        phone: data.phone || '',
+        interestType: "real_estate",
+        source: "website",
+        budget: data.investmentLevel || '$1M+',
+        tags: "Real Estate, Investment",
+        formName: "real-estate-guide",
+        formData: {
+          investmentLevel: data.investmentLevel,
+          preferredContactMethod: 'Email',
+          requestType: 'Guide Download'
+        }
+      };
+      
+      // Send the data to our API which will forward to Make.com webhook
+      const response = await fetch('/api/leads', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to submit form. Please try again.');
+      }
+      
+      console.log("Real estate guide request sent to Make.com webhook");
+      
+      toast({
+        title: "Thanks for your interest!",
+        description: "Your real estate guide has been sent to your email.",
+      });
+      
+      form.reset();
+      
+      // Simulate download start
+      setTimeout(() => {
+        window.open('/cabo-travel.pdf', '_blank');
+      }, 1000);
+      
+    } catch (error: any) {
+      console.error("Form submission error:", error);
+      toast({
+        title: "Something went wrong",
+        description: error.message || "Failed to submit form. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  return (
+    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <Input 
+        {...form.register("name")} 
+        placeholder="Your Name" 
+        className="bg-white text-[#2F4F4F]"
+      />
+      <Input 
+        {...form.register("email")} 
+        type="email" 
+        placeholder="Email Address" 
+        className="bg-white text-[#2F4F4F]"
+      />
+      <Input 
+        {...form.register("phone")} 
+        type="tel" 
+        placeholder="Phone (Optional)" 
+        className="bg-white text-[#2F4F4F]"
+      />
+      <Input 
+        {...form.register("investmentLevel")} 
+        placeholder="Investment Level (Optional)" 
+        className="bg-white text-[#2F4F4F]"
+      />
+      <Button type="submit" className="w-full gap-2 bg-white text-[#2F4F4F] hover:bg-gray-100">
+        <Download className="h-4 w-4" />
+        Download Guide
+      </Button>
+    </form>
+  );
+}
 
 // Sample listings data
 const sampleListings = [
@@ -184,10 +303,7 @@ export default function RealEstatePage() {
                   Get our comprehensive guide to buying property in Cabo San Lucas. Learn about the local market,
                   legal requirements, financing options, and insider tips for finding the perfect property.
                 </p>
-                <Button className="bg-white text-[#2F4F4F] hover:bg-gray-100 gap-2">
-                  <Download className="h-4 w-4" />
-                  Download Guide
-                </Button>
+                <RealEstateGuideForm />
               </div>
               <div className="md:w-1/3">
                 <img

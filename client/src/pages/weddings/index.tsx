@@ -30,15 +30,53 @@ export default function WeddingsPage() {
 
   const onSubmit = async (data: FormData) => {
     try {
+      console.log("Form submission started with data:", data);
+      
+      // Prepare the payload for Make.com webhook
+      const payload = {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        phone: data.phone,
+        interestType: "wedding",
+        source: "website",
+        budget: data.budget || "$10000+",
+        timeline: data.date,
+        tags: "Wedding, Event Planning",
+        formName: "wedding-planning",
+        formData: {
+          date: data.date,
+          guestCount: data.guestCount,
+          notes: data.notes,
+          preferredContactMethod: 'Email',
+        }
+      };
+      
+      // Send the data to our API which will forward to Make.com webhook
+      const response = await fetch('/api/leads', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to submit form. Please try again.');
+      }
+      
+      console.log("Submission sent to server, which will forward to Make.com webhook");
+      
       toast({
         title: "Thanks for your interest!",
         description: "We'll be in touch shortly to plan your perfect wedding.",
       });
       form.reset();
     } catch (error: any) {
+      console.error("Form submission error:", error);
       toast({
         title: "Something went wrong",
-        description: error.message,
+        description: error.message || "Failed to submit form. Please try again.",
         variant: "destructive",
       });
     }

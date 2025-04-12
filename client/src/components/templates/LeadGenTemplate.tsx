@@ -100,8 +100,8 @@ export function LeadGenTemplate({
                      title.toLowerCase().includes('estate') ? 'real_estate' :
                      'group_trip', // Default category
         source: 'website',
-        budget: parseInt(data.numberOfPeople) < 4 ? '$2000-$5000' : 
-                parseInt(data.numberOfPeople) < 8 ? '$5000-$10000' : '$10000+',
+        budget: Number(data.numberOfPeople) <= 3 ? '$2000-$5000' : 
+                Number(data.numberOfPeople) <= 7 ? '$5000-$10000' : '$10000+',
         timeline: data.preferredDates,
         tags: title, // Use the page title as tag
         formName: title.toLowerCase().replace(/[^a-z0-9]/g, '-'),
