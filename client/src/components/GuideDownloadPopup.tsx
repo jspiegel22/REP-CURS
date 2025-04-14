@@ -21,7 +21,7 @@ const formSchema = z.object({
   firstName: z.string().min(2, "Please enter your first name"),
   lastName: z.string().min(2, "Please enter your last name"),
   email: z.string().email("Please enter a valid email"),
-  phone: z.string().optional(),
+  phone: z.string().min(10, "Please enter a valid phone number"),
   investmentLevel: z.string().optional(),
   agentInterest: z.boolean().optional().default(false),
 });
@@ -141,7 +141,7 @@ export default function GuideDownloadPopup({
             <div>
               <Input 
                 {...form.register("firstName")} 
-                placeholder="First Name" 
+                placeholder="First Name*" 
                 className="w-full"
                 disabled={isSubmitting}
               />
@@ -153,7 +153,7 @@ export default function GuideDownloadPopup({
             <div>
               <Input 
                 {...form.register("lastName")} 
-                placeholder="Last Name" 
+                placeholder="Last Name*" 
                 className="w-full"
                 disabled={isSubmitting}
               />
@@ -163,27 +163,32 @@ export default function GuideDownloadPopup({
             </div>
           </div>
           
-          <div>
-            <Input 
-              {...form.register("email")} 
-              type="email" 
-              placeholder="Email Address" 
-              className="w-full"
-              disabled={isSubmitting}
-            />
-            {form.formState.errors.email && (
-              <p className="text-red-500 text-xs mt-1">{form.formState.errors.email.message}</p>
-            )}
-          </div>
-          
-          <div>
-            <Input 
-              {...form.register("phone")} 
-              type="tel" 
-              placeholder="Phone (Optional)" 
-              className="w-full"
-              disabled={isSubmitting}
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Input 
+                {...form.register("email")} 
+                type="email" 
+                placeholder="Email Address*" 
+                className="w-full"
+                disabled={isSubmitting}
+              />
+              {form.formState.errors.email && (
+                <p className="text-red-500 text-xs mt-1">{form.formState.errors.email.message}</p>
+              )}
+            </div>
+            
+            <div>
+              <Input 
+                {...form.register("phone", { required: "Phone is required" })} 
+                type="tel" 
+                placeholder="Phone*" 
+                className="w-full"
+                disabled={isSubmitting}
+              />
+              {form.formState.errors.phone && (
+                <p className="text-red-500 text-xs mt-1">{form.formState.errors.phone.message}</p>
+              )}
+            </div>
           </div>
           
           <Button 

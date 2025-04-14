@@ -11,7 +11,7 @@ curl -X POST http://localhost:3000/api/leads \
     "lastName": "Smith",
     "email": "john.smith@example.com",
     "phone": "5551234567",
-    "interestType": "family_trip",
+    "interestType": "group_trip",
     "source": "website",
     "status": "new",
     "budget": "$5000-$10000",
@@ -34,7 +34,7 @@ echo "- First Name: John"
 echo "- Last Name: Smith"
 echo "- Email: john.smith@example.com"
 echo "- Phone: 5551234567"
-echo "- Interest Type: family_trip"
+echo "- Interest Type: group_trip"
 echo "- Source: website"
 echo "- Budget: $5000-$10000"
 echo "- Timeline: 2024-07-15 to 2024-07-22"

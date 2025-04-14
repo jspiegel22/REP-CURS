@@ -291,10 +291,11 @@ export default function LuxuryConcierge() {
                   <div className="col-span-2 md:col-span-1">
                     <Input 
                       {...form.register("lastName")} 
-                      placeholder="Last Name" 
+                      placeholder="Last Name*" 
                       className="w-full"
                       disabled={isSubmitting}
                     />
+                    <FormError message={form.formState.errors.lastName?.message || ""} />
                   </div>
 
                   <div className="col-span-2 md:col-span-1">
@@ -312,30 +313,33 @@ export default function LuxuryConcierge() {
                     <Input 
                       {...form.register("phone")} 
                       type="tel" 
-                      placeholder="Phone" 
+                      placeholder="Phone*" 
                       className="w-full"
                       disabled={isSubmitting}
                     />
+                    <FormError message={form.formState.errors.phone?.message || ""} />
                   </div>
 
                   <div className="col-span-2 md:col-span-1">
                     <Input 
                       {...form.register("checkIn")} 
                       type="date" 
-                      placeholder="Check-in" 
+                      placeholder="Check-in*" 
                       className="w-full"
                       disabled={isSubmitting}
                     />
+                    <FormError message={form.formState.errors.checkIn?.message || ""} />
                   </div>
 
                   <div className="col-span-2 md:col-span-1">
                     <Input 
                       {...form.register("checkOut")} 
                       type="date" 
-                      placeholder="Check-out" 
+                      placeholder="Check-out*" 
                       className="w-full"
                       disabled={isSubmitting}
                     />
+                    <FormError message={form.formState.errors.checkOut?.message || ""} />
                   </div>
 
                   <div className="col-span-2 md:col-span-1">

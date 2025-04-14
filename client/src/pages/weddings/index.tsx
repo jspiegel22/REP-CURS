@@ -16,7 +16,7 @@ const formSchema = z.object({
   phone: z.string().min(10, "Please enter a valid phone number"),
   date: z.string().min(1, "Please select a preferred date"),
   guestCount: z.string().min(1, "Please enter expected guest count"),
-  budget: z.string().min(1, "Please enter your budget").optional(),
+  budget: z.string().min(1, "Please enter your budget"),
   notes: z.string().optional(),
 });
 
@@ -41,7 +41,7 @@ export default function WeddingsPage() {
         interestType: "lead",
         source: "website",
         status: "new",
-        budget: data.budget || "$10000+",
+        budget: data.budget,
         timeline: data.date,
         tags: "Wedding, Event Planning",
         formName: "wedding-planning-form",
@@ -287,13 +287,48 @@ export default function WeddingsPage() {
             <div className="bg-white rounded-xl shadow-lg p-4 md:p-8">
               <form onSubmit={form.handleSubmit(onSubmit)}>
                 <div className="grid grid-cols-2 gap-3 md:gap-6">
-                  <Input {...form.register("firstName")} placeholder="First Name" className="text-sm md:text-base" />
-                  <Input {...form.register("lastName")} placeholder="Last Name" className="text-sm md:text-base" />
-                  <Input {...form.register("email")} type="email" placeholder="Email" className="text-sm md:text-base" />
-                  <Input {...form.register("phone")} type="tel" placeholder="Phone" className="text-sm md:text-base" />
-                  <Input {...form.register("date")} type="date" placeholder="Preferred Date" className="text-sm md:text-base" />
-                  <Input {...form.register("guestCount")} type="number" placeholder="Guest Count" className="text-sm md:text-base" />
-                  <Input {...form.register("budget")} type="text" placeholder="Budget Range" className="text-sm md:text-base col-span-2" />
+                  <div>
+                    <Input {...form.register("firstName")} placeholder="First Name*" className="text-sm md:text-base" />
+                    {form.formState.errors.firstName && (
+                      <p className="text-red-500 text-xs mt-1">{form.formState.errors.firstName.message}</p>
+                    )}
+                  </div>
+                  <div>
+                    <Input {...form.register("lastName")} placeholder="Last Name*" className="text-sm md:text-base" />
+                    {form.formState.errors.lastName && (
+                      <p className="text-red-500 text-xs mt-1">{form.formState.errors.lastName.message}</p>
+                    )}
+                  </div>
+                  <div>
+                    <Input {...form.register("email")} type="email" placeholder="Email*" className="text-sm md:text-base" />
+                    {form.formState.errors.email && (
+                      <p className="text-red-500 text-xs mt-1">{form.formState.errors.email.message}</p>
+                    )}
+                  </div>
+                  <div>
+                    <Input {...form.register("phone")} type="tel" placeholder="Phone*" className="text-sm md:text-base" />
+                    {form.formState.errors.phone && (
+                      <p className="text-red-500 text-xs mt-1">{form.formState.errors.phone.message}</p>
+                    )}
+                  </div>
+                  <div>
+                    <Input {...form.register("date")} type="date" placeholder="Preferred Date*" className="text-sm md:text-base" />
+                    {form.formState.errors.date && (
+                      <p className="text-red-500 text-xs mt-1">{form.formState.errors.date.message}</p>
+                    )}
+                  </div>
+                  <div>
+                    <Input {...form.register("guestCount")} type="number" placeholder="Guest Count*" className="text-sm md:text-base" />
+                    {form.formState.errors.guestCount && (
+                      <p className="text-red-500 text-xs mt-1">{form.formState.errors.guestCount.message}</p>
+                    )}
+                  </div>
+                  <div className="col-span-2">
+                    <Input {...form.register("budget")} type="text" placeholder="Budget Range*" className="text-sm md:text-base w-full" />
+                    {form.formState.errors.budget && (
+                      <p className="text-red-500 text-xs mt-1">{form.formState.errors.budget.message}</p>
+                    )}
+                  </div>
                   <div className="col-span-2">
                     <Textarea 
                       {...form.register("notes")} 

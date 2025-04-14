@@ -24,9 +24,9 @@ import { useToast } from "@/hooks/use-toast";
 // Form schema with bachelorette party specific fields
 const formSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().optional(),
+  lastName: z.string().min(1, "Last name is required"),
   email: z.string().email("Invalid email address").min(1, "Email is required"),
-  phone: z.string().optional(),
+  phone: z.string().min(10, "Phone number is required"),
   timeline: z.string().min(1, "Timeline is required"),
   budget: z.string().min(1, "Budget is required"),
   groupSize: z.string().min(1, "Group size is required"),
@@ -69,9 +69,9 @@ export function BacheloretteForm({ isOpen, onClose }: BacheloretteFormProps) {
       // Format lead data for the API
       const leadData = {
         firstName: data.firstName,
-        lastName: data.lastName || '',
+        lastName: data.lastName,
         email: data.email,
-        phone: data.phone || '',
+        phone: data.phone,
         interestType: "lead" as const,
         budget: data.budget,
         timeline: data.timeline,
@@ -80,7 +80,7 @@ export function BacheloretteForm({ isOpen, onClose }: BacheloretteFormProps) {
         formName: "bachelorette-party-form",
         formData: {
           groupSize: data.groupSize,
-          specialRequests: data.specialRequests,
+          specialRequests: data.specialRequests || '',
           eventType: "Bachelorette Party",
           preferredContactMethod: 'Email',
           specificType: 'bachelorette'
@@ -175,7 +175,7 @@ export function BacheloretteForm({ isOpen, onClose }: BacheloretteFormProps) {
                   )}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="lastName" className="text-[#2F4F4F]">Last Name</Label>
+                  <Label htmlFor="lastName" className="text-[#2F4F4F]">Last Name*</Label>
                   <Input
                     id="lastName"
                     {...register("lastName")}
@@ -183,6 +183,9 @@ export function BacheloretteForm({ isOpen, onClose }: BacheloretteFormProps) {
                     placeholder="Your last name"
                     className="border-gray-300 focus:border-[#2F4F4F] focus:ring-[#2F4F4F]"
                   />
+                  {errors.lastName && (
+                    <FormError message={errors.lastName.message || "Last name is required"} />
+                  )}
                 </div>
               </div>
 
@@ -202,7 +205,7 @@ export function BacheloretteForm({ isOpen, onClose }: BacheloretteFormProps) {
                   )}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="phone" className="text-[#2F4F4F]">Phone Number</Label>
+                  <Label htmlFor="phone" className="text-[#2F4F4F]">Phone Number*</Label>
                   <Input
                     id="phone"
                     type="tel"
@@ -211,6 +214,9 @@ export function BacheloretteForm({ isOpen, onClose }: BacheloretteFormProps) {
                     placeholder="(123) 456-7890"
                     className="border-gray-300 focus:border-[#2F4F4F] focus:ring-[#2F4F4F]"
                   />
+                  {errors.phone && (
+                    <FormError message={errors.phone.message || "Phone number is required"} />
+                  )}
                 </div>
               </div>
 

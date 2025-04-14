@@ -303,10 +303,10 @@ export default function FamilyTripsPage() {
               <form onSubmit={form.handleSubmit(onSubmit)}>
                 {/* Grid layout - 2 columns on both mobile and desktop */}
                 <div className="grid grid-cols-2 gap-3 md:gap-6">
-                  <Input {...form.register("firstName")} placeholder="First Name" className="text-sm md:text-base" />
-                  <Input {...form.register("lastName")} placeholder="Last Name" className="text-sm md:text-base" />
-                  <Input {...form.register("email")} type="email" placeholder="Email" className="text-sm md:text-base" />
-                  <Input {...form.register("phone")} type="tel" placeholder="Phone" className="text-sm md:text-base" />
+                  <Input {...form.register("firstName")} placeholder="First Name*" className="text-sm md:text-base" />
+                  <Input {...form.register("lastName")} placeholder="Last Name*" className="text-sm md:text-base" />
+                  <Input {...form.register("email")} type="email" placeholder="Email*" className="text-sm md:text-base" />
+                  <Input {...form.register("phone")} type="tel" placeholder="Phone*" className="text-sm md:text-base" />
                   <Input {...form.register("checkIn")} type="date" placeholder="Check-in" className="text-sm md:text-base" />
                   <Input {...form.register("checkOut")} type="date" placeholder="Check-out" className="text-sm md:text-base" />
                   <Input {...form.register("budget")} type="text" placeholder="Budget Range" className="text-sm md:text-base" />

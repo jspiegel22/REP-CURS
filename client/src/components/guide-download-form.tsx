@@ -14,7 +14,7 @@ const formSchema = z.object({
   firstName: z.string().min(2, "Please enter your first name"),
   lastName: z.string().min(2, "Please enter your last name"),
   email: z.string().email("Please enter a valid email"),
-  phone: z.string().optional(),
+  phone: z.string().min(10, "Please enter a valid phone number"),
   investmentLevel: z.string().optional(),
   agentInterest: z.boolean().optional().default(false),
 });
@@ -68,7 +68,7 @@ export function GuideDownloadForm({
         firstName: data.firstName,
         lastName: data.lastName,
         email: data.email,
-        phone: data.phone || '',
+        phone: data.phone,
         guideType: guideType,
         source: "website",
         status: "pending",
@@ -76,7 +76,7 @@ export function GuideDownloadForm({
         tags: tags,
         formName: `${guideType.toLowerCase().replace(/\s+/g, '-')}-guide`,
         formData: {
-          investmentLevel: data.investmentLevel,
+          investmentLevel: data.investmentLevel || '',
           agentInterest: data.agentInterest,
           preferredContactMethod: 'Email',
           requestType: 'Guide Download'
@@ -175,10 +175,13 @@ export function GuideDownloadForm({
               <Input 
                 {...form.register("phone")} 
                 type="tel" 
-                placeholder="Phone (Optional)" 
+                placeholder="Phone Number" 
                 className={`${backgroundColor} ${textColor} w-full`}
                 disabled={isSubmitting}
               />
+              {form.formState.errors.phone && (
+                <p className="text-red-500 text-xs mt-1">{form.formState.errors.phone.message}</p>
+              )}
             </div>
             
             <div>
@@ -250,10 +253,13 @@ export function GuideDownloadForm({
             <Input 
               {...form.register("phone")} 
               type="tel" 
-              placeholder="Phone (Optional)" 
+              placeholder="Phone Number" 
               className={`${backgroundColor} ${textColor} mb-4`}
               disabled={isSubmitting}
             />
+            {form.formState.errors.phone && (
+              <p className="text-red-500 text-sm mt-1 mb-2">{form.formState.errors.phone.message}</p>
+            )}
             
             <Input 
               {...form.register("investmentLevel")} 
