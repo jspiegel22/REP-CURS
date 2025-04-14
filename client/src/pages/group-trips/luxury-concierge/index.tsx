@@ -61,19 +61,20 @@ export default function LuxuryConcierge() {
         lastName: data.lastName,
         email: data.email,
         phone: data.phone,
-        interestType: "concierge",
+        interestType: "lead",
         source: "website",
         status: "new",
         budget: data.budget || "$10000+",
         timeline: `${data.checkIn} to ${data.checkOut}`,
         tags: "Luxury, Concierge, VIP",
-        formName: "luxury-concierge",
+        formName: "luxury-concierge-form",
         formData: {
           checkIn: data.checkIn,
           checkOut: data.checkOut,
           groupSize: data.groupSize,
           notes: data.notes,
           preferredContactMethod: 'Email',
+          specificType: 'luxury_concierge'
         }
       };
       

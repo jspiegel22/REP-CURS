@@ -38,18 +38,19 @@ export default function WeddingsPage() {
         lastName: data.lastName,
         email: data.email,
         phone: data.phone,
-        interestType: "wedding",
+        interestType: "lead",
         source: "website",
         status: "new",
         budget: data.budget || "$10000+",
         timeline: data.date,
         tags: "Wedding, Event Planning",
-        formName: "wedding-planning",
+        formName: "wedding-planning-form",
         formData: {
           date: data.date,
           guestCount: data.guestCount,
           notes: data.notes,
           preferredContactMethod: 'Email',
+          specificType: 'wedding'
         }
       };
       

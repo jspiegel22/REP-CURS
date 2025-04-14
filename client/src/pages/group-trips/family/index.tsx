@@ -83,19 +83,20 @@ export default function FamilyTripsPage() {
         lastName: data.lastName,
         email: data.email,
         phone: data.phone,
-        interestType: 'family_trip',
+        interestType: 'lead',
         source: 'website',
         status: 'new',
         budget: data.budget || '$5000-$10000',
         timeline: `${data.checkIn} to ${data.checkOut}`,
         tags: "Family Trip, Group Travel",
-        formName: 'family-trip',
+        formName: 'family-trip-form',
         formData: {
           numberOfChildren: data.children,
           notes: data.notes,
           checkIn: data.checkIn,
           checkOut: data.checkOut,
-          preferredContactMethod: 'Email'
+          preferredContactMethod: 'Email',
+          specificType: 'family_trip'
         }
       };
       

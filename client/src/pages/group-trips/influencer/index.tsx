@@ -42,14 +42,14 @@ export default function InfluencerPage() {
         lastName: data.lastName,
         email: data.email,
         phone: data.phone,
-        interestType: 'influencer',
+        interestType: 'lead',
         source: 'website',
         status: 'new',
         budget: data.followers.includes('k') || data.followers.includes('K') || 
                 parseInt(data.followers) > 10000 ? '$10000+' : '$5000-$10000',
         timeline: `${data.checkIn} to ${data.checkOut}`,
         tags: 'Influencer, Content Creation',
-        formName: 'influencer-partnership',
+        formName: 'influencer-partnership-form',
         formData: {
           socialHandle: data.socialHandle,
           platform: data.platform,
@@ -58,6 +58,7 @@ export default function InfluencerPage() {
           checkOut: data.checkOut,
           notes: data.notes,
           preferredContactMethod: 'Email',
+          specificType: 'influencer'
         }
       };
       
