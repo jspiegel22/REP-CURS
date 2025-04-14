@@ -10,7 +10,7 @@ import CategoryGrid from "@/components/category-grid";
 import SEO from "@/components/SEO";
 import { sampleBlogs } from "@/data/sample-blogs";
 import { format } from "date-fns";
-import { GuideDownloadForm } from "@/components/guide-download-form";
+import GuideDownloadPopup from "@/components/GuideDownloadPopup";
 import GuideRequestPopup from '@/components/GuideRequestPopup';
 import { WhatsAppButton } from "@/components/whatsapp-button";
 
@@ -187,9 +187,13 @@ export default function HomePage() {
               </div>
               
               {/* Guide Download Form Modal */}
-              <GuideDownloadForm
+              <GuideDownloadPopup
                 isOpen={isGuideFormOpen}
                 onClose={() => setIsGuideFormOpen(false)}
+                guideType="Ultimate Cabo Guide 2025"
+                title="Download Your Free Cabo Guide"
+                description="Enter your details below to get instant access to our premium Cabo travel guide."
+                tags="Guide Request, Cabo Guide, Website"
               />
             </div>
           </div>
@@ -321,12 +325,6 @@ export default function HomePage() {
             </div>
           </div>
         </div>
-
-        {/* Guide Download Form */}
-        <GuideDownloadForm
-          isOpen={isGuideFormOpen}
-          onClose={() => setIsGuideFormOpen(false)}
-        />
 
         {/* Instagram Feed */}
         <div className="bg-white py-16">
