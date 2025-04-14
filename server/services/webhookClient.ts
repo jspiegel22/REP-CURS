@@ -35,7 +35,12 @@ export async function sendLeadWebhook(leadData: any): Promise<WebhookResponse> {
       ),
       // Extract preferredContactMethod from either direct property or from formData
       preferred_contact_method: leadData.preferredContactMethod || 
-                              (leadData.formData?.preferredContactMethod) || 'Email'
+                              (leadData.formData?.preferredContactMethod) || 'Email',
+      // Standardize field names for first name and last name
+      firstName: leadData.firstName || leadData.first_name || '',
+      lastName: leadData.lastName || leadData.last_name || '',
+      first_name: leadData.firstName || leadData.first_name || '',
+      last_name: leadData.lastName || leadData.last_name || ''
     };
     
     // Map form fields to proper Airtable columns
@@ -164,7 +169,12 @@ export async function sendBookingWebhook(bookingData: any): Promise<WebhookRespo
       ),
       // Extract preferredContactMethod from either direct property or from formData
       preferred_contact_method: bookingData.preferredContactMethod || 
-                              (bookingData.formData?.preferredContactMethod) || 'Email'
+                              (bookingData.formData?.preferredContactMethod) || 'Email',
+      // Standardize field names for first name and last name
+      firstName: bookingData.firstName || bookingData.first_name || '',
+      lastName: bookingData.lastName || bookingData.last_name || '',
+      first_name: bookingData.firstName || bookingData.first_name || '',
+      last_name: bookingData.lastName || bookingData.last_name || ''
     };
     
     // Map booking fields to proper Airtable columns
@@ -271,8 +281,11 @@ export async function sendGuideRequestWebhook(guideData: any): Promise<WebhookRe
     
     // Format data for webhook API
     const data: any = {
-      first_name: guideData.firstName,
-      last_name: guideData.lastName || '',
+      // Standardize field names for both camelCase and snake_case formats
+      firstName: guideData.firstName || guideData.first_name || '',
+      lastName: guideData.lastName || guideData.last_name || '',
+      first_name: guideData.firstName || guideData.first_name || '',
+      last_name: guideData.lastName || guideData.last_name || '',
       email: guideData.email,
       phone: guideData.phone || undefined,
       guide_type: guideData.guideType,
