@@ -23,9 +23,18 @@ export async function sendLeadWebhook(leadData: any): Promise<WebhookResponse> {
   try {
     console.log(`Attempting to send lead webhook for ${leadData.email}`);
     
+    // Extract first and last name for consistency
+    const firstName = leadData.firstName || leadData.first_name || '';
+    const lastName = leadData.lastName || leadData.last_name || '';
+    
     // Add tracking ID if not present
     const data = {
       ...leadData,
+      // Ensure first_name and last_name are at the top level and overwrite any existing values
+      first_name: firstName,
+      last_name: lastName,
+      firstName: firstName,
+      lastName: lastName,
       tracking_id: leadData.tracking_id || nanoid(),
       webhook_type: 'lead', // Add webhook type to help in Make.com routing
       submission_type: 'Lead', // Airtable column mapping
@@ -35,12 +44,7 @@ export async function sendLeadWebhook(leadData: any): Promise<WebhookResponse> {
       ),
       // Extract preferredContactMethod from either direct property or from formData
       preferred_contact_method: leadData.preferredContactMethod || 
-                              (leadData.formData?.preferredContactMethod) || 'Email',
-      // Standardize field names for first name and last name
-      firstName: leadData.firstName || leadData.first_name || '',
-      lastName: leadData.lastName || leadData.last_name || '',
-      first_name: leadData.firstName || leadData.first_name || '',
-      last_name: leadData.lastName || leadData.last_name || ''
+                              (leadData.formData?.preferredContactMethod) || 'Email'
     };
     
     // Map form fields to proper Airtable columns
@@ -157,9 +161,18 @@ export async function sendBookingWebhook(bookingData: any): Promise<WebhookRespo
   try {
     console.log(`Attempting to send booking webhook for ${bookingData.email}`);
     
+    // Extract first and last name for consistency
+    const firstName = bookingData.firstName || bookingData.first_name || '';
+    const lastName = bookingData.lastName || bookingData.last_name || '';
+    
     // Add tracking ID if not present
     const data = {
       ...bookingData,
+      // Ensure first_name and last_name are at the top level and overwrite any existing values
+      first_name: firstName,
+      last_name: lastName,
+      firstName: firstName,
+      lastName: lastName,
       tracking_id: bookingData.tracking_id || nanoid(),
       webhook_type: 'booking', // Add webhook type to help in Make.com routing
       submission_type: 'Booking', // Airtable column mapping
@@ -169,12 +182,7 @@ export async function sendBookingWebhook(bookingData: any): Promise<WebhookRespo
       ),
       // Extract preferredContactMethod from either direct property or from formData
       preferred_contact_method: bookingData.preferredContactMethod || 
-                              (bookingData.formData?.preferredContactMethod) || 'Email',
-      // Standardize field names for first name and last name
-      firstName: bookingData.firstName || bookingData.first_name || '',
-      lastName: bookingData.lastName || bookingData.last_name || '',
-      first_name: bookingData.firstName || bookingData.first_name || '',
-      last_name: bookingData.lastName || bookingData.last_name || ''
+                              (bookingData.formData?.preferredContactMethod) || 'Email'
     };
     
     // Map booking fields to proper Airtable columns
@@ -279,13 +287,17 @@ export async function sendGuideRequestWebhook(guideData: any): Promise<WebhookRe
   try {
     console.log(`Attempting to send guide request webhook for ${guideData.email}`, guideData);
     
+    // Extract first and last name for consistency
+    const firstName = guideData.firstName || guideData.first_name || '';
+    const lastName = guideData.lastName || guideData.last_name || '';
+    
     // Format data for webhook API
     const data: any = {
-      // Standardize field names for both camelCase and snake_case formats
-      firstName: guideData.firstName || guideData.first_name || '',
-      lastName: guideData.lastName || guideData.last_name || '',
-      first_name: guideData.firstName || guideData.first_name || '',
-      last_name: guideData.lastName || guideData.last_name || '',
+      // Ensure first_name and last_name are at the top level
+      first_name: firstName,
+      last_name: lastName,
+      firstName: firstName,
+      lastName: lastName,
       email: guideData.email,
       phone: guideData.phone || undefined,
       guide_type: guideData.guideType,
