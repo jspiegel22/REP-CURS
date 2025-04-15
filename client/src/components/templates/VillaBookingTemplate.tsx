@@ -129,7 +129,7 @@ export default function VillaBookingTemplate({
               name="startDate"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel>Check-in</FormLabel>
+                  <FormLabel>Check-in*</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -171,7 +171,7 @@ export default function VillaBookingTemplate({
               name="endDate"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel>Check-out</FormLabel>
+                  <FormLabel>Check-out*</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -215,7 +215,7 @@ export default function VillaBookingTemplate({
               name="guests"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Guests</FormLabel>
+                  <FormLabel>Guests*</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -235,7 +235,7 @@ export default function VillaBookingTemplate({
               name="contactPhone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Phone</FormLabel>
+                  <FormLabel>Phone*</FormLabel>
                   <FormControl>
                     <Input
                       type="tel"
@@ -255,7 +255,7 @@ export default function VillaBookingTemplate({
             name="contactEmail"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>Email*</FormLabel>
                 <FormControl>
                   <Input type="email" placeholder="your@email.com" {...field} />
                 </FormControl>

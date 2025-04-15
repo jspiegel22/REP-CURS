@@ -42,7 +42,7 @@ export default function InfluencerPage() {
         lastName: data.lastName,
         email: data.email,
         phone: data.phone,
-        interestType: 'lead',
+        interestType: 'influencer',
         source: 'website',
         status: 'new',
         budget: data.followers.includes('k') || data.followers.includes('K') || 
@@ -258,14 +258,14 @@ export default function InfluencerPage() {
               <form onSubmit={form.handleSubmit(onSubmit)}>
                 {/* Grid layout - 2 columns on both mobile and desktop */}
                 <div className="grid grid-cols-2 gap-3 md:gap-6">
-                  <Input {...form.register("firstName")} placeholder="First Name" className="text-sm md:text-base" />
-                  <Input {...form.register("lastName")} placeholder="Last Name" className="text-sm md:text-base" />
-                  <Input {...form.register("email")} type="email" placeholder="Email" className="text-sm md:text-base" />
-                  <Input {...form.register("phone")} type="tel" placeholder="Phone" className="text-sm md:text-base" />
-                  <Input {...form.register("socialHandle")} placeholder="Social Handle" className="text-sm md:text-base" />
-                  <Input {...form.register("platform")} placeholder="Main Platform" className="text-sm md:text-base" />
-                  <Input {...form.register("followers")} placeholder="Follower Count" className="text-sm md:text-base" />
-                  <Input {...form.register("checkIn")} type="date" placeholder="Preferred Visit Date" className="text-sm md:text-base" />
+                  <Input {...form.register("firstName")} placeholder="First Name*" className="text-sm md:text-base" />
+                  <Input {...form.register("lastName")} placeholder="Last Name*" className="text-sm md:text-base" />
+                  <Input {...form.register("email")} type="email" placeholder="Email*" className="text-sm md:text-base" />
+                  <Input {...form.register("phone")} type="tel" placeholder="Phone*" className="text-sm md:text-base" />
+                  <Input {...form.register("socialHandle")} placeholder="Social Handle*" className="text-sm md:text-base" />
+                  <Input {...form.register("platform")} placeholder="Main Platform*" className="text-sm md:text-base" />
+                  <Input {...form.register("followers")} placeholder="Follower Count*" className="text-sm md:text-base" />
+                  <Input {...form.register("checkIn")} type="date" placeholder="Preferred Visit Date*" className="text-sm md:text-base" />
                   {/* Notes field spans full width */}
                   <div className="col-span-2">
                     <Textarea 

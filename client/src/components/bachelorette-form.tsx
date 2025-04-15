@@ -72,7 +72,7 @@ export function BacheloretteForm({ isOpen, onClose }: BacheloretteFormProps) {
         lastName: data.lastName,
         email: data.email,
         phone: data.phone,
-        interestType: "lead" as const,
+        interestType: "group_trip" as const,
         budget: data.budget,
         timeline: data.timeline,
         source: "website",

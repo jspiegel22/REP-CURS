@@ -137,7 +137,7 @@ export function GuideDownloadForm({
             <div>
               <Input 
                 {...form.register("firstName")} 
-                placeholder="First Name" 
+                placeholder="First Name*" 
                 className={`${backgroundColor} ${textColor} w-full`}
                 disabled={isSubmitting}
               />
@@ -149,7 +149,7 @@ export function GuideDownloadForm({
             <div>
               <Input 
                 {...form.register("lastName")} 
-                placeholder="Last Name" 
+                placeholder="Last Name*" 
                 className={`${backgroundColor} ${textColor} w-full`}
                 disabled={isSubmitting}
               />
@@ -162,7 +162,7 @@ export function GuideDownloadForm({
               <Input 
                 {...form.register("email")} 
                 type="email" 
-                placeholder="Email Address" 
+                placeholder="Email Address*" 
                 className={`${backgroundColor} ${textColor} w-full`}
                 disabled={isSubmitting}
               />
@@ -175,7 +175,7 @@ export function GuideDownloadForm({
               <Input 
                 {...form.register("phone")} 
                 type="tel" 
-                placeholder="Phone Number" 
+                placeholder="Phone Number*" 
                 className={`${backgroundColor} ${textColor} w-full`}
                 disabled={isSubmitting}
               />
@@ -217,7 +217,7 @@ export function GuideDownloadForm({
               <div>
                 <Input 
                   {...form.register("firstName")} 
-                  placeholder="First Name" 
+                  placeholder="First Name*" 
                   className={`${backgroundColor} ${textColor}`}
                   disabled={isSubmitting}
                 />
@@ -229,7 +229,7 @@ export function GuideDownloadForm({
               <div>
                 <Input 
                   {...form.register("lastName")} 
-                  placeholder="Last Name" 
+                  placeholder="Last Name*" 
                   className={`${backgroundColor} ${textColor}`}
                   disabled={isSubmitting}
                 />
@@ -242,7 +242,7 @@ export function GuideDownloadForm({
             <Input 
               {...form.register("email")} 
               type="email" 
-              placeholder="Email Address" 
+              placeholder="Email Address*" 
               className={`${backgroundColor} ${textColor} mb-4`}
               disabled={isSubmitting}
             />
@@ -253,7 +253,7 @@ export function GuideDownloadForm({
             <Input 
               {...form.register("phone")} 
               type="tel" 
-              placeholder="Phone Number" 
+              placeholder="Phone Number*" 
               className={`${backgroundColor} ${textColor} mb-4`}
               disabled={isSubmitting}
             />

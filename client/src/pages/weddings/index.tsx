@@ -38,7 +38,7 @@ export default function WeddingsPage() {
         lastName: data.lastName,
         email: data.email,
         phone: data.phone,
-        interestType: "lead",
+        interestType: "wedding",
         source: "website",
         status: "new",
         budget: data.budget,

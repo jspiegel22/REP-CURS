@@ -83,7 +83,7 @@ export default function FamilyTripsPage() {
         lastName: data.lastName,
         email: data.email,
         phone: data.phone,
-        interestType: 'lead',
+        interestType: 'group_trip',
         source: 'website',
         status: 'new',
         budget: data.budget || '$5000-$10000',

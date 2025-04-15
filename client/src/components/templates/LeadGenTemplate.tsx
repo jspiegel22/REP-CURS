@@ -96,10 +96,11 @@ export function LeadGenTemplate({
         lastName: data.lastName,
         email: data.email,
         phone: data.phone,
-        interestType: title.toLowerCase().includes('family') ? 'family_trip' : 
+        interestType: title.toLowerCase().includes('family') ? 'group_trip' : 
                      title.toLowerCase().includes('wedding') ? 'wedding' :
                      title.toLowerCase().includes('luxury') ? 'concierge' :
-                     title.toLowerCase().includes('estate') ? 'real_estate' :
+                     title.toLowerCase().includes('estate') ? 'villa' :
+                     title.toLowerCase().includes('work with us') ? 'concierge' :
                      'group_trip', // Default category
         source: 'website',
         status: 'new',
@@ -264,7 +265,7 @@ export function LeadGenTemplate({
                         name="firstName"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>First Name</FormLabel>
+                            <FormLabel>First Name*</FormLabel>
                             <FormControl>
                               <Input {...field} />
                             </FormControl>
@@ -277,7 +278,7 @@ export function LeadGenTemplate({
                         name="lastName"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Last Name</FormLabel>
+                            <FormLabel>Last Name*</FormLabel>
                             <FormControl>
                               <Input {...field} />
                             </FormControl>
@@ -292,7 +293,7 @@ export function LeadGenTemplate({
                       name="email"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Email</FormLabel>
+                          <FormLabel>Email*</FormLabel>
                           <FormControl>
                             <Input type="email" {...field} />
                           </FormControl>
@@ -306,7 +307,7 @@ export function LeadGenTemplate({
                       name="phone"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Phone Number</FormLabel>
+                          <FormLabel>Phone Number*</FormLabel>
                           <FormControl>
                             <Input type="tel" {...field} />
                           </FormControl>

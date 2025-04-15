@@ -61,7 +61,7 @@ export default function LuxuryConcierge() {
         lastName: data.lastName,
         email: data.email,
         phone: data.phone,
-        interestType: "lead",
+        interestType: "concierge",
         source: "website",
         status: "new",
         budget: data.budget || "$10000+",
