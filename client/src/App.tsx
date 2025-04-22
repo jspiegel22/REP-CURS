@@ -18,10 +18,12 @@ import RestaurantsPage from "@/pages/restaurants";
 import RestaurantDetails from "@/pages/restaurants/[id]";
 import FamilyTripsPage from "@/pages/group-trips/family";
 import BachelorBachelorettePage from "@/pages/group-trips/bachelor-bachelorette";
+import CorporateEventsPage from "@/pages/group-trips/corporate";
 import LuxuryConcierge from "@/pages/group-trips/luxury-concierge";
 import InfluencerPage from "@/pages/group-trips/influencer";
 import WeddingsPage from "@/pages/weddings";
 import RealEstatePage from "@/pages/real-estate";
+import PropertyManagementPage from "@/pages/property-management";
 import EventsPage from "@/pages/events";
 import GuidesPage from "@/pages/guides";
 import WorkWithUsPage from "@/pages/work-with-us";
@@ -80,10 +82,12 @@ function Router() {
           <Route path="/restaurants/:id" component={RestaurantDetails} />
           <Route path="/group-trips/family" component={FamilyTripsPage} />
           <Route path="/group-trips/bachelor-bachelorette" component={BachelorBachelorettePage} />
+          <Route path="/group-trips/corporate" component={CorporateEventsPage} />
           <Route path="/group-trips/luxury-concierge" component={LuxuryConcierge} />
           <Route path="/group-trips/influencer" component={InfluencerPage} />
           <Route path="/weddings" component={WeddingsPage} />
           <Route path="/real-estate" component={RealEstatePage} />
+          <Route path="/property-management" component={PropertyManagementPage} />
           <Route path="/events" component={EventsPage} />
           <Route path="/guides" component={GuidesPage} />
           <Route path="/work-with-us" component={WorkWithUsPage} />

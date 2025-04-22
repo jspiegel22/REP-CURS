@@ -98,6 +98,12 @@ const groupTrips = [
     image: "https://images.unsplash.com/photo-1541956064527-8ec10ac76c31"
   },
   {
+    title: "Corporate Events",
+    href: "/group-trips/corporate",
+    description: "Presidents club, celebrations and corporate outings",
+    image: "https://images.unsplash.com/photo-1556761175-b413da4baf72"
+  },
+  {
     title: "Luxury Concierge",
     href: "/group-trips/luxury-concierge",
     description: "Personalized VIP experiences",
@@ -117,6 +123,12 @@ const moreMenuItems = [
     href: "/real-estate",
     description: "Find your dream property in Cabo",
     image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c"
+  },
+  {
+    title: "Property Management",
+    href: "/property-management",
+    description: "Let us manage your Cabo property for optimal returns",
+    image: "https://images.unsplash.com/photo-1560518883-ce09059eeffa"
   },
   {
     title: "Local Events",
@@ -164,7 +176,7 @@ const NavigationBar = () => {
           <div className="md:hidden">
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="text-[#2F4F4F]">
+                <Button variant="ghost" size="sm" className="text-[#2F4F4F] p-2 h-10 w-10 rounded-full">
                   <Menu className="h-6 w-6" />
                 </Button>
               </SheetTrigger>
@@ -373,7 +385,7 @@ const NavigationBar = () => {
 
           {/* Cart Button */}
           <div className="flex items-center justify-end">
-            <Button variant="ghost" size="icon" className="text-[#2F4F4F]">
+            <Button variant="ghost" size="sm" className="text-[#2F4F4F] p-2 h-10 w-10 rounded-full">
               <ShoppingCart className="h-6 w-6" />
             </Button>
           </div>
