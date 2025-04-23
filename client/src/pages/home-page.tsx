@@ -240,15 +240,37 @@ export default function HomePage() {
                 />
               </div>
               {/* Right Column - Content */}
-              <div className="text-left md:text-left text-center">
+              <div className="text-left text-white">
                 <h2 className="text-3xl font-bold mb-4">Luxury Concierge Services</h2>
-                <p className="text-lg mb-8">
+                <p className="text-lg mb-6 text-gray-200">
                   Experience Cabo San Lucas like never before with our premium concierge services. From private jets to yacht charters, we handle every detail.
                 </p>
-                <Link href="/concierge" className="inline-flex items-center gap-2 bg-white hover:bg-gray-100 text-[#2F4F4F] px-6 py-3 rounded-lg font-medium shadow-md hover:shadow-lg">
-                  Learn More
-                  <ChevronRight className="w-5 h-5" />
-                </Link>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-[#CC5500] flex items-center justify-center text-white">
+                      <ChevronRight className="w-5 h-5" />
+                    </div>
+                    <span className="text-gray-200">Personalized VIP service</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-[#CC5500] flex items-center justify-center text-white">
+                      <ChevronRight className="w-5 h-5" />
+                    </div>
+                    <span className="text-gray-200">Exclusive access to premier events</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-[#CC5500] flex items-center justify-center text-white">
+                      <ChevronRight className="w-5 h-5" />
+                    </div>
+                    <span className="text-gray-200">Luxury transportation and reservations</span>
+                  </div>
+                </div>
+                <div className="mt-8">
+                  <Link href="/concierge" className="inline-flex items-center gap-2 bg-white hover:bg-gray-100 text-[#2F4F4F] px-6 py-3 rounded-lg font-medium shadow-md hover:shadow-lg">
+                    Learn More
+                    <ChevronRight className="w-5 h-5" />
+                  </Link>
+                </div>
               </div>
             </div>
           </div>

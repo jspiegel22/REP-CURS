@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException, BackgroundTasks
+from fastapi import FastAPI, Depends, HTTPException, BackgroundTasks, Header
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from typing import List, Dict, Any, Optional, Union
@@ -119,6 +119,81 @@ class GuideRequestEvent(BaseModel):
 @app.get("/")
 async def root():
     return {"message": "Cabo Webhook API is running. See /docs for API documentation."}
+
+# AutoBlogger webhook model
+class AutoBlogPost(BaseModel):
+    title: str
+    content: str
+    excerpt: Optional[str] = None
+    slug: Optional[str] = None
+    image_url: Optional[str] = None
+    category: Optional[str] = "travel"
+    tags: Optional[List[str]] = None
+    publish: bool = True
+    
+@app.post("/api/webhooks/autoblogger")
+async def autoblogger_webhook(
+    post: AutoBlogPost, 
+    background_tasks: BackgroundTasks,
+    x_webhook_signature: Optional[str] = Header(None, alias="X-Webhook-Signature")
+):
+    """
+    Receive and process new blog posts from AutoBlogger AI
+    
+    This endpoint accepts blog posts from the AutoBlogger system with proper authentication.
+    The webhook requires a signature header that matches the configured webhook secret.
+    
+    - **title**: The blog post title
+    - **content**: The full HTML content of the blog post
+    - **excerpt**: Optional summary of the post (generated if not provided)
+    - **slug**: Optional URL slug (generated from title if not provided)
+    - **image_url**: Optional featured image URL
+    - **category**: Blog category (defaults to "travel")
+    - **tags**: Optional list of tags for the post
+    - **publish**: Whether to publish immediately (true) or save as draft (false)
+    """
+    # Verify webhook secret
+    webhook_secret = os.environ.get("WEBHOOK_SECRET")
+    if not webhook_secret:
+        logger.error("WEBHOOK_SECRET not set in environment")
+        raise HTTPException(status_code=500, detail="Webhook secret not configured")
+    
+    # Verify the signature if provided
+    if webhook_secret and x_webhook_signature:
+        if x_webhook_signature != webhook_secret:
+            logger.warning("Invalid webhook signature")
+            raise HTTPException(status_code=401, detail="Invalid webhook signature")
+    elif webhook_secret:
+        # Secret is set but no signature provided
+        logger.warning("Missing webhook signature")
+        raise HTTPException(status_code=401, detail="Missing webhook signature")
+        
+    # Process the blog post
+    try:
+        # Add unique slug if none provided
+        if not post.slug:
+            from slugify import slugify
+            post.slug = slugify(post.title)
+            
+        # Add excerpt if none provided
+        if not post.excerpt and post.content:
+            # Create an excerpt from the first 150 chars of content
+            post.excerpt = post.content[:150].rsplit(' ', 1)[0] + '...'
+            
+        logger.info(f"Received new blog post: {post.title}")
+        
+        # Here you would typically save to database, we'll log it for now
+        # In a real implementation, you'd connect to your database and save the post
+        
+        return {
+            "status": "success", 
+            "message": "Blog post received",
+            "post_slug": post.slug,
+            "callback_url": f"https://{os.environ.get('REPLIT_SLUG', 'localhost')}.replit.app/api/webhooks/autoblogger"
+        }
+    except Exception as e:
+        logger.error(f"Error processing blog post from AutoBlogger: {e}")
+        raise HTTPException(status_code=500, detail=f"Error processing blog post: {str(e)}")
 
 @app.post("/api/webhooks/setup", response_model=WebhookTarget)
 async def setup_webhook(webhook: WebhookTarget, conn=Depends(get_db_connection)):
