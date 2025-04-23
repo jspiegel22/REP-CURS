@@ -1,142 +1,112 @@
-// Test script for the AutoBlogger webhook
-// This script sends test blog posts to the autoblogger webhook endpoint
-
-import fetch from 'node-fetch';
+// Script to test the autoblogger webhook endpoint
+import axios from 'axios';
 
 // Configuration
-const API_URL = "http://localhost:8000/api/webhooks/autoblogger";
-const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET || "41d203af-5210-4f49-a1b6-865d15fca215"; // Default value if not set in environment
+const webhookUrl = 'http://localhost:5173/api/webhooks/autoblogger';
+const webhookSecret = process.env.WEBHOOK_SECRET || '41d203af-5210-4f49-a1b6-865d15fca215';
 
-// Test blog posts based on sample blog data
-const blogPosts = [
-  {
-    title: "Top 10 Hidden Beaches in Cabo San Lucas",
-    content: "Cabo San Lucas is home to some of the most breathtaking beaches in the world. While many travelers flock to the popular spots like Medano Beach, there are hidden gems waiting to be discovered. Here are our top picks for secluded beaches that offer pristine beauty and tranquility.\n\n## 1. Santa Maria Beach\nKnown for its horseshoe-shaped bay, Santa Maria Beach offers excellent snorkeling opportunities in crystal-clear waters. The beach's protected status ensures its pristine condition.\n\n## 2. Chileno Beach\nA favorite among locals, Chileno Beach provides a perfect balance of accessibility and seclusion. The calm waters make it ideal for swimming and snorkeling.",
-    excerpt: "Discover secluded paradises away from the tourist crowds, where pristine sands meet crystal-clear waters.",
-    slug: "top-10-hidden-beaches-cabo",
-    image_url: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
-    category: "Local Guides",
-    tags: ["beaches", "hidden gems", "snorkeling", "swimming"],
-    publish: true
-  },
-  
-  {
-    title: "Ultimate Guide to Luxury Yacht Charters",
-    content: "Experience the ultimate luxury on the waters of Cabo San Lucas with a private yacht charter. From selecting the perfect vessel to planning your itinerary, this guide covers everything you need to know.\n\n## Choosing Your Yacht\nThe first step in planning your yacht charter is selecting the right vessel. Cabo offers various options, from sleek sailing yachts to luxurious motor yachts. Consider factors like group size, duration of charter, desired amenities, and budget considerations.\n\n## Popular Routes\nMost yacht charters in Cabo follow these popular routes: Lover's Beach and the Arch, Santa Maria Bay, Chileno Bay, and Palmilla Point.",
-    excerpt: "Everything you need to know about planning the perfect yacht experience in Cabo's stunning waters.",
-    slug: "luxury-yacht-charters-guide",
-    image_url: "https://images.unsplash.com/photo-1605281317010-fe5ffe798166",
-    category: "Luxury Travel",
-    tags: ["yacht", "luxury", "charter", "sailing"],
-    publish: true
-  },
-  
-  {
-    title: "Planning Your Dream Wedding in Cabo",
-    content: "Cabo San Lucas has become one of the most sought-after destinations for weddings, combining stunning natural beauty with world-class amenities. Let's explore how to plan your perfect wedding in paradise.\n\n## Why Choose Cabo?\n- Year-round perfect weather\n- Stunning beach and desert landscapes\n- Luxury venues and accommodations\n- Easy access from major cities\n- Professional wedding services\n\n## Best Wedding Venues\n### Beach Resorts\n- Luxury beachfront properties\n- All-inclusive packages\n- Professional wedding coordinators\n- Accommodation for guests",
-    excerpt: "From venue selection to local vendors, your complete guide to creating magical moments.",
-    slug: "planning-dream-wedding-cabo",
-    image_url: "https://images.unsplash.com/photo-1546032996-6dfacbacbf3f",
-    category: "Weddings",
-    tags: ["wedding", "planning", "venues", "beach wedding"],
-    publish: true
-  },
-  
-  {
-    title: "Best Cabo Restaurants with Ocean Views",
-    content: "Dining with a view makes every meal memorable, and Cabo San Lucas offers some of the most spectacular ocean-view restaurants in the world. From cliff-side establishments to beachfront venues, here are our top picks for combining culinary excellence with breathtaking scenery.\n\n## El Farallon\nPerched on the cliffs of the Pedregal, El Farallon offers a dining experience unlike any other. The restaurant features a daily catch display where you can select your seafood, which is then prepared to perfection by expert chefs. With waves crashing below and the vast Pacific Ocean stretching to the horizon, the ambiance is simply magical, especially at sunset.",
-    excerpt: "Discover the most stunning oceanfront dining experiences that combine incredible cuisine with breathtaking views.",
-    slug: "best-cabo-restaurants-ocean-views",
-    image_url: "https://images.unsplash.com/photo-1515443961218-a51367888e4b",
-    category: "Dining",
-    tags: ["restaurants", "dining", "ocean view", "sunset", "seafood"],
-    publish: true
-  },
-  
-  {
-    title: "Family-Friendly Activities in Cabo San Lucas",
-    content: "Cabo San Lucas isn't just for couples and spring breakers—it's also a fantastic destination for families with children of all ages. From gentle beaches to exciting excursions, here's our guide to creating unforgettable family memories in Cabo.\n\n## Safe Swimming Beaches\nWhile many of Cabo's beaches have strong currents, there are several spots that are perfect for families with children. Medano Beach offers calm waters and a gradual slope, making it ideal for little ones. Chileno Beach and Santa Maria Beach also provide protected swimming areas with excellent snorkeling opportunities where children can discover colorful fish in shallow waters.",
-    excerpt: "Discover the best kid-friendly adventures, beaches, and attractions that the whole family will love.",
-    slug: "family-friendly-activities-cabo-san-lucas",
-    image_url: "https://images.unsplash.com/photo-1580541631976-fcc992c6375e",
-    category: "Family Travel",
-    tags: ["family", "kids", "activities", "beaches", "adventures"],
-    publish: true
-  }
-];
+// Sample blog post for testing
+const sampleBlogPost = {
+  title: "Top 5 Luxury Resorts in Cabo San Lucas",
+  content: `
+# Top 5 Luxury Resorts in Cabo San Lucas
 
-console.log("===== Testing AutoBlogger Webhook =====");
-console.log("API URL:", API_URL);
-console.log("Using webhook secret for authentication");
-console.log();
+Cabo San Lucas is known for its stunning beaches, vibrant nightlife, and world-class resorts. If you're planning a luxury getaway, here are the top 5 resorts that offer unparalleled luxury and amenities.
 
-// Function to send a blog post to the webhook
+## 1. Waldorf Astoria Los Cabos Pedregal
+
+Nestled at the tip of the Baja Peninsula, the Waldorf Astoria Los Cabos Pedregal offers breathtaking views of the Pacific Ocean. Each room features a private plunge pool and terrace. The resort's signature restaurant, El Farallon, serves the freshest seafood with ocean views.
+
+## 2. One&Only Palmilla
+
+This iconic resort combines Mexican charm with modern luxury. With two beautiful beaches, a Jack Nicklaus-designed golf course, and a world-class spa, One&Only Palmilla is the epitome of luxury.
+
+## 3. Las Ventanas al Paraiso
+
+Spanish for "Windows to Paradise," Las Ventanas lives up to its name with stunning architecture and unparalleled service. The resort features infinity pools, a holistic spa, and private beach cabanas.
+
+## 4. Montage Los Cabos
+
+Located on the golden sand beaches of Santa Maria Bay, Montage Los Cabos offers guests direct access to one of the best swimming beaches in the region. The resort's contemporary design blends seamlessly with the desert landscape.
+
+## 5. Grand Velas Los Cabos
+
+This all-inclusive resort redefines luxury with spacious suites, gourmet dining options, and a stunning three-tiered infinity pool overlooking the Sea of Cortez.
+  `,
+  excerpt: "Discover the most exclusive and luxurious accommodations in Cabo San Lucas for an unforgettable vacation experience.",
+  image_url: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b",
+  category: "Luxury Travel",
+  tags: ["resorts", "luxury", "accommodation", "cabo san lucas"],
+  publish: true
+};
+
+// Helper function to send the blog post
 async function sendBlogPost(post) {
   try {
     console.log(`Sending blog post: ${post.title}`);
     
-    const response = await fetch(API_URL, {
-      method: 'POST',
+    const response = await axios.post(webhookUrl, post, {
       headers: {
         'Content-Type': 'application/json',
-        'X-Webhook-Signature': WEBHOOK_SECRET
-      },
-      body: JSON.stringify(post)
+        'X-Webhook-Signature': webhookSecret
+      }
     });
     
-    const statusCode = response.status;
-    const responseData = await response.json();
-    
-    console.log(`Status code: ${statusCode}`);
-    console.log("Response:", JSON.stringify(responseData, null, 2));
-    
-    if (statusCode >= 200 && statusCode < 300) {
-      console.log("✅ Blog post sent successfully");
-    } else {
-      console.log("❌ Failed to send blog post");
-    }
-    console.log("-------------------------------------------");
-    
-    return { success: statusCode >= 200 && statusCode < 300, data: responseData };
+    console.log('✅ Successfully sent blog post!');
+    console.log('Response:', response.data);
+    return response.data;
   } catch (error) {
-    console.error("Error sending blog post:", error.message);
-    console.log("❌ Failed to send blog post due to error");
-    console.log("-------------------------------------------");
-    
-    return { success: false, error: error.message };
+    console.error('Error sending blog post:', error.message);
+    if (error.response) {
+      console.error('Response status:', error.response.status);
+      console.error('Response data:', error.response.data);
+    }
+    throw error;
   }
 }
 
-// Send each blog post to the webhook
+// Run tests with different scenarios
 async function runTests() {
-  const results = [];
-  
-  for (const post of blogPosts) {
-    const result = await sendBlogPost(post);
-    results.push({
-      title: post.title,
-      success: result.success,
-      response: result.data,
-      error: result.error
-    });
+  try {
+    console.log('🔍 Testing autoblogger webhook...\n');
     
-    // Add a small delay between requests
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    // Test 1: Valid blog post with all fields
+    console.log('🧪 Test 1: Sending complete blog post with valid signature');
+    await sendBlogPost(sampleBlogPost);
+    
+    // Test 2: Missing required fields
+    console.log('\n🧪 Test 2: Sending blog post with missing content (should fail)');
+    try {
+      const incompletePost = { ...sampleBlogPost };
+      delete incompletePost.content;
+      
+      await sendBlogPost(incompletePost);
+      console.log('❌ Test failed: Expected an error for missing content');
+    } catch (error) {
+      console.log('✅ Test passed: Correctly rejected post with missing content');
+    }
+    
+    // Test 3: Invalid webhook signature
+    console.log('\n🧪 Test 3: Sending blog post with invalid signature (should fail)');
+    try {
+      const response = await axios.post(webhookUrl, sampleBlogPost, {
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Webhook-Signature': 'invalid-signature'
+        }
+      });
+      
+      console.log('❌ Test failed: Accepted post with invalid signature');
+    } catch (error) {
+      console.log('✅ Test passed: Correctly rejected post with invalid signature');
+    }
+    
+    console.log('\n🎉 All tests completed!');
+  } catch (error) {
+    console.error('\n❌ Failed to send blog post due to error');
+    console.error('Test failed.');
   }
-  
-  console.log("\n===== AutoBlogger Webhook Testing Results =====");
-  console.log(`Total tests: ${results.length}`);
-  console.log(`Successful: ${results.filter(r => r.success).length}`);
-  console.log(`Failed: ${results.filter(r => !r.success).length}`);
-  
-  return results;
 }
 
-runTests()
-  .then(results => {
-    console.log("Testing complete!");
-  })
-  .catch(error => {
-    console.error("Error during testing:", error);
-    process.exit(1);
-  });
+// Run the tests
+runTests();

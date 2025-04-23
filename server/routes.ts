@@ -423,6 +423,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Helper function to generate slug from title
+  function generateSlug(title: string): string {
+    return title
+      .toLowerCase()
+      .replace(/[^\w\s-]/g, '') // Remove special characters
+      .replace(/\s+/g, '-') // Replace spaces with hyphens
+      .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
+      .trim(); // Trim leading/trailing whitespace
+  }
+
   // Autoblogger webhook endpoint
   app.post("/api/webhooks/autoblogger", async (req, res) => {
     try {
