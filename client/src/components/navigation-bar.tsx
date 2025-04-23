@@ -131,6 +131,12 @@ const moreMenuItems = [
     image: "https://images.unsplash.com/photo-1560518883-ce09059eeffa"
   },
   {
+    title: "Itinerary Builder",
+    href: "/itinerary-builder",
+    description: "Create your perfect personalized Cabo experience",
+    image: "https://images.unsplash.com/photo-1610641818989-c2051b5e2cfd"
+  },
+  {
     title: "Local Events",
     href: "/events",
     description: "Discover what's happening in Cabo",

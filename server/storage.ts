@@ -1,7 +1,7 @@
 import { db } from "./db";
 import { eq } from "drizzle-orm";
-import { users, listings, bookings, rewards, socialShares, weatherCache, resorts, villas, leads, guideSubmissions } from "@shared/schema";
-import type { User, InsertUser, Listing, Booking, Reward, SocialShare, WeatherCache, Resort, Villa, Lead, InsertLead } from "@shared/schema";
+import { users, listings, bookings, rewards, socialShares, weatherCache, resorts, villas, leads, guideSubmissions, blogPosts } from "@shared/schema";
+import type { User, InsertUser, Listing, Booking, Reward, SocialShare, WeatherCache, Resort, Villa, Lead, InsertLead, InsertBlogPost } from "@shared/schema";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
 import { nanoid } from "nanoid";
@@ -35,6 +35,9 @@ interface IStorage {
   getAllLeads(): Promise<Lead[]>;
   getBookingByPaymentIntentId(paymentIntentId: string): Promise<Booking | undefined>;
   updateBookingStatus(bookingId: number, status: string): Promise<Booking>;
+  createBlogPost(blogPost: any): Promise<any>;
+  getBlogPostBySlug(slug: string): Promise<any>;
+  getBlogPosts(limit?: number, category?: string): Promise<any[]>;
 }
 
 const PostgresSessionStore = connectPg(session);
@@ -455,6 +458,72 @@ export class DatabaseStorage implements IStorage {
     } catch (error) {
       console.error("Error updating booking status:", error);
       throw new Error(`Failed to update booking status to ${status}`);
+    }
+  }
+  
+  // Blog post management
+  async createBlogPost(blogPost: any): Promise<any> {
+    try {
+      console.log("Creating blog post:", blogPost.title);
+      
+      // Insert into database
+      const [newBlogPost] = await db.insert(blogPosts).values({
+        title: blogPost.title,
+        slug: blogPost.slug,
+        content: blogPost.content,
+        excerpt: blogPost.excerpt || (blogPost.content.length > 150 ? blogPost.content.substring(0, 150) + '...' : blogPost.content),
+        imageUrl: blogPost.imageUrl || null,
+        author: blogPost.author || 'Cabo Team',
+        pubDate: blogPost.pubDate ? new Date(blogPost.pubDate) : new Date(),
+        categories: Array.isArray(blogPost.categories) ? blogPost.categories : [],
+        tags: Array.isArray(blogPost.tags) ? blogPost.tags : [],
+        status: blogPost.status || 'published',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }).returning();
+      
+      console.log(`Blog post created successfully: ${newBlogPost.slug}`);
+      return newBlogPost;
+    } catch (error: any) {
+      console.error("Error creating blog post:", error);
+      throw new Error(`Failed to create blog post: ${error.message}`);
+    }
+  }
+  
+  async getBlogPostBySlug(slug: string): Promise<any> {
+    try {
+      const [blogPost] = await db.select().from(blogPosts).where(eq(blogPosts.slug, slug));
+      return blogPost;
+    } catch (error: any) {
+      console.error(`Error fetching blog post with slug ${slug}:`, error);
+      throw new Error(`Failed to fetch blog post: ${error.message}`);
+    }
+  }
+  
+  async getBlogPosts(limit = 10, category?: string): Promise<any[]> {
+    try {
+      // If category is provided, filter by it
+      if (category) {
+        // For jsonb array contains query, use raw SQL
+        const result = await db.execute(
+          `SELECT * FROM blog_posts 
+           WHERE categories @> $1::jsonb
+           ORDER BY pub_date DESC 
+           LIMIT $2`,
+          [JSON.stringify([category]), limit]
+        );
+        return result.rows;
+      } else {
+        // Otherwise just return the latest posts
+        const posts = await db.select()
+          .from(blogPosts)
+          .orderBy(blogPosts.pubDate)
+          .limit(limit);
+        return posts;
+      }
+    } catch (error) {
+      console.error("Error fetching blog posts:", error);
+      return []; // Return empty array instead of throwing
     }
   }
 }

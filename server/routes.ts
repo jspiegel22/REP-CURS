@@ -14,10 +14,14 @@ import {
 } from './services/webhookClient';
 
 import { registerStripeRoutes } from './routes/stripe';
+import itineraryRoutes from './routes/itinerary';
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Register Stripe routes for direct bookings
   registerStripeRoutes(app);
+  
+  // Register itinerary routes
+  app.use('/api', itineraryRoutes);
   // Webhook check endpoint
   app.get("/api/guides/check-webhook", (req, res) => {
     const makeWebhookUrl = process.env.MAKE_WEBHOOK_URL;
@@ -416,6 +420,64 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error retrying webhook:", error);
       res.status(500).json({ message: "Failed to retry webhook" });
+    }
+  });
+  
+  // Blog auto-sync webhook endpoint
+  app.post("/api/blog/webhook", async (req, res) => {
+    try {
+      const { title, content, excerpt, featuredImage, author, slug, categories, tags, pubDate } = req.body;
+      
+      // Basic validation
+      if (!title || !content || !slug) {
+        return res.status(400).json({ 
+          message: "Invalid blog post data", 
+          details: "Title, content, and slug are required" 
+        });
+      }
+      
+      // Check for API key for authentication
+      const apiKey = req.headers['x-api-key'];
+      const configuredApiKey = process.env.BLOG_WEBHOOK_API_KEY;
+      
+      if (!apiKey || apiKey !== configuredApiKey) {
+        return res.status(401).json({ 
+          message: "Unauthorized", 
+          details: "Invalid or missing API key" 
+        });
+      }
+      
+      console.log(`Blog webhook received for post: ${title} (${slug})`);
+      
+      // Store the blog post
+      const blogPost = await storage.createBlogPost({
+        title,
+        content,
+        excerpt: excerpt || content.substring(0, 150) + '...',
+        slug,
+        imageUrl: featuredImage || null,
+        author: author || 'Cabo Team',
+        pubDate: pubDate ? new Date(pubDate) : new Date(),
+        categories: categories || [],
+        tags: tags || [],
+        status: 'published',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      });
+      
+      console.log(`Blog post successfully created: ${blogPost.slug}`);
+      
+      res.status(201).json({ 
+        message: "Blog post created successfully", 
+        postId: blogPost.id,
+        slug: blogPost.slug
+      });
+    } catch (error) {
+      console.error("Error processing blog webhook:", error);
+      res.status(500).json({ 
+        message: "Failed to process blog post", 
+        details: error.message 
+      });
     }
   });
 

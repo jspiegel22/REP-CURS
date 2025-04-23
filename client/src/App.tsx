@@ -27,6 +27,7 @@ import PropertyManagementPage from "@/pages/property-management";
 import EventsPage from "@/pages/events";
 import GuidesPage from "@/pages/guides";
 import WorkWithUsPage from "@/pages/work-with-us";
+import ItineraryBuilderPage from "@/pages/itinerary-builder-page";
 import TestFormsPage from "@/pages/test-forms";
 import NavigationBar from "./components/navigation-bar";
 import { ChatButton } from "./components/chat-button";
@@ -91,6 +92,7 @@ function Router() {
           <Route path="/events" component={EventsPage} />
           <Route path="/guides" component={GuidesPage} />
           <Route path="/work-with-us" component={WorkWithUsPage} />
+          <Route path="/itinerary-builder" component={ItineraryBuilderPage} />
           <Route path="/test-forms" component={TestFormsPage} />
           <Route component={NotFound} />
         </Switch>

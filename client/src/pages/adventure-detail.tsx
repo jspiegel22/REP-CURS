@@ -12,7 +12,7 @@ import { ProductFooter } from "@/components/product-footer";
 import { RewardsPanel } from "@/components/rewards-panel";
 import { SocialShare } from "@/components/social-share";
 import TopAdventures from "@/components/top-adventures";
-import BookingForm from "@/components/booking-form";
+import InlineBookingForm from "@/components/inline-booking-form";
 
 // Removed next/router import
 import SEO, { generateAdventureSchema } from "@/components/SEO";
@@ -199,22 +199,7 @@ export default function AdventureDetail() {
                     <Plus className="h-4 w-4" />
                   </Button>
                 </div>
-                <Button
-                  size="lg"
-                  className="w-[200px] bg-[#FF8C38] hover:bg-[#E67D29] text-white shadow-lg hover:shadow-xl transition-all"
-                  onClick={() => setBookingOpen(true)}
-                >
-                  Book Now
-                </Button>
-                
-                {/* Stripe Direct Booking Form */}
-                <BookingForm 
-                  isOpen={bookingOpen}
-                  onClose={() => setBookingOpen(false)}
-                  adventureName={adventure.title}
-                  price={parseFloat(adventure.currentPrice.replace(/[^0-9.]/g, ''))}
-                  image={adventure.imageUrl}
-                />
+                {/* Removed popup button & dialog form from here */}
               </div>
             </div>
           </div>
@@ -322,13 +307,11 @@ export default function AdventureDetail() {
                       <span>{adventure.duration}</span>
                     </div>
                     <div className="pt-2">
-                      <Button 
-                        className="w-full bg-[#FF8C38] hover:bg-[#E67D29] text-white" 
-                        size="lg"
-                        onClick={() => setBookingOpen(true)}
-                      >
-                        Book Now
-                      </Button>
+                      <InlineBookingForm 
+                        adventureName={adventure.title}
+                        price={parseFloat(adventure.currentPrice.replace(/[^0-9.]/g, ''))}
+                        image={adventure.imageUrl}
+                      />
                     </div>
                   </div>
                 </CardContent>
@@ -397,7 +380,15 @@ export default function AdventureDetail() {
               <Button
                 size="sm"
                 className="bg-[#FF8C38] hover:bg-[#E67D29] text-white shadow-lg hover:shadow-xl transition-all"
-                onClick={() => setBookingOpen(true)}
+                onClick={() => {
+                  const bookingElement = document.querySelector('.sticky.top-4');
+                  if (bookingElement) {
+                    window.scrollTo({
+                      top: bookingElement.getBoundingClientRect().top + window.scrollY - 100,
+                      behavior: 'smooth'
+                    });
+                  }
+                }}
               >
                 Book Now
               </Button>

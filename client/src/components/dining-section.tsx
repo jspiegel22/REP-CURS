@@ -25,19 +25,19 @@ const diningOptions: DiningOption[] = [
 
 export default function DiningSection() {
   return (
-    <section className="w-full bg-white">
+    <section className="w-full bg-[#FEF6E6]">
       <div className="container mx-auto px-4 py-16">
         <div className="flex flex-col md:flex-row justify-between">
           <div className="mb-8 md:w-1/3">
             <h2 className="text-3xl font-bold relative inline-block mb-2">
               Dining
-              <span className="absolute bottom-0 left-0 w-full h-1 bg-orange-500 rounded"></span>
+              <span className="absolute bottom-0 left-0 w-full h-1 bg-[#FF8C38] rounded"></span>
             </h2>
             <p className="text-gray-700 mt-3 mb-2">
               Savor the flavors of Cabo with world-class restaurants and authentic local cuisine.
             </p>
             <Link href="/dining">
-              <a className="inline-flex items-center mt-2 text-orange-600 hover:text-orange-700 font-medium">
+              <a className="inline-flex items-center mt-2 text-[#FF8C38] hover:text-[#E67D29] font-medium">
                 View All Restaurants <ChevronRight className="w-4 h-4 ml-1" />
               </a>
             </Link>

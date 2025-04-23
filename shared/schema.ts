@@ -143,6 +143,23 @@ export const weatherCache = pgTable("weather_cache", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Blog posts table
+export const blogPosts = pgTable("blog_posts", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  slug: text("slug").notNull().unique(),
+  content: text("content").notNull(),
+  excerpt: text("excerpt"),
+  imageUrl: text("image_url"),
+  author: text("author").notNull().default("Cabo Team"),
+  pubDate: timestamp("pub_date").notNull().defaultNow(),
+  categories: jsonb("categories").default([]),
+  tags: jsonb("tags").default([]),
+  status: text("status", { enum: ["draft", "published", "archived"] }).notNull().default("published"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Schema for inserting new users
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
@@ -167,6 +184,11 @@ export const insertBookingSchema = createInsertSchema(bookings).omit({
 export const insertListingSchema = createInsertSchema(listings);
 export const insertRewardSchema = createInsertSchema(rewards);
 export const insertSocialShareSchema = createInsertSchema(socialShares);
+export const insertBlogPostSchema = createInsertSchema(blogPosts).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
 
 // Create a base schema from the table definition
 const baseLeadSchema = createInsertSchema(leads).omit({
@@ -238,6 +260,8 @@ export type Lead = typeof leads.$inferSelect;
 export type InsertLead = z.infer<typeof insertLeadSchema>;
 export type GuideSubmission = typeof guideSubmissions.$inferSelect;
 export type InsertGuideSubmission = z.infer<typeof insertGuideSubmissionSchema>;
+export type BlogPost = typeof blogPosts.$inferSelect;
+export type InsertBlogPost = z.infer<typeof insertBlogPostSchema>;
 
 // Add this new table definition after the existing tables
 export const guideFormSchema = z.object({

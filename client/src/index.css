@@ -21,4 +21,23 @@
   .hide-scrollbar::-webkit-scrollbar {
     display: none;             /* Chrome, Safari and Opera */
   }
+  
+  @keyframes wiggle {
+    0%, 100% { transform: rotate(0deg); }
+    15% { transform: rotate(-2deg); }
+    30% { transform: rotate(2deg); }
+    45% { transform: rotate(-1deg); }
+    60% { transform: rotate(1deg); }
+    75% { transform: rotate(-0.5deg); }
+    90% { transform: rotate(0.5deg); }
+  }
+  
+  .wiggle-animation {
+    animation: wiggle 3s ease-in-out infinite;
+    animation-play-state: running;
+  }
+  
+  .wiggle-animation:hover {
+    animation-play-state: paused;
+  }
 }

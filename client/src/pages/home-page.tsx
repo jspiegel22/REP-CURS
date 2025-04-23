@@ -4,9 +4,10 @@ import { Link } from "wouter";
 import { generateSlug } from "@/lib/utils";
 import { Villa, parseVillaData } from "@/types/villa";
 import { VillaCard } from "@/components/villa-card";
-import { ChevronRight, ArrowDown } from "lucide-react";
+import { ChevronRight, ArrowDown, Clock, Map, Star, Heart } from "lucide-react";
 import { SiTiktok, SiInstagram, SiWhatsapp, SiFacebook, SiPinterest, SiYoutube } from "react-icons/si";
 import FeaturedExperiences from "@/components/featured-experiences";
+import ItineraryBuilder from "@/components/itinerary-builder";
 import StaysSection from "@/components/stays-section";
 import ActivitiesSection from "@/components/activities-section";
 import DiningSection from "@/components/dining-section";
@@ -161,7 +162,7 @@ export default function HomePage() {
               {/* CTA Button */}
               <Button 
                 onClick={() => setIsGuideFormOpen(true)}
-                className="bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white text-xl px-12 py-5 rounded-lg transform transition-all duration-300 hover:scale-105 hidden md:inline-flex relative backdrop-blur-sm bg-opacity-90 shadow-[0_6px_20px_rgba(0,0,0,0.25)] hover:shadow-[0_10px_25px_rgba(47,79,79,0.4)]"
+                className="bg-[#CC5500] hover:bg-[#A83800] text-white text-xl px-12 py-5 rounded-lg transform transition-all duration-300 hover:scale-105 hidden md:inline-flex relative backdrop-blur-sm bg-opacity-90 shadow-[0_6px_20px_rgba(0,0,0,0.25)] hover:shadow-[0_10px_25px_rgba(204,85,0,0.4)] wiggle-animation"
               >
                 GET YOUR 2025 ULTIMATE GUIDE TO CABO
                 <ChevronRight className="w-5 h-5 ml-2" />
@@ -170,7 +171,7 @@ export default function HomePage() {
               {/* Mobile CTA Button */}
               <Button
                 onClick={() => setIsGuideFormOpen(true)}
-                className="md:hidden mx-auto w-[85%] my-8 bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white text-base px-4 py-6 rounded-lg flex items-center justify-center gap-2 shadow-[0_6px_15px_rgba(0,0,0,0.25)]"
+                className="md:hidden mx-auto w-[85%] my-8 bg-[#CC5500] hover:bg-[#A83800] text-white text-base px-4 py-6 rounded-lg flex items-center justify-center gap-2 shadow-[0_6px_15px_rgba(0,0,0,0.25)] wiggle-animation"
               >
                 GET YOUR 2025 ULTIMATE GUIDE
                 <ChevronRight className="w-5 h-5" />
@@ -210,17 +211,6 @@ export default function HomePage() {
         {/* Featured Experiences Section - Light Orange Background */}
         <div className="w-full bg-[#FEF6E6] py-16">
           <div className="container mx-auto px-4">
-            <div className="mb-6">
-              <h2 className="text-3xl font-bold mb-2">Featured Experiences</h2>
-              <p className="text-gray-700 mt-1 max-w-2xl">
-                Discover the most exciting adventures and experiences in Cabo San Lucas
-              </p>
-              <Link href="/experiences">
-                <a className="inline-flex items-center mt-2 text-orange-600 hover:text-orange-700 font-medium">
-                  View All Featured Adventures <ChevronRight className="w-4 h-4 ml-1" />
-                </a>
-              </Link>
-            </div>
             <FeaturedExperiences />
           </div>
         </div>
@@ -266,7 +256,7 @@ export default function HomePage() {
         {/* Latest Blog Posts */}
         <div className="py-16 bg-white">
           <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-bold mb-2 text-gray-900">Latest from Our Blog</h2>
+            <h2 className="text-3xl font-bold mb-2 text-gray-900">What's Going On in Cabo</h2>
             <p className="text-lg text-gray-600 mb-8">Stories, tips, and guides for your next Cabo adventure</p>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -307,34 +297,53 @@ export default function HomePage() {
             </div>
           </div>
         </div>
-
-        {/* Guide Download CTA */}
+        
+        {/* Itinerary Builder Teaser Section */}
         <div className="bg-[#2F4F4F] py-16">
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
               {/* Left Column - Content */}
               <div className="text-left text-white">
-                <h2 className="text-3xl font-bold mb-4">
-                  Download Our 2025 Restaurant Guide
-                </h2>
-                <p className="text-lg mb-8 text-gray-200">
-                  Discover the finest dining experiences in Cabo with our curated guide to the best restaurants, from hidden gems to Michelin-starred establishments.
+                <h2 className="text-3xl font-bold mb-4">Build Your Dream Cabo Vacation</h2>
+                <p className="text-lg mb-6 text-gray-200">
+                  Let our AI-powered assistant create a personalized itinerary based on your preferences.
                 </p>
-                <Button
-                  onClick={() => setIsGuideFormOpen(true)}
-                  className="bg-white text-[#2F4F4F] hover:bg-gray-100 text-lg py-6 px-8 rounded-xl flex items-center gap-2 shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-[0_8px_30px_rgba(255,255,255,0.2)]"
-                >
-                  Get Your Restaurant Guide
-                  <ChevronRight className="w-5 h-5" />
-                </Button>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-[#CC5500] flex items-center justify-center text-white">
+                      <ChevronRight className="w-5 h-5" />
+                    </div>
+                    <span className="text-gray-200">Day-by-day personalized plans</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-[#CC5500] flex items-center justify-center text-white">
+                      <ChevronRight className="w-5 h-5" />
+                    </div>
+                    <span className="text-gray-200">Restaurant and activity recommendations</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-[#CC5500] flex items-center justify-center text-white">
+                      <ChevronRight className="w-5 h-5" />
+                    </div>
+                    <span className="text-gray-200">Local insider tips and hidden gems</span>
+                  </div>
+                </div>
+                <div className="mt-8">
+                  <Link href="/itinerary-builder" className="inline-flex items-center gap-2 bg-[#CC5500] hover:bg-[#A83800] text-white px-6 py-3 rounded-lg font-medium">
+                    Create Your Itinerary 
+                    <ChevronRight className="w-5 h-5" />
+                  </Link>
+                </div>
               </div>
+              
               {/* Right Column - Image */}
-              <div className="relative h-[400px] rounded-2xl overflow-hidden">
+              <div className="relative h-[350px] rounded-2xl overflow-hidden shadow-lg">
                 <img 
-                  src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3" 
-                  alt="Cabo Restaurant Guide"
+                  src="https://images.unsplash.com/photo-1610641818989-c2051b5e2cfd?ixlib=rb-4.0.3" 
+                  alt="Personalized Cabo Itinerary"
                   className="w-full h-full object-cover"
                 />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
               </div>
             </div>
           </div>
@@ -357,7 +366,7 @@ export default function HomePage() {
                   className="relative aspect-square overflow-hidden rounded-lg group"
                 >
                   <img 
-                    src={`https://source.unsplash.com/random/600x600?cabo,beach,luxury&sig=${i}`}
+                    src={`https://images.unsplash.com/photo-15${i}0641818989-c2051b5e2cfd?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=600&q=80`}
                     alt="Instagram post"
                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                   />
