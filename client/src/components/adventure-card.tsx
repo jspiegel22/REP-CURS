@@ -10,7 +10,7 @@ interface AdventureCardProps {
 
 export function AdventureCard({ adventure }: AdventureCardProps) {
   return (
-    <Link href={`/adventure/${adventure.slug}`}>
+    <Link href={`/adventures/${adventure.slug}`}>
       <Card className="cursor-pointer hover:shadow-lg transition-shadow duration-200">
         <div className="aspect-[4/3] relative overflow-hidden rounded-t-lg">
           <img

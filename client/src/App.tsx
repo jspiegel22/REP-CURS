@@ -74,10 +74,10 @@ function Router() {
           <Route path="/villas" component={VillasLanding} />
           <Route path="/villas/:slug" component={VillaDetail} />
           <Route path="/adventures" component={AdventuresLanding} />
+          <Route path="/adventures/atv" component={AdventureDetail} />
+          <Route path="/adventures/private-yachts" component={AdventureDetail} />
+          <Route path="/adventures/whale-watching" component={AdventureDetail} />
           <Route path="/adventures/:slug" component={AdventureDetail} />
-          <Route path="/adventures/atv" component={AdventuresLanding} />
-          <Route path="/adventures/private-yachts" component={AdventuresLanding} />
-          <Route path="/adventures/whale-watching" component={AdventuresLanding} />
           <Route path="/restaurants" component={RestaurantsPage} />
           <Route path="/restaurants/:id" component={RestaurantDetails} />
           <Route path="/group-trips/family" component={FamilyTripsPage} />

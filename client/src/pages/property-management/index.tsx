@@ -396,8 +396,6 @@ export default function PropertyManagementPage() {
         </div>
       </div>
 
-      {/* Footer */}
-      <Footer />
     </div>
   );
 }

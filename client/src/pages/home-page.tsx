@@ -7,6 +7,8 @@ import { VillaCard } from "@/components/villa-card";
 import { ChevronRight, ArrowDown } from "lucide-react";
 import { SiTiktok, SiInstagram, SiWhatsapp, SiFacebook, SiPinterest, SiYoutube } from "react-icons/si";
 import CategoryGrid from "@/components/category-grid";
+import FeaturedExperiences from "@/components/featured-experiences";
+import CuratedCollections from "@/components/curated-collections";
 import SEO from "@/components/SEO";
 import { sampleBlogs } from "@/data/sample-blogs";
 import { format } from "date-fns";
@@ -199,10 +201,19 @@ export default function HomePage() {
           </div>
         </div>
 
+        {/* Featured Experiences Section */}
+        <div className="container mx-auto px-4 py-12 bg-gray-50">
+          <FeaturedExperiences />
+        </div>
+
         {/* Main Categories - Explore Cabo */}
         <div className="container mx-auto px-4 py-16">
-          <h2 className="text-3xl font-bold mb-8 text-gray-900">Explore Cabo</h2>
           <CategoryGrid />
+        </div>
+        
+        {/* Curated Collections */}
+        <div className="container mx-auto px-4 py-16 bg-gray-50">
+          <CuratedCollections />
         </div>
 
         {/* Featured Villas Section */}

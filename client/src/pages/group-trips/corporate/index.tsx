@@ -344,8 +344,6 @@ export default function CorporateEventsPage() {
         </div>
       </div>
 
-      {/* Footer */}
-      <Footer />
     </div>
   );
 }

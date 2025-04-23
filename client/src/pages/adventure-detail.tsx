@@ -120,13 +120,13 @@ export default function AdventureDetail() {
       <SEO
         title={`${adventure.title} - Adventure in Cabo San Lucas | Cabo Adventures`}
         description={`Experience ${adventure.title}, an exciting adventure in Cabo San Lucas. Book your adventure today!`}
-        canonicalUrl={`https://cabo-adventures.com/adventures/${adventure.id}`}
+        canonicalUrl={`https://cabo-adventures.com/adventures/${adventure.slug}`}
         schema={generateAdventureSchema(adventure)}
         openGraph={{
           title: `${adventure.title} - Adventure in Cabo San Lucas`,
           description: `Join us for this amazing ${adventure.duration} adventure in Cabo San Lucas.`,
           image: adventure.imageUrl,
-          url: `https://cabo-adventures.com/adventures/${adventure.id}`
+          url: `https://cabo-adventures.com/adventures/${adventure.slug}`
         }}
       />
       <div className="min-h-screen bg-background">
