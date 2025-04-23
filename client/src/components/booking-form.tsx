@@ -139,7 +139,7 @@ export default function BookingForm({ isOpen, onClose, adventureName, price, ima
   };
 
   const appearance = {
-    theme: 'stripe',
+    theme: 'stripe' as const,
     variables: {
       colorPrimary: '#FF8C38',
     },

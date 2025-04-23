@@ -343,15 +343,14 @@ export default function AdventureDetail() {
               <SocialShare
                 title={adventure.title}
                 imageUrl={adventure.imageUrl}
-                url={`https://cabo-adventures.com/adventures/${adventure.slug}`}
-                description={`Check out this amazing ${adventure.title} adventure in Cabo San Lucas!`}
+                listingId={Number(adventure.id)}
               />
             </div>
           </div>
         </div>
 
         {/* Other Top Adventures Section */}
-        <TopAdventures currentAdventureId={adventureId} />
+        <TopAdventures currentAdventureId={Number(adventure.id)} />
 
         {/* Mobile Sticky CTA */}
         <div className="fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg p-4 md:hidden transform transition-transform duration-300 z-50"

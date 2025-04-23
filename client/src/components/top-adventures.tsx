@@ -16,7 +16,10 @@ interface TopAdventuresProps {
 
 export default function TopAdventures({ currentAdventureId }: TopAdventuresProps) {
   const adventures = parseAdventureData(adventureData)
-    .filter(adventure => adventure.id !== currentAdventureId)
+    .filter(adventure => {
+      if (currentAdventureId === undefined) return true;
+      return Number(adventure.id) !== currentAdventureId;
+    })
     .slice(0, 3); // Show max 3 other adventures
 
   return (

@@ -84,6 +84,7 @@ export const bookings = pgTable("bookings", {
   specialRequests: text("special_requests"),
   budget: text("budget"),
   listingId: integer("listing_id").references(() => listings.id),
+  paymentIntentId: text("payment_intent_id"),
 });
 
 // Enhanced leads table

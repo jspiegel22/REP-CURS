@@ -33,6 +33,8 @@ interface IStorage {
   getGuideSubmissions(): Promise<any[]>;
   getAllBookings(): Promise<Booking[]>;
   getAllLeads(): Promise<Lead[]>;
+  getBookingByPaymentIntentId(paymentIntentId: string): Promise<Booking | undefined>;
+  updateBookingStatus(bookingId: number, status: string): Promise<Booking>;
 }
 
 const PostgresSessionStore = connectPg(session);
@@ -404,6 +406,55 @@ export class DatabaseStorage implements IStorage {
     } catch (error) {
       console.error("Error fetching all leads:", error);
       throw new Error("Failed to fetch all leads");
+    }
+  }
+
+  async getBookingByPaymentIntentId(paymentIntentId: string): Promise<Booking | undefined> {
+    try {
+      // Use raw query since we added the column without full Drizzle schema support
+      const result = await db.execute(
+        `SELECT * FROM bookings WHERE payment_intent_id = $1 LIMIT 1`,
+        [paymentIntentId]
+      );
+      
+      if (result.rows.length === 0) {
+        return undefined;
+      }
+      
+      return result.rows[0] as Booking;
+    } catch (error) {
+      console.error("Error fetching booking by payment intent ID:", error);
+      return undefined;
+    }
+  }
+
+  async updateBookingStatus(bookingId: number, status: string): Promise<Booking> {
+    try {
+      // Use raw query since we have schema inconsistencies
+      await db.execute(
+        `UPDATE bookings SET status = $1, updated_at = $2 WHERE id = $3`,
+        [status, new Date(), bookingId]
+      );
+      
+      // Fetch the updated booking
+      const [booking] = await db.select().from(bookings).where(eq(bookings.id, bookingId));
+      
+      if (!booking) {
+        throw new Error(`Booking with ID ${bookingId} not found after update`);
+      }
+      
+      // Send to webhook
+      try {
+        await retryFailedSync(syncBookingToAirtable, booking);
+      } catch (error) {
+        console.error("Failed to sync updated booking to Airtable:", error);
+        // Don't throw error here - we still want to return the booking
+      }
+      
+      return booking;
+    } catch (error) {
+      console.error("Error updating booking status:", error);
+      throw new Error(`Failed to update booking status to ${status}`);
     }
   }
 }
