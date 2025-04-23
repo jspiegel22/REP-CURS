@@ -26,7 +26,7 @@ const upcomingEvents: EventItem[] = [
 export default function EventsSection() {
   return (
     <section className="w-full bg-white">
-      <div className="container mx-auto px-4 py-16">
+      <div className="container mx-auto px-4 py-16 md:py-20">
         <div className="flex flex-col md:flex-row-reverse justify-between">
           <div className="mb-8 md:w-1/3 md:pl-12 md:text-right">
             <h2 className="text-3xl font-bold relative inline-block mb-2">

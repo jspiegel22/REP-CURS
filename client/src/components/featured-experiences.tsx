@@ -97,13 +97,16 @@ export default function FeaturedExperiences() {
   return (
     <div className="relative">
       <div className="mb-6">
-        <h2 className="text-3xl font-bold">Featured Experiences</h2>
-        <div className="flex justify-between items-center">
-          <p className="text-gray-600 mt-1">Discover the best activities and adventures in Cabo</p>
-          <Link href="/adventures" className="text-[#2F4F4F] font-medium hover:underline flex items-center">
-            View All Experiences <ChevronRight className="ml-1 h-4 w-4" />
-          </Link>
-        </div>
+        <h2 className="text-3xl font-bold relative inline-block mb-2">
+          Featured Experiences
+          <span className="absolute bottom-0 left-0 w-full h-1 bg-[#FF8C38] rounded"></span>
+        </h2>
+        <p className="text-gray-700 mt-3 mb-2">
+          Discover the best activities and adventures in Cabo
+        </p>
+        <Link href="/adventures" className="inline-flex items-center mt-2 text-[#FF8C38] hover:text-[#E67D29] font-medium">
+          View All Experiences <ChevronRight className="w-4 h-4 ml-1" />
+        </Link>
       </div>
 
       <div className="relative">

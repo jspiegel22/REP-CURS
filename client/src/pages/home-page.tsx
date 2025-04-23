@@ -162,7 +162,7 @@ export default function HomePage() {
               {/* CTA Button */}
               <Button 
                 onClick={() => setIsGuideFormOpen(true)}
-                className="bg-[#006400] hover:bg-[#004d00] text-white text-xl px-12 py-5 rounded-lg transform transition-all duration-300 hover:scale-105 hidden md:inline-flex relative backdrop-blur-sm bg-opacity-90 shadow-[0_6px_20px_rgba(0,0,0,0.25)] hover:shadow-[0_10px_25px_rgba(0,100,0,0.4)] wiggle-animation"
+                className="bg-[#095355] hover:bg-[#074143] text-white text-xl px-12 py-5 rounded-lg transform transition-all duration-300 hover:scale-105 hidden md:inline-flex relative backdrop-blur-sm bg-opacity-90 shadow-[0_6px_20px_rgba(0,0,0,0.25)] hover:shadow-[0_10px_25px_rgba(9,83,85,0.4)] wiggle-animation"
               >
                 GET YOUR 2025 ULTIMATE GUIDE TO CABO
                 <ChevronRight className="w-5 h-5 ml-2" />
@@ -171,7 +171,7 @@ export default function HomePage() {
               {/* Mobile CTA Button */}
               <Button
                 onClick={() => setIsGuideFormOpen(true)}
-                className="md:hidden mx-auto w-[85%] my-8 bg-[#006400] hover:bg-[#004d00] text-white text-base px-4 py-6 rounded-lg flex items-center justify-center gap-2 shadow-[0_6px_15px_rgba(0,0,0,0.25)] wiggle-animation"
+                className="md:hidden mx-auto w-[85%] my-8 bg-[#095355] hover:bg-[#074143] text-white text-base px-4 py-6 rounded-lg flex items-center justify-center gap-2 shadow-[0_6px_15px_rgba(0,0,0,0.25)] wiggle-animation"
               >
                 GET YOUR 2025 ULTIMATE GUIDE
                 <ChevronRight className="w-5 h-5" />
@@ -205,11 +205,11 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Spacer */}
-        <div className="w-full py-4 bg-white"></div>
+        {/* Spacer - reduced by 50% on mobile */}
+        <div className="w-full py-2 md:py-4 bg-white"></div>
 
         {/* Featured Experiences Section - Light Orange Background */}
-        <div className="w-full bg-[#FEF6E6] py-16">
+        <div className="w-full bg-[#FEF6E6] py-16 md:py-20">
           <div className="container mx-auto px-4">
             <FeaturedExperiences />
           </div>
@@ -228,7 +228,7 @@ export default function HomePage() {
         <EventsSection />
 
         {/* Luxury Concierge */}
-        <div className="bg-[#2F4F4F] text-white py-16">
+        <div className="bg-[#2F4F4F] text-white py-16 md:py-20">
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
               {/* Left Column - Image */}
@@ -245,16 +245,17 @@ export default function HomePage() {
                 <p className="text-lg mb-8">
                   Experience Cabo San Lucas like never before with our premium concierge services. From private jets to yacht charters, we handle every detail.
                 </p>
-                <Button asChild variant="outline" className="bg-white text-[#2F4F4F] hover:bg-[#F5F5DC] shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-[0_8px_30px_rgba(255,255,255,0.2)]">
-                  <Link href="/concierge">Learn More</Link>
-                </Button>
+                <Link href="/concierge" className="inline-flex items-center gap-2 bg-white hover:bg-gray-100 text-[#2F4F4F] px-6 py-3 rounded-lg font-medium shadow-md hover:shadow-lg">
+                  Learn More
+                  <ChevronRight className="w-5 h-5" />
+                </Link>
               </div>
             </div>
           </div>
         </div>
 
         {/* Latest Blog Posts */}
-        <div className="py-16 bg-white">
+        <div className="py-16 md:py-20 bg-white">
           <div className="container mx-auto px-4">
             <h2 className="text-3xl font-bold mb-2 text-gray-900">What's Going On in Cabo</h2>
             <p className="text-lg text-gray-600 mb-8">Stories, tips, and guides for your next Cabo adventure</p>
@@ -299,7 +300,7 @@ export default function HomePage() {
         </div>
         
         {/* Itinerary Builder Teaser Section */}
-        <div className="bg-[#2F4F4F] py-16">
+        <div className="bg-[#2F4F4F] py-16 md:py-20">
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
               {/* Left Column - Content */}
@@ -350,7 +351,7 @@ export default function HomePage() {
         </div>
 
         {/* Instagram Feed */}
-        <div className="bg-white py-16">
+        <div className="bg-white py-16 md:py-20">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold mb-4">Follow @cabo on Instagram</h2>
