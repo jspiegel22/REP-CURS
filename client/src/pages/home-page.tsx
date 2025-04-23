@@ -162,7 +162,7 @@ export default function HomePage() {
               {/* CTA Button */}
               <Button 
                 onClick={() => setIsGuideFormOpen(true)}
-                className="bg-[#CC5500] hover:bg-[#A83800] text-white text-xl px-12 py-5 rounded-lg transform transition-all duration-300 hover:scale-105 hidden md:inline-flex relative backdrop-blur-sm bg-opacity-90 shadow-[0_6px_20px_rgba(0,0,0,0.25)] hover:shadow-[0_10px_25px_rgba(204,85,0,0.4)] wiggle-animation"
+                className="bg-[#006400] hover:bg-[#004d00] text-white text-xl px-12 py-5 rounded-lg transform transition-all duration-300 hover:scale-105 hidden md:inline-flex relative backdrop-blur-sm bg-opacity-90 shadow-[0_6px_20px_rgba(0,0,0,0.25)] hover:shadow-[0_10px_25px_rgba(0,100,0,0.4)] wiggle-animation"
               >
                 GET YOUR 2025 ULTIMATE GUIDE TO CABO
                 <ChevronRight className="w-5 h-5 ml-2" />
@@ -171,7 +171,7 @@ export default function HomePage() {
               {/* Mobile CTA Button */}
               <Button
                 onClick={() => setIsGuideFormOpen(true)}
-                className="md:hidden mx-auto w-[85%] my-8 bg-[#CC5500] hover:bg-[#A83800] text-white text-base px-4 py-6 rounded-lg flex items-center justify-center gap-2 shadow-[0_6px_15px_rgba(0,0,0,0.25)] wiggle-animation"
+                className="md:hidden mx-auto w-[85%] my-8 bg-[#006400] hover:bg-[#004d00] text-white text-base px-4 py-6 rounded-lg flex items-center justify-center gap-2 shadow-[0_6px_15px_rgba(0,0,0,0.25)] wiggle-animation"
               >
                 GET YOUR 2025 ULTIMATE GUIDE
                 <ChevronRight className="w-5 h-5" />
@@ -329,7 +329,7 @@ export default function HomePage() {
                   </div>
                 </div>
                 <div className="mt-8">
-                  <Link href="/itinerary-builder" className="inline-flex items-center gap-2 bg-[#CC5500] hover:bg-[#A83800] text-white px-6 py-3 rounded-lg font-medium">
+                  <Link href="/itinerary-builder" className="inline-flex items-center gap-2 bg-white hover:bg-gray-100 text-[#2F4F4F] px-6 py-3 rounded-lg font-medium shadow-md hover:shadow-lg">
                     Create Your Itinerary 
                     <ChevronRight className="w-5 h-5" />
                   </Link>
