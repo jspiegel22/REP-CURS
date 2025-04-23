@@ -423,6 +423,68 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Autoblogger webhook endpoint
+  app.post("/api/webhooks/autoblogger", async (req, res) => {
+    try {
+      const { title, content, excerpt, slug, image_url, category, tags, publish } = req.body;
+      
+      // Basic validation
+      if (!title || !content) {
+        return res.status(400).json({ 
+          message: "Invalid blog post data", 
+          details: "Title and content are required" 
+        });
+      }
+      
+      // Check for webhook signature
+      const signature = req.headers['x-webhook-signature'];
+      const webhookSecret = process.env.WEBHOOK_SECRET || "41d203af-5210-4f49-a1b6-865d15fca215";
+      
+      if (!signature || signature !== webhookSecret) {
+        return res.status(401).json({ 
+          message: "Unauthorized", 
+          details: "Invalid or missing webhook signature" 
+        });
+      }
+      
+      console.log(`Autoblogger webhook received for post: ${title}`);
+      
+      // Generate slug if not provided
+      const finalSlug = slug || generateSlug(title);
+      
+      // Store the blog post
+      const blogPost = await storage.createBlogPost({
+        title,
+        content,
+        excerpt: excerpt || (content.length > 150 ? content.substring(0, 150) + '...' : content),
+        slug: finalSlug,
+        imageUrl: image_url || null,
+        author: 'Cabo Team',
+        categories: category ? [category] : ["travel"],
+        tags: tags || [],
+        status: publish ? 'published' : 'draft',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      });
+      
+      console.log(`Autoblogger post successfully created: ${blogPost.slug}`);
+      
+      res.status(201).json({ 
+        status: "success",
+        message: "Blog post created successfully", 
+        post_id: blogPost.id,
+        post_slug: blogPost.slug
+      });
+    } catch (error) {
+      console.error("Error processing autoblogger webhook:", error);
+      res.status(500).json({ 
+        status: "error",
+        message: "Failed to process blog post", 
+        details: error.message 
+      });
+    }
+  });
+  
   // Blog auto-sync webhook endpoint
   app.post("/api/blog/webhook", async (req, res) => {
     try {

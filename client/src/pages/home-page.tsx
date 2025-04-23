@@ -232,7 +232,7 @@ export default function HomePage() {
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
               {/* Left Column - Image */}
-              <div className="relative h-[400px] rounded-2xl overflow-hidden">
+              <div className="relative h-[350px] rounded-2xl overflow-hidden shadow-lg">
                 <img 
                   src="https://images.unsplash.com/photo-1540541338287-41700207dee6?ixlib=rb-4.0.3" 
                   alt="Luxury Concierge Services"
@@ -267,7 +267,7 @@ export default function HomePage() {
                 </div>
                 <div className="mt-8">
                   <Link href="/concierge" className="inline-flex items-center gap-2 bg-white hover:bg-gray-100 text-[#2F4F4F] px-6 py-3 rounded-lg font-medium shadow-md hover:shadow-lg">
-                    Learn More
+                    Get Started
                     <ChevronRight className="w-5 h-5" />
                   </Link>
                 </div>

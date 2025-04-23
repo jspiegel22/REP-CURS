@@ -47,7 +47,7 @@ export default function EventsSection() {
             {upcomingEvents.map((event) => (
               <Link key={event.title} href={event.link}>
                 <a className="group block">
-                  <div className="relative rounded-lg overflow-hidden h-60">
+                  <div className="relative rounded-lg overflow-hidden h-[18.75rem]">
                     <img 
                       src={event.imageUrl}
                       alt={event.title}

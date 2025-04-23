@@ -47,7 +47,7 @@ export default function StaysSection() {
             {stayOptions.map((option) => (
               <Link key={option.title} href={option.link}>
                 <a className="group block">
-                  <div className="relative rounded-lg overflow-hidden h-60">
+                  <div className="relative rounded-lg overflow-hidden h-[18.75rem]">
                     <img 
                       src={option.imageUrl}
                       alt={option.title}

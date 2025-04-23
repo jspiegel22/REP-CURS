@@ -182,15 +182,46 @@ async def autoblogger_webhook(
             
         logger.info(f"Received new blog post: {post.title}")
         
-        # Here you would typically save to database, we'll log it for now
-        # In a real implementation, you'd connect to your database and save the post
-        
-        return {
-            "status": "success", 
-            "message": "Blog post received",
-            "post_slug": post.slug,
-            "callback_url": f"https://{os.environ.get('REPLIT_SLUG', 'localhost')}.replit.app/api/webhooks/autoblogger"
-        }
+        # Save the blog post to the database
+        conn = await get_db_connection()
+        try:
+            status = "published" if post.publish else "draft"
+            
+            # Convert tags to JSON array if provided
+            tags_json = "[]"
+            if post.tags:
+                tags_json = json.dumps(post.tags)
+                
+            # Convert category to array for categories field
+            categories_json = json.dumps([post.category]) if post.category else "[]"
+            
+            # Insert the blog post into the database
+            cur = await conn.cursor()
+            await cur.execute(
+                """
+                INSERT INTO blog_posts (title, slug, content, excerpt, image_url, 
+                                      categories, tags, status, pub_date)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                RETURNING id, slug
+                """,
+                (post.title, post.slug, post.content, post.excerpt, post.image_url,
+                 categories_json, tags_json, status, datetime.now())
+            )
+            
+            result = await cur.fetchone()
+            await cur.close()
+            
+            logger.info(f"Successfully saved blog post to database with ID: {result[0]}")
+            
+            return {
+                "status": "success", 
+                "message": "Blog post saved to database",
+                "post_id": result[0],
+                "post_slug": result[1],
+                "callback_url": f"https://{os.environ.get('REPLIT_SLUG', 'localhost')}.replit.app/api/webhooks/autoblogger"
+            }
+        finally:
+            await conn.close()
     except Exception as e:
         logger.error(f"Error processing blog post from AutoBlogger: {e}")
         raise HTTPException(status_code=500, detail=f"Error processing blog post: {str(e)}")
