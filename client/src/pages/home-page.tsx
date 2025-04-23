@@ -6,9 +6,11 @@ import { Villa, parseVillaData } from "@/types/villa";
 import { VillaCard } from "@/components/villa-card";
 import { ChevronRight, ArrowDown } from "lucide-react";
 import { SiTiktok, SiInstagram, SiWhatsapp, SiFacebook, SiPinterest, SiYoutube } from "react-icons/si";
-import CategoryGrid from "@/components/category-grid";
 import FeaturedExperiences from "@/components/featured-experiences";
-import CuratedCollections from "@/components/curated-collections";
+import StaysSection from "@/components/stays-section";
+import ActivitiesSection from "@/components/activities-section";
+import DiningSection from "@/components/dining-section";
+import EventsSection from "@/components/events-section";
 import SEO from "@/components/SEO";
 import { sampleBlogs } from "@/data/sample-blogs";
 import { format } from "date-fns";
@@ -159,17 +161,18 @@ export default function HomePage() {
               {/* CTA Button */}
               <Button 
                 onClick={() => setIsGuideFormOpen(true)}
-                className="bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white text-xl px-10 py-6 rounded-2xl transform transition-all duration-300 hover:scale-105 hidden md:inline-flex relative backdrop-blur-sm bg-opacity-90 shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-[0_8px_30px_rgba(47,79,79,0.3)]"
+                className="bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white text-xl px-12 py-5 rounded-lg transform transition-all duration-300 hover:scale-105 hidden md:inline-flex relative backdrop-blur-sm bg-opacity-90 shadow-[0_6px_20px_rgba(0,0,0,0.25)] hover:shadow-[0_10px_25px_rgba(47,79,79,0.4)]"
               >
-                Get Your Free Guide
+                GET YOUR 2025 ULTIMATE GUIDE TO CABO
+                <ChevronRight className="w-5 h-5 ml-2" />
               </Button>
 
               {/* Mobile CTA Button */}
               <Button
                 onClick={() => setIsGuideFormOpen(true)}
-                className="md:hidden mx-auto w-[80%] bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white text-lg py-6 rounded-xl flex items-center justify-center gap-2 shadow-[0_8px_30px_rgb(0,0,0,0.12)]"
+                className="md:hidden mx-auto w-[85%] my-8 bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white text-base px-4 py-6 rounded-lg flex items-center justify-center gap-2 shadow-[0_6px_15px_rgba(0,0,0,0.25)]"
               >
-                Get Your Free Guide
+                GET YOUR 2025 ULTIMATE GUIDE
                 <ChevronRight className="w-5 h-5" />
               </Button>
 
@@ -201,38 +204,38 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Featured Experiences Section */}
-        <div className="container mx-auto px-4 py-12 bg-gray-50">
-          <FeaturedExperiences />
-        </div>
+        {/* Spacer */}
+        <div className="w-full py-4 bg-white"></div>
 
-        {/* Main Categories - Explore Cabo */}
-        <div className="container mx-auto px-4 py-16">
-          <CategoryGrid />
-        </div>
-        
-        {/* Curated Collections */}
-        <div className="container mx-auto px-4 py-16 bg-gray-50">
-          <CuratedCollections />
-        </div>
-
-        {/* Featured Villas Section */}
-        <div className="container mx-auto px-4 py-8 bg-white">
-          <h2 className="text-2xl font-bold mb-4">Featured Luxury Villas</h2>
-          <div className="relative">
-            <div className="overflow-x-auto pb-4 hide-scrollbar">
-              <div className="flex space-x-6">
-                {villas.map((villa) => (
-                  <VillaCard 
-                    key={villa.id} 
-                    villa={villa} 
-                    className="flex-none w-[300px]"
-                  />
-                ))}
-              </div>
+        {/* Featured Experiences Section - Light Orange Background */}
+        <div className="w-full bg-[#FEF6E6] py-16">
+          <div className="container mx-auto px-4">
+            <div className="mb-6">
+              <h2 className="text-3xl font-bold mb-2">Featured Experiences</h2>
+              <p className="text-gray-700 mt-1 max-w-2xl">
+                Discover the most exciting adventures and experiences in Cabo San Lucas
+              </p>
+              <Link href="/experiences">
+                <a className="inline-flex items-center mt-2 text-orange-600 hover:text-orange-700 font-medium">
+                  View All Featured Adventures <ChevronRight className="w-4 h-4 ml-1" />
+                </a>
+              </Link>
             </div>
+            <FeaturedExperiences />
           </div>
         </div>
+
+        {/* Stays Section - White Background */}
+        <StaysSection />
+        
+        {/* Activities Section - Light Orange Background */}
+        <ActivitiesSection />
+        
+        {/* Dining Section - White Background */}
+        <DiningSection />
+        
+        {/* Events Section - Light Orange Background */}
+        <EventsSection />
 
         {/* Luxury Concierge */}
         <div className="bg-[#2F4F4F] text-white py-16">

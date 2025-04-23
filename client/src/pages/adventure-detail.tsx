@@ -2,17 +2,17 @@ import { useParams } from "wouter";
 import { Adventure, parseAdventureData } from "@/types/adventure";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useState, useEffect } from "react";
-import { Clock, Users, Calendar, Plus, Minus } from "lucide-react";
+import { Clock, Users, Plus, Minus } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ProductFooter } from "@/components/product-footer";
 import { RewardsPanel } from "@/components/rewards-panel";
 import { SocialShare } from "@/components/social-share";
+import TopAdventures from "@/components/top-adventures";
+import BookingForm from "@/components/booking-form";
 
 // Removed next/router import
 import SEO, { generateAdventureSchema } from "@/components/SEO";
@@ -84,7 +84,8 @@ export default function AdventureDetail() {
     message: "",
     showMobileCTA: false
   });
-  // const router = useRouter(); // removed router
+  const [bookingOpen, setBookingOpen] = useState(false);
+  const adventureId = adventure?.id || -1;
 
   // Add scroll event handler
   useEffect(() => {
@@ -101,11 +102,6 @@ export default function AdventureDetail() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Booking form submitted:", formData);
-  };
 
   if (!adventure) {
     return (
@@ -203,93 +199,22 @@ export default function AdventureDetail() {
                     <Plus className="h-4 w-4" />
                   </Button>
                 </div>
-                <Sheet>
-                  <SheetTrigger asChild>
-                    <Button
-                      size="lg"
-                      className="w-[200px] bg-[#2F4F4F] hover:bg-[#2F4F4F]/90 text-white shadow-lg hover:shadow-xl transition-all"
-                    >
-                      Book Now
-                    </Button>
-                  </SheetTrigger>
-                  <SheetContent>
-                    <SheetHeader>
-                      <SheetTitle>Book Your Adventure</SheetTitle>
-                      <SheetDescription>
-                        Fill out the form below and we'll get back to you shortly with availability.
-                      </SheetDescription>
-                    </SheetHeader>
-                    <form onSubmit={handleSubmit} className="space-y-4 mt-6">
-                      <div>
-                        <Label htmlFor="guests">Number of Guests</Label>
-                        <Select
-                          value={formData.guests}
-                          onValueChange={(value) => setFormData({ ...formData, guests: value })}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select number of guests" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
-                              <SelectItem key={num} value={num.toString()}>
-                                {num} {num === 1 ? 'Guest' : 'Guests'}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div>
-                        <Label htmlFor="name">Name</Label>
-                        <Input
-                          id="name"
-                          value={formData.name}
-                          onChange={e => setFormData({ ...formData, name: e.target.value })}
-                          required
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="email">Email</Label>
-                        <Input
-                          id="email"
-                          type="email"
-                          value={formData.email}
-                          onChange={e => setFormData({ ...formData, email: e.target.value })}
-                          required
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="phone">Phone</Label>
-                        <Input
-                          id="phone"
-                          type="tel"
-                          value={formData.phone}
-                          onChange={e => setFormData({ ...formData, phone: e.target.value })}
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="date">Preferred Date</Label>
-                        <Input
-                          id="date"
-                          type="date"
-                          value={formData.date}
-                          onChange={e => setFormData({ ...formData, date: e.target.value })}
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="message">Special Requests</Label>
-                        <Textarea
-                          id="message"
-                          value={formData.message}
-                          onChange={e => setFormData({ ...formData, message: e.target.value })}
-                          placeholder="Any special requirements or questions?"
-                        />
-                      </div>
-                      <Button type="submit" className="w-full">
-                        Submit Booking Request
-                      </Button>
-                    </form>
-                  </SheetContent>
-                </Sheet>
+                <Button
+                  size="lg"
+                  className="w-[200px] bg-[#FF8C38] hover:bg-[#E67D29] text-white shadow-lg hover:shadow-xl transition-all"
+                  onClick={() => setBookingOpen(true)}
+                >
+                  Book Now
+                </Button>
+                
+                {/* Stripe Direct Booking Form */}
+                <BookingForm 
+                  isOpen={bookingOpen}
+                  onClose={() => setBookingOpen(false)}
+                  adventureName={adventure.title}
+                  price={parseFloat(adventure.currentPrice.replace(/[^0-9.]/g, ''))}
+                  image={adventure.imageUrl}
+                />
               </div>
             </div>
           </div>
@@ -346,194 +271,98 @@ export default function AdventureDetail() {
                 <div className="space-y-6 mb-12">
                   {reviews.map((review, index) => (
                     <Card key={index}>
-                      <CardContent className="p-6">
-                        <div className="flex justify-between items-start mb-2">
-                          <div>
-                            <p className="font-semibold">{review.name}</p>
-                            <p className="text-sm text-muted-foreground">{review.date}</p>
-                          </div>
-                          <div className="text-yellow-400">
-                            {"★".repeat(review.rating)}
-                          </div>
+                      <CardContent className="p-4">
+                        <div className="flex justify-between mb-2">
+                          <div className="font-semibold">{review.name}</div>
+                          <div className="text-sm text-muted-foreground">{review.date}</div>
                         </div>
-                        <p>{review.comment}</p>
+                        <div className="flex items-center mb-2">
+                          <span className="text-yellow-400" style={{ letterSpacing: '-3px' }}>
+                            {"★".repeat(review.rating)}
+                          </span>
+                        </div>
+                        <p className="text-sm">"{review.comment}"</p>
                       </CardContent>
                     </Card>
                   ))}
                 </div>
 
-                {/* FAQ Section */}
+                {/* FAQ Accordion */}
                 <h2 className="text-2xl font-semibold mb-6">Frequently Asked Questions</h2>
-                <Accordion type="single" collapsible className="mb-12">
-                  {faqs.map((faq, index) => (
-                    <AccordionItem key={index} value={`item-${index}`}>
-                      <AccordionTrigger>{faq.question}</AccordionTrigger>
-                      <AccordionContent>{faq.answer}</AccordionContent>
-                    </AccordionItem>
-                  ))}
-                </Accordion>
-                {/* Add Social Share */}
-                <div className="mb-8">
-                  <h2 className="text-lg font-semibold mb-4">Share this Adventure</h2>
-                  <SocialShare
-                    listingId={parseInt(adventure.id)}
-                    title={adventure.title}
-                    imageUrl={adventure.imageUrl}
-                  />
+                <div className="mb-12">
+                  <Accordion type="single" collapsible className="space-y-4">
+                    {faqs.map((faq, index) => (
+                      <AccordionItem key={index} value={`faq-${index}`} className="border rounded-md">
+                        <AccordionTrigger className="px-4 hover:no-underline">
+                          {faq.question}
+                        </AccordionTrigger>
+                        <AccordionContent className="px-4 pb-4 pt-1 text-muted-foreground">
+                          {faq.answer}
+                        </AccordionContent>
+                      </AccordionItem>
+                    ))}
+                  </Accordion>
                 </div>
               </div>
             </div>
 
             {/* Sidebar */}
-            <div className="lg:col-span-1">
-              <div className="space-y-6 sticky top-8">
+            <div className="order-first lg:order-last">
+              {/* Booking Card */}
+              <Card className="sticky top-4 mb-6">
+                <CardContent className="p-6">
+                  <h3 className="text-xl font-semibold mb-4">Book this adventure</h3>
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span className="font-medium">Price per person:</span>
+                      <span>{adventure.currentPrice}</span>
+                    </div>
+                    <div className="flex justify-between items-center pb-4 border-b">
+                      <span className="font-medium">Duration:</span>
+                      <span>{adventure.duration}</span>
+                    </div>
+                    <div className="pt-2">
+                      <Button 
+                        className="w-full bg-[#FF8C38] hover:bg-[#E67D29] text-white" 
+                        size="lg"
+                        onClick={() => setBookingOpen(true)}
+                      >
+                        Book Now
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Rewards Section */}
+              <div className="mb-6">
                 <RewardsPanel />
               </div>
+
+              {/* Social Share */}
+              <SocialShare
+                title={adventure.title}
+                imageUrl={adventure.imageUrl}
+                url={`https://cabo-adventures.com/adventures/${adventure.slug}`}
+                description={`Check out this amazing ${adventure.title} adventure in Cabo San Lucas!`}
+              />
             </div>
           </div>
         </div>
 
-        {/* Bottom Booking Section */}
-        <div className="bg-gray-50 py-6 mt-12 border-t">
-          <div className="container mx-auto px-4">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-              <div>
-                <span className="text-2xl font-bold">{adventure.currentPrice}</span>
-                {adventure.discount && (
-                  <span className="ml-2 text-sm line-through text-muted-foreground">
-                    {adventure.originalPrice}
-                  </span>
-                )}
-              </div>
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2 bg-white rounded-lg p-2 shadow-sm">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="hover:bg-[#2F4F4F]/10"
-                    onClick={() => setFormData(prev => ({
-                      ...prev,
-                      guests: Math.max(1, parseInt(prev.guests) - 1).toString()
-                    }))}
-                  >
-                    <Minus className="h-4 w-4" />
-                  </Button>
-                  <span className="w-20 text-center font-medium">
-                    {formData.guests} Guest{parseInt(formData.guests) !== 1 ? 's' : ''}
-                  </span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="hover:bg-[#2F4F4F]/10"
-                    onClick={() => setFormData(prev => ({
-                      ...prev,
-                      guests: Math.min(10, parseInt(prev.guests) + 1).toString()
-                    }))}
-                  >
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                </div>
-                <Sheet>
-                  <SheetTrigger asChild>
-                    <Button
-                      size="lg"
-                      className="w-[200px] bg-[#2F4F4F] hover:bg-[#2F4F4F]/90 text-white shadow-lg hover:shadow-xl transition-all"
-                    >
-                      Book Now
-                    </Button>
-                  </SheetTrigger>
-                  <SheetContent>
-                    <SheetHeader>
-                      <SheetTitle>Book Your Adventure</SheetTitle>
-                      <SheetDescription>
-                        Fill out the form below and we'll get back to you shortly with availability.
-                      </SheetDescription>
-                    </SheetHeader>
-                    <form onSubmit={handleSubmit} className="space-y-4 mt-6">
-                      <div>
-                        <Label htmlFor="guests">Number of Guests</Label>
-                        <Select
-                          value={formData.guests}
-                          onValueChange={(value) => setFormData({ ...formData, guests: value })}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select number of guests" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
-                              <SelectItem key={num} value={num.toString()}>
-                                {num} {num === 1 ? 'Guest' : 'Guests'}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div>
-                        <Label htmlFor="name">Name</Label>
-                        <Input
-                          id="name"
-                          value={formData.name}
-                          onChange={e => setFormData({ ...formData, name: e.target.value })}
-                          required
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="email">Email</Label>
-                        <Input
-                          id="email"
-                          type="email"
-                          value={formData.email}
-                          onChange={e => setFormData({ ...formData, email: e.target.value })}
-                          required
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="phone">Phone</Label>
-                        <Input
-                          id="phone"
-                          type="tel"
-                          value={formData.phone}
-                          onChange={e => setFormData({ ...formData, phone: e.target.value })}
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="date">Preferred Date</Label>
-                        <Input
-                          id="date"
-                          type="date"
-                          value={formData.date}
-                          onChange={e => setFormData({ ...formData, date: e.target.value })}
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="message">Special Requests</Label>
-                        <Textarea
-                          id="message"
-                          value={formData.message}
-                          onChange={e => setFormData({ ...formData, message: e.target.value })}
-                          placeholder="Any special requirements or questions?"
-                        />
-                      </div>
-                      <Button type="submit" className="w-full">
-                        Submit Booking Request
-                      </Button>
-                    </form>
-                  </SheetContent>
-                </Sheet>
-              </div>
-            </div>
-          </div>
-        </div>
+        {/* Other Top Adventures Section */}
+        <TopAdventures currentAdventureId={adventureId} />
+
         {/* Mobile Sticky CTA */}
         <div className="fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg p-4 md:hidden transform transition-transform duration-300 z-50"
           style={{
             transform: formData.showMobileCTA ? 'translateY(0)' : 'translateY(100%)'
           }}>
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex-shrink-0">
-              <span className="text-lg font-bold">{adventure.currentPrice}</span>
+          <div className="flex items-center justify-between">
+            <div className="flex flex-col">
+              <span className="text-xl font-semibold">{adventure.currentPrice}</span>
               {adventure.discount && (
-                <span className="ml-2 text-sm line-through text-muted-foreground">
+                <span className="text-xs text-muted-foreground line-through">
                   {adventure.originalPrice}
                 </span>
               )}
@@ -543,7 +372,7 @@ export default function AdventureDetail() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-6 w-6"
+                  className="h-7 w-7 p-0"
                   onClick={() => setFormData(prev => ({
                     ...prev,
                     guests: Math.max(1, parseInt(prev.guests) - 1).toString()
@@ -551,13 +380,13 @@ export default function AdventureDetail() {
                 >
                   <Minus className="h-3 w-3" />
                 </Button>
-                <span className="w-8 text-center text-sm">
+                <span className="text-sm font-medium w-5 text-center">
                   {formData.guests}
                 </span>
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-6 w-6"
+                  className="h-7 w-7 p-0"
                   onClick={() => setFormData(prev => ({
                     ...prev,
                     guests: Math.min(10, parseInt(prev.guests) + 1).toString()
@@ -566,23 +395,16 @@ export default function AdventureDetail() {
                   <Plus className="h-3 w-3" />
                 </Button>
               </div>
-              <Sheet>
-                <SheetTrigger asChild>
-                  <Button
-                    size="sm"
-                    className="bg-[#2F4F4F] hover:bg-[#2F4F4F]/90 text-white shadow-lg hover:shadow-xl transition-all"
-                  >
-                    Book Now
-                  </Button>
-                </SheetTrigger>
-                <SheetContent>
-                  {/* Same sheet content as above */}
-                </SheetContent>
-              </Sheet>
+              <Button
+                size="sm"
+                className="bg-[#FF8C38] hover:bg-[#E67D29] text-white shadow-lg hover:shadow-xl transition-all"
+                onClick={() => setBookingOpen(true)}
+              >
+                Book Now
+              </Button>
             </div>
           </div>
         </div>
-
       </div>
     </>
   );

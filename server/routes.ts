@@ -13,7 +13,11 @@ import {
   sendGuideRequestWebhook 
 } from './services/webhookClient';
 
+import { registerStripeRoutes } from './routes/stripe';
+
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Register Stripe routes for direct bookings
+  registerStripeRoutes(app);
   // Webhook check endpoint
   app.get("/api/guides/check-webhook", (req, res) => {
     const makeWebhookUrl = process.env.MAKE_WEBHOOK_URL;
