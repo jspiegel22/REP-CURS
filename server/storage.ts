@@ -5,7 +5,6 @@ import type { User, InsertUser, Listing, Booking, Reward, SocialShare, WeatherCa
 import session from "express-session";
 import connectPg from "connect-pg-simple";
 import { nanoid } from "nanoid";
-import { generateResortSlug } from "../client/src/lib/utils";
 
 interface IStorage {
   sessionStore: session.Store;
@@ -203,9 +202,30 @@ export class DatabaseStorage implements IStorage {
     return db.select().from(resorts);
   }
 
+  // Helper function to generate resort slug
+  private generateResortSlug(name: string): string {
+    return name
+      .toLowerCase()
+      .replace(/\s+/g, '-')           // Replace spaces with -
+      .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
+      .replace(/\-\-+/g, '-')         // Replace multiple - with single -
+      .replace(/^-+/, '')             // Trim - from start of text
+      .replace(/-+$/, '');            // Trim - from end of text
+  }
+
   async getResortBySlug(slug: string): Promise<Resort | undefined> {
     const allResorts = await this.getResorts();
-    return allResorts.find(resort => generateResortSlug(resort.name) === slug);
+    return allResorts.find(resort => {
+      // Generate slug from resort name
+      const resortSlug = resort.name
+        .toLowerCase()
+        .replace(/\s+/g, '-')
+        .replace(/[^\w\-]+/g, '')
+        .replace(/\-\-+/g, '-')
+        .replace(/^-+/, '')
+        .replace(/-+$/, '');
+      return resortSlug === slug;
+    });
   }
 
   // User Management

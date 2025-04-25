@@ -35,6 +35,7 @@ import { ChatButton } from "./components/chat-button";
 import { AuthProvider, useAuth } from "@/hooks/use-auth";
 import AdminDashboard from "@/pages/admin";
 import AdminLoginPage from "@/pages/admin/login";
+import AdminImagesPage from "@/pages/admin/images";
 
 function ProtectedAdminRoute({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
@@ -95,7 +96,13 @@ function Router() {
           <Route path="/work-with-us" component={WorkWithUsPage} />
           <Route path="/itinerary-builder" component={ItineraryBuilderPage} />
           <Route path="/test-forms" component={TestFormsPage} />
-          <Route path="/admin/images" component={ImageManagementPage} />
+          <Route path="/admin/images">
+            {() => (
+              <ProtectedAdminRoute>
+                <AdminImagesPage />
+              </ProtectedAdminRoute>
+            )}
+          </Route>
           <Route path="/image-management" component={ImageManagementPage} />
           <Route component={NotFound} />
         </Switch>

@@ -1,147 +1,180 @@
 import { Router } from "express";
-import { db } from "../db";
-import { siteImages } from "@shared/schema";
-import { eq } from "drizzle-orm";
-import sharp from "sharp";
+import multer from "multer";
 import path from "path";
 import fs from "fs";
-import { fileURLToPath } from "url";
+import sharp from "sharp";
+import { db } from "../db";
+import { siteImages } from "@shared/schema";
+import { eq, desc, like, and, or } from "drizzle-orm";
 
-// Setup image router
-const imageRouter = Router();
+const router = Router();
 
-// Get all images from the database with optional filtering
-imageRouter.get("/", async (req, res) => {
-  try {
-    const { category, featured, tags } = req.query;
-    
-    // Build the query filters
-    let filters = [];
-    
-    if (category) {
-      filters.push(eq(siteImages.category, category as string));
+// Configure multer for image uploads
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadDir = path.join("public", "uploads");
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
     }
-    
-    if (featured === "true") {
-      filters.push(eq(siteImages.featured, true));
-    }
-    
-    // Execute the query with filters
-    let images;
-    if (filters.length > 0) {
-      // Apply the first filter and chain the rest
-      let query = db.select().from(siteImages).where(filters[0]);
-      
-      // Add any additional filters
-      for (let i = 1; i < filters.length; i++) {
-        query = query.where(filters[i]);
-      }
-      
-      images = await query;
-    } else {
-      // No filters
-      images = await db.select().from(siteImages);
-    }
-    
-    return res.json({ images });
-  } catch (error) {
-    console.error("Error fetching images:", error);
-    return res.status(500).json({ error: "Failed to fetch images" });
+    cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    const extension = file.originalname.split(".").pop()?.toLowerCase();
+    cb(null, `${uniqueSuffix}.${extension}`);
   }
 });
 
-// Get a single image by ID
-imageRouter.get("/:id", async (req, res) => {
+const upload = multer({
+  storage,
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+    if (allowedTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error("Invalid file type. Only JPEG, PNG, WebP, and GIF are allowed.") as any);
+    }
+  }
+});
+
+// Get all images
+router.get("/", async (req, res) => {
+  try {
+    const { category, search } = req.query;
+    
+    let query = db.select().from(siteImages).orderBy(desc(siteImages.created_at));
+    
+    if (category && category !== "all") {
+      query = query.where(eq(siteImages.category, category as string));
+    }
+
+    if (search) {
+      const searchTerm = `%${search}%`;
+      query = query.where(
+        or(
+          like(siteImages.name, searchTerm),
+          like(siteImages.alt_text, searchTerm),
+          like(siteImages.description, searchTerm)
+        )
+      );
+    }
+    
+    const images = await query;
+    
+    res.json(images);
+  } catch (error) {
+    console.error("Error fetching images:", error);
+    res.status(500).json({ error: "Failed to fetch images" });
+  }
+});
+
+// Get single image by ID
+router.get("/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    
     const [image] = await db
       .select()
       .from(siteImages)
       .where(eq(siteImages.id, parseInt(id)));
-      
+    
     if (!image) {
       return res.status(404).json({ error: "Image not found" });
     }
     
-    return res.json({ image });
+    res.json(image);
   } catch (error) {
     console.error("Error fetching image:", error);
-    return res.status(500).json({ error: "Failed to fetch image" });
+    res.status(500).json({ error: "Failed to fetch image" });
   }
 });
 
-// Create a new image record
-imageRouter.post("/", async (req, res) => {
+// Upload new image
+router.post("/upload", upload.single("file"), async (req, res) => {
   try {
-    const {
+    if (!req.file) {
+      return res.status(400).json({ error: "No file uploaded" });
+    }
+
+    const { 
+      name, 
+      alt_text, 
+      description = "",
+      category = "uncategorized",
+      tags = ""
+    } = req.body;
+
+    if (!name || !alt_text) {
+      return res.status(400).json({ error: "Name and alt text are required" });
+    }
+
+    // Process the image file - convert to WebP for better performance
+    const originalPath = req.file.path;
+    const filename = path.basename(originalPath, path.extname(originalPath));
+    const webpPath = path.join(path.dirname(originalPath), `${filename}.webp`);
+    
+    // Process with sharp
+    const imageInfo = await sharp(originalPath)
+      .webp({ quality: 85 })
+      .toFile(webpPath);
+    
+    // Delete the original file
+    fs.unlinkSync(originalPath);
+    
+    // Create relative URL
+    const url = `/uploads/${filename}.webp`;
+    
+    // Parse tags
+    const parsedTags = tags 
+      ? tags.split(',').map(tag => tag.trim()).filter(Boolean)
+      : [];
+    
+    // Insert into database
+    const [image] = await db.insert(siteImages).values({
       name,
-      image_file,
-      image_url,
       alt_text,
       description,
-      width,
-      height,
-      category,
-      tags,
-      featured
-    } = req.body;
+      category: category as any,
+      url,
+      width: imageInfo.width,
+      height: imageInfo.height,
+      file_size: imageInfo.size,
+      tags: parsedTags,
+      created_at: new Date(),
+      updated_at: new Date()
+    }).returning();
     
-    // Validate required fields
-    if (!name || !image_file || !image_url || !alt_text || !category) {
-      return res.status(400).json({ 
-        error: "Missing required fields",
-        required: ["name", "image_file", "image_url", "alt_text", "category"]
-      });
+    res.status(201).json(image);
+  } catch (error) {
+    console.error("Error uploading image:", error);
+    
+    // Clean up file if it exists
+    if (req.file && fs.existsSync(req.file.path)) {
+      fs.unlinkSync(req.file.path);
     }
     
-    // Insert the new image
-    const [newImage] = await db
-      .insert(siteImages)
-      .values({
-        name,
-        image_file,
-        image_url,
-        alt_text,
-        description,
-        width,
-        height,
-        category,
-        tags,
-        featured: featured || false
-      })
-      .returning();
-      
-    return res.status(201).json({ image: newImage });
-  } catch (error) {
-    console.error("Error creating image:", error);
-    return res.status(500).json({ error: "Failed to create image" });
+    res.status(500).json({ error: "Failed to upload image" });
   }
 });
 
-// Update an existing image
-imageRouter.put("/:id", async (req, res) => {
+// Update image
+router.patch("/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const {
-      name,
-      image_file,
-      image_url,
-      alt_text,
+    const { 
+      name, 
+      alt_text, 
       description,
-      width,
-      height,
       category,
-      tags,
-      featured
+      tags
     } = req.body;
     
-    // Validate image exists
+    // Check if image exists
     const [existingImage] = await db
       .select()
       .from(siteImages)
       .where(eq(siteImages.id, parseInt(id)));
-      
+    
     if (!existingImage) {
       return res.status(404).json({ error: "Image not found" });
     }
@@ -150,179 +183,54 @@ imageRouter.put("/:id", async (req, res) => {
     const [updatedImage] = await db
       .update(siteImages)
       .set({
-        name: name !== undefined ? name : existingImage.name,
-        image_file: image_file !== undefined ? image_file : existingImage.image_file,
-        image_url: image_url !== undefined ? image_url : existingImage.image_url,
-        alt_text: alt_text !== undefined ? alt_text : existingImage.alt_text,
+        name: name || existingImage.name,
+        alt_text: alt_text || existingImage.alt_text,
         description: description !== undefined ? description : existingImage.description,
-        width: width !== undefined ? width : existingImage.width,
-        height: height !== undefined ? height : existingImage.height,
-        category: category !== undefined ? category : existingImage.category,
-        tags: tags !== undefined ? tags : existingImage.tags,
-        featured: featured !== undefined ? featured : existingImage.featured,
+        category: category || existingImage.category,
+        tags: Array.isArray(tags) ? tags : existingImage.tags,
         updated_at: new Date()
       })
       .where(eq(siteImages.id, parseInt(id)))
       .returning();
-      
-    return res.json({ image: updatedImage });
+    
+    res.json(updatedImage);
   } catch (error) {
     console.error("Error updating image:", error);
-    return res.status(500).json({ error: "Failed to update image" });
+    res.status(500).json({ error: "Failed to update image" });
   }
 });
 
-// Delete an image
-imageRouter.delete("/:id", async (req, res) => {
+// Delete image
+router.delete("/:id", async (req, res) => {
   try {
     const { id } = req.params;
     
-    // Validate image exists
-    const [existingImage] = await db
+    // Get the image to delete
+    const [image] = await db
       .select()
       .from(siteImages)
       .where(eq(siteImages.id, parseInt(id)));
-      
-    if (!existingImage) {
+    
+    if (!image) {
       return res.status(404).json({ error: "Image not found" });
     }
     
-    // Delete the image
+    // Delete from database
     await db
       .delete(siteImages)
       .where(eq(siteImages.id, parseInt(id)));
-      
-    return res.json({ success: true, message: "Image deleted successfully" });
+    
+    // Delete file from disk
+    const filePath = path.join("public", image.url);
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+    
+    res.json({ message: "Image deleted successfully", id });
   } catch (error) {
     console.error("Error deleting image:", error);
-    return res.status(500).json({ error: "Failed to delete image" });
+    res.status(500).json({ error: "Failed to delete image" });
   }
 });
 
-// Utility route to scan the public/images directory and add images to the database
-imageRouter.post("/scan", async (req, res) => {
-  try {
-    const { category } = req.body;
-    
-    if (!category) {
-      return res.status(400).json({ error: "Category is required" });
-    }
-    
-    // Define the directory path based on category
-    const categoryDirs: Record<string, string> = {
-      hero: 'hero',
-      resort: 'resorts',
-      villa: 'villas',
-      restaurant: 'restaurants',
-      activity: 'activities',
-      beach: 'beaches',
-      wedding: 'weddings',
-      yacht: 'yachts',
-      luxury: 'luxury',
-      family: 'family',
-      blog: 'blog',
-      testimonial: 'testimonials'
-    };
-    
-    // Get the absolute directory path
-    const __filename = fileURLToPath(import.meta.url);
-    const __dirname = path.dirname(__filename);
-    const imagesDir = path.join(__dirname, '..', '..', 'public', 'images', categoryDirs[category] || category);
-    
-    // Check if directory exists
-    if (!fs.existsSync(imagesDir)) {
-      return res.status(404).json({ error: `Directory for category '${category}' not found` });
-    }
-    
-    // Read all files in the directory
-    const files = fs.readdirSync(imagesDir);
-    
-    // Filter image files
-    const imageFiles = files.filter(file => 
-      /\.(jpg|jpeg|png|gif|webp|avif|svg)$/i.test(file)
-    );
-    
-    if (imageFiles.length === 0) {
-      return res.status(404).json({ error: `No images found in category '${category}'` });
-    }
-    
-    // Process each image
-    const results = [];
-    for (const file of imageFiles) {
-      const filePath = path.join(imagesDir, file);
-      const relativePath = `/images/${categoryDirs[category] || category}/${file}`;
-      const imageUrl = relativePath;
-      
-      // Generate a friendly name
-      const baseName = path.basename(file, path.extname(file));
-      const friendlyName = baseName
-        .replace(/[-_]/g, ' ')
-        .replace(/\b\w/g, c => c.toUpperCase());
-      
-      // Get image dimensions if not SVG
-      let width, height;
-      if (!file.endsWith('.svg')) {
-        try {
-          const metadata = await sharp(filePath).metadata();
-          width = metadata.width;
-          height = metadata.height;
-        } catch (err) {
-          console.warn(`Could not get dimensions for ${file}:`, err);
-        }
-      }
-      
-      // Check if image already exists in the database
-      const [existingImage] = await db
-        .select()
-        .from(siteImages)
-        .where(eq(siteImages.image_file, relativePath));
-      
-      if (existingImage) {
-        // Update the existing record
-        const [updatedImage] = await db
-          .update(siteImages)
-          .set({
-            width: width || existingImage.width,
-            height: height || existingImage.height,
-            updated_at: new Date()
-          })
-          .where(eq(siteImages.id, existingImage.id))
-          .returning();
-          
-        results.push({ status: 'updated', image: updatedImage });
-      } else {
-        // Create a new record
-        const [newImage] = await db
-          .insert(siteImages)
-          .values({
-            name: friendlyName,
-            image_file: relativePath,
-            image_url: imageUrl,
-            alt_text: friendlyName,
-            description: `${friendlyName} in Cabo San Lucas`,
-            width,
-            height,
-            category,
-            tags: [category, baseName],
-            featured: file.includes('featured')
-          })
-          .returning();
-          
-        results.push({ status: 'created', image: newImage });
-      }
-    }
-    
-    return res.json({ 
-      success: true, 
-      message: `Processed ${results.length} images`,
-      created: results.filter(r => r.status === 'created').length,
-      updated: results.filter(r => r.status === 'updated').length,
-      results
-    });
-  } catch (error) {
-    console.error("Error scanning images:", error);
-    return res.status(500).json({ error: "Failed to scan images" });
-  }
-});
-
-export default imageRouter;
+export default router;

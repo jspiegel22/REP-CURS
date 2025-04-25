@@ -1,33 +1,33 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
-
+ 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function generateSlug(name: string): string {
-  // Convert the name to lowercase and trim spaces
-  // Replace any non-alphanumeric characters (including &) with hyphens
-  // Remove consecutive hyphens
-  // Remove leading and trailing hyphens
-  return name
+/**
+ * Generate a URL-friendly slug from a string
+ */
+export function generateSlug(str: string): string {
+  return str
     .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/(^-|-$)/g, '');
+    .replace(/\s+/g, '-')           // Replace spaces with -
+    .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
+    .replace(/\-\-+/g, '-')         // Replace multiple - with single -
+    .replace(/^-+/, '')             // Trim - from start of text
+    .replace(/-+$/, '');            // Trim - from end of text
 }
 
-export function generateVillaSlug(villaName: string): string {
-  // Add "villa-" prefix and convert to slug format
-  return `villa-${generateSlug(villaName.replace(/^Villa\s+/i, ''))}`;
+/**
+ * Generate a URL-friendly slug from a resort name
+ */
+export function generateResortSlug(name: string): string {
+  return generateSlug(name);
 }
 
-export function generateResortSlug(resortName: string): string {
-  // Generate a URL-friendly slug for resort names
-  return generateSlug(resortName
-    .replace(/Resort\s*(&|and)\s*Spa/i, '')
-    .replace(/Hotel/i, '')
-    .trim()
-  );
+/**
+ * Generate a URL-friendly slug from a villa name
+ */
+export function generateVillaSlug(name: string): string {
+  return generateSlug(name);
 }

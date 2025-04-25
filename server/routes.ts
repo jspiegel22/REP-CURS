@@ -4,7 +4,8 @@ import { storage } from "./storage";
 import { setupAuth } from "./auth";
 import { z } from "zod";
 import { insertBookingSchema, insertLeadSchema, insertGuideSubmissionSchema, insertListingSchema } from "@shared/schema";
-import { generateSlug } from "@/lib/utils";
+// Use our own version of generateSlug since we need it server-side
+// instead of importing from client utils
 import { nanoid } from "nanoid";
 import passport from "passport";
 import { 
@@ -225,6 +226,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to create lead" });
     }
   });
+
+  // Function to generate slug for resorts and villas
+  function generateSlug(str: string): string {
+    return str
+      .toLowerCase()
+      .replace(/\s+/g, '-')           // Replace spaces with -
+      .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
+      .replace(/\-\-+/g, '-')         // Replace multiple - with single -
+      .replace(/^-+/, '')             // Trim - from start of text
+      .replace(/-+$/, '');            // Trim - from end of text
+  }
 
   // Keep existing routes
   app.get("/api/villas", async (req, res) => {
