@@ -1,28 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
-// Array of testimonial face images (using optimized WebP format of customer-provided photos)
+// Array of testimonial faces using the processed WebP images
 const testimonialFaces = [
-  {
-    src: '/images/testimonials/testimonial-1.webp',
-    alt: 'Cabo travel enthusiast',
-    initials: 'CE',
+  { 
+    src: '/images/testimonials/webp/kylie.webp',
+    initials: 'KW', 
+    alt: 'Kylie, Cabo traveler',
+    color: 'bg-blue-100' 
   },
-  {
-    src: '/images/testimonials/testimonial-2.webp',
-    alt: 'Cabo luxury traveler',
-    initials: 'CL',
+  { 
+    src: '/images/testimonials/webp/katie.webp',
+    initials: 'KT', 
+    alt: 'Katie, Cabo luxury traveler',
+    color: 'bg-green-100' 
   },
-  {
-    src: '/images/testimonials/testimonial-3.webp',
-    alt: 'Satisfied Cabo visitor',
-    initials: 'PK',
+  { 
+    src: '/images/testimonials/webp/kellie.webp',
+    initials: 'KL', 
+    alt: 'Kellie, Cabo adventure seeker',
+    color: 'bg-purple-100' 
   },
-  {
-    src: '/images/testimonials/testimonial-4.webp',
-    alt: 'Cabo experience reviewer',
-    initials: 'JL',
-  },
+  { 
+    src: '/images/testimonials/webp/phil-k.webp',
+    initials: 'PK', 
+    alt: 'Phil, Cabo experience reviewer',
+    color: 'bg-amber-100' 
+  }
 ];
 
 interface TestimonialFacesProps {
@@ -44,7 +48,7 @@ export function TestimonialFaces({
   // Size mapping for avatar component
   const sizeClass = {
     sm: 'h-8 w-8',
-    md: 'h-12 w-12',
+    md: 'h-12 w-12', 
     lg: 'h-16 w-16',
   };
   
@@ -83,10 +87,12 @@ export function TestimonialFaces({
       {displayedFaces.map((face, index) => (
         <Avatar 
           key={index} 
-          className={`${sizeClass[size]} border-2 border-white`}
+          className={`${sizeClass[size]} border-2 border-white shadow-sm transition-transform hover:scale-110 hover:z-10 rounded-full overflow-hidden`}
         >
-          <AvatarImage src={face.src} alt={face.alt} />
-          <AvatarFallback>{face.initials}</AvatarFallback>
+          <AvatarImage src={face.src} alt={face.alt} className="object-cover w-full h-full" />
+          <AvatarFallback className={`${face.color} text-gray-700 font-medium`}>
+            {face.initials}
+          </AvatarFallback>
         </Avatar>
       ))}
     </div>

@@ -132,18 +132,20 @@ export default function HomePage() {
 
               {/* Social Proof */}
               <div className="flex items-center justify-center mb-6">
-                {/* Testimonial faces with random rotation */}
-                <TestimonialFaces 
-                  count={4} 
-                  size="md" 
-                  autoRotate={true} 
-                  rotationInterval={6000}
-                />
-                <div className="ml-4 flex flex-col items-center">
-                  <span className="text-gray-600">
-                    Trusted by <span className="font-semibold">227,000+</span> travelers
-                  </span>
-                  <span className="text-yellow-400 mt-1">⭐⭐⭐⭐⭐</span>
+                {/* Testimonial faces with real customer photos */}
+                <div className="flex items-center gap-4">
+                  <TestimonialFaces 
+                    count={4} 
+                    size="lg" 
+                    autoRotate={true} 
+                    rotationInterval={6000}
+                  />
+                  <div className="flex flex-col items-center">
+                    <span className="text-gray-600">
+                      Trusted by <span className="font-semibold">227,000+</span> travelers
+                    </span>
+                    <span className="text-yellow-400 mt-1">⭐⭐⭐⭐⭐</span>
+                  </div>
                 </div>
               </div>
 
