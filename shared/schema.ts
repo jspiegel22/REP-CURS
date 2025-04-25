@@ -293,6 +293,7 @@ export const ImageCategory = [
   "luxury",
   "family",
   "blog",
+  "testimonial",
 ] as const;
 
 // Images table with all SEO and reference information

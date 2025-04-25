@@ -20,6 +20,7 @@ import GuideRequestPopup from '@/components/GuideRequestPopup';
 import { WhatsAppButton } from "@/components/whatsapp-button";
 import { ResponsiveCaboImage, CaboImage } from "@/components/ui/cabo-image";
 import { images } from "@/lib/imageMap";
+import { TestimonialFaces } from "@/components/testimonials/testimonial-faces";
 
 // Import villa data
 const villaData = `stretched-link href,w-100 src,location,detail,col-12,detail (2),detail (3),col-auto,col-auto (2),col-auto (3)
@@ -131,28 +132,13 @@ export default function HomePage() {
 
               {/* Social Proof */}
               <div className="flex items-center justify-center mb-6">
-                <div className="flex -space-x-4">
-                  <img
-                    className="w-10 h-10 rounded-full border-2 border-white"
-                    src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=64"
-                    alt="User"
-                  />
-                  <img
-                    className="w-10 h-10 rounded-full border-2 border-white"
-                    src="https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=64"
-                    alt="User"
-                  />
-                  <img
-                    className="w-10 h-10 rounded-full border-2 border-white"
-                    src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=64"
-                    alt="User"
-                  />
-                  <img
-                    className="w-10 h-10 rounded-full border-2 border-white"
-                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=64"
-                    alt="User"
-                  />
-                </div>
+                {/* Testimonial faces with random rotation */}
+                <TestimonialFaces 
+                  count={4} 
+                  size="md" 
+                  autoRotate={true} 
+                  rotationInterval={6000}
+                />
                 <div className="ml-4 flex flex-col items-center">
                   <span className="text-gray-600">
                     Trusted by <span className="font-semibold">227,000+</span> travelers

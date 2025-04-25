@@ -15,10 +15,9 @@ imageRouter.get("/", async (req, res) => {
   try {
     const { category, featured, tags } = req.query;
     
-    // Create filters array
-    const filters = [];
+    // Build the query filters
+    let filters = [];
     
-    // Add filters based on query parameters
     if (category) {
       filters.push(eq(siteImages.category, category as string));
     }
@@ -27,11 +26,20 @@ imageRouter.get("/", async (req, res) => {
       filters.push(eq(siteImages.featured, true));
     }
     
-    // Get the results
+    // Execute the query with filters
     let images;
     if (filters.length > 0) {
-      images = await db.select().from(siteImages).where(filters[0]);
+      // Apply the first filter and chain the rest
+      let query = db.select().from(siteImages).where(filters[0]);
+      
+      // Add any additional filters
+      for (let i = 1; i < filters.length; i++) {
+        query = query.where(filters[i]);
+      }
+      
+      images = await query;
     } else {
+      // No filters
       images = await db.select().from(siteImages);
     }
     
@@ -212,7 +220,8 @@ imageRouter.post("/scan", async (req, res) => {
       yacht: 'yachts',
       luxury: 'luxury',
       family: 'family',
-      blog: 'blog'
+      blog: 'blog',
+      testimonial: 'testimonials'
     };
     
     // Get the absolute directory path
