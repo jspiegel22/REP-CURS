@@ -3,6 +3,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "wouter";
 import { generateVillaSlug } from "@/lib/utils";
 import { MapPin, Star } from "lucide-react";
+import { ResponsiveCaboImage } from "@/components/ui/cabo-image";
+import { images } from "@/lib/imageMap";
 
 interface VillaCardProps {
   villa: Villa;
@@ -17,10 +19,12 @@ export function VillaCard({ villa, className = "" }: VillaCardProps) {
     >
       <Card className="cursor-pointer hover:shadow-lg transition-shadow duration-200">
         <div className="aspect-[16/9] relative overflow-hidden rounded-t-lg bg-muted">
-          <img
+          <ResponsiveCaboImage
             src={villa.imageUrl}
             alt={villa.name}
-            className="object-cover w-full h-full"
+            category="villa"
+            aspectRatio="16/9"
+            className="rounded-t-lg"
             loading="lazy"
             decoding="async"
           />

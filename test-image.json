@@ -1,0 +1,9 @@
+{
+  "name": "Test Beach",
+  "image_file": "/images/beaches/beach-test.jpg",
+  "image_url": "/images/beaches/beach-test.jpg",
+  "alt_text": "Beautiful test beach in Cabo",
+  "description": "A stunning beach for testing purposes",
+  "category": "beach",
+  "tags": ["beach", "test"]
+}

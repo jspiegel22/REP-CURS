@@ -15,6 +15,7 @@ import {
 
 import { registerStripeRoutes } from './routes/stripe';
 import itineraryRoutes from './routes/itinerary';
+import imageRoutes from './routes/image';
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Register Stripe routes for direct bookings
@@ -22,6 +23,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Register itinerary routes
   app.use('/api', itineraryRoutes);
+  
+  // Register image management routes
+  app.use('/api/images', imageRoutes);
   // Webhook check endpoint
   app.get("/api/guides/check-webhook", (req, res) => {
     const makeWebhookUrl = process.env.MAKE_WEBHOOK_URL;

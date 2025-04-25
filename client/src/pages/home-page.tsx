@@ -18,6 +18,8 @@ import { format } from "date-fns";
 import GuideDownloadPopup from "@/components/GuideDownloadPopup";
 import GuideRequestPopup from '@/components/GuideRequestPopup';
 import { WhatsAppButton } from "@/components/whatsapp-button";
+import { ResponsiveCaboImage, CaboImage } from "@/components/ui/cabo-image";
+import { images } from "@/lib/imageMap";
 
 // Import villa data
 const villaData = `stretched-link href,w-100 src,location,detail,col-12,detail (2),detail (3),col-auto,col-auto (2),col-auto (3)
@@ -233,10 +235,12 @@ export default function HomePage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
               {/* Left Column - Image */}
               <div className="relative h-[350px] rounded-2xl overflow-hidden shadow-lg">
-                <img 
-                  src="https://images.unsplash.com/photo-1540541338287-41700207dee6?ixlib=rb-4.0.3" 
+                <ResponsiveCaboImage 
+                  src={images.luxury.concierge} 
                   alt="Luxury Concierge Services"
-                  className="w-full h-full object-cover"
+                  category="luxury"
+                  aspectRatio="16/9"
+                  className="rounded-xl"
                 />
               </div>
               {/* Right Column - Content */}
@@ -361,10 +365,12 @@ export default function HomePage() {
               
               {/* Right Column - Image */}
               <div className="relative h-[350px] rounded-2xl overflow-hidden shadow-lg">
-                <img 
-                  src="https://images.unsplash.com/photo-1610641818989-c2051b5e2cfd?ixlib=rb-4.0.3" 
+                <ResponsiveCaboImage 
+                  src={images.activity.featured2}
                   alt="Personalized Cabo Itinerary"
-                  className="w-full h-full object-cover"
+                  category="activity"
+                  aspectRatio="16/9"
+                  className="rounded-xl"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
               </div>
@@ -380,7 +386,12 @@ export default function HomePage() {
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {/* Sample Instagram posts - first row only */}
-              {[1, 2, 3, 4].map((i) => (
+              {[
+                images.beach.featured1,
+                images.villa.featured2,
+                images.activity.featured3,
+                images.restaurant.featured1
+              ].map((imageSrc, i) => (
                 <a 
                   key={i}
                   href="https://instagram.com/cabo"
@@ -388,9 +399,10 @@ export default function HomePage() {
                   rel="noopener noreferrer"
                   className="relative aspect-square overflow-hidden rounded-lg group"
                 >
-                  <img 
-                    src={`https://images.unsplash.com/photo-15${i}0641818989-c2051b5e2cfd?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=600&q=80`}
-                    alt="Instagram post"
+                  <CaboImage 
+                    src={imageSrc}
+                    alt={`Cabo Instagram post ${i+1}`}
+                    category={i === 0 ? "beach" : i === 1 ? "villa" : i === 2 ? "activity" : "restaurant"}
                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                   />
                   <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">

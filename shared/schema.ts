@@ -279,3 +279,46 @@ export const guideFormSchema = z.object({
 });
 
 export type GuideFormData = z.infer<typeof guideFormSchema>;
+
+// Image categories enum
+export const ImageCategory = [
+  "hero",
+  "resort",
+  "villa",
+  "restaurant",
+  "activity",
+  "beach",
+  "wedding",
+  "yacht",
+  "luxury",
+  "family",
+  "blog",
+] as const;
+
+// Images table with all SEO and reference information
+export const siteImages = pgTable("site_images", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  image_file: text("image_file").notNull().unique(),
+  image_url: text("image_url").notNull(),
+  alt_text: text("alt_text").notNull(),
+  description: text("description"),
+  width: integer("width"),
+  height: integer("height"),
+  category: text("category", { enum: ImageCategory }).notNull(),
+  tags: jsonb("tags").$type<string[]>(),
+  featured: boolean("featured").default(false),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow(),
+});
+
+// Create schemas for the images table
+export const insertSiteImageSchema = createInsertSchema(siteImages).omit({
+  id: true,
+  created_at: true, 
+  updated_at: true,
+});
+
+// Export types
+export type SiteImage = typeof siteImages.$inferSelect;
+export type InsertSiteImage = z.infer<typeof insertSiteImageSchema>;

@@ -29,6 +29,7 @@ import GuidesPage from "@/pages/guides";
 import WorkWithUsPage from "@/pages/work-with-us";
 import ItineraryBuilderPage from "@/pages/itinerary-builder-page";
 import TestFormsPage from "@/pages/test-forms";
+import { ImageManagementPage } from "@/pages/image-management";
 import NavigationBar from "./components/navigation-bar";
 import { ChatButton } from "./components/chat-button";
 import { AuthProvider, useAuth } from "@/hooks/use-auth";
@@ -94,6 +95,8 @@ function Router() {
           <Route path="/work-with-us" component={WorkWithUsPage} />
           <Route path="/itinerary-builder" component={ItineraryBuilderPage} />
           <Route path="/test-forms" component={TestFormsPage} />
+          <Route path="/admin/images" component={ImageManagementPage} />
+          <Route path="/image-management" component={ImageManagementPage} />
           <Route component={NotFound} />
         </Switch>
       </div>
