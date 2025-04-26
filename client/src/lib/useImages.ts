@@ -41,7 +41,8 @@ export function useImages(options?: {
         
       const response = await apiRequest('GET', url);
       const data = await response.json();
-      return data.images as SiteImage[];
+      // Ensure we always return an array even if the API returns nothing
+      return Array.isArray(data) ? data : [];
     }
   });
 }
@@ -56,7 +57,8 @@ export function useImage(id: number | null) {
       if (!id) return null;
       const response = await apiRequest('GET', `${IMAGES_QUERY_KEY}/${id}`);
       const data = await response.json();
-      return data.image as SiteImage;
+      // Handle both formats: {image: SiteImage} or direct SiteImage object
+      return data.image || data || null;
     },
     enabled: !!id
   });

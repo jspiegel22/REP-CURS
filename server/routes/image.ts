@@ -41,7 +41,7 @@ const upload = multer({
 // Get all images
 router.get("/", async (req, res) => {
   try {
-    const { category, search } = req.query;
+    const { category, search, featured, tags } = req.query;
     
     let query = db.select().from(siteImages).orderBy(desc(siteImages.created_at));
     
@@ -60,9 +60,25 @@ router.get("/", async (req, res) => {
       );
     }
     
+    if (featured === 'true') {
+      query = query.where(eq(siteImages.featured, true));
+    }
+    
+    // Get all images from query
     const images = await query;
     
-    res.json(images);
+    // Filter by tags if needed (doing this in JS since it's an array field)
+    let filteredImages = images;
+    if (tags) {
+      const tagArray = Array.isArray(tags) ? tags : [tags];
+      filteredImages = images.filter(image => {
+        if (!image.tags) return false;
+        return tagArray.some(tag => image.tags.includes(tag as string));
+      });
+    }
+    
+    // Return the images array directly
+    res.json(filteredImages);
   } catch (error) {
     console.error("Error fetching images:", error);
     res.status(500).json({ error: "Failed to fetch images" });
