@@ -18,7 +18,7 @@ const stayOptions: StayOption[] = [
   {
     title: "Private Villas",
     description: "Exclusive retreats for families and groups",
-    imageUrl: "/uploads/villa-chavez.webp",
+    imageUrl: "/uploads/book-cabo-villa.webp",
     link: "/stays/villas"
   }
 ];
@@ -48,7 +48,9 @@ export default function StaysSection() {
                   <img 
                     src={option.imageUrl}
                     alt={option.title}
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    className={`w-full h-full transition-transform duration-300 group-hover:scale-105 ${
+                      option.title === "Private Villas" ? "object-fill" : "object-cover"
+                    }`}
                   />
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent p-6">
                     <h3 className="text-xl font-bold text-white">{option.title}</h3>
