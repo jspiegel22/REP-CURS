@@ -68,7 +68,7 @@ const adventures = [
     title: "ATV Tours",
     href: "/adventures/atv",
     description: "Thrilling desert and mountain adventures",
-    image: "https://images.unsplash.com/photo-1623176035122-4e07bc19bab7"
+    image: "/uploads/atv-tour-cabo.png"
   },
   {
     title: "Private Yachts",
@@ -198,7 +198,7 @@ const NavigationBar = () => {
                             <img
                               src={item.image}
                               alt={item.title}
-                              className="w-full h-full object-cover"
+                              className="w-full h-full object-fill"
                               loading="lazy"
                             />
                             <div className="absolute inset-0 bg-black/50 flex items-center">
@@ -217,7 +217,7 @@ const NavigationBar = () => {
                             <img
                               src={item.image}
                               alt={item.title}
-                              className="w-full h-full object-cover"
+                              className="w-full h-full object-fill"
                               loading="lazy"
                             />
                             <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-center p-2">
@@ -236,7 +236,7 @@ const NavigationBar = () => {
                             <img
                               src={item.image}
                               alt={item.title}
-                              className="w-full h-full object-cover"
+                              className="w-full h-full object-fill"
                               loading="lazy"
                             />
                             <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-center p-2">
@@ -289,7 +289,7 @@ const NavigationBar = () => {
                         <li key={item.href}>
                           <NavigationMenuLink asChild>
                             <Link href={item.href} className="flex gap-4 select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                              <img src={item.image} alt={item.title} className="w-24 h-16 object-cover rounded" />
+                              <img src={item.image} alt={item.title} className="w-24 h-16 object-fill rounded" />
                               <div>
                                 <div className="text-sm font-medium leading-none">{item.title}</div>
                                 <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-1">{item.description}</p>
@@ -311,7 +311,7 @@ const NavigationBar = () => {
                         <li key={item.href}>
                           <NavigationMenuLink asChild>
                             <Link href={item.href} className="flex gap-4 select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                              <img src={item.image} alt={item.title} className="w-24 h-16 object-cover rounded" />
+                              <img src={item.image} alt={item.title} className="w-24 h-16 object-fill rounded" />
                               <div>
                                 <div className="text-sm font-medium leading-none">{item.title}</div>
                                 <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-1">{item.description}</p>
@@ -333,7 +333,7 @@ const NavigationBar = () => {
                         <li key={item.href}>
                           <NavigationMenuLink asChild>
                             <Link href={item.href} className="flex gap-4 select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                              <img src={item.image} alt={item.title} className="w-24 h-16 object-cover rounded" />
+                              <img src={item.image} alt={item.title} className="w-24 h-16 object-fill rounded" />
                               <div>
                                 <div className="text-sm font-medium leading-none">{item.title}</div>
                                 <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-1">{item.description}</p>
@@ -373,7 +373,7 @@ const NavigationBar = () => {
                         <li key={item.href}>
                           <NavigationMenuLink asChild>
                             <Link href={item.href} className="flex gap-4 select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                              <img src={item.image} alt={item.title} className="w-24 h-16 object-cover rounded" />
+                              <img src={item.image} alt={item.title} className="w-24 h-16 object-fill rounded" />
                               <div>
                                 <div className="text-sm font-medium leading-none">{item.title}</div>
                                 <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-1">{item.description}</p>

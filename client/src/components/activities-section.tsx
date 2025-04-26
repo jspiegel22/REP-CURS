@@ -12,13 +12,13 @@ const activityOptions: ActivityOption[] = [
   {
     title: "Water Sports",
     description: "Snorkeling, surfing, and sailing adventures",
-    imageUrl: "/uploads/cabo-water-sports.png",
+    imageUrl: "/uploads/luxury-yacht-cabo.png",
     link: "/adventures/water-sports"
   },
   {
     title: "Land Adventures",
     description: "ATV tours, hiking, and desert expeditions",
-    imageUrl: "https://images.unsplash.com/photo-1519865885898-a54a6f2c7eea?ixlib=rb-4.0.3",
+    imageUrl: "/uploads/atv-tour-cabo.png",
     link: "/adventures/land-adventures"
   }
 ];

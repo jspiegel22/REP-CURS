@@ -16,7 +16,7 @@ export function AdventureCard({ adventure }: AdventureCardProps) {
           <img
             src={adventure.imageUrl}
             alt={adventure.title}
-            className="object-cover w-full h-full"
+            className="object-fill w-full h-full"
           />
           {adventure.discount && (
             <div className="absolute top-2 right-2 bg-primary/90 text-primary-foreground px-2 py-1 rounded-full text-xs">

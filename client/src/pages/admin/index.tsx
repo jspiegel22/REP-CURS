@@ -10,7 +10,14 @@ import {
   LogOut,
   Download,
   Image,
-  ImageUp
+  ImageUp,
+  Compass,
+  BedDouble,
+  PalmtreeIcon,
+  Newspaper,
+  HomeIcon,
+  Menu,
+  X
 } from "lucide-react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
@@ -19,6 +26,11 @@ import { Bookings } from "@/components/admin/bookings";
 import { Leads } from "@/components/admin/leads";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import AdventureManager from "@/components/admin/AdventureManager";
+import ResortManager from "@/components/admin/ResortManager";
+import VillaManager from "@/components/admin/VillaManager";
+import BlogManager from "@/components/admin/BlogManager";
+import ImageManager from "@/components/admin/ImageManager";
 
 // This will show a simple analytics dashboard
 function Analytics() {
@@ -107,6 +119,7 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("analytics");
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   // Check if user is authenticated on mount
   useEffect(() => {
@@ -146,77 +159,123 @@ export default function AdminDashboard() {
     }
   };
 
+  const menuItems = [
+    { id: "analytics", label: "Analytics", icon: <BarChart4 className="h-5 w-5" /> },
+    { id: "leads", label: "Leads", icon: <Users className="h-5 w-5" /> },
+    { id: "bookings", label: "Bookings", icon: <CalendarDays className="h-5 w-5" /> },
+    
+    // Content management
+    { id: "title-cms", label: "CONTENT MANAGEMENT", isDivider: true },
+    { id: "adventures", label: "Adventures", icon: <PalmtreeIcon className="h-5 w-5" /> },
+    { id: "resorts", label: "Resorts & Hotels", icon: <BedDouble className="h-5 w-5" /> },
+    { id: "villas", label: "Villas", icon: <HomeIcon className="h-5 w-5" /> },
+    { id: "blogs", label: "Blog Posts", icon: <Newspaper className="h-5 w-5" /> },
+    { id: "images", label: "Image Library", icon: <Image className="h-5 w-5" /> },
+    
+    // Utilities
+    { id: "title-utils", label: "UTILITIES", isDivider: true },
+    { id: "guides", label: "Guide Downloads", icon: <Download className="h-5 w-5" /> },
+    { id: "integrations", label: "Integrations", icon: <LinkIcon className="h-5 w-5" /> },
+    { id: "photo-sync", label: "Photo Sync Manager", icon: <ImageUp className="h-5 w-5" />, isLink: true, href: "/admin/photo-sync" },
+  ];
+
+  const handleNavigation = (id: string) => {
+    setActiveTab(id);
+    setIsMobileMenuOpen(false);
+  };
+
   return (
-    <div className="flex h-screen bg-muted/30">
-      {/* Sidebar */}
-      <div className="w-64 bg-white shadow-sm">
+    <div className="flex flex-col md:flex-row h-screen bg-muted/30">
+      {/* Mobile header */}
+      <div className="md:hidden bg-white border-b p-4 flex justify-between items-center">
+        <h1 className="text-xl font-bold">Cabo Admin</h1>
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        >
+          {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+        </Button>
+      </div>
+      
+      {/* Mobile sidebar (overlay) */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden fixed inset-0 bg-black/50 z-40" onClick={() => setIsMobileMenuOpen(false)}>
+          <div className="w-64 h-full bg-white overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="p-4 border-b">
+              <h1 className="text-xl font-bold">Cabo Admin</h1>
+            </div>
+            
+            <nav className="p-4">
+              <ul className="space-y-2">
+                {menuItems.map((item) => (
+                  <li key={item.id}>
+                    {item.isDivider ? (
+                      <div className="text-xs font-semibold text-muted-foreground mt-6 mb-2 px-2">{item.label}</div>
+                    ) : item.isLink ? (
+                      <Link to={item.href!} className="flex items-center w-full p-2 rounded-md text-left hover:bg-muted" onClick={() => setIsMobileMenuOpen(false)}>
+                        <span className="mr-2">{item.icon}</span>
+                        <span>{item.label}</span>
+                      </Link>
+                    ) : (
+                      <button
+                        onClick={() => handleNavigation(item.id)}
+                        className={`flex items-center w-full p-2 rounded-md text-left ${
+                          activeTab === item.id ? "bg-primary text-primary-foreground" : "hover:bg-muted"
+                        }`}
+                      >
+                        <span className="mr-2">{item.icon}</span>
+                        <span>{item.label}</span>
+                      </button>
+                    )}
+                  </li>
+                ))}
+              </ul>
+              
+              <div className="mt-8 pt-4 border-t">
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center w-full p-2 rounded-md text-left hover:bg-muted text-red-500"
+                >
+                  <LogOut className="mr-2 h-5 w-5" />
+                  <span>Logout</span>
+                </button>
+              </div>
+            </nav>
+          </div>
+        </div>
+      )}
+      
+      {/* Desktop sidebar */}
+      <div className="hidden md:block w-64 bg-white shadow-sm h-screen overflow-y-auto">
         <div className="p-4 border-b">
           <h1 className="text-xl font-bold">Cabo Admin</h1>
         </div>
         
         <nav className="p-4">
           <ul className="space-y-2">
-            <li>
-              <button
-                onClick={() => setActiveTab("analytics")}
-                className={`flex items-center w-full p-2 rounded-md text-left ${
-                  activeTab === "analytics" ? "bg-primary text-primary-foreground" : "hover:bg-muted"
-                }`}
-              >
-                <BarChart4 className="mr-2 h-5 w-5" />
-                <span>Analytics</span>
-              </button>
-            </li>
-            <li>
-              <button
-                onClick={() => setActiveTab("leads")}
-                className={`flex items-center w-full p-2 rounded-md text-left ${
-                  activeTab === "leads" ? "bg-primary text-primary-foreground" : "hover:bg-muted"
-                }`}
-              >
-                <Users className="mr-2 h-5 w-5" />
-                <span>Leads</span>
-              </button>
-            </li>
-            <li>
-              <button
-                onClick={() => setActiveTab("bookings")}
-                className={`flex items-center w-full p-2 rounded-md text-left ${
-                  activeTab === "bookings" ? "bg-primary text-primary-foreground" : "hover:bg-muted"
-                }`}
-              >
-                <CalendarDays className="mr-2 h-5 w-5" />
-                <span>Bookings</span>
-              </button>
-            </li>
-            <li>
-              <button
-                onClick={() => setActiveTab("guides")}
-                className={`flex items-center w-full p-2 rounded-md text-left ${
-                  activeTab === "guides" ? "bg-primary text-primary-foreground" : "hover:bg-muted"
-                }`}
-              >
-                <Download className="mr-2 h-5 w-5" />
-                <span>Guide Downloads</span>
-              </button>
-            </li>
-            <li>
-              <button
-                onClick={() => setActiveTab("integrations")}
-                className={`flex items-center w-full p-2 rounded-md text-left ${
-                  activeTab === "integrations" ? "bg-primary text-primary-foreground" : "hover:bg-muted"
-                }`}
-              >
-                <LinkIcon className="mr-2 h-5 w-5" />
-                <span>Integrations</span>
-              </button>
-            </li>
-            <li>
-              <Link to="/admin/photo-sync" className="flex items-center w-full p-2 rounded-md text-left hover:bg-muted">
-                <ImageUp className="mr-2 h-5 w-5" />
-                <span>Photo Sync Manager</span>
-              </Link>
-            </li>
+            {menuItems.map((item) => (
+              <li key={item.id}>
+                {item.isDivider ? (
+                  <div className="text-xs font-semibold text-muted-foreground mt-6 mb-2 px-2">{item.label}</div>
+                ) : item.isLink ? (
+                  <Link to={item.href!} className="flex items-center w-full p-2 rounded-md text-left hover:bg-muted">
+                    <span className="mr-2">{item.icon}</span>
+                    <span>{item.label}</span>
+                  </Link>
+                ) : (
+                  <button
+                    onClick={() => setActiveTab(item.id)}
+                    className={`flex items-center w-full p-2 rounded-md text-left ${
+                      activeTab === item.id ? "bg-primary text-primary-foreground" : "hover:bg-muted"
+                    }`}
+                  >
+                    <span className="mr-2">{item.icon}</span>
+                    <span>{item.label}</span>
+                  </button>
+                )}
+              </li>
+            ))}
           </ul>
           
           <div className="mt-8 pt-4 border-t">
@@ -234,14 +293,29 @@ export default function AdminDashboard() {
       {/* Main content */}
       <div className="flex-1 overflow-auto">
         <div className="p-4 border-b bg-white flex justify-between items-center">
-          <h2 className="text-xl font-semibold">Dashboard</h2>
+          <h2 className="text-xl font-semibold">
+            {activeTab === "analytics" && "Dashboard"}
+            {activeTab === "leads" && "Leads Management"}
+            {activeTab === "bookings" && "Bookings Management"}
+            {activeTab === "guides" && "Guide Downloads"}
+            {activeTab === "adventures" && "Adventure Management"}
+            {activeTab === "resorts" && "Resort Management"}
+            {activeTab === "villas" && "Villa Management"}
+            {activeTab === "blogs" && "Blog Management"}
+            {activeTab === "images" && "Image Library"}
+            {activeTab === "integrations" && "Integrations"}
+          </h2>
         </div>
         
-        <div className="p-4">
+        <div className="p-4 overflow-y-auto">
           {activeTab === "analytics" && <Analytics />}
           {activeTab === "leads" && <Leads />}
           {activeTab === "bookings" && <Bookings />}
           {activeTab === "guides" && <GuideDownloads />}
+          {activeTab === "adventures" && <AdventureManager />}
+          {activeTab === "resorts" && <ResortManager />}
+          {activeTab === "blogs" && <BlogManager />}
+          {activeTab === "images" && <ImageManager />}
           {activeTab === "integrations" && <Integrations />}
         </div>
       </div>
