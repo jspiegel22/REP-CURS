@@ -1,0 +1,36 @@
+[vite] connecting...
+[vite] connected.
+Total parsed restaurants: 5
+Warning: validateDOMNesting(...): <a> cannot appear as a descendant of &lt;a&gt;.
+    at a
+    at a
+    at https://603d1be0-7877-4e31-a83b-029d972cc9fd-00-cxbuxrzsxtnb.janeway.replit.dev:3000/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=6837f8e9:337:18
+    at div
+    at div
+    at div
+    at nav
+    at NavigationBar (https://603d1be0-7877-4e31-a83b-029d972cc9fd-00-cxbuxrzsxtnb.janeway.replit.dev:3000/src/components/navigation-bar.tsx:186:31)
+    at div
+    at Router
+    at AuthProvider (https://603d1be0-7877-4e31-a83b-029d972cc9fd-00-cxbuxrzsxtnb.janeway.replit.dev:3000/src/hooks/use-auth.tsx:20:32)
+    at QueryClientProvider (https://603d1be0-7877-4e31-a83b-029d972cc9fd-00-cxbuxrzsxtnb.janeway.replit.dev:3000/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=6837f8e9:2805:3)
+    at _a (https://603d1be0-7877-4e31-a83b-029d972cc9fd-00-cxbuxrzsxtnb.janeway.replit.dev:3000/@fs/home/runner/workspace/node_modules/.vite/deps/react-helmet-async.js?v=6837f8e9:550:5)
+    at App
+at a
+at a
+at https://603d1be0-7877-4e31-a83b-029d972cc9fd-00-cxbuxrzsxtnb.janeway.replit.dev:3000/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=6837f8e9:337:18
+at div
+at div
+at div
+at nav
+at NavigationBar (https://603d1be0-7877-4e31-a83b-029d972cc9fd-00-cxbuxrzsxtnb.janeway.replit.dev:3000/src/components/navigation-bar.tsx:186:31)
+at div
+at Router
+at AuthProvider (https://603d1be0-7877-4e31-a83b-029d972cc9fd-00-cxbuxrzsxtnb.janeway.replit.dev:3000/src/hooks/use-auth.tsx:20:32)
+at QueryClientProvider (https://603d1be0-7877-4e31-a83b-029d972cc9fd-00-cxbuxrzsxtnb.janeway.replit.dev:3000/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=6837f8e9:2805:3)
+at _a (https://603d1be0-7877-4e31-a83b-029d972cc9fd-00-cxbuxrzsxtnb.janeway.replit.dev:3000/@fs/home/runner/workspace/node_modules/.vite/deps/react-helmet-async.js?v=6837f8e9:550:5)
+at App
+at t.value (https://603d1be0-7877-4e31-a83b-029d972cc9fd-00-cxbuxrzsxtnb.janeway.replit.dev:3000/__replco/static/devtools/eruda/3.2.3/eruda.js:2:17465)
+at new t (https://603d1be0-7877-4e31-a83b-029d972cc9fd-00-cxbuxrzsxtnb.janeway.replit.dev:3000/__replco/static/devtools/eruda/3.2.3/eruda.js:2:12630)
+at t.value (https://603d1be0-7877-4e31-a83b-029d972cc9fd-00-cxbuxrzsxtnb.janeway.replit.dev:3000/__replco/static/devtools/eruda/3.2.3/eruda.js:2:32766)
+at https://603d1be0-7877-4e31-a83b-029d972cc9fd-00-cxbuxrzsxtnb.janeway.replit.dev:3000/__replco/static/devtools/eruda/3.2.3/eruda.js:2:34400

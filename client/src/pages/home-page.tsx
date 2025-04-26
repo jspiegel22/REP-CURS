@@ -278,34 +278,32 @@ export default function HomePage() {
                 <Link 
                   key={blog.id} 
                   href={`/blog/${blog.slug}`}
-                  className={`block ${index === 2 ? 'hidden md:block' : ''}`}
+                  className={`group block ${index === 2 ? 'hidden md:block' : ''}`}
                 >
-                  <a className="group block">
-                    <div className="relative aspect-[16/9] rounded-lg overflow-hidden mb-4">
-                      <img
-                        src={blog.imageUrl}
-                        alt={blog.title}
-                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                        loading="lazy"
-                      />
+                  <div className="relative aspect-[16/9] rounded-lg overflow-hidden mb-4">
+                    <img
+                      src={blog.imageUrl}
+                      alt={blog.title}
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      loading="lazy"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-3 text-sm text-gray-600">
+                      <span>{format(new Date(blog.date), 'MMM d, yyyy')}</span>
+                      <span>•</span>
+                      <span>{blog.readTime}</span>
                     </div>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-3 text-sm text-gray-600">
-                        <span>{format(new Date(blog.date), 'MMM d, yyyy')}</span>
-                        <span>•</span>
-                        <span>{blog.readTime}</span>
-                      </div>
-                      <h3 className="text-xl font-semibold group-hover:text-[#2F4F4F] transition-colors">
-                        {blog.title}
-                      </h3>
-                      <p className="text-gray-600 line-clamp-2">{blog.excerpt}</p>
-                      <div className="pt-2 flex items-center gap-2 text-sm">
-                        <span className="text-[#2F4F4F] font-medium">{blog.author}</span>
-                        <span>in</span>
-                        <span className="text-[#2F4F4F] font-medium">{blog.category}</span>
-                      </div>
+                    <h3 className="text-xl font-semibold group-hover:text-[#2F4F4F] transition-colors">
+                      {blog.title}
+                    </h3>
+                    <p className="text-gray-600 line-clamp-2">{blog.excerpt}</p>
+                    <div className="pt-2 flex items-center gap-2 text-sm">
+                      <span className="text-[#2F4F4F] font-medium">{blog.author}</span>
+                      <span>in</span>
+                      <span className="text-[#2F4F4F] font-medium">{blog.category}</span>
                     </div>
-                  </a>
+                  </div>
                 </Link>
               ))}
             </div>

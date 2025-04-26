@@ -271,8 +271,8 @@ const NavigationBar = () => {
 
           {/* Logo */}
           <div className="flex-1 flex justify-center md:justify-start">
-            <Link href="/">
-              <a className="text-2xl font-bold text-[#2F4F4F] hover:text-[#1F3F3F]">@cabo</a>
+            <Link href="/" className="text-2xl font-bold text-[#2F4F4F] hover:text-[#1F3F3F]">
+              @cabo
             </Link>
           </div>
 

@@ -36,29 +36,25 @@ export default function StaysSection() {
             <p className="text-gray-700 mt-3 mb-2">
               From luxury resorts to private villas, find the perfect accommodation for your Cabo getaway.
             </p>
-            <Link href="/stays">
-              <a className="inline-flex items-center mt-2 text-blue-600 hover:text-blue-700 font-medium">
-                View All Stays <ChevronRight className="w-4 h-4 ml-1" />
-              </a>
+            <Link href="/stays" className="inline-flex items-center mt-2 text-blue-600 hover:text-blue-700 font-medium">
+              View All Stays <ChevronRight className="w-4 h-4 ml-1" />
             </Link>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:w-2/3">
             {stayOptions.map((option) => (
-              <Link key={option.title} href={option.link}>
-                <a className="group block">
-                  <div className="relative rounded-lg overflow-hidden h-[18.75rem]">
-                    <img 
-                      src={option.imageUrl}
-                      alt={option.title}
-                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                    />
-                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent p-6">
-                      <h3 className="text-xl font-bold text-white">{option.title}</h3>
-                      <p className="text-gray-200 mt-1">{option.description}</p>
-                    </div>
+              <Link key={option.title} href={option.link} className="group block">
+                <div className="relative rounded-lg overflow-hidden h-[18.75rem]">
+                  <img 
+                    src={option.imageUrl}
+                    alt={option.title}
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent p-6">
+                    <h3 className="text-xl font-bold text-white">{option.title}</h3>
+                    <p className="text-gray-200 mt-1">{option.description}</p>
                   </div>
-                </a>
+                </div>
               </Link>
             ))}
           </div>

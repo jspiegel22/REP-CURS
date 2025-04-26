@@ -36,29 +36,25 @@ export default function ActivitiesSection() {
             <p className="text-gray-700 mt-3 mb-2">
               Experience unforgettable adventures on land and sea with our curated activities.
             </p>
-            <Link href="/adventures">
-              <a className="inline-flex items-center mt-2 text-[#FF8C38] hover:text-[#E67D29] font-medium">
-                View All Activities <ChevronRight className="w-4 h-4 ml-1" />
-              </a>
+            <Link href="/adventures" className="inline-flex items-center mt-2 text-[#FF8C38] hover:text-[#E67D29] font-medium">
+              View All Activities <ChevronRight className="w-4 h-4 ml-1" />
             </Link>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:w-2/3">
             {activityOptions.map((option) => (
-              <Link key={option.title} href={option.link}>
-                <a className="group block">
-                  <div className="relative rounded-lg overflow-hidden h-[18.75rem]">
-                    <img 
-                      src={option.imageUrl}
-                      alt={option.title}
-                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                    />
-                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent p-6">
-                      <h3 className="text-xl font-bold text-white">{option.title}</h3>
-                      <p className="text-gray-200 mt-1">{option.description}</p>
-                    </div>
+              <Link key={option.title} href={option.link} className="group block">
+                <div className="relative rounded-lg overflow-hidden h-[18.75rem]">
+                  <img 
+                    src={option.imageUrl}
+                    alt={option.title}
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent p-6">
+                    <h3 className="text-xl font-bold text-white">{option.title}</h3>
+                    <p className="text-gray-200 mt-1">{option.description}</p>
                   </div>
-                </a>
+                </div>
               </Link>
             ))}
           </div>
