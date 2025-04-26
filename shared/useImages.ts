@@ -53,6 +53,26 @@ export const staticImages: SiteImage[] = [
   },
   {
     id: 3,
+    name: 'Dream Vacation Cabo',
+    image_url: '/uploads/dream-vacation-cabo.webp',
+    alt_text: 'Group of women on a yacht celebrating at the famous Cabo San Lucas Arch',
+    description: 'Friends enjoying their dream Cabo vacation on a yacht at El Arco (The Arch)',
+    category: 'activity',
+    tags: ['yacht', 'arch', 'friends', 'vacation', 'celebration'],
+    featured: true
+  },
+  {
+    id: 4,
+    name: 'Grand Velas Los Cabos',
+    image_url: '/uploads/grand-velas-los-cabos.webp',
+    alt_text: 'Grand Velas Los Cabos luxury resort with yacht in foreground',
+    description: 'Aerial view of the Grand Velas Los Cabos luxury resort with a private yacht cruising in the turquoise waters',
+    category: 'luxury',
+    tags: ['resort', 'yacht', 'luxury', 'ocean view', 'beachfront'],
+    featured: true
+  },
+  {
+    id: 5,
     name: 'Cabo Beach Sunset',
     image_url: '/uploads/cabo-beach-sunset.webp',
     alt_text: 'Beautiful sunset over a beach in Cabo San Lucas with dramatic sky colors',
@@ -62,7 +82,7 @@ export const staticImages: SiteImage[] = [
     featured: true
   },
   {
-    id: 4,
+    id: 6,
     name: 'Luxury Villa with Ocean View',
     image_url: '/uploads/luxury-villa.webp',
     alt_text: 'Luxury villa with infinity pool overlooking the ocean in Cabo San Lucas',
@@ -72,7 +92,7 @@ export const staticImages: SiteImage[] = [
     featured: false
   },
   {
-    id: 5,
+    id: 7,
     name: 'Cabo San Lucas Arch',
     image_url: '/uploads/cabo-arch.webp',
     alt_text: 'The famous Arch of Cabo San Lucas (El Arco) rock formation',

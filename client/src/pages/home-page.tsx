@@ -223,8 +223,8 @@ export default function HomePage() {
               {/* Left Column - Image */}
               <div className="relative h-[350px] rounded-2xl overflow-hidden shadow-lg">
                 <ResponsiveCaboImage 
-                  src={images.luxury.concierge} 
-                  alt="Luxury Concierge Services"
+                  src="/uploads/grand-velas-los-cabos.webp" 
+                  alt="Grand Velas Los Cabos luxury resort with yacht"
                   category="luxury"
                   aspectRatio="16/9"
                   className="rounded-xl"
@@ -353,8 +353,8 @@ export default function HomePage() {
               {/* Right Column - Image */}
               <div className="relative h-[350px] rounded-2xl overflow-hidden shadow-lg">
                 <ResponsiveCaboImage 
-                  src={images.activity.featured2}
-                  alt="Personalized Cabo Itinerary"
+                  src="/uploads/dream-vacation-cabo.webp"
+                  alt="Friends celebrating on a yacht at El Arco in Cabo San Lucas"
                   category="activity"
                   aspectRatio="16/9"
                   className="rounded-xl"
