@@ -46,16 +46,33 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  // Start the server first to meet the timeout requirements
   const server = await registerRoutes(app);
-
-  // Temporarily disabled TrackHS integration for testing
-  // try {
-  //   scheduleVillaSync(60); // Sync every hour
-  //   console.log('Villa sync scheduler started');
-  // } catch (error) {
-  //   console.error('Failed to start villa sync scheduler:', error);
-  // }
-  console.log('TrackHS villa sync disabled for testing');
+  
+  // Create a variable to track if the server is up and running
+  let serverReady = false;
+  
+  // Set up timeout to perform non-critical initialization after server is started
+  setTimeout(() => {
+    // Any non-critical initialization can be done here after server is already running
+    // This helps avoid the 20-second timeout issue in Replit
+    console.log('Running delayed initialization tasks...');
+    
+    // Log message instead of doing heavy initialization during startup
+    console.log('TrackHS villa sync disabled for testing');
+    
+    // Initialize database connection warmup without blocking - important to use dynamic imports
+    import('./services/init').then(({ warmupDatabaseConnection }) => {
+      warmupDatabaseConnection()
+        .then(() => console.log('Database connection warmed up successfully'))
+        .catch(error => console.error('Error warming up database connection:', error));
+    }).catch(error => {
+      console.error('Could not load initialization services:', error);
+    });
+    
+    // Mark server as fully initialized
+    serverReady = true;
+  }, 1000); // Wait just 1 second after server startup to perform these tasks
 
   // Handle API routes first
   app.use("/api/*", (req, res) => {

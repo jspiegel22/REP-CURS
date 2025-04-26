@@ -36,6 +36,7 @@ import { AuthProvider, useAuth } from "@/hooks/use-auth";
 import AdminDashboard from "@/pages/admin";
 import AdminLoginPage from "@/pages/admin/login";
 import AdminImagesPage from "@/pages/admin-images";
+import PhotoSyncPage from "@/pages/photo-sync-page";
 
 function ProtectedAdminRoute({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
@@ -103,6 +104,14 @@ function Router() {
               </ProtectedAdminRoute>
             )}
           </Route>
+          <Route path="/admin/photo-sync">
+            {() => (
+              <ProtectedAdminRoute>
+                <PhotoSyncPage />
+              </ProtectedAdminRoute>
+            )}
+          </Route>
+          <Route path="/photo-sync" component={PhotoSyncPage} />
           <Route path="/image-management" component={ImageManagementPage} />
           <Route component={NotFound} />
         </Switch>

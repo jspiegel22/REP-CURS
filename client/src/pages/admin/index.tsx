@@ -6,10 +6,13 @@ import {
   Users,
   CalendarDays,
   FileText,
-  Link,
+  Link as LinkIcon,
   LogOut,
-  Download
+  Download,
+  Image,
+  ImageUp
 } from "lucide-react";
+import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { GuideDownloads } from "@/components/admin/guide-downloads";
 import { Bookings } from "@/components/admin/bookings";
@@ -204,9 +207,15 @@ export default function AdminDashboard() {
                   activeTab === "integrations" ? "bg-primary text-primary-foreground" : "hover:bg-muted"
                 }`}
               >
-                <Link className="mr-2 h-5 w-5" />
+                <LinkIcon className="mr-2 h-5 w-5" />
                 <span>Integrations</span>
               </button>
+            </li>
+            <li>
+              <Link to="/admin/photo-sync" className="flex items-center w-full p-2 rounded-md text-left hover:bg-muted">
+                <ImageUp className="mr-2 h-5 w-5" />
+                <span>Photo Sync Manager</span>
+              </Link>
             </li>
           </ul>
           

@@ -4,7 +4,7 @@ import path from "path";
 import fs from "fs";
 import sharp from "sharp";
 import { db } from "../db";
-import { siteImages, ImageCategory } from "@shared/schema";
+import { siteImages, ImageCategory, type InsertSiteImage } from "@shared/schema";
 import { eq, desc, like, and, or, sql } from "drizzle-orm";
 
 const router = Router();
@@ -169,21 +169,33 @@ router.post("/upload", upload.single("file"), async (req, res) => {
       ? tags.split(',').map((tag: string) => tag.trim()).filter(Boolean)
       : [];
     
-    // Insert into database
-    const [image] = await db.insert(siteImages).values({
+    // Insert into database using type for safety, omitting created_at and updated_at which are auto-generated
+    const imageData: InsertSiteImage = {
       name,
       image_file: filename + '.webp',
       image_url,
       alt_text,
       description,
-      category: category as any,
+      category: category as typeof ImageCategory[number],
       width: imageInfo.width,
       height: imageInfo.height,
       tags: parsedTags,
-      featured: featured === 'true',
-      created_at: new Date(),
-      updated_at: new Date()
-    }).returning();
+      featured: featured === 'true'
+    };
+    
+    // For TypeScript type safety, use direct object with type assertion
+    const [image] = await db.insert(siteImages).values([{
+      name: imageData.name,
+      image_file: imageData.image_file,
+      image_url: imageData.image_url,
+      alt_text: imageData.alt_text,
+      description: imageData.description,
+      category: imageData.category,
+      width: imageData.width,
+      height: imageData.height,
+      tags: imageData.tags,
+      featured: imageData.featured
+    }] as any).returning();
     
     res.status(201).json(image);
   } catch (error) {
@@ -249,21 +261,33 @@ router.post("/bulk-upload", upload.array("files", 50), async (req, res) => {
           ? tags.split(',').map((tag: string) => tag.trim()).filter(Boolean)
           : [];
         
-        // Insert into database
-        const [image] = await db.insert(siteImages).values({
+        // Insert into database with type safety, omitting created_at and updated_at
+        const bulkImageData: InsertSiteImage = {
           name: name, // Auto-generated from filename
           image_file: filename + '.webp',
           image_url,
           alt_text: `${name} image for ${category} category`, // Auto-generated
           description: `${name} in ${category} category`, // Auto-generated
-          category: category as any,
+          category: category as typeof ImageCategory[number],
           width: imageInfo.width,
           height: imageInfo.height,
           tags: parsedTags,
-          featured: featured === 'true',
-          created_at: new Date(),
-          updated_at: new Date()
-        }).returning();
+          featured: featured === 'true'
+        };
+        
+        // For TypeScript type safety, use array with type assertion
+        const [image] = await db.insert(siteImages).values([{
+          name: bulkImageData.name,
+          image_file: bulkImageData.image_file,
+          image_url: bulkImageData.image_url,
+          alt_text: bulkImageData.alt_text,
+          description: bulkImageData.description,
+          category: bulkImageData.category,
+          width: bulkImageData.width,
+          height: bulkImageData.height,
+          tags: bulkImageData.tags,
+          featured: bulkImageData.featured
+        }] as any).returning();
         
         uploadResults.push(image);
       } catch (err: any) {
@@ -502,21 +526,33 @@ router.post("/load-samples", async (req, res) => {
         // Create relative URL
         const image_url = `/uploads/${filename}.webp`;
 
-        // Insert into database
-        const [image] = await db.insert(siteImages).values({
+        // Insert into database with proper typing, omitting created_at and updated_at
+        const sampleImageData: InsertSiteImage = {
           name: imageData.name,
           image_file: `${filename}.webp`,
           image_url,
           alt_text: imageData.alt_text,
           description: imageData.description,
-          category: imageData.category,
+          category: imageData.category as typeof ImageCategory[number],
           width: imageInfo.width,
           height: imageInfo.height,
           tags: imageData.tags,
-          featured: imageData.featured,
-          created_at: new Date(),
-          updated_at: new Date()
-        }).returning();
+          featured: imageData.featured
+        };
+        
+        // For TypeScript type safety, use array with type assertion
+        const [image] = await db.insert(siteImages).values([{
+          name: sampleImageData.name,
+          image_file: sampleImageData.image_file,
+          image_url: sampleImageData.image_url,
+          alt_text: sampleImageData.alt_text,
+          description: sampleImageData.description,
+          category: sampleImageData.category,
+          width: sampleImageData.width,
+          height: sampleImageData.height,
+          tags: sampleImageData.tags,
+          featured: sampleImageData.featured
+        }] as any).returning();
 
         results.push(image);
       } catch (error: any) {

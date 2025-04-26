@@ -1,9 +1,9 @@
-const path = require('path');
-const fs = require('fs');
-const sharp = require('sharp');
-const { db } = require('../server/db');
-const { siteImages } = require('../shared/schema');
-const { sql } = require('drizzle-orm');
+import path from 'path';
+import fs from 'fs';
+import sharp from 'sharp';
+import { db } from '../server/db.js';
+import { siteImages } from '../shared/schema.js';
+import { sql } from 'drizzle-orm';
 
 // Define sample images to load from attached_assets
 const sampleImages = [
