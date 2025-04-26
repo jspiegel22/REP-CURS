@@ -11,10 +11,28 @@
 
 // Define the categories of images used throughout the site
 export type ImageCategory = 'hero' | 'resort' | 'villa' | 'restaurant' | 'activity' | 
-                           'beach' | 'wedding' | 'yacht' | 'luxury' | 'family' | 'blog';
+                           'beach' | 'wedding' | 'yacht' | 'luxury' | 'family' | 'blog' | 'testimonial';
+                           
+// Array of categories for components to use for dropdown lists, etc.
+export const IMAGE_CATEGORIES = [
+  'hero', 'resort', 'villa', 'restaurant', 'activity', 
+  'beach', 'wedding', 'yacht', 'luxury', 'family', 'blog', 'testimonial'
+] as const;
 
 // Map of all images by category
 export const images = {
+  testimonial: {
+    featured1: '/images/testimonials/testimonial-featured-1.jpg',
+    featured2: '/images/testimonials/testimonial-featured-2.jpg',
+    featured3: '/images/testimonials/testimonial-featured-3.jpg',
+    // Specific testimonial people
+    person1: '/images/testimonials/testimonial-person-1.jpg',
+    person2: '/images/testimonials/testimonial-person-2.jpg',
+    person3: '/images/testimonials/testimonial-person-3.jpg',
+    person4: '/images/testimonials/testimonial-person-4.jpg',
+    default: '/images/testimonials/testimonial-default.jpg',
+  },
+    
   hero: {
     main: '/images/hero/hero-featured-1.jpg',
     secondary: '/images/hero/hero-featured-2.jpg',
@@ -162,6 +180,7 @@ const fallbackImages: Record<ImageCategory, string> = {
   luxury: '/images/luxury/luxury-featured-1.jpg',
   family: '/images/family/family-featured-1.jpg',
   blog: '/images/blog/blog-default.svg',
+  testimonial: '/images/testimonials/testimonial-default.jpg',
 };
 
 /**

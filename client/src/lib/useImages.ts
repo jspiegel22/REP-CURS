@@ -1,6 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
-import { ImageCategory } from '@/lib/imageMap';
+import { ImageCategory } from '@shared/schema';
+// Extract the actual type from the tuple array
+type ImageCategoryType = (typeof ImageCategory)[number];
 import type { SiteImage } from '@shared/schema';
 
 const IMAGES_QUERY_KEY = '/api/images';
@@ -9,7 +11,7 @@ const IMAGES_QUERY_KEY = '/api/images';
  * Hook to fetch all images with optional filtering
  */
 export function useImages(options?: { 
-  category?: ImageCategory, 
+  category?: ImageCategoryType, 
   featured?: boolean,
   tags?: string[]
 }) {
@@ -31,7 +33,7 @@ export function useImages(options?: {
       }
       
       if (options?.tags?.length) {
-        options.tags.forEach(tag => params.append('tags', tag));
+        options.tags.forEach((tag: string) => params.append('tags', tag));
       }
       
       const queryString = params.toString();
@@ -75,7 +77,7 @@ export interface ImageInput {
   description?: string;
   width?: number;
   height?: number;
-  category: ImageCategory;
+  category: ImageCategoryType;
   tags?: string[];
   featured?: boolean;
 }
@@ -142,7 +144,7 @@ export function useScanImages() {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: async (category: ImageCategory) => {
+    mutationFn: async (category: ImageCategoryType) => {
       const response = await apiRequest('POST', `${IMAGES_QUERY_KEY}/scan`, { category });
       const data = await response.json();
       return data;

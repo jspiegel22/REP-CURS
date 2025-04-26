@@ -35,7 +35,7 @@ import { ChatButton } from "./components/chat-button";
 import { AuthProvider, useAuth } from "@/hooks/use-auth";
 import AdminDashboard from "@/pages/admin";
 import AdminLoginPage from "@/pages/admin/login";
-import AdminImagesPage from "@/pages/admin/images";
+import AdminImagesPage from "@/pages/admin-images";
 
 function ProtectedAdminRoute({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
