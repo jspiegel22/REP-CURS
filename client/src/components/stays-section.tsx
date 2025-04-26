@@ -18,7 +18,7 @@ const stayOptions: StayOption[] = [
   {
     title: "Private Villas",
     description: "Exclusive retreats for families and groups",
-    imageUrl: "https://images.unsplash.com/photo-1605281317010-fe5ffe798166?ixlib=rb-4.0.3",
+    imageUrl: "/uploads/villa-chavez.webp",
     link: "/stays/villas"
   }
 ];

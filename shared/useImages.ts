@@ -43,6 +43,16 @@ export const staticImages: SiteImage[] = [
   },
   {
     id: 2,
+    name: 'Villa Chavez',
+    image_url: '/uploads/villa-chavez.webp',
+    alt_text: 'Modern luxury Villa Chavez with infinity pool in Cabo San Lucas at sunset',
+    description: 'Exclusive luxury Villa Chavez featuring a stunning infinity pool, modern architecture, and mountain views in Cabo San Lucas',
+    category: 'villa',
+    tags: ['villa', 'luxury', 'pool', 'mountain view', 'private'],
+    featured: true
+  },
+  {
+    id: 3,
     name: 'Cabo Beach Sunset',
     image_url: '/uploads/cabo-beach-sunset.webp',
     alt_text: 'Beautiful sunset over a beach in Cabo San Lucas with dramatic sky colors',
@@ -52,17 +62,17 @@ export const staticImages: SiteImage[] = [
     featured: true
   },
   {
-    id: 3,
+    id: 4,
     name: 'Luxury Villa with Ocean View',
     image_url: '/uploads/luxury-villa.webp',
     alt_text: 'Luxury villa with infinity pool overlooking the ocean in Cabo San Lucas',
     description: 'Private luxury villa with stunning infinity pool and panoramic ocean views',
     category: 'villa',
     tags: ['luxury', 'pool', 'ocean view', 'private'],
-    featured: true
+    featured: false
   },
   {
-    id: 4,
+    id: 5,
     name: 'Cabo San Lucas Arch',
     image_url: '/uploads/cabo-arch.webp',
     alt_text: 'The famous Arch of Cabo San Lucas (El Arco) rock formation',
