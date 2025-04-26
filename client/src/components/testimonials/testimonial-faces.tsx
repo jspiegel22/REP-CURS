@@ -39,11 +39,12 @@ interface TestimonialFacesProps {
 export function TestimonialFaces({
   count = 4,
   size = 'md',
-  autoRotate = true,
+  autoRotate = false, // Set default to false as we don't want to rotate
   rotationInterval = 5000,
 }: TestimonialFacesProps) {
-  // State to hold the currently displayed faces
-  const [displayedFaces, setDisplayedFaces] = useState<typeof testimonialFaces>([]);
+  // Use testimonial faces directly without shuffling
+  // Only slice if count is less than the total available faces
+  const displayedFaces = testimonialFaces.slice(0, count);
   
   // Size mapping for avatar component
   const sizeClass = {
@@ -51,36 +52,6 @@ export function TestimonialFaces({
     md: 'h-12 w-12', 
     lg: 'h-16 w-16',
   };
-  
-  // Function to shuffle and select random faces
-  const shuffleFaces = () => {
-    // Make a copy of the original array
-    const shuffled = [...testimonialFaces];
-    
-    // Shuffle using Fisher-Yates algorithm
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-    
-    // Take only the requested number of faces
-    setDisplayedFaces(shuffled.slice(0, count));
-  };
-  
-  // Initialize with shuffled faces
-  useEffect(() => {
-    shuffleFaces();
-  }, [count]);
-  
-  // Set up auto-rotation if enabled
-  useEffect(() => {
-    if (autoRotate) {
-      const intervalId = setInterval(shuffleFaces, rotationInterval);
-      
-      // Clean up interval on unmount
-      return () => clearInterval(intervalId);
-    }
-  }, [autoRotate, rotationInterval]);
   
   return (
     <div className="flex -space-x-2">

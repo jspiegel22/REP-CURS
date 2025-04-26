@@ -137,8 +137,7 @@ export default function HomePage() {
                   <TestimonialFaces 
                     count={4} 
                     size="lg" 
-                    autoRotate={true} 
-                    rotationInterval={6000}
+                    autoRotate={false}
                   />
                   <div className="flex flex-col items-center">
                     <span className="text-gray-600">

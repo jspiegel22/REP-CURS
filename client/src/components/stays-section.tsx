@@ -12,7 +12,7 @@ const stayOptions: StayOption[] = [
   {
     title: "Luxury Resorts",
     description: "World-class amenities with stunning ocean views",
-    imageUrl: "https://images.unsplash.com/photo-1582719508461-905c673771fd?ixlib=rb-4.0.3",
+    imageUrl: "/uploads/four-seasons-cds.webp",
     link: "/stays/resorts"
   },
   {
