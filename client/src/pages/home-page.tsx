@@ -284,7 +284,7 @@ export default function HomePage() {
                     <img
                       src={blog.imageUrl}
                       alt={blog.title}
-                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      className="w-full h-full object-fill transition-transform duration-300 group-hover:scale-105"
                       loading="lazy"
                     />
                   </div>
@@ -388,7 +388,7 @@ export default function HomePage() {
                     src={imageSrc}
                     alt={`Cabo Instagram post ${i+1}`}
                     category={i === 0 ? "beach" : i === 1 ? "villa" : i === 2 ? "activity" : "restaurant"}
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                    className="w-full h-full object-fill transition-transform duration-300 group-hover:scale-110"
                   />
                   <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                     <SiInstagram className="w-8 h-8 text-white" />
