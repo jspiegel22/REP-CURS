@@ -139,11 +139,11 @@ export default function HomePage() {
                     size="lg" 
                     autoRotate={false}
                   />
-                  <div className="flex flex-col items-center">
+                  <div className="flex flex-row items-center gap-3">
                     <span className="text-gray-600">
                       Trusted by <span className="font-semibold">227,000+</span> travelers
                     </span>
-                    <span className="text-yellow-400 mt-1">⭐⭐⭐⭐⭐</span>
+                    <span className="text-yellow-400">⭐⭐⭐⭐⭐</span>
                   </div>
                 </div>
               </div>
