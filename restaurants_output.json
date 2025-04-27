@@ -1,0 +1,2593 @@
+[
+  {
+    "name": "Bagatelle Los Cabos",
+    "description": "Bagatelle Los Cabos offers international cuisine in a awesome setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 4.5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/bagetelle-los-cabos-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjoxLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/2/47401755.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/2/47401755.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": false
+  },
+  {
+    "name": "Don Manuel's - Waldorf Astoria Los Cabos Pedregal",
+    "description": "Don Manuel's - Waldorf Astoria Los Cabos Pedregal offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/don-manuels-waldorf-astoria-los-cabos-pedregal-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/3/67415914.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/3/67415914.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Hacienda Cocina y Cantina",
+    "description": "Hacienda Cocina y Cantina offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/hacienda-cocina-y-cantina-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant",
+    "imageUrls": [
+      "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Los Tres Gallos - Cabo San Lucas",
+    "description": "Los Tres Gallos - Cabo San Lucas offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/los-tres-gallos-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant",
+    "imageUrls": [
+      "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Taboo Cabo",
+    "description": "Taboo Cabo offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/taboo-cabo-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjoxLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant",
+    "imageUrls": [
+      "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Torote Restaurant",
+    "description": "Torote Restaurant offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/torote-restaurant-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant",
+    "imageUrls": [
+      "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "The Ledge at The Cape a Thompson Hotel",
+    "description": "The Ledge at The Cape a Thompson Hotel offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/the-ledge-at-the-cape-a-thompson-hotel-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant",
+    "imageUrls": [
+      "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Comal Restaurant & Bar - Chileno Bay Resort & Residences",
+    "description": "Comal Restaurant & Bar - Chileno Bay Resort & Residences offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/comal-restaurant-and-bar-chileno-bay-resort-and-residences-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant",
+    "imageUrls": [
+      "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Acre Restaurant & Cocktail Bar",
+    "description": "Acre Restaurant & Cocktail Bar offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/acre-restaurant-and-cocktail-bar-san-jose-del-cabo?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant",
+    "imageUrls": [
+      "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Outpost",
+    "description": "Outpost offers international cuisine in a awesome setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 4.5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/outpost-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjoxLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant",
+    "imageUrls": [
+      "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": false
+  },
+  {
+    "name": "Palmerio at Four Seasons Cabo San Lucas at Cabo Del Sol",
+    "description": "Palmerio at Four Seasons Cabo San Lucas at Cabo Del Sol offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/palmerio-at-four-seasons-cabo-san-lucas-at-cabo-del-sol-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant",
+    "imageUrls": [
+      "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Casa Martín",
+    "description": "Casa Martín offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/casa-martin-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant",
+    "imageUrls": [
+      "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Luna Italiana",
+    "description": "Luna Italiana offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/luna-italiana-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant",
+    "imageUrls": [
+      "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "SUR Beach Club Los Cabos",
+    "description": "SUR Beach Club Los Cabos offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/sur-beach-house-los-cabos-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant",
+    "imageUrls": [
+      "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "7 Seas Seafood Grille",
+    "description": "7 Seas Seafood Grille offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/7-seas-seafood-grille-san-jose-del-cabo?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant",
+    "imageUrls": [
+      "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "De Cortez",
+    "description": "De Cortez offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/de-cortez-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant",
+    "imageUrls": [
+      "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Cascabel at Solaz, a Luxury Collection Resort",
+    "description": "Cascabel at Solaz, a Luxury Collection Resort offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/cascabel-at-solaz-solaz-a-luxury-collection-resort-san-jose-del-cabo?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant",
+    "imageUrls": [
+      "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Sports Bar - Diamante Cabo San Lucas",
+    "description": "Sports Bar - Diamante Cabo San Lucas offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/sports-bar-diamante-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant",
+    "imageUrls": [
+      "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Cascadas Beach Grill",
+    "description": "Cascadas Beach Grill offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/cascadas-beach-grill-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant",
+    "imageUrls": [
+      "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Nick-San Cabo San Lucas",
+    "description": "Nick-San Cabo San Lucas offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/nicksan-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant",
+    "imageUrls": [
+      "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Restaurante Fénix",
+    "description": "Restaurante Fénix offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/restaurante-fenix-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant",
+    "imageUrls": [
+      "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Trattoria Da Pietro",
+    "description": "Trattoria Da Pietro offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/trattoria-da-pietro-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant",
+    "imageUrls": [
+      "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Bar Esquina Los Cabos",
+    "description": "Bar Esquina Los Cabos offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/bar-esquina-los-cabos-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant",
+    "imageUrls": [
+      "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Rooftop 360",
+    "description": "Rooftop 360 offers international cuisine in a awesome setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 4.5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/rooftop-360-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant",
+    "imageUrls": [
+      "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": false
+  },
+  {
+    "name": "YAYA at Chileno Bay Resort & Residences",
+    "description": "YAYA at Chileno Bay Resort & Residences offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/yaya-at-chileno-bay-resort-and-residences-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant",
+    "imageUrls": [
+      "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "PANACHE RESTAURANT",
+    "description": "PANACHE RESTAURANT offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/panache-restaurant-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant",
+    "imageUrls": [
+      "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Los Tres Gallos - San José del Cabo",
+    "description": "Los Tres Gallos - San José del Cabo offers international cuisine in a awesome setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 4.5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/los-tres-gallos-san-jose-del-cabo?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant",
+    "imageUrls": [
+      "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": false
+  },
+  {
+    "name": "Los Tamarindos",
+    "description": "Los Tamarindos offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/los-tamarindos-san-jose-del-cabo?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant",
+    "imageUrls": [
+      "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Coraluz at Four Seasons Cabo San Lucas at Cabo Del Sol",
+    "description": "Coraluz at Four Seasons Cabo San Lucas at Cabo Del Sol offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/coraluz-at-four-seasons-cabo-san-lucas-at-cabo-del-sol-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant",
+    "imageUrls": [
+      "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Encanto, Farm & Sea Restaurant – Hotel Mar Del Cabo by Velas Resorts",
+    "description": "Encanto, Farm & Sea Restaurant – Hotel Mar Del Cabo by Velas Resorts offers international cuisine in a awesome setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 4.5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/encanto-farm-and-sea-restaurant-hotel-mar-del-cabo-by-velas-resorts-san-jose-del-cabo?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant",
+    "imageUrls": [
+      "https://placehold.co/600x400/orange/white?text=Cabo+Restaurant"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": false
+  },
+  {
+    "name": "JM Steakhouse",
+    "description": "JM Steakhouse offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/jm-steak-house-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjoxLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/3/46744766.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/3/46744766.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Chamuyo - Los Cabos",
+    "description": "Chamuyo - Los Cabos offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/chamuyo-los-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/1/23696943.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/1/23696943.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Pacific Restaurant",
+    "description": "Pacific Restaurant offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/pacific-restaurant-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/2/42080317.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/2/42080317.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Lumbre",
+    "description": "Lumbre offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/lumbre-la-paz?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/7/47018313.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/7/47018313.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Craft Cabo",
+    "description": "Craft Cabo offers international cuisine in a awesome setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 4.5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/craft-cabo-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjoxLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/3/65581326.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/3/65581326.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": false
+  },
+  {
+    "name": "Maria Corona",
+    "description": "Maria Corona offers international cuisine in a awesome setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 4.5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/maria-corona-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjoxLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/1/23674431.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/1/23674431.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": false
+  },
+  {
+    "name": "Solomon´s Landing Los Cabos",
+    "description": "Solomon´s Landing Los Cabos offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/solomons-landing-los-cabos-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/3/47378801.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/3/47378801.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Kitchen San José del Cabo",
+    "description": "Kitchen San José del Cabo offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/kitchen-san-jose-del-cabo?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/3/66908261.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/3/66908261.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Cayao by Chef Richard Sandoval",
+    "description": "Cayao by Chef Richard Sandoval offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/cayao-by-chef-richard-sandoval?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/3/69095365.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/3/69095365.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "La Forchetta",
+    "description": "La Forchetta offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/la-forchetta-san-jose-del-cabo?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/1/24098448.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/1/24098448.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Agave Kitchen",
+    "description": "Agave Kitchen offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/agave-kitchen-san-jose-del-cabo?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/2/42357234.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/2/42357234.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Picaro",
+    "description": "Picaro offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/picaro-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/3/42454015.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/3/42454015.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Carbón Cabrón",
+    "description": "Carbón Cabrón offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/carbon-cabron-san-jose-del-cabo?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/1/26026624.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/1/26026624.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Spinalis Steakhouse",
+    "description": "Spinalis Steakhouse offers international cuisine in a awesome setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 4.5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/spinalis-steakhouse-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/3/66632413.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/3/66632413.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": false
+  },
+  {
+    "name": "Pitahayas",
+    "description": "Pitahayas offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/pitahayas-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/1/24931965.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/1/24931965.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Izzy’s Restaurant - Diamante Cabo San Lucas",
+    "description": "Izzy’s Restaurant - Diamante Cabo San Lucas offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/izzys-restaurant-diamante-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/3/69185622.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/3/69185622.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Don Sanchez",
+    "description": "Don Sanchez offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/don-sanchez-san-jose-del-cabo?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/3/48363336.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/3/48363336.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Nick-San Palmilla",
+    "description": "Nick-San Palmilla offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/nicksan-palmilla-san-jose-del-cabo?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/3/58756820.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/3/58756820.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Simaruba",
+    "description": "Simaruba offers international cuisine in a awesome setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 4.5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/simaruba-san-jose-del-cabo?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/2/62209041.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/2/62209041.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": false
+  },
+  {
+    "name": "M BAR",
+    "description": "M BAR offers international cuisine in a awesome setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 4.5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/m-bar-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/3/59915522.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/3/59915522.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": false
+  },
+  {
+    "name": "Bonachón Asado de Baja Sur",
+    "description": "Bonachón Asado de Baja Sur offers mexican cuisine in a awesome setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "Mexican",
+    "priceLevel": "$$$",
+    "rating": 4.5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/bonachon-asado-de-baja-sur-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjoxLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/2/73781541.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/2/73781541.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "Mexican"
+    ],
+    "category": "mexican",
+    "featured": false
+  },
+  {
+    "name": "Habanero's Gastro Grill",
+    "description": "Habanero's Gastro Grill offers mexican cuisine in a exceptional setting in San José del Cabo.",
+    "location": "San José del Cabo",
+    "cuisine": "Mexican",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/habaneros-gastro-grill-san-jose-del-cabo?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/2/70187965.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/2/70187965.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "Mexican"
+    ],
+    "category": "mexican",
+    "featured": true
+  },
+  {
+    "name": "Restaurante San Lucero",
+    "description": "Restaurante San Lucero offers international cuisine in a awesome setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 4.5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/restaurante-san-lucero-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjoxLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/3/50387939.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/3/50387939.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": false
+  },
+  {
+    "name": "La Pintada",
+    "description": "La Pintada offers mexican cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "Mexican",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/la-pintada-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjoxLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/4/52935535.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/4/52935535.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "Mexican"
+    ],
+    "category": "mexican",
+    "featured": true
+  },
+  {
+    "name": "OMAKAI SUSHI",
+    "description": "OMAKAI SUSHI offers japanese speciality cuisine in a exceptional setting in San José del Cabo.",
+    "location": "San José del Cabo",
+    "cuisine": "Japanese Speciality",
+    "priceLevel": "$$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/omakai-sushi-san-jose-del-cabo?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/3/50581283.png?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/3/50581283.png?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Fine Dining",
+      "Ocean View",
+      "Upscale"
+    ],
+    "tags": [
+      "Japanese Speciality"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Javier´s - Los Cabos",
+    "description": "Javier´s - Los Cabos offers mexican cuisine in a exceptional setting in San José del Cabo.",
+    "location": "San José del Cabo",
+    "cuisine": "Mexican",
+    "priceLevel": "$$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/javiers-restaurant-san-jose-del-cabo?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/4/47759058.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/4/47759058.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Fine Dining",
+      "Ocean View",
+      "Upscale"
+    ],
+    "tags": [
+      "Mexican"
+    ],
+    "category": "mexican",
+    "featured": true
+  },
+  {
+    "name": "Jazmin's Restaurant",
+    "description": "Jazmin's Restaurant offers traditional mexican cuisine in a awesome setting in San José del Cabo.",
+    "location": "San José del Cabo",
+    "cuisine": "Traditional Mexican",
+    "priceLevel": "$$",
+    "rating": 4.5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/jazmins-restaurant-san-jose-del-cabo?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/3/68376531.png?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/3/68376531.png?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Dining",
+      "Family Friendly"
+    ],
+    "tags": [
+      "Traditional Mexican"
+    ],
+    "category": "international",
+    "featured": false
+  },
+  {
+    "name": "Ruth's Chris Steak House - Los Cabos",
+    "description": "Ruth's Chris Steak House - Los Cabos offers steakhouse cuisine in a excellent setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "Steakhouse",
+    "priceLevel": "$$$$",
+    "rating": 4,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/ruths-chris-steak-house-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/1/24911557.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/1/24911557.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Fine Dining",
+      "Ocean View",
+      "Upscale"
+    ],
+    "tags": [
+      "Steakhouse"
+    ],
+    "category": "steakhouse",
+    "featured": false
+  },
+  {
+    "name": "Cocina de Campo",
+    "description": "Cocina de Campo offers organic cuisine in a exceptional setting in El Pescadero.",
+    "location": "El Pescadero",
+    "cuisine": "Organic",
+    "priceLevel": "$$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/cocina-de-campo-el-pescadero?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/3/52647569.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/3/52647569.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Fine Dining",
+      "Ocean View",
+      "Upscale"
+    ],
+    "tags": [
+      "Organic"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Chambao Los Cabos in San José",
+    "description": "Chambao Los Cabos in San José offers meat cuisine in a awesome setting in San José del Cabo.",
+    "location": "San José del Cabo",
+    "cuisine": "Meat",
+    "priceLevel": "$$$$",
+    "rating": 4.5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/chambao-los-cabos-in-san-jose-san-jose-del-cabo?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/3/68678718.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/3/68678718.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Fine Dining",
+      "Ocean View",
+      "Upscale"
+    ],
+    "tags": [
+      "Meat"
+    ],
+    "category": "international",
+    "featured": false
+  },
+  {
+    "name": "Nido",
+    "description": "Nido offers seafood cuisine in a exceptional setting in San José del Cabo.",
+    "location": "San José del Cabo",
+    "cuisine": "Seafood",
+    "priceLevel": "$$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/nido-san-jose-del-cabo?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/1/25686533.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/1/25686533.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Fine Dining",
+      "Ocean View",
+      "Upscale"
+    ],
+    "tags": [
+      "Seafood"
+    ],
+    "category": "seafood",
+    "featured": true
+  },
+  {
+    "name": "LIMO Heritage Kitchen at Suelo Sur",
+    "description": "LIMO Heritage Kitchen at Suelo Sur offers farm-to-table cuisine in a exceptional setting in San José del Cabo.",
+    "location": "San José del Cabo",
+    "cuisine": "Farm-to-table",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/limo-heritage-kitchen-at-suelo-sur-san-jose-del-cabo?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/3/65317025.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/3/65317025.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "Farm-to-table"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Al Pairo at Solaz, a Luxury Collection Resort",
+    "description": "Al Pairo at Solaz, a Luxury Collection Resort offers contemporary mexican cuisine in a exceptional setting in San José del Cabo.",
+    "location": "San José del Cabo",
+    "cuisine": "Contemporary Mexican",
+    "priceLevel": "$$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/al-pairo-at-solaz-a-luxury-collection-resort-san-jose-del-cabo?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/2/71978560.png?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/2/71978560.png?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Fine Dining",
+      "Ocean View",
+      "Upscale"
+    ],
+    "tags": [
+      "Contemporary Mexican"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Sand Bar",
+    "description": "Sand Bar offers mexican cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "Mexican",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/sand-bar-los-cabos?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/1/32385792.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/1/32385792.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "Mexican"
+    ],
+    "category": "mexican",
+    "featured": true
+  },
+  {
+    "name": "Limonetto",
+    "description": "Limonetto offers italian cuisine in a awesome setting in San José del Cabo.",
+    "location": "San José del Cabo",
+    "cuisine": "Italian",
+    "priceLevel": "$$$$",
+    "rating": 4.5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/limonetto-san-jose-del-cabo?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/2/74310631.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/2/74310631.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Fine Dining",
+      "Ocean View",
+      "Upscale"
+    ],
+    "tags": [
+      "Italian"
+    ],
+    "category": "italian",
+    "featured": false
+  },
+  {
+    "name": "Humo at Zadún a Ritz-Carlton Reserve",
+    "description": "Humo at Zadún a Ritz-Carlton Reserve offers grill cuisine in a exceptional setting in San José del Cabo.",
+    "location": "San José del Cabo",
+    "cuisine": "Grill",
+    "priceLevel": "$$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/humo-at-zadun-a-ritz-carlton-reserve-san-jose-del-cabo?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/3/66481213.png?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/3/66481213.png?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Fine Dining",
+      "Ocean View",
+      "Upscale"
+    ],
+    "tags": [
+      "Grill"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "La Roca Restaurant",
+    "description": "La Roca Restaurant offers international cuisine in a awesome setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$$",
+    "rating": 4.5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/la-roca-restaurant-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/1/29705057.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/1/29705057.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Fine Dining",
+      "Ocean View",
+      "Upscale"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": false
+  },
+  {
+    "name": "La Casona",
+    "description": "La Casona offers meat cuisine in a awesome setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "Meat",
+    "priceLevel": "$$$",
+    "rating": 4.5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/la-casona-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/3/47234514.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/3/47234514.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "Meat"
+    ],
+    "category": "international",
+    "featured": false
+  },
+  {
+    "name": "Sunken Bar at The Cape - Thompson Hotel",
+    "description": "Sunken Bar at The Cape - Thompson Hotel offers mexican cuisine in a awesome setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "Mexican",
+    "priceLevel": "$$$",
+    "rating": 4.5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/sunken-bar-at-the-cape-thompson-hotel-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/3/63707678.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/3/63707678.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "Mexican"
+    ],
+    "category": "mexican",
+    "featured": false
+  },
+  {
+    "name": "The Woods Cabo",
+    "description": "The Woods Cabo offers sports bar cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "Sports Bar",
+    "priceLevel": "$$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/the-woods-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/1/55780945.png?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/1/55780945.png?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Fine Dining",
+      "Ocean View",
+      "Upscale"
+    ],
+    "tags": [
+      "Sports Bar"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Cielomar",
+    "description": "Cielomar offers grill cuisine in a exceptional setting in San José del Cabo.",
+    "location": "San José del Cabo",
+    "cuisine": "Grill",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/cielomar-san-jose-del-cabo?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/3/48156343.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/3/48156343.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "Grill"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Aleta",
+    "description": "Aleta offers contemporary mexican cuisine in a awesome setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "Contemporary Mexican",
+    "priceLevel": "$$$",
+    "rating": 4.5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/aleta-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/2/46763190.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/2/46763190.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "Contemporary Mexican"
+    ],
+    "category": "international",
+    "featured": false
+  },
+  {
+    "name": "RAW BAJA",
+    "description": "RAW BAJA offers seafood cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "Seafood",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/raw-baja-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/2/65518316.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/2/65518316.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "Seafood"
+    ],
+    "category": "seafood",
+    "featured": true
+  },
+  {
+    "name": "Corazón Beach Club",
+    "description": "Corazón Beach Club offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/corazon-beach-club-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/3/48461297.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/3/48461297.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Fine Dining",
+      "Ocean View",
+      "Upscale"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Jazamango",
+    "description": "Jazamango offers regional mexican cuisine in a exceptional setting in Todos Santos.",
+    "location": "Todos Santos",
+    "cuisine": "Regional Mexican",
+    "priceLevel": "$$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/jazamango-todos-santos?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/3/68641322.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/3/68641322.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Fine Dining",
+      "Ocean View",
+      "Upscale"
+    ],
+    "tags": [
+      "Regional Mexican"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Rubas",
+    "description": "Rubas offers bistro cuisine in a exceptional setting in San José del Cabo.",
+    "location": "San José del Cabo",
+    "cuisine": "Bistro",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/rubas-san-jose-del-cabo?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/3/41944185.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/3/41944185.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "Bistro"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Sakagura - Cabo",
+    "description": "Sakagura - Cabo offers japanese speciality cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "Japanese Speciality",
+    "priceLevel": "$$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/sakagura-cabo-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/3/51049761.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/3/51049761.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Fine Dining",
+      "Ocean View",
+      "Upscale"
+    ],
+    "tags": [
+      "Japanese Speciality"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Zenna Restaurant",
+    "description": "Zenna Restaurant offers latin american cuisine in a exceptional setting in San José del Cabo.",
+    "location": "San José del Cabo",
+    "cuisine": "Latin American",
+    "priceLevel": "$$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/il-splendido-san-jose-del-cabo?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/2/59050614.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/2/59050614.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Fine Dining",
+      "Ocean View",
+      "Upscale"
+    ],
+    "tags": [
+      "Latin American"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Mamazzita Cabo",
+    "description": "Mamazzita Cabo offers international cuisine in a awesome setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 4.5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/mamazzita-cabo-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjoxLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/3/49978115.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/3/49978115.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": false
+  },
+  {
+    "name": "Tropicana Cocina de las Californias",
+    "description": "Tropicana Cocina de las Californias offers international cuisine in a awesome setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 4.5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/tropicana-cocina-de-las-californias-san-jose-del-cabo?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/2/71219990.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/2/71219990.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": false
+  },
+  {
+    "name": "Leña Latin Grill - The Hilton Los Cabos Hotel",
+    "description": "Leña Latin Grill - The Hilton Los Cabos Hotel offers international cuisine in a awesome setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 4.5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/lena-latin-grill-the-hilton-los-cabos-hotel-san-jose-del-cabo?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/2/41896307.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/2/41896307.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": false
+  },
+  {
+    "name": "Santoro Agaveteca",
+    "description": "Santoro Agaveteca offers international cuisine in a excellent setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 4,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/santoro-agaveteca-san-jose-del-cabo?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/2/71023142.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/2/71023142.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": false
+  },
+  {
+    "name": "The Kitchen by Nowhere Bar",
+    "description": "The Kitchen by Nowhere Bar offers international cuisine in a awesome setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 4.5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/the-kitchen-by-nowhere-bar-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjoxLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/5/50370177.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/5/50370177.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": false
+  },
+  {
+    "name": "Fiorenza Los Cabos",
+    "description": "Fiorenza Los Cabos offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/fiorenza-los-cabos-san-jose-del-cabo?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/3/48631893.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/3/48631893.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Daikoku - Los Cabos",
+    "description": "Daikoku - Los Cabos offers international cuisine in a awesome setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 4.5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/daikoku-los-cabos-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjoxLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/1/32265441.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/1/32265441.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": false
+  },
+  {
+    "name": "La Galeria - Cabo",
+    "description": "La Galeria - Cabo offers international cuisine in a awesome setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 4.5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/la-galeria-cabo?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/3/62781991.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/3/62781991.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": false
+  },
+  {
+    "name": "Arts And Sushi",
+    "description": "Arts And Sushi offers international cuisine in a awesome setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 4.5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/arts-and-sushi-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/1/25883775.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/1/25883775.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": false
+  },
+  {
+    "name": "Jardin Secreto",
+    "description": "Jardin Secreto offers international cuisine in a awesome setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 4.5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/jardin-secreto-san-jose-del-cabo?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/3/48665893.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/3/48665893.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": false
+  },
+  {
+    "name": "SEAD Cabo",
+    "description": "SEAD Cabo offers international cuisine in a  setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 4,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/sead-cabo-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/2/72906863.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/2/72906863.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": false
+  },
+  {
+    "name": "SOL KBBQ",
+    "description": "SOL KBBQ offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/sol-kbbq-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/2/73656056.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/2/73656056.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Cafe des Artistes - Los Cabos",
+    "description": "Cafe des Artistes - Los Cabos offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/cafe-des-artistes-los-cabos-san-jose-del-cabo?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/1/24610431.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/1/24610431.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Milky Beach Cabo San Lucas",
+    "description": "Milky Beach Cabo San Lucas offers international cuisine in a excellent setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 4,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/milky-beach-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/3/47271404.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/3/47271404.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": false
+  },
+  {
+    "name": "STEAK Chops & Such",
+    "description": "STEAK Chops & Such offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/steak-chops-and-such-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/3/50045872.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/3/50045872.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Estrella Restaurant",
+    "description": "Estrella Restaurant offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/estrella-restaurant-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/2/67214445.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/2/67214445.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Punta Médano Ceviche Bar",
+    "description": "Punta Médano Ceviche Bar offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/punta-medano-ceviche-bar-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/2/70214401.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/2/70214401.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Riccio di Mare at Solaz, a Luxury Collection Resort",
+    "description": "Riccio di Mare at Solaz, a Luxury Collection Resort offers international cuisine in a awesome setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 4.5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/riccio-di-mare-at-solaz-a-luzury-collection-resort-san-jose-del-cabo?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/3/50926062.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/3/50926062.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": false
+  },
+  {
+    "name": "Wine Bar - Romeo y Julieta",
+    "description": "Wine Bar - Romeo y Julieta offers international cuisine in a awesome setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 4.5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/wine-bar-romeo-y-julieta-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/2/27332978.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/2/27332978.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": false
+  },
+  {
+    "name": "The Green Room",
+    "description": "The Green Room offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/the-green-room-todos-los-santos?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/4/26521552.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/4/26521552.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Pancho´s Restaurant & Tequila Bar",
+    "description": "Pancho´s Restaurant & Tequila Bar offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/panchos-restaurant-and-tequila-bar-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/3/46813026.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/3/46813026.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "La Playita by Hotel San Cristobal",
+    "description": "La Playita by Hotel San Cristobal offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/la-playita-by-hotel-san-cristobal-todos-santos?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/3/66778816.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/3/66778816.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Las Mariscadas",
+    "description": "Las Mariscadas offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/las-mariscadas-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/3/51564398.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/3/51564398.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Oystera",
+    "description": "Oystera offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/oystera-todos-santos?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/2/56251744.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/2/56251744.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Latino 8",
+    "description": "Latino 8 offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/latino-8-san-jose-del-cabo?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/1/25840434.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/1/25840434.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "CÓDIGO 1530 Tasting House by La Lupita",
+    "description": "CÓDIGO 1530 Tasting House by La Lupita offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/codigo-1530-tasting-house-by-la-lupita-san-jose-del-cabo?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/2/51912266.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/2/51912266.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Kahal",
+    "description": "Kahal offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/kahal-el-pescadero?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/3/57034111.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/3/57034111.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Agave Study at Peacock Alley",
+    "description": "Agave Study at Peacock Alley offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/agave-study-at-peacock-alley-cabo-san-lucas?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/3/51777795.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/3/51777795.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Sushi Sky Bar - Grand Fiesta Americana Los Cabos Golf & Spa",
+    "description": "Sushi Sky Bar - Grand Fiesta Americana Los Cabos Golf & Spa offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/sushi-sky-bar-grand-fiesta-americana-los-cabos-golf-and-spa-los-cabos?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/4/67061115.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/4/67061115.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  },
+  {
+    "name": "Benno at Hotel San Cristóbal",
+    "description": "Benno at Hotel San Cristóbal offers international cuisine in a exceptional setting in Cabo San Lucas.",
+    "location": "Cabo San Lucas",
+    "cuisine": "International",
+    "priceLevel": "$$$",
+    "rating": 5,
+    "reviewCount": 0,
+    "openTable": "https://www.opentable.com/r/benno-todos-los-santos?corrid=00890699-fab7-4ff7-98b7-f082ee6d01ba&avt=eyJ2IjoyLCJtIjoxLCJwIjowLCJzIjowLCJuIjowfQ&p=2&sd=2025-03-12T19%3A00%3A00",
+    "imageUrl": "https://resizer.otstatic.com/v2/photos/legacy/4/28647765.jpg?w=600&h=400&fit=crop",
+    "imageUrls": [
+      "https://resizer.otstatic.com/v2/photos/legacy/4/28647765.jpg?w=600&h=400&fit=crop"
+    ],
+    "features": [
+      "Casual Elegant",
+      "Full Bar",
+      "Patio Dining"
+    ],
+    "tags": [
+      "International"
+    ],
+    "category": "international",
+    "featured": true
+  }
+]

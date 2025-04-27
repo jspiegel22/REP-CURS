@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Loader2, Search, Plus, Edit, Trash2, Save, Upload, X } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { apiRequest } from "@/lib/queryClient";
+import JsonAdventureImporter from './JsonAdventureImporter';
 
 interface Adventure {
   id: number;
@@ -293,6 +294,28 @@ export default function AdventureManager() {
         </CardHeader>
         
         <CardContent>
+          <div className="mb-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="col-span-1 md:col-span-2">
+              <h3 className="text-lg font-semibold mb-2">Quick Actions</h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Manage and import adventure data from various sources.
+              </p>
+              <div className="flex flex-wrap gap-4">
+                <Button onClick={handleCreateAdventure}>
+                  <Plus className="mr-2 h-4 w-4" />
+                  New Adventure
+                </Button>
+                <Button variant="secondary" onClick={fetchAdventures}>
+                  <Loader2 className="mr-2 h-4 w-4" />
+                  Refresh Data
+                </Button>
+              </div>
+            </div>
+            <div className="col-span-1">
+              <JsonAdventureImporter />
+            </div>
+          </div>
+
           <Tabs defaultValue="all" className="space-y-4">
             <div className="flex justify-between items-center">
               <TabsList>
@@ -315,11 +338,6 @@ export default function AdventureManager() {
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </div>
-                
-                <Button onClick={handleCreateAdventure}>
-                  <Plus className="mr-2 h-4 w-4" />
-                  New Adventure
-                </Button>
               </div>
             </div>
             
@@ -335,7 +353,7 @@ export default function AdventureManager() {
                       <img 
                         src={adventure.imageUrl}
                         alt={adventure.title}
-                        className="w-full h-full object-fill"
+                        className="w-full h-full object-cover"
                       />
                       <div className="absolute top-2 right-2 flex flex-col gap-2 items-end">
                         {adventure.category && (
@@ -371,7 +389,7 @@ export default function AdventureManager() {
                       </div>
                       <div className="flex justify-between">
                         <Button 
-                          variant="outline" 
+                          variant="default" 
                           size="sm"
                           onClick={() => handleEditAdventure(adventure)}
                         >
@@ -560,7 +578,7 @@ export default function AdventureManager() {
                       <img 
                         src={editForm.imageUrl}
                         alt="Adventure"
-                        className="w-full h-full object-fill"
+                        className="w-full h-full object-cover"
                       />
                       <button
                         type="button"
@@ -581,7 +599,7 @@ export default function AdventureManager() {
                       />
                       <Button
                         type="button"
-                        variant="outline"
+                        variant="secondary"
                         onClick={() => fileInputRef.current?.click()}
                       >
                         <Upload className="mr-2 h-4 w-4" />
@@ -595,7 +613,7 @@ export default function AdventureManager() {
           </div>
           
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
+            <Button variant="secondary" onClick={() => setIsEditDialogOpen(false)}>
               Cancel
             </Button>
             <Button onClick={handleSaveEdit}>
@@ -770,7 +788,7 @@ export default function AdventureManager() {
                       <img 
                         src={createForm.imageUrl}
                         alt="Adventure"
-                        className="w-full h-full object-fill"
+                        className="w-full h-full object-cover"
                       />
                       <button
                         type="button"
@@ -791,7 +809,7 @@ export default function AdventureManager() {
                       />
                       <Button
                         type="button"
-                        variant="outline"
+                        variant="secondary"
                         onClick={() => createFileInputRef.current?.click()}
                       >
                         <Upload className="mr-2 h-4 w-4" />
@@ -805,7 +823,7 @@ export default function AdventureManager() {
           </div>
           
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
+            <Button variant="secondary" onClick={() => setIsCreateDialogOpen(false)}>
               Cancel
             </Button>
             <Button onClick={handleCreateSubmit}>

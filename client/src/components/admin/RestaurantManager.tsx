@@ -1,19 +1,16 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2, Search, Plus, Edit, Trash2, Save, Upload, X } from "lucide-react";
-import { Label } from "@/components/ui/label";
-import { apiRequest } from "@/lib/queryClient";
+import { Download, Edit, Loader2, MapPin, Plus, Search, Star, Trash2, X } from "lucide-react";
 
-// Define the Restaurant interface based on schema
 interface Restaurant {
   id: number;
   name: string;
@@ -42,117 +39,95 @@ interface Restaurant {
   updatedAt: string;
 }
 
-// Create a component for managing restaurants (CRUD operations)
 export default function RestaurantManager() {
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
-  const [filteredRestaurants, setFilteredRestaurants] = useState<Restaurant[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('all');
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedRestaurant, setSelectedRestaurant] = useState<Restaurant | null>(null);
-  const [editForm, setEditForm] = useState<Partial<Restaurant>>({});
+  const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [importing, setImporting] = useState(false);
+  
+  const createFileInputRef = useRef<HTMLInputElement>(null);
+  const editFileInputRef = useRef<HTMLInputElement>(null);
+  
   const [createForm, setCreateForm] = useState<Partial<Restaurant>>({
     name: '',
     description: '',
     location: 'Cabo San Lucas',
     cuisine: '',
+    category: 'mexican',
     priceLevel: '$$',
     rating: 4.5,
     reviewCount: 0,
-    category: 'mexican',
+    imageUrl: '',
+    imageUrls: [],
     features: [],
     tags: [],
     reviews: [],
     featured: false,
   });
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const createFileInputRef = useRef<HTMLInputElement>(null);
+  
+  const [editForm, setEditForm] = useState<Partial<Restaurant>>({});
+  const [newFeature, setNewFeature] = useState<string>('');
+  const [newTag, setNewTag] = useState<string>('');
+  const [newEditFeature, setNewEditFeature] = useState<string>('');
+  const [newEditTag, setNewEditTag] = useState<string>('');
+  
   const { toast } = useToast();
-
-  // Fetch all restaurants
+  
   useEffect(() => {
     fetchRestaurants();
   }, []);
-
-  // Filter restaurants based on search term and category
-  useEffect(() => {
-    if (!restaurants.length) return;
-    
-    let filtered = [...restaurants];
-    
-    if (searchTerm) {
-      filtered = filtered.filter(restaurant => 
-        restaurant.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        restaurant.cuisine.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        restaurant.category?.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-    
-    if (categoryFilter !== 'all') {
-      filtered = filtered.filter(restaurant => restaurant.category === categoryFilter);
-    }
-    
-    setFilteredRestaurants(filtered);
-  }, [restaurants, searchTerm, categoryFilter]);
-
+  
   async function fetchRestaurants() {
-    setLoading(true);
     try {
-      // Fetch restaurants from the API
-      const response = await apiRequest('GET', '/api/restaurants');
+      setLoading(true);
+      const response = await fetch('/api/restaurants');
+      if (!response.ok) {
+        throw new Error('Failed to fetch restaurants');
+      }
       const data = await response.json();
-      
-      console.log("Fetched restaurants:", data);
-      
-      // Set the restaurants in state
       setRestaurants(data);
-      setFilteredRestaurants(data);
     } catch (error) {
-      console.error("Error fetching restaurants:", error);
-      toast({
-        title: "Error",
-        description: "Failed to load restaurants",
-        variant: "destructive"
-      });
+      console.error('Error fetching restaurants:', error);
+      setError('Failed to load restaurants');
     } finally {
       setLoading(false);
     }
   }
-
+  
   function handleCreateChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | { name: string, value: any }) {
     const { name, value } = 'target' in e ? e.target : e;
     setCreateForm(prev => ({ ...prev, [name]: value }));
   }
-
+  
   function handleEditChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | { name: string, value: any }) {
     const { name, value } = 'target' in e ? e.target : e;
     setEditForm(prev => ({ ...prev, [name]: value }));
   }
-
+  
   function handleAddFeature(formType: 'create' | 'edit') {
-    const inputElement = document.getElementById(
-      formType === 'create' ? 'new-feature-input' : 'edit-feature-input'
-    ) as HTMLInputElement;
-
-    if (inputElement && inputElement.value.trim()) {
-      const newFeature = inputElement.value.trim();
-      if (formType === 'create') {
-        setCreateForm(prev => ({
-          ...prev,
-          features: [...(prev.features || []), newFeature]
-        }));
-      } else {
-        setEditForm(prev => ({
-          ...prev,
-          features: [...(prev.features || []), newFeature]
-        }));
-      }
-      inputElement.value = '';
+    const feature = formType === 'create' ? newFeature : newEditFeature;
+    if (!feature.trim()) return;
+    
+    if (formType === 'create') {
+      setCreateForm(prev => ({
+        ...prev,
+        features: [...(prev.features || []), feature]
+      }));
+      setNewFeature('');
+    } else {
+      setEditForm(prev => ({
+        ...prev,
+        features: [...(prev.features || []), feature]
+      }));
+      setNewEditFeature('');
     }
   }
-
+  
   function handleRemoveFeature(formType: 'create' | 'edit', index: number) {
     if (formType === 'create') {
       setCreateForm(prev => ({
@@ -166,29 +141,26 @@ export default function RestaurantManager() {
       }));
     }
   }
-
+  
   function handleAddTag(formType: 'create' | 'edit') {
-    const inputElement = document.getElementById(
-      formType === 'create' ? 'new-tag-input' : 'edit-tag-input'
-    ) as HTMLInputElement;
-
-    if (inputElement && inputElement.value.trim()) {
-      const newTag = inputElement.value.trim();
-      if (formType === 'create') {
-        setCreateForm(prev => ({
-          ...prev,
-          tags: [...(prev.tags || []), newTag]
-        }));
-      } else {
-        setEditForm(prev => ({
-          ...prev,
-          tags: [...(prev.tags || []), newTag]
-        }));
-      }
-      inputElement.value = '';
+    const tag = formType === 'create' ? newTag : newEditTag;
+    if (!tag.trim()) return;
+    
+    if (formType === 'create') {
+      setCreateForm(prev => ({
+        ...prev,
+        tags: [...(prev.tags || []), tag]
+      }));
+      setNewTag('');
+    } else {
+      setEditForm(prev => ({
+        ...prev,
+        tags: [...(prev.tags || []), tag]
+      }));
+      setNewEditTag('');
     }
   }
-
+  
   function handleRemoveTag(formType: 'create' | 'edit', index: number) {
     if (formType === 'create') {
       setCreateForm(prev => ({
@@ -202,699 +174,435 @@ export default function RestaurantManager() {
       }));
     }
   }
-
+  
   async function handleCreateRestaurant() {
     try {
-      const response = await apiRequest('POST', '/api/restaurants', createForm);
+      if (!createForm.name || !createForm.description || !createForm.location || !createForm.cuisine) {
+        toast({
+          title: "Missing information",
+          description: "Please fill in all required fields.",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      if (!createForm.imageUrl && (!createForm.imageUrls || createForm.imageUrls.length === 0)) {
+        toast({
+          title: "Missing images",
+          description: "Please add at least one image.",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      const response = await fetch('/api/restaurants', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(createForm),
+      });
       
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to create restaurant');
+        throw new Error('Failed to create restaurant');
       }
       
       const newRestaurant = await response.json();
-      
       setRestaurants(prev => [...prev, newRestaurant]);
-      setIsCreateDialogOpen(false);
-      
-      // Reset form
       setCreateForm({
         name: '',
         description: '',
         location: 'Cabo San Lucas',
         cuisine: '',
+        category: 'mexican',
         priceLevel: '$$',
         rating: 4.5,
         reviewCount: 0,
-        category: 'mexican',
+        imageUrl: '',
+        imageUrls: [],
         features: [],
         tags: [],
         reviews: [],
         featured: false,
       });
+      setIsCreateDialogOpen(false);
       
       toast({
-        title: "Success",
-        description: "Restaurant created successfully",
+        title: "Restaurant created",
+        description: "The restaurant has been successfully added.",
       });
     } catch (error) {
-      console.error("Error creating restaurant:", error);
+      console.error('Error creating restaurant:', error);
       toast({
         title: "Error",
-        description: error.message || "Failed to create restaurant",
-        variant: "destructive"
+        description: "Failed to create restaurant. Please try again.",
+        variant: "destructive",
       });
     }
   }
-
+  
   async function handleUpdateRestaurant() {
-    if (!selectedRestaurant) return;
-    
     try {
-      const response = await apiRequest('PUT', `/api/restaurants/${selectedRestaurant.id}`, editForm);
+      if (!selectedRestaurant) return;
+      
+      if (!editForm.name || !editForm.description || !editForm.location || !editForm.cuisine) {
+        toast({
+          title: "Missing information",
+          description: "Please fill in all required fields.",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      if (!editForm.imageUrl && (!editForm.imageUrls || editForm.imageUrls.length === 0)) {
+        toast({
+          title: "Missing images",
+          description: "Please add at least one image.",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      const response = await fetch(`/api/restaurants/${selectedRestaurant.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(editForm),
+      });
       
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to update restaurant');
+        throw new Error('Failed to update restaurant');
       }
       
       const updatedRestaurant = await response.json();
-      
       setRestaurants(prev => 
-        prev.map(restaurant => 
-          restaurant.id === updatedRestaurant.id ? updatedRestaurant : restaurant
-        )
+        prev.map(r => r.id === updatedRestaurant.id ? updatedRestaurant : r)
       );
-      
       setIsEditDialogOpen(false);
       
       toast({
-        title: "Success",
-        description: "Restaurant updated successfully",
+        title: "Restaurant updated",
+        description: "The restaurant has been successfully updated.",
       });
     } catch (error) {
-      console.error("Error updating restaurant:", error);
+      console.error('Error updating restaurant:', error);
       toast({
         title: "Error",
-        description: error.message || "Failed to update restaurant",
-        variant: "destructive"
+        description: "Failed to update restaurant. Please try again.",
+        variant: "destructive",
       });
     }
   }
-
+  
   async function handleDeleteRestaurant(id: number) {
-    if (!confirm("Are you sure you want to delete this restaurant? This action cannot be undone.")) {
-      return;
-    }
+    if (!confirm('Are you sure you want to delete this restaurant?')) return;
     
     try {
-      const response = await apiRequest('DELETE', `/api/restaurants/${id}`);
+      const response = await fetch(`/api/restaurants/${id}`, {
+        method: 'DELETE',
+      });
       
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to delete restaurant');
+        throw new Error('Failed to delete restaurant');
       }
       
-      setRestaurants(prev => prev.filter(restaurant => restaurant.id !== id));
+      setRestaurants(prev => prev.filter(r => r.id !== id));
       
       toast({
-        title: "Success",
-        description: "Restaurant deleted successfully",
+        title: "Restaurant deleted",
+        description: "The restaurant has been successfully removed.",
       });
     } catch (error) {
-      console.error("Error deleting restaurant:", error);
+      console.error('Error deleting restaurant:', error);
       toast({
         title: "Error",
-        description: error.message || "Failed to delete restaurant",
-        variant: "destructive"
+        description: "Failed to delete restaurant. Please try again.",
+        variant: "destructive",
       });
     }
   }
-
+  
   async function handleImageUpload(event: React.ChangeEvent<HTMLInputElement>, restaurantId?: number) {
-    const files = event.target.files;
-    if (!files || files.length === 0) return;
-
-    const formData = new FormData();
-    formData.append('file', files[0]);
-    formData.append('category', 'restaurant');
+    const file = event.target.files?.[0];
+    if (!file) return;
     
     try {
-      const response = await fetch('/api/images/upload', {
+      const formData = new FormData();
+      formData.append('image', file);
+      
+      const response = await fetch('/api/upload', {
         method: 'POST',
         body: formData,
       });
       
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to upload image');
+        throw new Error('Failed to upload image');
       }
       
-      const data = await response.json();
+      const { url } = await response.json();
       
       if (restaurantId) {
-        // Update existing restaurant with new image
-        const currentRestaurant = restaurants.find(r => r.id === restaurantId);
-        if (currentRestaurant) {
-          const imageUrls = [...(currentRestaurant.imageUrls || []), data.url];
-          const updatedData = { 
-            imageUrl: imageUrls[0] || data.url, // Set primary image if none exists
-            imageUrls 
-          };
-          
-          const updateResponse = await apiRequest('PUT', `/api/restaurants/${restaurantId}`, updatedData);
-          
-          if (updateResponse.ok) {
-            const updatedRestaurant = await updateResponse.json();
-            setRestaurants(prev => 
-              prev.map(restaurant => 
-                restaurant.id === updatedRestaurant.id ? updatedRestaurant : restaurant
-              )
-            );
-            
-            setEditForm(prev => ({
-              ...prev,
-              imageUrl: updatedRestaurant.imageUrl,
-              imageUrls: updatedRestaurant.imageUrls
-            }));
-          }
-        }
+        // Update for edit form
+        setEditForm(prev => ({
+          ...prev,
+          imageUrls: [...(prev.imageUrls || []), url],
+          imageUrl: prev.imageUrl || url // Set as main image if it's the first one
+        }));
       } else {
-        // For new restaurant
+        // Update for create form
         setCreateForm(prev => {
-          const imageUrls = [...(prev.imageUrls || []), data.url];
+          const updatedImageUrls = [...(prev.imageUrls || []), url];
           return {
             ...prev,
-            imageUrl: imageUrls[0] || data.url,
-            imageUrls
+            imageUrls: updatedImageUrls,
+            imageUrl: prev.imageUrl || url // Set as main image if it's the first one
           };
         });
       }
       
+      // Clear the file input
+      event.target.value = '';
+      
       toast({
-        title: "Success",
-        description: "Image uploaded successfully",
+        title: "Image uploaded",
+        description: "The image has been successfully uploaded.",
       });
     } catch (error) {
-      console.error("Error uploading image:", error);
+      console.error('Error uploading image:', error);
       toast({
         title: "Error",
-        description: error.message || "Failed to upload image",
-        variant: "destructive"
+        description: "Failed to upload image. Please try again.",
+        variant: "destructive",
       });
     }
   }
-
+  
   function handleRemoveImage(formType: 'create' | 'edit', index: number) {
     if (formType === 'create') {
-      setCreateForm(prev => {
-        const newImageUrls = (prev.imageUrls || []).filter((_, i) => i !== index);
-        return {
-          ...prev,
-          imageUrls: newImageUrls,
-          imageUrl: newImageUrls[0] || '' // Update primary image if needed
-        };
-      });
+      const updatedUrls = [...(createForm.imageUrls || [])];
+      updatedUrls.splice(index, 1);
+      
+      setCreateForm(prev => ({
+        ...prev,
+        imageUrls: updatedUrls,
+        imageUrl: updatedUrls.length > 0 ? updatedUrls[0] : ''
+      }));
     } else {
-      setEditForm(prev => {
-        const newImageUrls = (prev.imageUrls || []).filter((_, i) => i !== index);
-        return {
-          ...prev,
-          imageUrls: newImageUrls,
-          imageUrl: newImageUrls[0] || prev.imageUrl || '' // Keep current primary if available
-        };
-      });
+      const updatedUrls = [...(editForm.imageUrls || [])];
+      updatedUrls.splice(index, 1);
+      
+      setEditForm(prev => ({
+        ...prev,
+        imageUrls: updatedUrls,
+        imageUrl: updatedUrls.length > 0 ? updatedUrls[0] : ''
+      }));
     }
   }
-
+  
   function handleOpenEditDialog(restaurant: Restaurant) {
     setSelectedRestaurant(restaurant);
     setEditForm({
       ...restaurant,
-      // Convert any missing arrays to empty arrays for editing
+      // Ensure arrays are properly initialized
       features: restaurant.features || [],
       tags: restaurant.tags || [],
       imageUrls: restaurant.imageUrls || [],
-      reviews: restaurant.reviews || []
     });
     setIsEditDialogOpen(true);
   }
-
+  
+  async function handleImportRestaurants() {
+    try {
+      setImporting(true);
+      
+      const response = await fetch('/api/restaurants/import', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        // Adding timeout and credentials for better reliability
+        credentials: 'same-origin'
+      });
+      
+      if (!response.ok) {
+        const errorText = await response.text().catch(() => 'Unknown error');
+        console.error('Import error response:', errorText);
+        throw new Error(`Failed to import restaurants: ${response.status} ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      const created = data.created || 0;
+      const updated = data.updated || 0;
+      const total = data.total || created + updated;
+      
+      toast({
+        title: "Restaurants imported",
+        description: `Successfully imported ${total} restaurants (${created} new, ${updated} updated).`,
+      });
+      
+      // Refresh the restaurant list
+      await fetchRestaurants();
+    } catch (error) {
+      console.error('Error importing restaurants:', error);
+      toast({
+        title: "Import failed",
+        description: error.message || "Failed to import restaurants. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setImporting(false);
+    }
+  }
+  
+  const filteredRestaurants = restaurants.filter(restaurant => {
+    const matchesCategory = categoryFilter === 'all' || restaurant.category === categoryFilter;
+    const matchesSearch = searchQuery === '' || 
+      restaurant.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      restaurant.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      restaurant.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      restaurant.cuisine.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    return matchesCategory && matchesSearch;
+  });
+  
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-2 w-full sm:w-auto">
           <div className="relative w-full sm:w-64">
-            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
+              type="text"
               placeholder="Search restaurants..."
               className="pl-8"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger className="w-full sm:w-40">
-              <SelectValue placeholder="Category" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Categories</SelectItem>
-              <SelectItem value="seafood">Seafood</SelectItem>
-              <SelectItem value="mexican">Mexican</SelectItem>
-              <SelectItem value="italian">Italian</SelectItem>
-              <SelectItem value="steakhouse">Steakhouse</SelectItem>
-              <SelectItem value="fusion">Fusion</SelectItem>
-              <SelectItem value="american">American</SelectItem>
-              <SelectItem value="japanese">Japanese</SelectItem>
-              <SelectItem value="vegan">Vegan</SelectItem>
-              <SelectItem value="international">International</SelectItem>
-            </SelectContent>
-          </Select>
         </div>
         
-        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-primary text-white">
-              <Plus className="mr-2 h-4 w-4" /> New Restaurant
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>Add New Restaurant</DialogTitle>
-            </DialogHeader>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-4">
-              <div className="md:col-span-2">
-                <Label htmlFor="name" className="text-right">
-                  Restaurant Name
-                </Label>
-                <Input
-                  id="name"
-                  name="name"
-                  placeholder="El Pescador"
-                  value={createForm.name || ''}
-                  onChange={handleCreateChange}
-                  className="mt-1"
-                />
-              </div>
-              
-              <div className="md:col-span-2">
-                <Label htmlFor="description" className="text-right">
-                  Description
-                </Label>
-                <Textarea
-                  id="description"
-                  name="description"
-                  placeholder="A beautiful oceanfront restaurant..."
-                  value={createForm.description || ''}
-                  onChange={handleCreateChange}
-                  rows={3}
-                  className="mt-1"
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="category" className="text-right">
-                  Category
-                </Label>
-                <Select
-                  name="category"
-                  value={createForm.category as string || 'mexican'}
-                  onValueChange={(value) => handleCreateChange({ name: 'category', value })}
-                >
-                  <SelectTrigger className="mt-1 w-full">
-                    <SelectValue placeholder="Select category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="seafood">Seafood</SelectItem>
-                    <SelectItem value="mexican">Mexican</SelectItem>
-                    <SelectItem value="italian">Italian</SelectItem>
-                    <SelectItem value="steakhouse">Steakhouse</SelectItem>
-                    <SelectItem value="fusion">Fusion</SelectItem>
-                    <SelectItem value="american">American</SelectItem>
-                    <SelectItem value="japanese">Japanese</SelectItem>
-                    <SelectItem value="vegan">Vegan</SelectItem>
-                    <SelectItem value="international">International</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div>
-                <Label htmlFor="cuisine" className="text-right">
-                  Cuisine Type
-                </Label>
-                <Input
-                  id="cuisine"
-                  name="cuisine"
-                  placeholder="Traditional Mexican"
-                  value={createForm.cuisine || ''}
-                  onChange={handleCreateChange}
-                  className="mt-1"
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="priceLevel" className="text-right">
-                  Price Level
-                </Label>
-                <Select
-                  name="priceLevel"
-                  value={createForm.priceLevel || '$$'}
-                  onValueChange={(value) => handleCreateChange({ name: 'priceLevel', value })}
-                >
-                  <SelectTrigger className="mt-1 w-full">
-                    <SelectValue placeholder="Select price level" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="$">$ (Budget)</SelectItem>
-                    <SelectItem value="$$">$$ (Moderate)</SelectItem>
-                    <SelectItem value="$$$">$$$ (Upscale)</SelectItem>
-                    <SelectItem value="$$$$">$$$$ (Fine Dining)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div>
-                <Label htmlFor="location" className="text-right">
-                  Location
-                </Label>
-                <Input
-                  id="location"
-                  name="location"
-                  placeholder="Cabo San Lucas"
-                  value={createForm.location || ''}
-                  onChange={handleCreateChange}
-                  className="mt-1"
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="address" className="text-right">
-                  Full Address
-                </Label>
-                <Input
-                  id="address"
-                  name="address"
-                  placeholder="123 Beach Road, Cabo San Lucas"
-                  value={createForm.address || ''}
-                  onChange={handleCreateChange}
-                  className="mt-1"
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="phone" className="text-right">
-                  Phone Number
-                </Label>
-                <Input
-                  id="phone"
-                  name="phone"
-                  placeholder="+52 624 123 4567"
-                  value={createForm.phone || ''}
-                  onChange={handleCreateChange}
-                  className="mt-1"
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="website" className="text-right">
-                  Website URL
-                </Label>
-                <Input
-                  id="website"
-                  name="website"
-                  placeholder="https://www.restaurant-website.com"
-                  value={createForm.website || ''}
-                  onChange={handleCreateChange}
-                  className="mt-1"
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="openTable" className="text-right">
-                  OpenTable URL
-                </Label>
-                <Input
-                  id="openTable"
-                  name="openTable"
-                  placeholder="https://www.opentable.com/r/restaurant"
-                  value={createForm.openTable || ''}
-                  onChange={handleCreateChange}
-                  className="mt-1"
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="menuUrl" className="text-right">
-                  Menu URL
-                </Label>
-                <Input
-                  id="menuUrl"
-                  name="menuUrl"
-                  placeholder="https://www.restaurant-website.com/menu"
-                  value={createForm.menuUrl || ''}
-                  onChange={handleCreateChange}
-                  className="mt-1"
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="rating" className="text-right">
-                  Rating (1-5)
-                </Label>
-                <Input
-                  id="rating"
-                  name="rating"
-                  type="number"
-                  min="1"
-                  max="5"
-                  step="0.1"
-                  placeholder="4.5"
-                  value={createForm.rating || ''}
-                  onChange={handleCreateChange}
-                  className="mt-1"
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="reviewCount" className="text-right">
-                  Number of Reviews
-                </Label>
-                <Input
-                  id="reviewCount"
-                  name="reviewCount"
-                  type="number"
-                  min="0"
-                  placeholder="42"
-                  value={createForm.reviewCount || ''}
-                  onChange={handleCreateChange}
-                  className="mt-1"
-                />
-              </div>
-              
-              <div className="md:col-span-2">
-                <div className="flex items-center space-x-2 mb-2">
-                  <Checkbox
-                    id="featured"
-                    checked={createForm.featured || false}
-                    onCheckedChange={(checked) => 
-                      handleCreateChange({ name: 'featured', value: checked })
-                    }
-                  />
-                  <label
-                    htmlFor="featured"
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    Featured Restaurant (highlight on homepage)
-                  </label>
-                </div>
-              </div>
-              
-              <div className="md:col-span-2">
-                <Label className="text-right block mb-2">
-                  Restaurant Images
-                </Label>
-                
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 mb-2">
-                  {(createForm.imageUrls || []).map((url, index) => (
-                    <div key={index} className="relative group border rounded-md h-24 overflow-hidden">
-                      <img 
-                        src={url} 
-                        alt={`Restaurant image ${index}`} 
-                        className="w-full h-full object-cover"
-                      />
-                      <Button
-                        className="absolute top-1 right-1 h-6 w-6 p-0 bg-red-500 hover:bg-red-600 text-white opacity-0 group-hover:opacity-100 transition-opacity"
-                        onClick={() => handleRemoveImage('create', index)}
-                        title="Remove image"
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
-                  
-                  <div 
-                    className="border rounded-md flex items-center justify-center h-24 cursor-pointer hover:bg-muted"
-                    onClick={() => createFileInputRef.current?.click()}
-                  >
-                    <input
-                      type="file"
-                      ref={createFileInputRef}
-                      className="hidden"
-                      accept="image/*"
-                      onChange={(e) => handleImageUpload(e)}
-                    />
-                    <Plus className="h-8 w-8 text-muted-foreground" />
-                  </div>
-                </div>
-              </div>
-              
-              <div className="md:col-span-2">
-                <Label className="text-right block mb-2">
-                  Key Features
-                </Label>
-                
-                <div className="flex flex-wrap gap-2 mb-2">
-                  {(createForm.features || []).map((feature, index) => (
-                    <Badge key={index} variant="secondary" className="group flex items-center gap-1">
-                      {feature}
-                      <button 
-                        onClick={() => handleRemoveFeature('create', index)}
-                        className="text-xs hover:text-red-500"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </Badge>
-                  ))}
-                </div>
-                
-                <div className="flex gap-2">
-                  <Input
-                    id="new-feature-input"
-                    placeholder="Add a feature (e.g., 'Ocean View')"
-                    className="flex-1"
-                  />
-                  <Button 
-                    type="button" 
-                    onClick={() => handleAddFeature('create')}
-                    variant="outline"
-                  >
-                    Add
-                  </Button>
-                </div>
-              </div>
-              
-              <div className="md:col-span-2">
-                <Label className="text-right block mb-2">
-                  Tags
-                </Label>
-                
-                <div className="flex flex-wrap gap-2 mb-2">
-                  {(createForm.tags || []).map((tag, index) => (
-                    <Badge key={index} className="group flex items-center gap-1">
-                      {tag}
-                      <button 
-                        onClick={() => handleRemoveTag('create', index)}
-                        className="text-xs hover:text-red-500"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </Badge>
-                  ))}
-                </div>
-                
-                <div className="flex gap-2">
-                  <Input
-                    id="new-tag-input"
-                    placeholder="Add a tag (e.g., 'family-friendly')"
-                    className="flex-1"
-                  />
-                  <Button 
-                    type="button" 
-                    onClick={() => handleAddTag('create')}
-                    variant="outline"
-                  >
-                    Add
-                  </Button>
-                </div>
-              </div>
-            </div>
-            
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
-                Cancel
-              </Button>
-              <Button onClick={handleCreateRestaurant}>
-                Create Restaurant
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+          <SelectTrigger className="w-full sm:w-48">
+            <SelectValue placeholder="Filter by category" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Categories</SelectItem>
+            <SelectItem value="seafood">Seafood</SelectItem>
+            <SelectItem value="mexican">Mexican</SelectItem>
+            <SelectItem value="italian">Italian</SelectItem>
+            <SelectItem value="steakhouse">Steakhouse</SelectItem>
+            <SelectItem value="fusion">Fusion</SelectItem>
+            <SelectItem value="american">American</SelectItem>
+            <SelectItem value="japanese">Japanese</SelectItem>
+            <SelectItem value="vegan">Vegan</SelectItem>
+            <SelectItem value="international">International</SelectItem>
+          </SelectContent>
+        </Select>
+        
+        <div className="flex gap-2">
+          <Button 
+            className="bg-blue-600 text-white hover:bg-blue-700" 
+            onClick={handleImportRestaurants} 
+            disabled={importing}
+          >
+            {importing ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Importing...
+              </>
+            ) : (
+              <>
+                <Download className="mr-2 h-4 w-4" /> Import Data
+              </>
+            )}
+          </Button>
+          
+          <Button className="bg-primary text-white" onClick={() => setIsCreateDialogOpen(true)}>
+            <Plus className="mr-2 h-4 w-4" /> New Restaurant
+          </Button>
+        </div>
       </div>
       
       {loading ? (
-        <div className="flex justify-center items-center h-64">
-          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        <div className="flex justify-center items-center py-12">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      ) : error ? (
+        <div className="text-center py-12">
+          <p className="text-red-500">{error}</p>
+          <Button className="mt-4" onClick={fetchRestaurants}>Try Again</Button>
         </div>
       ) : filteredRestaurants.length === 0 ? (
-        <div className="bg-white rounded-lg border p-8 text-center">
-          <h3 className="text-lg font-medium mb-2">No restaurants found</h3>
-          <p className="text-muted-foreground">
-            {searchTerm || categoryFilter !== 'all' 
-              ? "Try adjusting your search or filter" 
-              : "Add your first restaurant to get started"}
-          </p>
+        <div className="text-center py-12">
+          <p className="text-muted-foreground mb-4">No restaurants found</p>
+          <Button onClick={() => setIsCreateDialogOpen(true)}>Add Your First Restaurant</Button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredRestaurants.map((restaurant) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          {filteredRestaurants.map(restaurant => (
             <Card key={restaurant.id} className="overflow-hidden">
-              <div className="aspect-video relative overflow-hidden">
+              <div className="relative h-48">
                 <img 
                   src={restaurant.imageUrl} 
                   alt={restaurant.name} 
-                  className="w-full h-full object-cover transition-transform hover:scale-105"
+                  className="w-full h-full object-cover"
                 />
                 {restaurant.featured && (
-                  <div className="absolute top-2 right-2">
-                    <Badge className="bg-amber-500">Featured</Badge>
-                  </div>
+                  <Badge className="absolute top-2 left-2 bg-primary text-white">
+                    Featured
+                  </Badge>
                 )}
+                <Badge className="absolute top-2 right-2" variant="secondary">
+                  {restaurant.priceLevel}
+                </Badge>
               </div>
-              
-              <CardHeader className="pb-2">
-                <div className="flex justify-between items-start">
-                  <CardTitle className="text-xl">{restaurant.name}</CardTitle>
-                  <Badge variant="outline">{restaurant.priceLevel}</Badge>
+              <CardContent className="pt-6">
+                <div className="flex justify-between items-start mb-2">
+                  <div>
+                    <h3 className="font-semibold text-lg">{restaurant.name}</h3>
+                    <p className="text-sm text-muted-foreground">{restaurant.cuisine}</p>
+                  </div>
+                  <div className="flex items-center">
+                    <Star className="h-4 w-4 fill-yellow-400 text-yellow-400 mr-1" />
+                    <span className="text-sm font-medium">{restaurant.rating}</span>
+                    <span className="text-xs text-muted-foreground ml-1">({restaurant.reviewCount})</span>
+                  </div>
                 </div>
-                <CardDescription className="flex items-center">
-                  <span className="flex items-center mr-2">
-                    ⭐ {restaurant.rating.toFixed(1)}
-                  </span>
-                  <span className="text-muted-foreground">({restaurant.reviewCount} reviews)</span>
-                </CardDescription>
-              </CardHeader>
-              
-              <CardContent className="pb-2">
-                <div className="mb-2">
-                  <p className="text-sm text-muted-foreground line-clamp-2">{restaurant.description}</p>
-                </div>
-                
-                <div className="mb-2">
-                  <p className="text-sm font-medium">
-                    {restaurant.location}
-                  </p>
-                </div>
-                
-                <div className="flex flex-wrap gap-1 mb-3">
-                  <Badge variant="secondary">{restaurant.category}</Badge>
-                  <Badge variant="secondary">{restaurant.cuisine}</Badge>
-                  {restaurant.tags?.slice(0, 2).map((tag, index) => (
-                    <Badge key={index} variant="outline">{tag}</Badge>
+                <p className="text-sm line-clamp-2 mb-4">{restaurant.description}</p>
+                <div className="flex flex-wrap gap-1 mb-4">
+                  {restaurant.features && restaurant.features.slice(0, 3).map((feature, i) => (
+                    <Badge key={i} variant="outline" className="text-xs">
+                      {feature}
+                    </Badge>
                   ))}
-                  {(restaurant.tags?.length || 0) > 2 && (
-                    <Badge variant="outline">+{(restaurant.tags?.length || 0) - 2} more</Badge>
+                  {restaurant.features && restaurant.features.length > 3 && (
+                    <Badge variant="outline" className="text-xs">
+                      +{restaurant.features.length - 3} more
+                    </Badge>
                   )}
                 </div>
-                
                 <div className="flex justify-between items-center">
+                  <p className="text-sm">
+                    <MapPin className="h-3.5 w-3.5 inline mr-1 opacity-70" />
+                    {restaurant.location}
+                  </p>
                   <div className="flex gap-2">
                     <Button 
                       size="sm" 
-                      variant="outline" 
-                      className="flex items-center"
+                      variant="outline"
+                      className="h-8 bg-blue-100 hover:bg-blue-200 border-blue-300" 
                       onClick={() => handleOpenEditDialog(restaurant)}
                     >
-                      <Edit className="h-4 w-4 mr-1" />
+                      <Edit className="h-3.5 w-3.5 mr-1" />
                       Edit
                     </Button>
                     <Button 
                       size="sm" 
-                      variant="destructive" 
-                      className="flex items-center"
+                      variant="outline"
+                      className="h-8 bg-red-100 hover:bg-red-200 border-red-300" 
                       onClick={() => handleDeleteRestaurant(restaurant.id)}
                     >
-                      <Trash2 className="h-4 w-4 mr-1" />
+                      <Trash2 className="h-3.5 w-3.5 mr-1" />
                       Delete
                     </Button>
                   </div>
@@ -905,7 +613,370 @@ export default function RestaurantManager() {
         </div>
       )}
       
-      {/* Edit Dialog */}
+      {/* Create Restaurant Dialog */}
+      <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Add New Restaurant</DialogTitle>
+          </DialogHeader>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-4">
+            <div className="md:col-span-2">
+              <Label htmlFor="name" className="text-right">
+                Restaurant Name
+              </Label>
+              <Input
+                id="name"
+                name="name"
+                placeholder="El Pescador"
+                value={createForm.name || ''}
+                onChange={handleCreateChange}
+                className="mt-1"
+              />
+            </div>
+            
+            <div className="md:col-span-2">
+              <Label htmlFor="description" className="text-right">
+                Description
+              </Label>
+              <Textarea
+                id="description"
+                name="description"
+                placeholder="A beautiful oceanfront restaurant..."
+                value={createForm.description || ''}
+                onChange={handleCreateChange}
+                rows={3}
+                className="mt-1"
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="category" className="text-right">
+                Category
+              </Label>
+              <Select
+                name="category"
+                value={createForm.category as string || 'mexican'}
+                onValueChange={(value) => handleCreateChange({ name: 'category', value })}
+              >
+                <SelectTrigger className="mt-1 w-full">
+                  <SelectValue placeholder="Select category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="seafood">Seafood</SelectItem>
+                  <SelectItem value="mexican">Mexican</SelectItem>
+                  <SelectItem value="italian">Italian</SelectItem>
+                  <SelectItem value="steakhouse">Steakhouse</SelectItem>
+                  <SelectItem value="fusion">Fusion</SelectItem>
+                  <SelectItem value="american">American</SelectItem>
+                  <SelectItem value="japanese">Japanese</SelectItem>
+                  <SelectItem value="vegan">Vegan</SelectItem>
+                  <SelectItem value="international">International</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div>
+              <Label htmlFor="cuisine" className="text-right">
+                Cuisine Type
+              </Label>
+              <Input
+                id="cuisine"
+                name="cuisine"
+                placeholder="Traditional Mexican"
+                value={createForm.cuisine || ''}
+                onChange={handleCreateChange}
+                className="mt-1"
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="priceLevel" className="text-right">
+                Price Level
+              </Label>
+              <Select
+                name="priceLevel"
+                value={createForm.priceLevel || '$$'}
+                onValueChange={(value) => handleCreateChange({ name: 'priceLevel', value })}
+              >
+                <SelectTrigger className="mt-1 w-full">
+                  <SelectValue placeholder="Select price level" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="$">$ (Budget)</SelectItem>
+                  <SelectItem value="$$">$$ (Moderate)</SelectItem>
+                  <SelectItem value="$$$">$$$ (Upscale)</SelectItem>
+                  <SelectItem value="$$$$">$$$$ (Fine Dining)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div>
+              <Label htmlFor="location" className="text-right">
+                Location
+              </Label>
+              <Input
+                id="location"
+                name="location"
+                placeholder="Cabo San Lucas"
+                value={createForm.location || ''}
+                onChange={handleCreateChange}
+                className="mt-1"
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="address" className="text-right">
+                Full Address
+              </Label>
+              <Input
+                id="address"
+                name="address"
+                placeholder="123 Beach Road, Cabo San Lucas"
+                value={createForm.address || ''}
+                onChange={handleCreateChange}
+                className="mt-1"
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="phone" className="text-right">
+                Phone Number
+              </Label>
+              <Input
+                id="phone"
+                name="phone"
+                placeholder="+52 624 123 4567"
+                value={createForm.phone || ''}
+                onChange={handleCreateChange}
+                className="mt-1"
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="website" className="text-right">
+                Website URL
+              </Label>
+              <Input
+                id="website"
+                name="website"
+                placeholder="https://www.restaurant-website.com"
+                value={createForm.website || ''}
+                onChange={handleCreateChange}
+                className="mt-1"
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="openTable" className="text-right">
+                OpenTable URL
+              </Label>
+              <Input
+                id="openTable"
+                name="openTable"
+                placeholder="https://www.opentable.com/r/restaurant"
+                value={createForm.openTable || ''}
+                onChange={handleCreateChange}
+                className="mt-1"
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="menuUrl" className="text-right">
+                Menu URL
+              </Label>
+              <Input
+                id="menuUrl"
+                name="menuUrl"
+                placeholder="https://www.restaurant-website.com/menu"
+                value={createForm.menuUrl || ''}
+                onChange={handleCreateChange}
+                className="mt-1"
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="rating" className="text-right">
+                Rating (1-5)
+              </Label>
+              <Input
+                id="rating"
+                name="rating"
+                type="number"
+                min="1"
+                max="5"
+                step="0.1"
+                placeholder="4.5"
+                value={createForm.rating || ''}
+                onChange={handleCreateChange}
+                className="mt-1"
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="reviewCount" className="text-right">
+                Number of Reviews
+              </Label>
+              <Input
+                id="reviewCount"
+                name="reviewCount"
+                type="number"
+                min="0"
+                placeholder="42"
+                value={createForm.reviewCount || ''}
+                onChange={handleCreateChange}
+                className="mt-1"
+              />
+            </div>
+            
+            <div className="md:col-span-2">
+              <div className="flex items-center space-x-2 mb-2">
+                <Checkbox
+                  id="featured"
+                  checked={createForm.featured || false}
+                  onCheckedChange={(checked) => 
+                    handleCreateChange({ name: 'featured', value: checked })
+                  }
+                />
+                <label
+                  htmlFor="featured"
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  Featured Restaurant (highlight on homepage)
+                </label>
+              </div>
+            </div>
+            
+            <div className="md:col-span-2">
+              <Label className="text-right block mb-2">
+                Restaurant Images
+              </Label>
+              
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 mb-2">
+                {(createForm.imageUrls || []).map((url, index) => (
+                  <div key={index} className="relative group border rounded-md h-24 overflow-hidden">
+                    <img 
+                      src={url} 
+                      alt={`Restaurant image ${index}`} 
+                      className="w-full h-full object-cover"
+                    />
+                    <Button
+                      className="absolute top-1 right-1 h-6 w-6 p-0 bg-red-500 hover:bg-red-600 text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => handleRemoveImage('create', index)}
+                      title="Remove image"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+                
+                <div 
+                  className="border rounded-md flex items-center justify-center h-24 cursor-pointer hover:bg-muted"
+                  onClick={() => createFileInputRef.current?.click()}
+                >
+                  <input
+                    type="file"
+                    ref={createFileInputRef}
+                    className="hidden"
+                    accept="image/*"
+                    onChange={(e) => handleImageUpload(e)}
+                  />
+                  <Plus className="h-8 w-8 text-muted-foreground" />
+                </div>
+              </div>
+            </div>
+            
+            <div className="md:col-span-2">
+              <Label className="text-right block mb-2">
+                Key Features
+              </Label>
+              
+              <div className="flex flex-wrap gap-2 mb-2">
+                {(createForm.features || []).map((feature, index) => (
+                  <Badge key={index} variant="secondary" className="group flex items-center gap-1">
+                    {feature}
+                    <button 
+                      onClick={() => handleRemoveFeature('create', index)}
+                      className="text-xs hover:text-red-500"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </Badge>
+                ))}
+              </div>
+              
+              <div className="flex gap-2">
+                <Input
+                  id="new-feature-input"
+                  value={newFeature}
+                  onChange={(e) => setNewFeature(e.target.value)}
+                  placeholder="Ocean view, Live music, etc."
+                  className="flex-1"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleAddFeature('create');
+                    }
+                  }}
+                />
+                <Button type="button" onClick={() => handleAddFeature('create')}>
+                  Add
+                </Button>
+              </div>
+            </div>
+            
+            <div className="md:col-span-2">
+              <Label className="text-right block mb-2">
+                Tags
+              </Label>
+              
+              <div className="flex flex-wrap gap-2 mb-2">
+                {(createForm.tags || []).map((tag, index) => (
+                  <Badge key={index} className="group flex items-center gap-1">
+                    {tag}
+                    <button 
+                      onClick={() => handleRemoveTag('create', index)}
+                      className="text-xs hover:text-red-500"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </Badge>
+                ))}
+              </div>
+              
+              <div className="flex gap-2">
+                <Input
+                  id="new-tag-input"
+                  value={newTag}
+                  onChange={(e) => setNewTag(e.target.value)}
+                  placeholder="romantic, family-friendly, etc."
+                  className="flex-1"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleAddTag('create');
+                    }
+                  }}
+                />
+                <Button type="button" onClick={() => handleAddTag('create')}>
+                  Add
+                </Button>
+              </div>
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleCreateRestaurant}>
+              Create Restaurant
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Edit Restaurant Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
@@ -914,12 +985,13 @@ export default function RestaurantManager() {
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-4">
             <div className="md:col-span-2">
-              <Label htmlFor="edit-name" className="text-right">
+              <Label htmlFor="name-edit" className="text-right">
                 Restaurant Name
               </Label>
               <Input
-                id="edit-name"
+                id="name-edit"
                 name="name"
+                placeholder="El Pescador"
                 value={editForm.name || ''}
                 onChange={handleEditChange}
                 className="mt-1"
@@ -927,12 +999,13 @@ export default function RestaurantManager() {
             </div>
             
             <div className="md:col-span-2">
-              <Label htmlFor="edit-description" className="text-right">
+              <Label htmlFor="description-edit" className="text-right">
                 Description
               </Label>
               <Textarea
-                id="edit-description"
+                id="description-edit"
                 name="description"
+                placeholder="A beautiful oceanfront restaurant..."
                 value={editForm.description || ''}
                 onChange={handleEditChange}
                 rows={3}
@@ -941,7 +1014,7 @@ export default function RestaurantManager() {
             </div>
             
             <div>
-              <Label htmlFor="edit-category" className="text-right">
+              <Label htmlFor="category-edit" className="text-right">
                 Category
               </Label>
               <Select
@@ -967,12 +1040,13 @@ export default function RestaurantManager() {
             </div>
             
             <div>
-              <Label htmlFor="edit-cuisine" className="text-right">
+              <Label htmlFor="cuisine-edit" className="text-right">
                 Cuisine Type
               </Label>
               <Input
-                id="edit-cuisine"
+                id="cuisine-edit"
                 name="cuisine"
+                placeholder="Traditional Mexican"
                 value={editForm.cuisine || ''}
                 onChange={handleEditChange}
                 className="mt-1"
@@ -980,7 +1054,7 @@ export default function RestaurantManager() {
             </div>
             
             <div>
-              <Label htmlFor="edit-priceLevel" className="text-right">
+              <Label htmlFor="priceLevel-edit" className="text-right">
                 Price Level
               </Label>
               <Select
@@ -1001,12 +1075,13 @@ export default function RestaurantManager() {
             </div>
             
             <div>
-              <Label htmlFor="edit-location" className="text-right">
+              <Label htmlFor="location-edit" className="text-right">
                 Location
               </Label>
               <Input
-                id="edit-location"
+                id="location-edit"
                 name="location"
+                placeholder="Cabo San Lucas"
                 value={editForm.location || ''}
                 onChange={handleEditChange}
                 className="mt-1"
@@ -1014,12 +1089,13 @@ export default function RestaurantManager() {
             </div>
             
             <div>
-              <Label htmlFor="edit-address" className="text-right">
+              <Label htmlFor="address-edit" className="text-right">
                 Full Address
               </Label>
               <Input
-                id="edit-address"
+                id="address-edit"
                 name="address"
+                placeholder="123 Beach Road, Cabo San Lucas"
                 value={editForm.address || ''}
                 onChange={handleEditChange}
                 className="mt-1"
@@ -1027,12 +1103,13 @@ export default function RestaurantManager() {
             </div>
             
             <div>
-              <Label htmlFor="edit-phone" className="text-right">
+              <Label htmlFor="phone-edit" className="text-right">
                 Phone Number
               </Label>
               <Input
-                id="edit-phone"
+                id="phone-edit"
                 name="phone"
+                placeholder="+52 624 123 4567"
                 value={editForm.phone || ''}
                 onChange={handleEditChange}
                 className="mt-1"
@@ -1040,12 +1117,13 @@ export default function RestaurantManager() {
             </div>
             
             <div>
-              <Label htmlFor="edit-website" className="text-right">
+              <Label htmlFor="website-edit" className="text-right">
                 Website URL
               </Label>
               <Input
-                id="edit-website"
+                id="website-edit"
                 name="website"
+                placeholder="https://www.restaurant-website.com"
                 value={editForm.website || ''}
                 onChange={handleEditChange}
                 className="mt-1"
@@ -1053,12 +1131,13 @@ export default function RestaurantManager() {
             </div>
             
             <div>
-              <Label htmlFor="edit-openTable" className="text-right">
+              <Label htmlFor="openTable-edit" className="text-right">
                 OpenTable URL
               </Label>
               <Input
-                id="edit-openTable"
+                id="openTable-edit"
                 name="openTable"
+                placeholder="https://www.opentable.com/r/restaurant"
                 value={editForm.openTable || ''}
                 onChange={handleEditChange}
                 className="mt-1"
@@ -1066,12 +1145,13 @@ export default function RestaurantManager() {
             </div>
             
             <div>
-              <Label htmlFor="edit-menuUrl" className="text-right">
+              <Label htmlFor="menuUrl-edit" className="text-right">
                 Menu URL
               </Label>
               <Input
-                id="edit-menuUrl"
+                id="menuUrl-edit"
                 name="menuUrl"
+                placeholder="https://www.restaurant-website.com/menu"
                 value={editForm.menuUrl || ''}
                 onChange={handleEditChange}
                 className="mt-1"
@@ -1079,16 +1159,17 @@ export default function RestaurantManager() {
             </div>
             
             <div>
-              <Label htmlFor="edit-rating" className="text-right">
+              <Label htmlFor="rating-edit" className="text-right">
                 Rating (1-5)
               </Label>
               <Input
-                id="edit-rating"
+                id="rating-edit"
                 name="rating"
                 type="number"
                 min="1"
                 max="5"
                 step="0.1"
+                placeholder="4.5"
                 value={editForm.rating || ''}
                 onChange={handleEditChange}
                 className="mt-1"
@@ -1096,14 +1177,15 @@ export default function RestaurantManager() {
             </div>
             
             <div>
-              <Label htmlFor="edit-reviewCount" className="text-right">
+              <Label htmlFor="reviewCount-edit" className="text-right">
                 Number of Reviews
               </Label>
               <Input
-                id="edit-reviewCount"
+                id="reviewCount-edit"
                 name="reviewCount"
                 type="number"
                 min="0"
+                placeholder="42"
                 value={editForm.reviewCount || ''}
                 onChange={handleEditChange}
                 className="mt-1"
@@ -1113,14 +1195,14 @@ export default function RestaurantManager() {
             <div className="md:col-span-2">
               <div className="flex items-center space-x-2 mb-2">
                 <Checkbox
-                  id="edit-featured"
+                  id="featured-edit"
                   checked={editForm.featured || false}
                   onCheckedChange={(checked) => 
                     handleEditChange({ name: 'featured', value: checked })
                   }
                 />
                 <label
-                  htmlFor="edit-featured"
+                  htmlFor="featured-edit"
                   className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                 >
                   Featured Restaurant (highlight on homepage)
@@ -1153,11 +1235,11 @@ export default function RestaurantManager() {
                 
                 <div 
                   className="border rounded-md flex items-center justify-center h-24 cursor-pointer hover:bg-muted"
-                  onClick={() => fileInputRef.current?.click()}
+                  onClick={() => editFileInputRef.current?.click()}
                 >
                   <input
                     type="file"
-                    ref={fileInputRef}
+                    ref={editFileInputRef}
                     className="hidden"
                     accept="image/*"
                     onChange={(e) => handleImageUpload(e, selectedRestaurant?.id)}
@@ -1188,15 +1270,19 @@ export default function RestaurantManager() {
               
               <div className="flex gap-2">
                 <Input
-                  id="edit-feature-input"
-                  placeholder="Add a feature (e.g., 'Ocean View')"
+                  id="new-feature-edit-input"
+                  value={newEditFeature}
+                  onChange={(e) => setNewEditFeature(e.target.value)}
+                  placeholder="Ocean view, Live music, etc."
                   className="flex-1"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleAddFeature('edit');
+                    }
+                  }}
                 />
-                <Button 
-                  type="button" 
-                  onClick={() => handleAddFeature('edit')}
-                  variant="outline"
-                >
+                <Button type="button" onClick={() => handleAddFeature('edit')}>
                   Add
                 </Button>
               </div>
@@ -1223,15 +1309,19 @@ export default function RestaurantManager() {
               
               <div className="flex gap-2">
                 <Input
-                  id="edit-tag-input"
-                  placeholder="Add a tag (e.g., 'family-friendly')"
+                  id="new-tag-edit-input"
+                  value={newEditTag}
+                  onChange={(e) => setNewEditTag(e.target.value)}
+                  placeholder="romantic, family-friendly, etc."
                   className="flex-1"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleAddTag('edit');
+                    }
+                  }}
                 />
-                <Button 
-                  type="button" 
-                  onClick={() => handleAddTag('edit')}
-                  variant="outline"
-                >
+                <Button type="button" onClick={() => handleAddTag('edit')}>
                   Add
                 </Button>
               </div>

@@ -17,6 +17,7 @@ import {
 import { registerStripeRoutes } from './routes/stripe';
 import itineraryRoutes from './routes/itinerary';
 import imageRoutes from './routes/image';
+import { importRestaurantData } from './routes/import-restaurant-data';
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Define admin middleware at the beginning
@@ -1011,6 +1012,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Restaurant API endpoints
+  app.post("/api/restaurants/import", requireAdmin, importRestaurantData);
+  
   app.get("/api/restaurants", async (req, res) => {
     try {
       const category = req.query.category as string | undefined;

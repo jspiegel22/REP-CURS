@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { eq } from "drizzle-orm";
+import { eq, and, ne, SQL } from "drizzle-orm";
 import { users, listings, bookings, rewards, socialShares, weatherCache, resorts, villas, leads, guideSubmissions, blogPosts, adventures, restaurants } from "@shared/schema";
 import type { User, InsertUser, Listing, Booking, Reward, SocialShare, WeatherCache, Resort, Villa, Lead, InsertLead, InsertBlogPost, Adventure, InsertAdventure, Restaurant, InsertRestaurant } from "@shared/schema";
 import session from "express-session";
@@ -652,10 +652,21 @@ export class DatabaseStorage implements IStorage {
   // Adventure Management
   async getAdventures(category?: string): Promise<Adventure[]> {
     try {
+      let results;
       if (category) {
-        return db.select().from(adventures).where(eq(adventures.category, category));
+        results = await db.select().from(adventures).where(eq(adventures.category, category));
+      } else {
+        results = await db.select().from(adventures);
       }
-      return db.select().from(adventures);
+      
+      // Format ratings to show only one decimal place
+      return results.map(adventure => {
+        if (adventure.rating) {
+          // Convert to number, round to 1 decimal place, and convert back to string
+          adventure.rating = Number(Number(adventure.rating).toFixed(1));
+        }
+        return adventure;
+      });
     } catch (error) {
       console.error('Error fetching adventures:', error);
       return [];
@@ -665,6 +676,10 @@ export class DatabaseStorage implements IStorage {
   async getAdventure(id: number): Promise<Adventure | undefined> {
     try {
       const [adventure] = await db.select().from(adventures).where(eq(adventures.id, id));
+      if (adventure && adventure.rating) {
+        // Format rating to one decimal place
+        adventure.rating = Number(Number(adventure.rating).toFixed(1));
+      }
       return adventure;
     } catch (error) {
       console.error(`Error fetching adventure with ID ${id}:`, error);
@@ -675,6 +690,10 @@ export class DatabaseStorage implements IStorage {
   async getAdventureBySlug(slug: string): Promise<Adventure | undefined> {
     try {
       const [adventure] = await db.select().from(adventures).where(eq(adventures.slug, slug));
+      if (adventure && adventure.rating) {
+        // Format rating to one decimal place
+        adventure.rating = Number(Number(adventure.rating).toFixed(1));
+      }
       return adventure;
     } catch (error) {
       console.error(`Error fetching adventure with slug ${slug}:`, error);
@@ -695,6 +714,11 @@ export class DatabaseStorage implements IStorage {
           .replace(/-+$/, '');
       }
       
+      // Format rating to one decimal place if provided
+      if (adventure.rating) {
+        adventure.rating = Number(Number(adventure.rating).toFixed(1));
+      }
+      
       const [newAdventure] = await db.insert(adventures).values(adventure).returning();
       return newAdventure;
     } catch (error) {
@@ -705,15 +729,62 @@ export class DatabaseStorage implements IStorage {
 
   async updateAdventure(id: number, adventure: Partial<Adventure>): Promise<Adventure> {
     try {
+      // Get current adventure to check for conflicts
+      const currentAdventure = await this.getAdventure(id);
+      if (!currentAdventure) {
+        throw new Error('Adventure not found');
+      }
+      
       // Generate a slug from the title if title is updated and slug is not provided
       if (adventure.title && !adventure.slug) {
-        adventure.slug = adventure.title
+        let baseSlug = adventure.title
           .toLowerCase()
           .replace(/\s+/g, '-')
           .replace(/[^\w\-]+/g, '')
           .replace(/\-\-+/g, '-')
           .replace(/^-+/, '')
           .replace(/-+$/, '');
+        
+        // If slug is being changed, check for potential conflicts
+        if (baseSlug !== currentAdventure.slug) {
+          // If the slug we're trying to use already exists, keep the original slug
+          // or create a unique one by adding a timestamp
+          try {
+            // Check if another adventure already has this slug
+            // (excluding the current adventure)
+            const existingSlugs = await db
+              .select({ slug: adventures.slug })
+              .from(adventures)
+              .where(and(
+                eq(adventures.slug, baseSlug),
+                ne(adventures.id, id)
+              ));
+            
+            if (existingSlugs.length > 0) {
+              // If slug already exists, keep current slug or add timestamp
+              if (currentAdventure.slug) {
+                adventure.slug = currentAdventure.slug;
+              } else {
+                // Add timestamp to make it unique
+                adventure.slug = `${baseSlug}-${Date.now()}`;
+              }
+            } else {
+              adventure.slug = baseSlug;
+            }
+          } catch (error) {
+            // If there's an error checking, keep the existing slug
+            console.log('Error checking slug, keeping current one:', error);
+            adventure.slug = currentAdventure.slug;
+          }
+        } else {
+          // Keep the same slug if title hasn't changed
+          adventure.slug = currentAdventure.slug;
+        }
+      }
+      
+      // Format rating to one decimal place if provided
+      if (adventure.rating) {
+        adventure.rating = Number(Number(adventure.rating).toFixed(1));
       }
       
       const [updatedAdventure] = await db
@@ -759,6 +830,16 @@ export class DatabaseStorage implements IStorage {
       return restaurant;
     } catch (error) {
       console.error(`Error fetching restaurant with ID ${id}:`, error);
+      return undefined;
+    }
+  }
+
+  async getRestaurantByName(name: string): Promise<Restaurant | undefined> {
+    try {
+      const [restaurant] = await db.select().from(restaurants).where(eq(restaurants.name, name));
+      return restaurant;
+    } catch (error) {
+      console.error(`Error fetching restaurant with name "${name}":`, error);
       return undefined;
     }
   }
