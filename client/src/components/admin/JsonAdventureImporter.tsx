@@ -200,8 +200,7 @@ const JsonAdventureImporter = () => {
         <Button 
           onClick={importAdventures} 
           disabled={isLoading}
-          className="w-full"
-          variant="default"
+          className="w-full bg-blue-800 hover:bg-blue-700 text-white"
         >
           {isLoading ? (
             <>

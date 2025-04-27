@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, MapPin, Star, CalendarIcon } from "lucide-react";
+import { Search, MapPin, Star, CalendarIcon, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -13,7 +13,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Restaurant, RestaurantFilters, RestaurantSortOptions } from "@/types/restaurant";
 import { useLocation, useRouter } from "wouter";
-import { restaurants, cuisineTypes, priceRanges } from "@/data/restaurants";
+import { priceRanges } from "@/data/restaurants";
 import {
   Dialog,
   DialogContent,
@@ -29,6 +29,7 @@ import { PopoverContent, PopoverTrigger, Popover } from "@/components/ui/popover
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import SEO, { generateRestaurantSchema } from "@/components/SEO";
+import { useQuery } from "@tanstack/react-query";
 
 // Helper function to get badge color based on cuisine type
 const getCuisineBadgeColor = (cuisine: string) => {
@@ -79,6 +80,21 @@ export default function RestaurantsPage() {
   const [, setLocation] = useLocation();
   const [selectedRestaurant, setSelectedRestaurant] = useState<Restaurant | null>(null);
   const router = useRouter();
+
+  // Fetch restaurants from the API
+  const { 
+    data: restaurants = [], 
+    isLoading, 
+    isError 
+  } = useQuery<Restaurant[]>({ 
+    queryKey: ['/api/restaurants'],
+    staleTime: 60 * 1000, // 1 minute
+  });
+
+  // Extract cuisine types from loaded restaurants
+  const cuisineTypes = Array.from(
+    new Set(restaurants.map(r => r.cuisine))
+  ).sort();
 
   const form = useForm<ReservationFormData>({
     defaultValues: {
@@ -213,26 +229,53 @@ export default function RestaurantsPage() {
               </Select>
             </div>
 
+            {/* Loading State */}
+            {isLoading && (
+              <div className="flex justify-center items-center h-64">
+                <Loader2 className="h-10 w-10 animate-spin text-primary" />
+                <span className="ml-2 text-lg">Loading restaurants...</span>
+              </div>
+            )}
+
+            {/* Error State */}
+            {isError && (
+              <div className="bg-red-50 border border-red-200 rounded-md p-4 my-4">
+                <p className="text-red-700">There was an error loading restaurants. Please try again later.</p>
+              </div>
+            )}
+
+            {/* Empty State */}
+            {!isLoading && !isError && sortedRestaurants.length === 0 && (
+              <div className="text-center p-8 border border-dashed rounded-md border-gray-300">
+                <p className="text-lg text-muted-foreground">No restaurants found for the selected filters.</p>
+                <Button className="mt-4" onClick={() => {
+                  setFilters({});
+                  setSearchQuery('');
+                }}>Reset Filters</Button>
+              </div>
+            )}
+
             {/* Restaurant Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {sortedRestaurants.map((restaurant) => (
-                <Card 
-                  key={restaurant.id} 
-                  className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer group"
-                  onClick={() => setLocation(`/restaurants/${restaurant.id}`)}
-                >
-                  <div className="relative h-48">
-                    <img
-                      src={restaurant.imageUrl}
-                      alt={restaurant.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                    {restaurant.bookingsToday > 20 && (
-                      <div className="absolute top-4 right-4 bg-red-600 text-white px-3 py-1 rounded-full text-sm font-medium">
-                        Popular: {restaurant.bookingsToday} bookings today
-                      </div>
-                    )}
-                  </div>
+            {!isLoading && !isError && sortedRestaurants.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {sortedRestaurants.map((restaurant) => (
+                  <Card 
+                    key={restaurant.id} 
+                    className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer group"
+                    onClick={() => setLocation(`/restaurants/${restaurant.id}`)}
+                  >
+                    <div className="relative h-48">
+                      <img
+                        src={restaurant.imageUrl}
+                        alt={restaurant.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                      {restaurant.bookingsToday && restaurant.bookingsToday > 20 && (
+                        <div className="absolute top-4 right-4 bg-red-600 text-white px-3 py-1 rounded-full text-sm font-medium">
+                          Popular: {restaurant.bookingsToday} bookings today
+                        </div>
+                      )}
+                    </div>
                   <CardContent className="p-6">
                     <div className="flex justify-between items-start mb-4">
                       <div>
@@ -418,6 +461,7 @@ export default function RestaurantsPage() {
                 </Card>
               ))}
             </div>
+            )}
           </div>
         </div>
       </div>

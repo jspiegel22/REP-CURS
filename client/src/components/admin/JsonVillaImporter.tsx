@@ -114,12 +114,11 @@ export default function JsonVillaImporter() {
   return (
     <Card className="h-full">
       <CardHeader>
-        <CardTitle className="flex items-center">
-          <FileJson className="mr-2 h-5 w-5" />
-          Import Villas
+        <CardTitle className="text-xl">
+          Import Villas from JSON
         </CardTitle>
         <CardDescription>
-          Import villas from a JSON file or paste JSON data directly.
+          This will import villas from the JSON file created by the CSV import script.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -132,23 +131,24 @@ export default function JsonVillaImporter() {
             onChange={handleFileSelect}
           />
           <Button 
-            variant="outline" 
             onClick={handleClickUpload}
-            className="w-full"
+            className="w-full bg-green-700 hover:bg-green-800 text-white"
           >
             <Upload className="mr-2 h-4 w-4" />
             Upload JSON File
           </Button>
         </div>
         
-        <div>
-          <Textarea
-            value={jsonContent}
-            onChange={handleJsonChange}
-            placeholder={`Paste villa JSON data here...\n\nExample format:\n${getPlaceholderJson()}`}
-            className="min-h-[200px] font-mono text-sm"
-          />
-        </div>
+        {jsonContent && (
+          <div>
+            <Textarea
+              value={jsonContent}
+              onChange={handleJsonChange}
+              placeholder={`Paste villa JSON data here...\n\nExample format:\n${getPlaceholderJson()}`}
+              className="min-h-[200px] font-mono text-sm"
+            />
+          </div>
+        )}
         
         {error && (
           <Alert variant="destructive">
@@ -168,22 +168,23 @@ export default function JsonVillaImporter() {
           </Alert>
         )}
         
-        <Button 
-          onClick={handleImport} 
-          disabled={!jsonContent || isLoading}
-          className="w-full"
-        >
-          {isLoading ? 'Importing...' : 'Import Villas'}
-        </Button>
+        {jsonContent && (
+          <Button 
+            onClick={handleImport} 
+            disabled={!jsonContent || isLoading}
+            className="w-full"
+          >
+            {isLoading ? 'Importing...' : 'Import from JSON'}
+          </Button>
+        )}
         
-        <div className="text-xs text-muted-foreground space-y-2">
-          <p>
-            <strong>Note:</strong> The JSON file should contain an array of villa objects.
-          </p>
-          <p>
-            <strong>Required fields:</strong> name, bedrooms, bathrooms, maxGuests, pricePerNight
-          </p>
-        </div>
+        {!jsonContent && !isSuccess && (
+          <div className="text-sm text-muted-foreground">
+            <p>
+              Upload a JSON file to import villa data. The file should contain an array of villa objects with the required fields: name, bedrooms, bathrooms, maxGuests, and pricePerNight.
+            </p>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

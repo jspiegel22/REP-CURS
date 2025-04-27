@@ -422,9 +422,9 @@ export default function VillaManager() {
                           </div>
                           <div className="flex justify-between">
                             <Button 
-                              variant="outline" 
                               size="sm"
                               onClick={() => handleEditVilla(villa)}
+                              className="bg-blue-800 hover:bg-blue-700 text-white"
                             >
                               <Edit className="mr-1 h-4 w-4" />
                               Edit

@@ -16,6 +16,8 @@ import BlogIndex from "@/pages/blog";
 import BlogDetail from "@/pages/blog/[slug]";
 import RestaurantsPage from "@/pages/restaurants";
 import RestaurantDetails from "@/pages/restaurants/[id]";
+import PartyPage from "@/pages/party";
+import WellnessPage from "@/pages/wellness";
 import FamilyTripsPage from "@/pages/group-trips/family";
 import BachelorBachelorettePage from "@/pages/group-trips/bachelor-bachelorette";
 import CorporateEventsPage from "@/pages/group-trips/corporate";
@@ -84,6 +86,8 @@ function Router() {
           <Route path="/adventures/:slug" component={AdventureDetail} />
           <Route path="/restaurants" component={RestaurantsPage} />
           <Route path="/restaurants/:id" component={RestaurantDetails} />
+          <Route path="/party" component={PartyPage} />
+          <Route path="/wellness" component={WellnessPage} />
           <Route path="/group-trips/family" component={FamilyTripsPage} />
           <Route path="/group-trips/bachelor-bachelorette" component={BachelorBachelorettePage} />
           <Route path="/group-trips/corporate" component={CorporateEventsPage} />

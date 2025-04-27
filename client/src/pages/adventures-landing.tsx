@@ -1,24 +1,11 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { AdventureCard } from "@/components/adventure-card";
-import { Adventure, parseAdventureData } from "@/types/adventure";
+import { Adventure } from "@/types/adventure";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import SEO, { generateAdventureSchema } from "@/components/SEO";
-
-// Import complete CSV data from the assets
-const adventureData = `group href,h-full src,ais-Highlight-nonHighlighted,text-base,text-xs-4,absolute,font-sans,flex src (2),font-sans (2),gl-font-meta,group href (2)
-https://www.cabo-adventures.com/en/tour/luxury-day-sailing/,https://cdn.sanity.io/images/esqfj3od/production/834cde8965aeeee934450fb9b385ed7ecfa36c16-608x912.webp?w=640&q=65&fit=clip&auto=format,4-HOUR LUXURY CABO SAILING BOAT TOUR,$104 USD,$149 USD,-30%,4 Hours,https://cdn.sanity.io/images/esqfj3od/production/7bba402f8a80a81c964f504de9e5a9cf8a7e0a3a-24x24.svg?w=48&q=65&fit=clip&auto=format,Min 8 years old,ADD TO CART,
-https://www.cabo-adventures.com/en/tour/signature-swim/,https://cdn.sanity.io/images/esqfj3od/production/bd7bfbf824efdf124cf41220ef1830bf4335a462-608x912.webp?w=640&q=65&fit=clip&auto=format,CABO DOLPHIN SWIM SIGNATURE,$146 USD,$209 USD,-30%,40 Minutes,https://cdn.sanity.io/images/esqfj3od/production/7bba402f8a80a81c964f504de9e5a9cf8a7e0a3a-24x24.svg?w=48&q=65&fit=clip&auto=format,Min. 4 years old,ADD TO CART,
-https://www.cabo-adventures.com/en/tour/outdoor-adventure-cabo/,https://cdn.sanity.io/images/esqfj3od/production/82ad01cfa3a513e85d158016f76161a9460e5247-608x912.webp?w=640&q=65&fit=clip&auto=format,OUTDOOR ADVENTURE 4X4 + CABO ZIPLINE + RAPPEL,$97 USD,$139 USD,-30%,3.5 Hours,https://cdn.sanity.io/images/esqfj3od/production/7bba402f8a80a81c964f504de9e5a9cf8a7e0a3a-24x24.svg?w=48&q=65&fit=clip&auto=format,Min 8 years old,ADD TO CART,
-https://www.cabo-adventures.com/en/tour/camel-atv-ecofarm/,/uploads/ATV-Tour-Cabo.png,CAMELS + ATV + LUNCH,$118 USD,$169 USD,-30%,3 hours,https://cdn.sanity.io/images/esqfj3od/production/7bba402f8a80a81c964f504de9e5a9cf8a7e0a3a-24x24.svg?w=48&q=65&fit=clip&auto=format,Min 8 years old,ADD TO CART,
-https://www.cabo-adventures.com/en/tour/luxury-sunset-sailing-cabo/,https://cdn.sanity.io/images/esqfj3od/production/56c52d182d39bb86c7c5d638d537684b4c376b1b-608x912.webp?w=640&q=65&fit=clip&auto=format,LUXURY CABO SUNSET CRUISE,$76 USD,$109 USD,-30%,2.5 Hours,https://cdn.sanity.io/images/esqfj3od/production/7bba402f8a80a81c964f504de9e5a9cf8a7e0a3a-24x24.svg?w=48&q=65&fit=clip&auto=format,Min 8 years old,ADD TO CART,
-https://www.cabo-adventures.com/en/tour/dolphin-experience/,https://cdn.sanity.io/images/esqfj3od/production/e561f483565d57da0f60f4b78b9d7e201e1719a5-608x912.webp?w=640&q=65&fit=clip&auto=format,CABO DOLPHIN EXPERIENCE,$125 USD,$179 USD,-30%,30 Min,https://cdn.sanity.io/images/esqfj3od/production/7bba402f8a80a81c964f504de9e5a9cf8a7e0a3a-24x24.svg?w=48&q=65&fit=clip&auto=format,Min. 4 years old,ADD TO CART,
-https://www.cabo-adventures.com/en/tour/luxury-two-bay-snorkel/,https://cdn.sanity.io/images/esqfj3od/production/6408a4a1046222b51e2764397e57ab987ad17be3-608x912.webp?w=640&q=65&fit=clip&auto=format,LUXURY TWO-BAY SNORKEL,$97 USD,$139 USD,-30%,4 Hours,https://cdn.sanity.io/images/esqfj3od/production/7bba402f8a80a81c964f504de9e5a9cf8a7e0a3a-24x24.svg?w=48&q=65&fit=clip&auto=format,Min 5 years old,ADD TO CART,
-https://www.cabo-adventures.com/en/tour/outback-and-camel-safari/,https://cdn.sanity.io/images/esqfj3od/production/87cb95d909eacc583b3bcd8d9e0f8ebf8cc2bf22-608x912.webp?w=640&q=65&fit=clip&auto=format,OUTBACK & CABO CAMEL RIDE,$83 USD,$119 USD,-30%,3 Hours,https://cdn.sanity.io/images/esqfj3od/production/7bba402f8a80a81c964f504de9e5a9cf8a7e0a3a-24x24.svg?w=48&q=65&fit=clip&auto=format,Min 5 years old,ADD TO CART,
-https://www.cabo-adventures.com/en/tour/luxury-whale-watching/,https://cdn.sanity.io/images/esqfj3od/production/76c1e97bb2129788a3907f7809aba1b85f328cbb-608x912.webp?w=640&q=65&fit=clip&auto=format,LUXURY WHALE WATCHING IN CABO,$97 USD,$139 USD,-30%,2.5 Hours,https://cdn.sanity.io/images/esqfj3od/production/7bba402f8a80a81c964f504de9e5a9cf8a7e0a3a-24x24.svg?w=48&q=65&fit=clip&auto=format,Min 5 years old,ADD TO CART,
-https://www.cabo-adventures.com/en/tour/whale-shark-encounter/,https://cdn.sanity.io/images/esqfj3od/production/ae2e87b46789cce6c375dea1ebb9c678fac559f3-608x912.webp?w=640&q=65&fit=clip&auto=format,SWIM WITH WHALE SHARKS IN CABO,$202 USD,$289 USD,-30%,10 Hours,https://cdn.sanity.io/images/esqfj3od/production/7bba402f8a80a81c964f504de9e5a9cf8a7e0a3a-24x24.svg?w=48&q=65&fit=clip&auto=format,Min 8 years old,ADD TO CART,`;
-
-const adventures = parseAdventureData(adventureData);
+import { useQuery } from "@tanstack/react-query";
+import { Loader2 } from "lucide-react";
 
 const ITEMS_PER_PAGE = 12;
 
@@ -26,7 +13,13 @@ export default function AdventuresLanding() {
   const [currentPage, setCurrentPage] = useState(1);
   const [filter, setFilter] = useState<'all' | 'water' | 'land' | 'luxury' | 'family'>('all');
 
-  const filteredAdventures = adventures.filter(adventure => {
+  // Fetch adventures from the API
+  const { data: adventures = [], isLoading, isError } = useQuery<Adventure[]>({ 
+    queryKey: ['/api/adventures'],
+    staleTime: 60 * 1000, // 1 minute
+  });
+
+  const filteredAdventures = adventures.filter((adventure) => {
     if (filter === 'all') return true;
     return adventure.category === filter;
   });
@@ -132,12 +125,37 @@ export default function AdventuresLanding() {
             </Button>
           </div>
 
+          {/* Loading State */}
+          {isLoading && (
+            <div className="flex justify-center items-center h-64">
+              <Loader2 className="h-10 w-10 animate-spin text-primary" />
+              <span className="ml-2 text-lg">Loading adventures...</span>
+            </div>
+          )}
+
+          {/* Error State */}
+          {isError && (
+            <div className="bg-red-50 border border-red-200 rounded-md p-4 my-4">
+              <p className="text-red-700">There was an error loading adventures. Please try again later.</p>
+            </div>
+          )}
+
+          {/* Empty State */}
+          {!isLoading && !isError && filteredAdventures.length === 0 && (
+            <div className="text-center p-8 border border-dashed rounded-md border-gray-300">
+              <p className="text-lg text-muted-foreground">No adventures found for the selected filter.</p>
+              <Button className="mt-4" onClick={() => setFilter('all')}>View All Adventures</Button>
+            </div>
+          )}
+
           {/* Adventures Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {displayedAdventures.map((adventure) => (
-              <AdventureCard key={adventure.id} adventure={adventure} />
-            ))}
-          </div>
+          {!isLoading && !isError && filteredAdventures.length > 0 && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {displayedAdventures.map((adventure) => (
+                <AdventureCard key={adventure.id} adventure={adventure} />
+              ))}
+            </div>
+          )}
 
           {/* Pagination */}
           {totalPages > 1 && (

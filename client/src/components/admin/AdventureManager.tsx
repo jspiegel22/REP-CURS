@@ -389,9 +389,9 @@ export default function AdventureManager() {
                       </div>
                       <div className="flex justify-between">
                         <Button 
-                          variant="default" 
                           size="sm"
                           onClick={() => handleEditAdventure(adventure)}
+                          className="bg-blue-800 hover:bg-blue-700 text-white"
                         >
                           <Edit className="mr-1 h-4 w-4" />
                           Edit
