@@ -30,6 +30,7 @@ import { useAuth } from "@/hooks/use-auth";
 import AdventureManager from "@/components/admin/AdventureManager";
 import ResortManager from "@/components/admin/ResortManager";
 import VillaManager from "@/components/admin/VillaManager";
+import RestaurantManager from "@/components/admin/RestaurantManager";
 import BlogManager from "@/components/admin/BlogManager";
 import ImageManager from "@/components/admin/ImageManager";
 import AnalyticsDashboard from "@/components/admin/AnalyticsDashboard";
@@ -175,6 +176,7 @@ export default function AdminDashboard() {
     { id: "adventures", label: "Adventures", icon: <PalmtreeIcon className="h-5 w-5" /> },
     { id: "resorts", label: "Resorts & Hotels", icon: <BedDouble className="h-5 w-5" /> },
     { id: "villas", label: "Villas", icon: <HomeIcon className="h-5 w-5" /> },
+    { id: "restaurants", label: "Restaurants", icon: <Compass className="h-5 w-5" /> },
     { id: "blogs", label: "Blog Posts", icon: <Newspaper className="h-5 w-5" /> },
     { id: "images", label: "Image Library", icon: <Image className="h-5 w-5" /> },
     
@@ -307,6 +309,7 @@ export default function AdminDashboard() {
             {activeTab === "adventures" && "Adventure Management"}
             {activeTab === "resorts" && "Resort Management"}
             {activeTab === "villas" && "Villa Management"}
+            {activeTab === "restaurants" && "Restaurant Management"}
             {activeTab === "blogs" && "Blog Management"}
             {activeTab === "images" && "Image Library"}
             {activeTab === "integrations" && "Integrations"}
@@ -321,6 +324,7 @@ export default function AdminDashboard() {
           {activeTab === "adventures" && <AdventureManager />}
           {activeTab === "resorts" && <ResortManager />}
           {activeTab === "villas" && <VillaManager />}
+          {activeTab === "restaurants" && <RestaurantManager />}
           {activeTab === "blogs" && <BlogManager />}
           {activeTab === "images" && <ImageManager />}
           {activeTab === "integrations" && <Integrations />}

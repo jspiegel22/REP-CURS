@@ -22,6 +22,7 @@ interface Resort {
   reviewCount: number;
   priceLevel: string;
   imageUrl: string;
+  imageUrls: string[];
   category: string;
   amenities: string[];
   featured: boolean;
@@ -95,6 +96,7 @@ export default function ResortManager() {
           reviewCount: 356,
           priceLevel: "$$$$",
           imageUrl: "/uploads/four-seasons-los-cabos.jpg",
+          imageUrls: ["/uploads/four-seasons-los-cabos.jpg", "/uploads/resort-room1.jpg", "/uploads/resort-pool1.jpg"],
           category: "luxury",
           amenities: ["Beach Access", "Spa", "Pool", "Fine Dining", "Golf"],
           featured: true
@@ -108,6 +110,7 @@ export default function ResortManager() {
           reviewCount: 289,
           priceLevel: "$$$",
           imageUrl: "/uploads/grand-velas-los-cabos.jpg",
+          imageUrls: ["/uploads/grand-velas-los-cabos.jpg", "/uploads/resort-room2.jpg"],
           category: "all-inclusive",
           amenities: ["All-Inclusive", "Spa", "Pool", "Kids Club", "Restaurants"],
           featured: true
@@ -144,6 +147,8 @@ export default function ResortManager() {
       category: 'hotel',
       amenities: [],
       featured: false,
+      imageUrl: '',
+      imageUrls: [],
     });
     setIsCreateDialogOpen(true);
   }
@@ -198,6 +203,7 @@ export default function ResortManager() {
         reviewCount: createForm.reviewCount || 0,
         priceLevel: createForm.priceLevel || '$$$',
         imageUrl: createForm.imageUrl || '/placeholder-resort.jpg',
+        imageUrls: createForm.imageUrls || [],
         category: createForm.category || 'hotel',
         amenities: createForm.amenities || [],
         featured: createForm.featured || false,
@@ -303,6 +309,174 @@ export default function ResortManager() {
       toast({
         title: "Image upload failed",
         description: String(error) || "Failed to upload image. Please try again.",
+        variant: "destructive"
+      });
+    }
+  }
+  
+  // Function to handle uploading additional images for the image gallery (Edit form)
+  async function handleAdditionalImageUpload(event: React.ChangeEvent<HTMLInputElement>) {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+    
+    const file = files[0];
+    // Capture the temporary URL outside of try/catch to use it in error handling
+    const temporaryUrl = URL.createObjectURL(file);
+    
+    // Add temporary URL to the imageUrls array
+    setEditForm(prev => ({
+      ...prev, 
+      imageUrls: [...(prev.imageUrls || []), temporaryUrl]
+    }));
+    
+    try {
+      // Create a FormData object to send the file to the server
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('name', `${selectedResort?.name || 'Resort'} Additional Image`);
+      formData.append('alt_text', `Additional image of ${selectedResort?.name || 'resort'} in Cabo San Lucas`);
+      formData.append('description', `Additional image of ${selectedResort?.name || 'resort'}`);
+      formData.append('category', 'resort');
+      
+      // Upload the image to the server
+      const response = await fetch('/api/images/upload', {
+        method: 'POST',
+        body: formData
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Failed to upload image: ${response.statusText}`);
+      }
+      
+      // Get the permanent image URL from the server response
+      const result = await response.json();
+      const imageUrl = result.file_path || result.url || result.image_url;
+      
+      if (!imageUrl) {
+        throw new Error('No image URL returned from server');
+      }
+      
+      // Replace the temporary URL with the permanent one
+      setEditForm(prev => {
+        const currentUrls = [...(prev.imageUrls || [])];
+        const temporaryIndex = currentUrls.indexOf(temporaryUrl);
+        
+        if (temporaryIndex !== -1) {
+          currentUrls[temporaryIndex] = imageUrl;
+        } else {
+          // If for some reason we can't find the temporary URL, just add the new one
+          currentUrls.push(imageUrl);
+        }
+        
+        return {...prev, imageUrls: currentUrls};
+      });
+      
+      toast({
+        title: "Additional image uploaded",
+        description: "The image has been added to the gallery and will be saved with your changes.",
+      });
+    } catch (error) {
+      console.error("Error uploading additional image:", error);
+      
+      // Remove the temporary URL on failure
+      setEditForm(prev => {
+        const currentUrls = [...(prev.imageUrls || [])];
+        const temporaryIndex = currentUrls.indexOf(temporaryUrl);
+        
+        if (temporaryIndex !== -1) {
+          currentUrls.splice(temporaryIndex, 1);
+        }
+        
+        return {...prev, imageUrls: currentUrls};
+      });
+      
+      toast({
+        title: "Image upload failed",
+        description: String(error) || "Failed to upload additional image. Please try again.",
+        variant: "destructive"
+      });
+    }
+  }
+  
+  // Function to handle uploading additional images for the image gallery (Create form)
+  async function handleCreateAdditionalImageUpload(event: React.ChangeEvent<HTMLInputElement>) {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+    
+    const file = files[0];
+    // Capture the temporary URL outside of try/catch to use it in error handling
+    const temporaryUrl = URL.createObjectURL(file);
+    
+    // Add temporary URL to the imageUrls array
+    setCreateForm(prev => ({
+      ...prev, 
+      imageUrls: [...(prev.imageUrls || []), temporaryUrl]
+    }));
+    
+    try {
+      // Create a FormData object to send the file to the server
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('name', `${createForm.name || 'New Resort'} Additional Image`);
+      formData.append('alt_text', `Additional image of ${createForm.name || 'resort'} in Cabo San Lucas`);
+      formData.append('description', `Additional image of ${createForm.name || 'resort'}`);
+      formData.append('category', 'resort');
+      
+      // Upload the image to the server
+      const response = await fetch('/api/images/upload', {
+        method: 'POST',
+        body: formData
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Failed to upload image: ${response.statusText}`);
+      }
+      
+      // Get the permanent image URL from the server response
+      const result = await response.json();
+      const imageUrl = result.file_path || result.url || result.image_url;
+      
+      if (!imageUrl) {
+        throw new Error('No image URL returned from server');
+      }
+      
+      // Replace the temporary URL with the permanent one
+      setCreateForm(prev => {
+        const currentUrls = [...(prev.imageUrls || [])];
+        const temporaryIndex = currentUrls.indexOf(temporaryUrl);
+        
+        if (temporaryIndex !== -1) {
+          currentUrls[temporaryIndex] = imageUrl;
+        } else {
+          // If for some reason we can't find the temporary URL, just add the new one
+          currentUrls.push(imageUrl);
+        }
+        
+        return {...prev, imageUrls: currentUrls};
+      });
+      
+      toast({
+        title: "Additional image uploaded",
+        description: "The image has been added to the gallery and will be saved with your changes.",
+      });
+    } catch (error) {
+      console.error("Error uploading additional image:", error);
+      
+      // Remove the temporary URL on failure
+      setCreateForm(prev => {
+        const currentUrls = [...(prev.imageUrls || [])];
+        const temporaryIndex = currentUrls.indexOf(temporaryUrl);
+        
+        if (temporaryIndex !== -1) {
+          currentUrls.splice(temporaryIndex, 1);
+        }
+        
+        return {...prev, imageUrls: currentUrls};
+      });
+      
+      toast({
+        title: "Image upload failed",
+        description: String(error) || "Failed to upload additional image. Please try again.",
         variant: "destructive"
       });
     }
@@ -549,7 +723,7 @@ export default function ResortManager() {
               </div>
               
               <div>
-                <Label>Resort Image</Label>
+                <Label>Main Resort Image</Label>
                 <div className="mt-2">
                   {editForm.imageUrl ? (
                     <div className="relative w-full aspect-video bg-muted rounded-md overflow-hidden">
@@ -581,10 +755,61 @@ export default function ResortManager() {
                         onClick={() => fileInputRef.current?.click()}
                       >
                         <Upload className="mr-2 h-4 w-4" />
-                        Upload Image
+                        Upload Main Image
                       </Button>
                     </div>
                   )}
+                </div>
+              </div>
+              
+              {/* Additional Images Section */}
+              <div>
+                <Label>Additional Images</Label>
+                <div className="mt-2">
+                  <div className="grid grid-cols-3 gap-2 mb-2">
+                    {editForm.imageUrls && editForm.imageUrls.length > 0 ? (
+                      editForm.imageUrls.map((imgUrl, index) => (
+                        <div key={index} className="relative group">
+                          <img 
+                            src={imgUrl} 
+                            alt={`Additional image ${index + 1}`} 
+                            className="w-full h-24 object-cover rounded-md border"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const newImageUrls = [...(editForm.imageUrls || [])];
+                              newImageUrls.splice(index, 1);
+                              setEditForm({...editForm, imageUrls: newImageUrls});
+                            }}
+                            className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="col-span-3 text-center py-4 border rounded-md">
+                        <p className="text-muted-foreground text-sm">No additional images</p>
+                      </div>
+                    )}
+                  </div>
+                  <Button 
+                    type="button" 
+                    variant="outline"
+                    onClick={() => document.getElementById('additionalImagesInput')?.click()}
+                    className="w-full"
+                  >
+                    <Upload className="h-4 w-4 mr-2" />
+                    Add Additional Image
+                  </Button>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    id="additionalImagesInput"
+                    onChange={handleAdditionalImageUpload}
+                  />
                 </div>
               </div>
               
@@ -742,7 +967,7 @@ export default function ResortManager() {
               </div>
               
               <div>
-                <Label>Resort Image</Label>
+                <Label>Main Resort Image</Label>
                 <div className="mt-2">
                   {createForm.imageUrl ? (
                     <div className="relative w-full aspect-video bg-muted rounded-md overflow-hidden">
@@ -774,10 +999,61 @@ export default function ResortManager() {
                         onClick={() => createFileInputRef.current?.click()}
                       >
                         <Upload className="mr-2 h-4 w-4" />
-                        Upload Image
+                        Upload Main Image
                       </Button>
                     </div>
                   )}
+                </div>
+              </div>
+              
+              {/* Additional Images Section */}
+              <div>
+                <Label>Additional Images</Label>
+                <div className="mt-2">
+                  <div className="grid grid-cols-3 gap-2 mb-2">
+                    {createForm.imageUrls && createForm.imageUrls.length > 0 ? (
+                      createForm.imageUrls.map((imgUrl, index) => (
+                        <div key={index} className="relative group">
+                          <img 
+                            src={imgUrl} 
+                            alt={`Additional image ${index + 1}`} 
+                            className="w-full h-24 object-cover rounded-md border"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const newImageUrls = [...(createForm.imageUrls || [])];
+                              newImageUrls.splice(index, 1);
+                              setCreateForm({...createForm, imageUrls: newImageUrls});
+                            }}
+                            className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="col-span-3 text-center py-4 border rounded-md">
+                        <p className="text-muted-foreground text-sm">No additional images</p>
+                      </div>
+                    )}
+                  </div>
+                  <Button 
+                    type="button" 
+                    variant="outline"
+                    onClick={() => document.getElementById('createAdditionalImagesInput')?.click()}
+                    className="w-full"
+                  >
+                    <Upload className="h-4 w-4 mr-2" />
+                    Add Additional Image
+                  </Button>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    id="createAdditionalImagesInput"
+                    onChange={handleCreateAdditionalImageUpload}
+                  />
                 </div>
               </div>
               

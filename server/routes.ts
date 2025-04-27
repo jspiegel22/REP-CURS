@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth } from "./auth";
 import { z } from "zod";
-import { insertBookingSchema, insertLeadSchema, insertGuideSubmissionSchema, insertListingSchema, insertAdventureSchema } from "@shared/schema";
+import { insertBookingSchema, insertLeadSchema, insertGuideSubmissionSchema, insertListingSchema, insertAdventureSchema, insertRestaurantSchema } from "@shared/schema";
 // Use our own version of generateSlug since we need it server-side
 // instead of importing from client utils
 import { nanoid } from "nanoid";
@@ -1007,6 +1007,119 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Adventure deletion error:", error);
       res.status(500).json({ message: "Failed to delete adventure" });
+    }
+  });
+
+  // Restaurant API endpoints
+  app.get("/api/restaurants", async (req, res) => {
+    try {
+      const category = req.query.category as string | undefined;
+      const restaurants = await storage.getRestaurants(category);
+      res.json(restaurants);
+    } catch (error) {
+      console.error("Error fetching restaurants:", error);
+      res.status(500).json({ message: "Failed to fetch restaurants" });
+    }
+  });
+
+  app.get("/api/restaurants/:idOrSlug", async (req, res) => {
+    try {
+      const id = parseInt(req.params.idOrSlug);
+      
+      if (isNaN(id)) {
+        // If not a number, treat as slug
+        const restaurant = await storage.getRestaurantBySlug(req.params.idOrSlug);
+        if (!restaurant) {
+          return res.status(404).json({ message: "Restaurant not found" });
+        }
+        return res.json(restaurant);
+      }
+      
+      const restaurant = await storage.getRestaurant(id);
+      if (!restaurant) {
+        return res.status(404).json({ message: "Restaurant not found" });
+      }
+      res.json(restaurant);
+    } catch (error) {
+      console.error("Error fetching restaurant:", error);
+      res.status(500).json({ message: "Failed to fetch restaurant" });
+    }
+  });
+
+  app.post("/api/restaurants", async (req, res) => {
+    try {
+      // Check if user is authenticated and is an admin
+      if (!req.isAuthenticated() || req.user.role !== "admin") {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+
+      // Validate request body
+      const restaurantData = insertRestaurantSchema.safeParse(req.body);
+      if (!restaurantData.success) {
+        return res.status(400).json({ 
+          message: "Invalid restaurant data",
+          errors: restaurantData.error.errors 
+        });
+      }
+
+      // Create restaurant
+      const restaurant = await storage.createRestaurant(restaurantData.data);
+      res.status(201).json(restaurant);
+    } catch (error) {
+      console.error("Restaurant creation error:", error);
+      res.status(500).json({ message: "Failed to create restaurant" });
+    }
+  });
+
+  app.put("/api/restaurants/:id", async (req, res) => {
+    try {
+      // Check if user is authenticated and is an admin
+      if (!req.isAuthenticated() || req.user.role !== "admin") {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid restaurant ID" });
+      }
+
+      // First check if restaurant exists
+      const existingRestaurant = await storage.getRestaurant(id);
+      if (!existingRestaurant) {
+        return res.status(404).json({ message: "Restaurant not found" });
+      }
+
+      // Update restaurant
+      const updatedRestaurant = await storage.updateRestaurant(id, req.body);
+      res.json(updatedRestaurant);
+    } catch (error) {
+      console.error("Restaurant update error:", error);
+      res.status(500).json({ message: "Failed to update restaurant" });
+    }
+  });
+
+  app.delete("/api/restaurants/:id", async (req, res) => {
+    try {
+      // Check if user is authenticated and is an admin
+      if (!req.isAuthenticated() || req.user.role !== "admin") {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid restaurant ID" });
+      }
+
+      // Delete restaurant
+      const deleted = await storage.deleteRestaurant(id);
+      if (!deleted) {
+        return res.status(404).json({ message: "Restaurant not found" });
+      }
+      
+      res.json({ success: true, message: "Restaurant deleted successfully" });
+    } catch (error) {
+      console.error("Restaurant deletion error:", error);
+      res.status(500).json({ message: "Failed to delete restaurant" });
     }
   });
 

@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, timestamp, jsonb, decimal } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, jsonb, decimal, varchar } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -34,6 +34,7 @@ export const resorts = pgTable("resorts", {
   location: text("location").notNull(),
   description: text("description").notNull(),
   imageUrl: text("image_url").notNull(),
+  imageUrls: jsonb("image_urls").$type<string[]>().default([]),
   amenities: jsonb("amenities").notNull(),
   googleUrl: text("google_url"),
   bookingsToday: integer("bookings_today"),
@@ -320,6 +321,37 @@ export const insertSiteImageSchema = createInsertSchema(siteImages).omit({
 });
 
 // Export types
+// Restaurants table with all necessary fields for restaurant info
+export const restaurants = pgTable("restaurants", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  location: text("location").notNull(),
+  address: text("address"),
+  latitude: decimal("latitude"),
+  longitude: decimal("longitude"),
+  cuisine: text("cuisine").notNull(), // Type of food (Mexican, Seafood, etc.)
+  priceLevel: text("price_level").notNull(), // $, $$, $$$, $$$$
+  rating: decimal("rating").notNull().default("4.0"),
+  reviewCount: integer("review_count").notNull().default(0),
+  openTable: text("open_table_url"), // OpenTable URL for reservations
+  website: text("website_url"), // Restaurant website
+  phone: text("phone"),
+  openHours: jsonb("open_hours").$type<Record<string, string>>().default({}), // Store hours by day
+  menuUrl: text("menu_url"), // Link to menu
+  imageUrl: text("image_url").notNull(),
+  imageUrls: jsonb("image_urls").$type<string[]>().default([]),
+  featured: boolean("featured").default(false),
+  category: text("category", { 
+    enum: ["seafood", "mexican", "italian", "steakhouse", "fusion", "american", "japanese", "vegan", "international"]
+  }).notNull(),
+  tags: jsonb("tags").$type<string[]>().default([]),
+  features: jsonb("features").$type<string[]>().default([]), // Features like outdoor seating, view, etc.
+  reviews: jsonb("reviews").$type<Array<{name: string, rating: number, comment: string, date: string}>>().default([]),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Adventures table for all Cabo experiences and activities (including yacht tours)
 export const adventures = pgTable("adventures", {
   id: serial("id").primaryKey(),
@@ -331,6 +363,7 @@ export const adventures = pgTable("adventures", {
   discount: text("discount"),
   duration: text("duration").notNull(),
   imageUrl: text("image_url").notNull(),
+  imageUrls: jsonb("image_urls").$type<string[]>().default([]),
   minAge: text("min_age"),
   // Make provider optional for backward compatibility
   provider: text("provider"),
@@ -352,8 +385,17 @@ export const insertAdventureSchema = createInsertSchema(adventures).omit({
   updatedAt: true,
 });
 
+// Create schema for the restaurants table
+export const insertRestaurantSchema = createInsertSchema(restaurants).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 // Export types
 export type SiteImage = typeof siteImages.$inferSelect;
 export type InsertSiteImage = z.infer<typeof insertSiteImageSchema>;
 export type Adventure = typeof adventures.$inferSelect;
 export type InsertAdventure = z.infer<typeof insertAdventureSchema>;
+export type Restaurant = typeof restaurants.$inferSelect;
+export type InsertRestaurant = z.infer<typeof insertRestaurantSchema>;

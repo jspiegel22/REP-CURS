@@ -1,7 +1,7 @@
 import { db } from "./db";
 import { eq } from "drizzle-orm";
-import { users, listings, bookings, rewards, socialShares, weatherCache, resorts, villas, leads, guideSubmissions, blogPosts, adventures } from "@shared/schema";
-import type { User, InsertUser, Listing, Booking, Reward, SocialShare, WeatherCache, Resort, Villa, Lead, InsertLead, InsertBlogPost, Adventure, InsertAdventure } from "@shared/schema";
+import { users, listings, bookings, rewards, socialShares, weatherCache, resorts, villas, leads, guideSubmissions, blogPosts, adventures, restaurants } from "@shared/schema";
+import type { User, InsertUser, Listing, Booking, Reward, SocialShare, WeatherCache, Resort, Villa, Lead, InsertLead, InsertBlogPost, Adventure, InsertAdventure, Restaurant, InsertRestaurant } from "@shared/schema";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
 import { nanoid } from "nanoid";
@@ -50,6 +50,14 @@ interface IStorage {
   createAdventure(adventure: InsertAdventure): Promise<Adventure>;
   updateAdventure(id: number, adventure: Partial<Adventure>): Promise<Adventure>;
   deleteAdventure(id: number): Promise<boolean>;
+  
+  // Restaurant related methods
+  getRestaurants(category?: string): Promise<Restaurant[]>;
+  getRestaurant(id: number): Promise<Restaurant | undefined>;
+  getRestaurantBySlug(slug: string): Promise<Restaurant | undefined>;
+  createRestaurant(restaurant: InsertRestaurant): Promise<Restaurant>;
+  updateRestaurant(id: number, restaurant: Partial<Restaurant>): Promise<Restaurant>;
+  deleteRestaurant(id: number): Promise<boolean>;
   
   // Analytics methods
   getLeadAnalytics(): Promise<any>;
@@ -226,7 +234,7 @@ export class DatabaseStorage implements IStorage {
       
       // Remove any fields that don't exist in the database schema
       const validFields = ['name', 'description', 'location', 'rating', 'reviewCount', 
-                          'priceLevel', 'imageUrl', 'amenities', 'googleUrl', 
+                          'priceLevel', 'imageUrl', 'imageUrls', 'amenities', 'googleUrl', 
                           'bookingsToday', 'category', 'featured'];
       
       const filteredData: any = {};
@@ -731,6 +739,103 @@ export class DatabaseStorage implements IStorage {
     }
   }
   
+  // Restaurant related methods
+  async getRestaurants(category?: string): Promise<Restaurant[]> {
+    try {
+      if (category) {
+        // Filter by category if provided
+        return db.select().from(restaurants).where(eq(restaurants.category, category));
+      }
+      return db.select().from(restaurants);
+    } catch (error) {
+      console.error('Error fetching restaurants:', error);
+      return [];
+    }
+  }
+
+  async getRestaurant(id: number): Promise<Restaurant | undefined> {
+    try {
+      const [restaurant] = await db.select().from(restaurants).where(eq(restaurants.id, id));
+      return restaurant;
+    } catch (error) {
+      console.error(`Error fetching restaurant with ID ${id}:`, error);
+      return undefined;
+    }
+  }
+
+  async getRestaurantBySlug(slug: string): Promise<Restaurant | undefined> {
+    // We don't have a slug field in the restaurants table, so we'll generate slugs on the fly
+    const allRestaurants = await this.getRestaurants();
+    
+    // Find the restaurant by matching the slug with the generated slug of each restaurant
+    return allRestaurants.find(restaurant => {
+      const restaurantSlug = this.generateResortSlug(restaurant.name);
+      return restaurantSlug === slug;
+    });
+  }
+
+  async createRestaurant(restaurant: InsertRestaurant): Promise<Restaurant> {
+    try {
+      console.log("Creating new restaurant:", restaurant);
+      
+      // Set default values for optional fields if not provided
+      const restaurantWithDefaults = {
+        ...restaurant,
+        imageUrls: restaurant.imageUrls || [],
+        features: restaurant.features || [],
+        tags: restaurant.tags || [],
+        reviews: restaurant.reviews || [],
+        featured: restaurant.featured !== undefined ? restaurant.featured : false
+      };
+      
+      const [newRestaurant] = await db.insert(restaurants)
+        .values(restaurantWithDefaults)
+        .returning();
+      
+      console.log("Restaurant created successfully:", newRestaurant);
+      return newRestaurant;
+    } catch (error) {
+      console.error("Error creating restaurant:", error);
+      throw new Error("Failed to create restaurant");
+    }
+  }
+
+  async updateRestaurant(id: number, restaurant: Partial<Restaurant>): Promise<Restaurant> {
+    try {
+      console.log("Updating restaurant with ID:", id, "with data:", JSON.stringify(restaurant));
+      
+      // Add the updatedAt field
+      const updatedData = {
+        ...restaurant,
+        updatedAt: new Date()
+      };
+      
+      const [updatedRestaurant] = await db.update(restaurants)
+        .set(updatedData)
+        .where(eq(restaurants.id, id))
+        .returning();
+      
+      console.log("Restaurant updated successfully:", updatedRestaurant);
+      return updatedRestaurant;
+    } catch (error) {
+      console.error("Error updating restaurant:", error);
+      throw new Error("Failed to update restaurant");
+    }
+  }
+
+  async deleteRestaurant(id: number): Promise<boolean> {
+    try {
+      const result = await db.delete(restaurants)
+        .where(eq(restaurants.id, id))
+        .returning();
+      
+      return result.length > 0;
+    } catch (error) {
+      console.error("Error deleting restaurant:", error);
+      return false;
+    }
+  }
+  
   // Recent data retrieval for admin notification
   async getRecentLeads(limit: number): Promise<Lead[]> {
     try {
@@ -902,10 +1007,11 @@ export class DatabaseStorage implements IStorage {
       
       // Get all data for dashboard
       // Limit the data for better performance - only get what's necessary for the dashboard
-      const [leadsData, guidesData, listings] = await Promise.all([
+      const [leadsData, guidesData, listings, allRestaurants] = await Promise.all([
         this.getLeadAnalytics(),
         this.getGuideAnalytics(),
-        this.getListings()
+        this.getListings(),
+        this.getRestaurants()
       ]);
       
       console.timeLog('getDashboardAnalytics', 'Got analytics data');
@@ -935,12 +1041,24 @@ export class DatabaseStorage implements IStorage {
       
       console.timeLog('getDashboardAnalytics', 'Finished fetching recent data');
       
+      // Restaurant analytics
+      const restaurantsByCategory = {};
+      allRestaurants.forEach(restaurant => {
+        const category = restaurant.category;
+        restaurantsByCategory[category] = (restaurantsByCategory[category] || 0) + 1;
+      });
+      
       return {
         leads: leadsData,
         guides: guidesData,
         listings: {
           total: listings.length,
           byType: listingsByType
+        },
+        restaurants: {
+          total: allRestaurants.length,
+          featured: allRestaurants.filter(r => r.featured).length,
+          byCategory: restaurantsByCategory
         },
         recent: {
           leads: recentLeads,
@@ -953,6 +1071,7 @@ export class DatabaseStorage implements IStorage {
         leads: { total: 0 },
         guides: { total: 0 },
         listings: { total: 0 },
+        restaurants: { total: 0, featured: 0, byCategory: {} },
         recent: { leads: [], guides: [] }
       };
     }
