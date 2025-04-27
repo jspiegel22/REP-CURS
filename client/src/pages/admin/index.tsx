@@ -32,39 +32,11 @@ import ResortManager from "@/components/admin/ResortManager";
 import VillaManager from "@/components/admin/VillaManager";
 import BlogManager from "@/components/admin/BlogManager";
 import ImageManager from "@/components/admin/ImageManager";
+import AnalyticsDashboard from "@/components/admin/AnalyticsDashboard";
 
-// This will show a simple analytics dashboard
+// Use our new Analytics Dashboard component
 function Analytics() {
-  return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold mb-6">Analytics Dashboard</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white p-4 rounded-lg shadow">
-          <h3 className="text-lg text-muted-foreground mb-2">Total Leads</h3>
-          <p className="text-3xl font-bold">248</p>
-        </div>
-        <div className="bg-white p-4 rounded-lg shadow">
-          <h3 className="text-lg text-muted-foreground mb-2">Guide Downloads</h3>
-          <p className="text-3xl font-bold">127</p>
-        </div>
-        <div className="bg-white p-4 rounded-lg shadow">
-          <h3 className="text-lg text-muted-foreground mb-2">Booking Requests</h3>
-          <p className="text-3xl font-bold">53</p>
-        </div>
-        <div className="bg-white p-4 rounded-lg shadow">
-          <h3 className="text-lg text-muted-foreground mb-2">Conversion Rate</h3>
-          <p className="text-3xl font-bold">21.3%</p>
-        </div>
-      </div>
-      
-      <div className="mt-8 bg-white p-6 rounded-lg shadow">
-        <h3 className="text-xl font-bold mb-4">Monthly Lead Acquisition</h3>
-        <div className="h-64 bg-muted/30 rounded flex items-center justify-center">
-          <p className="text-muted-foreground">Chart visualization placeholder</p>
-        </div>
-      </div>
-    </div>
-  );
+  return <AnalyticsDashboard />;
 }
 
 // This will show integration settings

@@ -38,7 +38,8 @@ import {
   Tag,
   Plus,
   Copy,
-  Check
+  Check,
+  ImageUp
 } from 'lucide-react';
 import {
   Dialog,
@@ -430,7 +431,16 @@ export default function ImageManager() {
               </Button>
               
               <Button 
+                variant="outline"
+                asChild
+              >
+                <a href="/admin/photo-sync">
+                  <ImageUp className="h-4 w-4 mr-2" /> Bulk Upload
+                </a>
+              </Button>
+              <Button 
                 onClick={() => setIsUploadDialogOpen(true)}
+                className="ml-2"
               >
                 <Upload className="h-4 w-4 mr-2" /> Upload
               </Button>

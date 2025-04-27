@@ -105,7 +105,10 @@ export function Leads() {
             <TableHeader>
               <TableRow>
                 <TableHead>Date</TableHead>
-                <TableHead>Contact</TableHead>
+                <TableHead>First Name</TableHead>
+                <TableHead>Last Name</TableHead>
+                <TableHead>Email</TableHead>
+                <TableHead>Phone</TableHead>
                 <TableHead>Interest</TableHead>
                 <TableHead>Source</TableHead>
                 <TableHead>Status</TableHead>
@@ -118,13 +121,10 @@ export function Leads() {
                   <TableCell className="font-medium">
                     {lead.createdAt && format(new Date(lead.createdAt), "MMM d, yyyy")}
                   </TableCell>
-                  <TableCell>
-                    <div>
-                      <div>{lead.firstName} {lead.lastName}</div>
-                      <div className="text-sm text-muted-foreground">{lead.email}</div>
-                      {lead.phone && <div className="text-sm text-muted-foreground">{lead.phone}</div>}
-                    </div>
-                  </TableCell>
+                  <TableCell>{lead.firstName || "-"}</TableCell>
+                  <TableCell>{lead.lastName || "-"}</TableCell>
+                  <TableCell>{lead.email}</TableCell>
+                  <TableCell>{lead.phone || "-"}</TableCell>
                   <TableCell>
                     <span className="capitalize">{lead.interestType.replace('_', ' ')}</span>
                   </TableCell>

@@ -45,6 +45,11 @@ interface IStorage {
   createAdventure(adventure: InsertAdventure): Promise<Adventure>;
   updateAdventure(id: number, adventure: Partial<Adventure>): Promise<Adventure>;
   deleteAdventure(id: number): Promise<boolean>;
+  
+  // Analytics methods
+  getLeadAnalytics(): Promise<any>;
+  getGuideAnalytics(): Promise<any>;
+  getDashboardAnalytics(): Promise<any>;
 }
 
 const PostgresSessionStore = connectPg(session);
@@ -418,10 +423,54 @@ export class DatabaseStorage implements IStorage {
 
   async getAllBookings(): Promise<Booking[]> {
     try {
-      return await db
-        .select()
-        .from(bookings)
-        .orderBy(bookings.createdAt);
+      // Use a safe SQL query with only columns known to exist in the database
+      const result = await db.execute(
+        sql`SELECT id, listing_id, adventure_id, start_date, end_date, user_id, 
+        form_data, points_earned, payment_intent_id, status 
+        FROM bookings ORDER BY id DESC`
+      );
+      
+      return result.map(row => {
+        // Extract form data safely
+        const formData = row.form_data || {};
+        
+        return {
+          id: row.id,
+          bookingType: (formData.bookingType || "resort") as any,
+          startDate: new Date(row.start_date),
+          endDate: new Date(row.end_date),
+          listingId: row.listing_id,
+          adventureId: row.adventure_id,
+          userId: row.user_id,
+          formData: formData,
+          pointsEarned: row.points_earned,
+          paymentIntentId: row.payment_intent_id,
+          status: row.status,
+          
+          // Extract data from form_data or use defaults
+          firstName: formData.firstName || "Guest",
+          lastName: formData.lastName || "",
+          email: formData.email || "guest@example.com",
+          phone: formData.phone || null,
+          source: "website",
+          guests: formData.guests || 2,
+          
+          // Set defaults for schema compatibility
+          createdAt: null,
+          updatedAt: null,
+          formName: null,
+          notes: null,
+          ipAddress: null,
+          userAgent: null,
+          referrer: null,
+          tags: null,
+          utmSource: null,
+          utmMedium: null,
+          utmCampaign: null,
+          totalAmount: null,
+          specialRequests: null
+        };
+      });
     } catch (error) {
       console.error("Error fetching all bookings:", error);
       throw new Error("Failed to fetch all bookings");
@@ -642,6 +691,184 @@ export class DatabaseStorage implements IStorage {
     } catch (error) {
       console.error(`Error deleting adventure with ID ${id}:`, error);
       return false;
+    }
+  }
+  
+  // Analytics methods
+  async getLeadAnalytics(): Promise<any> {
+    try {
+      // Get leads by type
+      const leads = await this.getAllLeads();
+      
+      const leadsByType = {
+        villa: leads.filter(l => l.interestType === 'villa').length,
+        resort: leads.filter(l => l.interestType === 'resort').length,
+        adventure: leads.filter(l => l.interestType === 'adventure').length,
+        wedding: leads.filter(l => l.interestType === 'wedding').length,
+        group_trip: leads.filter(l => l.interestType === 'group_trip').length,
+        influencer: leads.filter(l => l.interestType === 'influencer').length,
+        concierge: leads.filter(l => l.interestType === 'concierge').length,
+      };
+      
+      // Get leads by month (last 12 months)
+      const now = new Date();
+      const monthLabels = [];
+      const leadsByMonth = [];
+      
+      for (let i = 11; i >= 0; i--) {
+        const month = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const monthName = month.toLocaleString('default', { month: 'short', year: '2-digit' });
+        monthLabels.push(monthName);
+        
+        const monthLeads = leads.filter(lead => {
+          const leadDate = new Date(lead.createdAt);
+          return leadDate.getMonth() === month.getMonth() && 
+                 leadDate.getFullYear() === month.getFullYear();
+        }).length;
+        
+        leadsByMonth.push(monthLeads);
+      }
+      
+      return {
+        total: leads.length,
+        byType: leadsByType,
+        byStatus: {
+          new: leads.filter(l => l.status === 'new').length,
+          contacted: leads.filter(l => l.status === 'contacted').length,
+          qualified: leads.filter(l => l.status === 'qualified').length,
+          converted: leads.filter(l => l.status === 'converted').length,
+          closed: leads.filter(l => l.status === 'closed').length,
+        },
+        timeSeries: {
+          labels: monthLabels,
+          data: leadsByMonth
+        }
+      };
+    } catch (error) {
+      console.error("Error getting lead analytics:", error);
+      return {
+        total: 0,
+        byType: {},
+        byStatus: {},
+        timeSeries: { labels: [], data: [] }
+      };
+    }
+  }
+  
+  async getGuideAnalytics(): Promise<any> {
+    try {
+      // Get guide submissions
+      const guides = await this.getGuideSubmissions();
+      
+      // Get guides by month (last 12 months)
+      const now = new Date();
+      const monthLabels = [];
+      const guidesByMonth = [];
+      
+      for (let i = 11; i >= 0; i--) {
+        const month = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const monthName = month.toLocaleString('default', { month: 'short', year: '2-digit' });
+        monthLabels.push(monthName);
+        
+        const monthGuides = guides.filter(guide => {
+          const guideDate = new Date(guide.createdAt);
+          return guideDate.getMonth() === month.getMonth() && 
+                 guideDate.getFullYear() === month.getFullYear();
+        }).length;
+        
+        guidesByMonth.push(monthGuides);
+      }
+      
+      // Get guides by type
+      const guidesByType = {};
+      guides.forEach(guide => {
+        const type = guide.guideType || 'Ultimate Cabo Guide';
+        guidesByType[type] = (guidesByType[type] || 0) + 1;
+      });
+      
+      return {
+        total: guides.length,
+        byType: guidesByType,
+        byStatus: {
+          pending: guides.filter(g => g.status === 'pending').length,
+          sent: guides.filter(g => g.status === 'sent').length,
+          failed: guides.filter(g => g.status === 'failed').length,
+        },
+        timeSeries: {
+          labels: monthLabels,
+          data: guidesByMonth
+        }
+      };
+    } catch (error) {
+      console.error("Error getting guide analytics:", error);
+      return {
+        total: 0,
+        byType: {},
+        byStatus: {},
+        timeSeries: { labels: [], data: [] }
+      };
+    }
+  }
+  
+  async getDashboardAnalytics(): Promise<any> {
+    try {
+      console.time('getDashboardAnalytics');
+      
+      // Get all data for dashboard
+      // Limit the data for better performance - only get what's necessary for the dashboard
+      const [leadsData, guidesData, listings] = await Promise.all([
+        this.getLeadAnalytics(),
+        this.getGuideAnalytics(),
+        this.getListings()
+      ]);
+      
+      console.timeLog('getDashboardAnalytics', 'Got analytics data');
+      
+      // Listing/booking counts by type
+      const listingsByType = {
+        villa: listings.filter(l => l.type === 'villa').length,
+        resort: listings.filter(l => l.type === 'resort').length,
+        adventure: listings.filter(l => l.type === 'adventure').length,
+        restaurant: listings.filter(l => l.type === 'restaurant').length,
+        hotel: listings.filter(l => l.type === 'hotel').length,
+      };
+      
+      // Get recent leads and recent guide downloads - optimized to only fetch what we need
+      console.timeLog('getDashboardAnalytics', 'Starting to fetch recent data');
+      
+      // Function to get only the most recent records directly from the database
+      const getRecentRecords = async (table, limit = 5) => {
+        return await db.select().from(table).orderBy(desc(table.createdAt)).limit(limit);
+      };
+      
+      // Fetch recent data in parallel
+      const [recentLeads, recentGuides] = await Promise.all([
+        getRecentRecords(leads, 5),
+        getRecentRecords(guideSubmissions, 5)
+      ]);
+      
+      console.timeLog('getDashboardAnalytics', 'Finished fetching recent data');
+      
+      return {
+        leads: leadsData,
+        guides: guidesData,
+        listings: {
+          total: listings.length,
+          byType: listingsByType
+        },
+        recent: {
+          leads: recentLeads,
+          guides: recentGuides
+        }
+      };
+    } catch (error) {
+      console.error("Error getting dashboard analytics:", error);
+      return {
+        leads: { total: 0 },
+        guides: { total: 0 },
+        listings: { total: 0 },
+        recent: { leads: [], guides: [] }
+      };
     }
   }
 }

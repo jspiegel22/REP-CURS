@@ -321,7 +321,7 @@ export const insertSiteImageSchema = createInsertSchema(siteImages).omit({
 });
 
 // Export types
-// Adventures table for all Cabo experiences and activities
+// Adventures table for all Cabo experiences and activities (including yacht tours)
 export const adventures = pgTable("adventures", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),
@@ -333,8 +333,13 @@ export const adventures = pgTable("adventures", {
   duration: text("duration").notNull(),
   imageUrl: text("image_url").notNull(),
   minAge: text("min_age"),
-  provider: text("provider").notNull(),
-  category: text("category", { enum: ["water", "land", "luxury", "family"] }).notNull().default("water"),
+  // Make provider optional for backward compatibility
+  provider: text("provider"),
+  // Add yacht category for yacht activities
+  category: text("category", { enum: ["water", "land", "luxury", "family", "yacht"] }).notNull().default("water"),
+  keyFeatures: jsonb("key_features").default([]),
+  thingsToBring: jsonb("things_to_bring").default([]),
+  topRecommended: boolean("top_recommended").default(false),
   rating: decimal("rating"),
   featured: boolean("featured").default(false),
   createdAt: timestamp("created_at").defaultNow(),

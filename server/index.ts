@@ -52,27 +52,32 @@ app.use((req, res, next) => {
   // Create a variable to track if the server is up and running
   let serverReady = false;
   
-  // Set up timeout to perform non-critical initialization after server is started
+  // Set up immediate action to start server first, then minimal delayed initializations
+  // This helps avoid the 20-second timeout issue in Replit
+  console.log('Running minimal initialization to speed up startup...');
+  
+  // Log message instead of doing heavy initialization during startup
+  console.log('TrackHS villa sync disabled for testing');
+  
+  // Mark server as ready immediately
+  serverReady = true;
+  
+  // After server is ready, perform non-blocking database warmup with short timeout
   setTimeout(() => {
-    // Any non-critical initialization can be done here after server is already running
-    // This helps avoid the 20-second timeout issue in Replit
-    console.log('Running delayed initialization tasks...');
+    const initDbConnection = async () => {
+      try {
+        // Use dynamic import to avoid blocking startup
+        const { warmupDatabaseConnection } = await import('./services/init');
+        await warmupDatabaseConnection();
+        console.log('Database connection warmed up successfully');
+      } catch (error) {
+        console.error('Error during database initialization:', error);
+      }
+    };
     
-    // Log message instead of doing heavy initialization during startup
-    console.log('TrackHS villa sync disabled for testing');
-    
-    // Initialize database connection warmup without blocking - important to use dynamic imports
-    import('./services/init').then(({ warmupDatabaseConnection }) => {
-      warmupDatabaseConnection()
-        .then(() => console.log('Database connection warmed up successfully'))
-        .catch(error => console.error('Error warming up database connection:', error));
-    }).catch(error => {
-      console.error('Could not load initialization services:', error);
-    });
-    
-    // Mark server as fully initialized
-    serverReady = true;
-  }, 1000); // Wait just 1 second after server startup to perform these tasks
+    // Execute but don't wait for completion
+    initDbConnection();
+  }, 500); // Reduced to 500ms to start even faster
 
   // Handle API routes first
   app.use("/api/*", (req, res) => {

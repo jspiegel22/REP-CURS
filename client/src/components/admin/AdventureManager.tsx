@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Loader2, Search, Plus, Edit, Trash2, Save, Upload, X } from "lucide-react";
@@ -23,7 +24,10 @@ interface Adventure {
   imageUrl: string;
   minAge: string | null;
   provider: string;
-  category: "water" | "land" | "luxury" | "family";
+  category: "water" | "land" | "luxury" | "family" | "yacht";
+  keyFeatures: string[];
+  thingsToBring: string[];
+  topRecommended: boolean;
   rating: number | null;
   description: string;
   featured: boolean;
@@ -51,6 +55,9 @@ export default function AdventureManager() {
     provider: 'Cabo Adventures',
     category: 'water',
     rating: 4.5,
+    keyFeatures: [],
+    thingsToBring: [],
+    topRecommended: false,
   });
   const fileInputRef = useRef<HTMLInputElement>(null);
   const createFileInputRef = useRef<HTMLInputElement>(null);
@@ -121,6 +128,9 @@ export default function AdventureManager() {
       provider: 'Cabo Adventures',
       category: 'water',
       rating: 4.5,
+      keyFeatures: [],
+      thingsToBring: [],
+      topRecommended: false,
     });
     setIsCreateDialogOpen(true);
   }
@@ -173,6 +183,9 @@ export default function AdventureManager() {
         minAge: createForm.minAge || null,
         provider: createForm.provider || 'Cabo Adventures',
         category: createForm.category || 'water',
+        keyFeatures: createForm.keyFeatures || [],
+        thingsToBring: createForm.thingsToBring || [],
+        topRecommended: createForm.topRecommended || false,
         rating: createForm.rating || null,
         description: createForm.description || '',
         featured: createForm.featured || false
@@ -288,6 +301,7 @@ export default function AdventureManager() {
                 <TabsTrigger value="land" onClick={() => setCategoryFilter('land')}>Land</TabsTrigger>
                 <TabsTrigger value="luxury" onClick={() => setCategoryFilter('luxury')}>Luxury</TabsTrigger>
                 <TabsTrigger value="family" onClick={() => setCategoryFilter('family')}>Family</TabsTrigger>
+                <TabsTrigger value="yacht" onClick={() => setCategoryFilter('yacht')}>Yacht</TabsTrigger>
               </TabsList>
               
               <div className="flex items-center gap-4">
@@ -323,11 +337,18 @@ export default function AdventureManager() {
                         alt={adventure.title}
                         className="w-full h-full object-fill"
                       />
-                      {adventure.category && (
-                        <Badge className="absolute top-2 right-2 capitalize">
-                          {adventure.category}
-                        </Badge>
-                      )}
+                      <div className="absolute top-2 right-2 flex flex-col gap-2 items-end">
+                        {adventure.category && (
+                          <Badge className="capitalize">
+                            {adventure.category}
+                          </Badge>
+                        )}
+                        {adventure.topRecommended && (
+                          <Badge variant="secondary" className="bg-yellow-500 text-white hover:bg-yellow-600">
+                            Top Recommended
+                          </Badge>
+                        )}
+                      </div>
                     </div>
                     <CardContent className="p-4">
                       <div className="flex justify-between items-start mb-2">
@@ -443,8 +464,8 @@ export default function AdventureManager() {
                 <div className="flex-1">
                   <Label htmlFor="category">Category</Label>
                   <Select
-                    value={editForm.category as "water" | "land" | "luxury" | "family" | undefined}
-                    onValueChange={(value: string) => setEditForm({...editForm, category: value as "water" | "land" | "luxury" | "family"})}
+                    value={editForm.category as "water" | "land" | "luxury" | "family" | "yacht" | undefined}
+                    onValueChange={(value: string) => setEditForm({...editForm, category: value as "water" | "land" | "luxury" | "family" | "yacht"})}
                   >
                     <SelectTrigger id="category">
                       <SelectValue placeholder="Select category" />
@@ -454,6 +475,7 @@ export default function AdventureManager() {
                       <SelectItem value="land">Land</SelectItem>
                       <SelectItem value="luxury">Luxury</SelectItem>
                       <SelectItem value="family">Family</SelectItem>
+                      <SelectItem value="yacht">Yacht</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -471,9 +493,46 @@ export default function AdventureManager() {
                   onChange={(e) => setEditForm({...editForm, rating: e.target.value ? parseFloat(e.target.value) : null})}
                 />
               </div>
+
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="topRecommended" 
+                  checked={editForm.topRecommended || false}
+                  onCheckedChange={(checked) => setEditForm({...editForm, topRecommended: Boolean(checked)})}
+                />
+                <Label htmlFor="topRecommended" className="cursor-pointer">Top Recommended Adventure</Label>
+              </div>
+              
+              <div>
+                <Label htmlFor="keyFeatures">Key Features (one per line)</Label>
+                <Textarea 
+                  id="keyFeatures"
+                  className="h-20"
+                  value={Array.isArray(editForm.keyFeatures) ? editForm.keyFeatures.join('\n') : ''}
+                  onChange={(e) => {
+                    const features = e.target.value.split('\n').filter(line => line.trim() !== '');
+                    setEditForm({...editForm, keyFeatures: features});
+                  }}
+                  placeholder="Transportation included&#10;Food & drinks&#10;Wifi available"
+                />
+              </div>
             </div>
             
             <div className="space-y-4">
+              <div>
+                <Label htmlFor="thingsToBring">Things to Bring (one per line)</Label>
+                <Textarea 
+                  id="thingsToBring"
+                  className="h-20"
+                  value={Array.isArray(editForm.thingsToBring) ? editForm.thingsToBring.join('\n') : ''}
+                  onChange={(e) => {
+                    const items = e.target.value.split('\n').filter(line => line.trim() !== '');
+                    setEditForm({...editForm, thingsToBring: items});
+                  }}
+                  placeholder="Swimwear&#10;Sunscreen&#10;Camera"
+                />
+              </div>
+            
               <div>
                 <Label htmlFor="description">Description</Label>
                 <Textarea 
@@ -615,8 +674,8 @@ export default function AdventureManager() {
                 <div className="flex-1">
                   <Label htmlFor="create-category">Category</Label>
                   <Select
-                    value={createForm.category as "water" | "land" | "luxury" | "family" | undefined}
-                    onValueChange={(value: string) => setCreateForm({...createForm, category: value as "water" | "land" | "luxury" | "family"})}
+                    value={createForm.category as "water" | "land" | "luxury" | "family" | "yacht" | undefined}
+                    onValueChange={(value: string) => setCreateForm({...createForm, category: value as "water" | "land" | "luxury" | "family" | "yacht"})}
                   >
                     <SelectTrigger id="create-category">
                       <SelectValue placeholder="Select category" />
@@ -626,6 +685,7 @@ export default function AdventureManager() {
                       <SelectItem value="land">Land</SelectItem>
                       <SelectItem value="luxury">Luxury</SelectItem>
                       <SelectItem value="family">Family</SelectItem>
+                      <SelectItem value="yacht">Yacht</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -643,9 +703,46 @@ export default function AdventureManager() {
                   onChange={(e) => setCreateForm({...createForm, rating: e.target.value ? parseFloat(e.target.value) : null})}
                 />
               </div>
+
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="create-topRecommended" 
+                  checked={createForm.topRecommended || false}
+                  onCheckedChange={(checked) => setCreateForm({...createForm, topRecommended: Boolean(checked)})}
+                />
+                <Label htmlFor="create-topRecommended" className="cursor-pointer">Top Recommended Adventure</Label>
+              </div>
+              
+              <div>
+                <Label htmlFor="create-keyFeatures">Key Features (one per line)</Label>
+                <Textarea 
+                  id="create-keyFeatures"
+                  className="h-20"
+                  value={Array.isArray(createForm.keyFeatures) ? createForm.keyFeatures.join('\n') : ''}
+                  onChange={(e) => {
+                    const features = e.target.value.split('\n').filter(line => line.trim() !== '');
+                    setCreateForm({...createForm, keyFeatures: features});
+                  }}
+                  placeholder="Transportation included&#10;Food & drinks&#10;Wifi available"
+                />
+              </div>
             </div>
             
             <div className="space-y-4">
+              <div>
+                <Label htmlFor="create-thingsToBring">Things to Bring (one per line)</Label>
+                <Textarea 
+                  id="create-thingsToBring"
+                  className="h-20"
+                  value={Array.isArray(createForm.thingsToBring) ? createForm.thingsToBring.join('\n') : ''}
+                  onChange={(e) => {
+                    const items = e.target.value.split('\n').filter(line => line.trim() !== '');
+                    setCreateForm({...createForm, thingsToBring: items});
+                  }}
+                  placeholder="Swimwear&#10;Sunscreen&#10;Camera"
+                />
+              </div>
+            
               <div>
                 <Label htmlFor="create-description">Description</Label>
                 <Textarea 

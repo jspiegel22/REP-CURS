@@ -27,6 +27,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Register image management routes
   app.use('/api/images', imageRoutes);
+  
+  // Analytics endpoints
+  app.get("/api/analytics/leads", async (req, res) => {
+    try {
+      // Get lead analytics data
+      const leadsData = await storage.getLeadAnalytics();
+      res.json(leadsData);
+    } catch (error) {
+      console.error("Error fetching lead analytics:", error);
+      res.status(500).json({ error: "Failed to fetch lead analytics data" });
+    }
+  });
+
+  app.get("/api/analytics/guides", async (req, res) => {
+    try {
+      // Get guide downloads analytics data
+      const guideData = await storage.getGuideAnalytics();
+      res.json(guideData);
+    } catch (error) {
+      console.error("Error fetching guide analytics:", error);
+      res.status(500).json({ error: "Failed to fetch guide analytics data" });
+    }
+  });
+
+  app.get("/api/analytics/dashboard", async (req, res) => {
+    try {
+      console.log("Dashboard analytics endpoint called");
+      // Get combined analytics data for dashboard
+      const dashboardData = await storage.getDashboardAnalytics();
+      console.log("Dashboard analytics data retrieved:", JSON.stringify(dashboardData).slice(0, 200) + "...");
+      res.json(dashboardData);
+    } catch (error) {
+      console.error("Error fetching dashboard analytics:", error);
+      res.status(500).json({ error: "Failed to fetch dashboard analytics data" });
+    }
+  });
+  
   // Webhook check endpoint
   app.get("/api/guides/check-webhook", (req, res) => {
     const makeWebhookUrl = process.env.MAKE_WEBHOOK_URL;
