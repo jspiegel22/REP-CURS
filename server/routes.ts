@@ -36,6 +36,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Register image management routes
   app.use('/api/images', imageRoutes);
   
+  // Test endpoint for admin notification
+  app.get("/api/test-admin-notification", requireAdmin, async (req, res) => {
+    try {
+      // Import the sendAdminNotification function
+      const { sendAdminNotification } = await import('./services/activeCampaign');
+      
+      // Test HTML template
+      const subject = 'Test Admin Notification';
+      const body = `
+        <h2>Test Email Notification</h2>
+        <p>This is a test email to verify that HTML templates are working correctly.</p>
+        
+        <div style="margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; background-color: #f9f9f9;">
+          <h3 style="color: #2F4F4F; margin-top: 0;">Sample Lead Information</h3>
+          <p><strong>Name:</strong> John Doe</p>
+          <p><strong>Email:</strong> john@example.com</p>
+          <p><strong>Phone:</strong> 555-123-4567</p>
+          <p><strong>Interest:</strong> Villa Rental</p>
+          <p><strong>Budget:</strong> $5,000-$10,000</p>
+          <p><strong>Timeline:</strong> Summer 2025</p>
+        </div>
+        
+        <p>This email was generated from the test endpoint at ${new Date().toLocaleString()}.</p>
+        <p>If you received this, the HTML email template system is working correctly!</p>
+      `;
+      
+      // Send the notification
+      const result = await sendAdminNotification(subject, body);
+      
+      // Return the result
+      if (result) {
+        res.json({ success: true, message: 'Admin notification email sent successfully!' });
+      } else {
+        res.status(500).json({ success: false, message: 'Failed to send admin notification email.' });
+      }
+    } catch (error) {
+      console.error('Error sending admin notification:', error);
+      res.status(500).json({ success: false, message: 'Error sending admin notification', error: String(error) });
+    }
+  });
+  
   // Analytics endpoints
   app.get("/api/analytics/leads", async (req, res) => {
     try {
@@ -138,6 +179,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
           });
       });
       
+      // Process in ActiveCampaign for notifications (non-blocking)
+      import('./services/activeCampaign').then(({ processGuideRequest }) => {
+        processGuideRequest(submission)
+          .then(success => {
+            if (success) {
+              console.log(`Guide request processed in ActiveCampaign for ${submission.email}`);
+            } else {
+              console.error(`Failed to process guide request in ActiveCampaign for ${submission.email}`);
+            }
+          })
+          .catch(error => {
+            console.error("Error processing guide request in ActiveCampaign:", error);
+          });
+      });
+      
       // Send webhook notification (non-blocking)
       sendGuideRequestWebhook(submission)
         .then(result => {
@@ -200,6 +256,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
           });
       });
       
+      // Process in ActiveCampaign for admin notifications (non-blocking)
+      import('./services/activeCampaign').then(({ processBooking }) => {
+        processBooking(booking)
+          .then(success => {
+            if (success) {
+              console.log(`Booking processed in ActiveCampaign for ${booking.email}`);
+            } else {
+              console.error(`Failed to process booking in ActiveCampaign for ${booking.email}`);
+            }
+          })
+          .catch(error => {
+            console.error("Error processing booking in ActiveCampaign:", error);
+          });
+      });
+      
       // Send webhook notification (non-blocking)
       sendBookingWebhook(booking)
         .then(result => {
@@ -250,6 +321,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         retryFailedSync(syncLeadToAirtable, lead)
           .then(() => console.log(`Lead synced to Airtable for ${lead.email}`))
           .catch(error => console.error("Error syncing lead to Airtable:", error));
+      });
+      
+      // Process in ActiveCampaign for admin notifications (non-blocking)
+      import('./services/activeCampaign').then(({ processLead }) => {
+        processLead(lead)
+          .then(success => {
+            if (success) {
+              console.log(`Lead processed in ActiveCampaign for ${lead.email}`);
+            } else {
+              console.error(`Failed to process lead in ActiveCampaign for ${lead.email}`);
+            }
+          })
+          .catch(error => {
+            console.error("Error processing lead in ActiveCampaign:", error);
+          });
       });
       
       // Send webhook notification (non-blocking)

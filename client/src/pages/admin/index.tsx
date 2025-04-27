@@ -49,6 +49,34 @@ function Integrations() {
         <div className="bg-white p-6 rounded-lg shadow">
           <div className="flex items-center justify-between mb-4">
             <div>
+              <h3 className="text-xl font-bold">ActiveCampaign</h3>
+              <p className="text-muted-foreground">Email notifications and contact management</p>
+            </div>
+            <div className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
+              Connected
+            </div>
+          </div>
+          <div className="border-t pt-4">
+            <p className="text-sm text-muted-foreground mb-2">API Key: {process.env.ACTIVECAMPAIGN_API_KEY ? `${process.env.ACTIVECAMPAIGN_API_KEY.slice(0, 4)}****` : "Not configured"}</p>
+            <p className="text-sm text-muted-foreground mb-4">API URL: {process.env.ACTIVECAMPAIGN_API_URL ? "Configured" : "Not configured"}</p>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm">
+                Reconfigure
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => window.location.href = "/admin/test-notification"}
+              >
+                Test Email Notification
+              </Button>
+            </div>
+          </div>
+        </div>
+        
+        <div className="bg-white p-6 rounded-lg shadow">
+          <div className="flex items-center justify-between mb-4">
+            <div>
               <h3 className="text-xl font-bold">Airtable</h3>
               <p className="text-muted-foreground">Connect to Airtable for lead and booking management</p>
             </div>
@@ -81,8 +109,6 @@ function Integrations() {
             </Button>
           </div>
         </div>
-        
-
       </div>
     </div>
   );

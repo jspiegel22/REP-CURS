@@ -37,6 +37,7 @@ import AdminDashboard from "@/pages/admin";
 import AdminLoginPage from "@/pages/admin/login";
 import AdminImagesPage from "@/pages/admin-images";
 import PhotoSyncPage from "@/pages/photo-sync-page";
+import TestNotificationPage from "@/pages/admin/test-notification";
 
 function ProtectedAdminRoute({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
@@ -107,6 +108,13 @@ function Router() {
             {() => (
               <ProtectedAdminRoute>
                 <PhotoSyncPage />
+              </ProtectedAdminRoute>
+            )}
+          </Route>
+          <Route path="/admin/test-notification">
+            {() => (
+              <ProtectedAdminRoute>
+                <TestNotificationPage />
               </ProtectedAdminRoute>
             )}
           </Route>
