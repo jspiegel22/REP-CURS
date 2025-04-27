@@ -119,6 +119,18 @@ const groupTrips = [
 
 const moreMenuItems = [
   {
+    title: "Party Experiences",
+    href: "/party",
+    description: "Unforgettable party experiences in Cabo",
+    image: "https://images.unsplash.com/photo-1541532713592-79a0317b6b77"
+  },
+  {
+    title: "Wellness Retreats",
+    href: "/wellness",
+    description: "Rejuvenating wellness experiences and spa retreats",
+    image: "https://images.unsplash.com/photo-1544161515-4ab6ce6db874"
+  },
+  {
     title: "Real Estate",
     href: "/real-estate",
     description: "Find your dream property in Cabo",
@@ -230,7 +242,7 @@ const NavigationBar = () => {
 
                     {/* Additional Pages */}
                     <div className="grid grid-cols-3 gap-2 mt-2">
-                      {[...moreMenuItems].slice(0, 6).map((item) => (
+                      {[...moreMenuItems].slice(0, 8).map((item) => (
                         <Link key={item.href} href={item.href} className="block group">
                           <div className="relative aspect-square rounded-lg overflow-hidden">
                             <img
