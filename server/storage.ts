@@ -38,6 +38,11 @@ interface IStorage {
   getBlogPostBySlug(slug: string): Promise<any>;
   getBlogPosts(limit?: number, category?: string): Promise<any[]>;
   
+  // Recent data retrieval for admin notification
+  getRecentLeads(limit: number): Promise<Lead[]>;
+  getRecentBookings(limit: number): Promise<Booking[]>;
+  getRecentGuideSubmissions(limit: number): Promise<any[]>;
+  
   // Adventures related methods
   getAdventures(category?: string): Promise<Adventure[]>;
   getAdventure(id: number): Promise<Adventure | undefined>;
@@ -714,6 +719,55 @@ export class DatabaseStorage implements IStorage {
     }
   }
   
+  // Recent data retrieval for admin notification
+  async getRecentLeads(limit: number): Promise<Lead[]> {
+    try {
+      // Get the most recent leads, sorted by creation date (descending)
+      const recentLeads = await db
+        .select()
+        .from(leads)
+        .orderBy(leads.createdAt, 'desc')
+        .limit(limit);
+      
+      return recentLeads;
+    } catch (error) {
+      console.error("Error retrieving recent leads:", error);
+      return [];
+    }
+  }
+  
+  async getRecentBookings(limit: number): Promise<Booking[]> {
+    try {
+      // Get the most recent bookings, sorted by creation date (descending)
+      const recentBookings = await db
+        .select()
+        .from(bookings)
+        .orderBy(bookings.createdAt, 'desc')
+        .limit(limit);
+      
+      return recentBookings;
+    } catch (error) {
+      console.error("Error retrieving recent bookings:", error);
+      return [];
+    }
+  }
+  
+  async getRecentGuideSubmissions(limit: number): Promise<any[]> {
+    try {
+      // Get the most recent guide submissions, sorted by creation date (descending)
+      const recentGuideSubmissions = await db
+        .select()
+        .from(guideSubmissions)
+        .orderBy(guideSubmissions.createdAt, 'desc')
+        .limit(limit);
+      
+      return recentGuideSubmissions;
+    } catch (error) {
+      console.error("Error retrieving recent guide submissions:", error);
+      return [];
+    }
+  }
+
   // Analytics methods
   async getLeadAnalytics(): Promise<any> {
     try {

@@ -77,6 +77,138 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Comprehensive test endpoint with real data summary from database
+  app.get("/api/test-comprehensive-notification", requireAdmin, async (req, res) => {
+    try {
+      // Import the sendAdminNotification function
+      const { sendAdminNotification } = await import('./services/activeCampaign');
+      
+      // Get actual data from storage
+      const recentLeads = await storage.getRecentLeads(5);
+      const recentBookings = await storage.getRecentBookings(5);
+      const recentGuides = await storage.getRecentGuideSubmissions(5);
+      
+      // Create leads HTML
+      let leadsHtml = '<h3 style="color: #2F4F4F; margin-top: 20px;">Recent Leads</h3>';
+      
+      if (recentLeads.length > 0) {
+        leadsHtml += '<div style="margin-bottom: 20px; max-height: 300px; overflow-y: auto;">';
+        recentLeads.forEach((lead, index) => {
+          leadsHtml += `
+            <div style="margin: 10px 0; padding: 10px; border: 1px solid #eee; background-color: ${index % 2 === 0 ? '#f9f9f9' : '#fff'};">
+              <p><strong>Name:</strong> ${lead.firstName} ${lead.lastName || ''}</p>
+              <p><strong>Email:</strong> ${lead.email}</p>
+              <p><strong>Phone:</strong> ${lead.phone || 'Not provided'}</p>
+              <p><strong>Interest:</strong> ${lead.interestType || 'Not specified'}</p>
+              <p><strong>Budget:</strong> ${lead.budget || 'Not specified'}</p>
+              <p><strong>Timeline:</strong> ${lead.timeline || 'Not specified'}</p>
+              <p><strong>Source:</strong> ${lead.source || 'Website'}</p>
+              <p><strong>Status:</strong> ${lead.status || 'New'}</p>
+              <p><strong>Created:</strong> ${new Date(lead.createdAt || new Date()).toLocaleString()}</p>
+            </div>
+          `;
+        });
+        leadsHtml += '</div>';
+      } else {
+        leadsHtml += '<p>No recent leads found.</p>';
+      }
+      
+      // Create bookings HTML
+      let bookingsHtml = '<h3 style="color: #2F4F4F; margin-top: 20px;">Recent Bookings</h3>';
+      
+      if (recentBookings.length > 0) {
+        bookingsHtml += '<div style="margin-bottom: 20px; max-height: 300px; overflow-y: auto;">';
+        recentBookings.forEach((booking, index) => {
+          bookingsHtml += `
+            <div style="margin: 10px 0; padding: 10px; border: 1px solid #eee; background-color: ${index % 2 === 0 ? '#f9f9f9' : '#fff'};">
+              <p><strong>Name:</strong> ${booking.firstName} ${booking.lastName || ''}</p>
+              <p><strong>Email:</strong> ${booking.email}</p>
+              <p><strong>Phone:</strong> ${booking.phone || 'Not provided'}</p>
+              <p><strong>Booking Type:</strong> ${booking.bookingType}</p>
+              <p><strong>Check-in:</strong> ${new Date(booking.startDate).toLocaleDateString()}</p>
+              <p><strong>Check-out:</strong> ${new Date(booking.endDate).toLocaleDateString()}</p>
+              <p><strong>Guests:</strong> ${booking.guests}</p>
+              ${booking.totalAmount ? `<p><strong>Total Amount:</strong> $${booking.totalAmount}</p>` : ''}
+              <p><strong>Special Requests:</strong> ${booking.specialRequests || 'None'}</p>
+              <p><strong>Source:</strong> ${booking.source || 'Website'}</p>
+              <p><strong>Status:</strong> ${booking.status || 'Pending'}</p>
+              <p><strong>Created:</strong> ${new Date(booking.createdAt || new Date()).toLocaleString()}</p>
+            </div>
+          `;
+        });
+        bookingsHtml += '</div>';
+      } else {
+        bookingsHtml += '<p>No recent bookings found.</p>';
+      }
+      
+      // Create guides HTML
+      let guidesHtml = '<h3 style="color: #2F4F4F; margin-top: 20px;">Recent Guide Downloads</h3>';
+      
+      if (recentGuides.length > 0) {
+        guidesHtml += '<div style="margin-bottom: 20px; max-height: 300px; overflow-y: auto;">';
+        recentGuides.forEach((guide, index) => {
+          guidesHtml += `
+            <div style="margin: 10px 0; padding: 10px; border: 1px solid #eee; background-color: ${index % 2 === 0 ? '#f9f9f9' : '#fff'};">
+              <p><strong>Name:</strong> ${guide.firstName} ${guide.lastName || ''}</p>
+              <p><strong>Email:</strong> ${guide.email}</p>
+              <p><strong>Phone:</strong> ${guide.phone || 'Not provided'}</p>
+              <p><strong>Guide Type:</strong> ${guide.guideType}</p>
+              <p><strong>Interest Areas:</strong> ${
+                Array.isArray(guide.interestAreas) 
+                  ? guide.interestAreas.join(', ') 
+                  : (guide.interestAreas || 'Not specified')
+              }</p>
+              <p><strong>Source:</strong> ${guide.source || 'Website'}</p>
+              <p><strong>Created:</strong> ${new Date(guide.createdAt || new Date()).toLocaleString()}</p>
+            </div>
+          `;
+        });
+        guidesHtml += '</div>';
+      } else {
+        guidesHtml += '<p>No recent guide downloads found.</p>';
+      }
+      
+      // Complete HTML body
+      const body = `
+        <h2>Comprehensive Data Summary - ${new Date().toLocaleString()}</h2>
+        <p>This is a comprehensive summary of recent leads, bookings, and guide downloads from the database.</p>
+        
+        <div style="margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; background-color: #f9f9f9;">
+          ${leadsHtml}
+          ${bookingsHtml}
+          ${guidesHtml}
+        </div>
+        
+        <p>This summary was generated from actual database records at ${new Date().toLocaleString()}.</p>
+      `;
+      
+      // Send the notification
+      const result = await sendAdminNotification('Comprehensive Data Summary', body);
+      
+      // Return the result
+      if (result) {
+        res.json({ 
+          success: true, 
+          message: 'Comprehensive admin notification email sent successfully!',
+          dataCounts: {
+            leads: recentLeads.length,
+            bookings: recentBookings.length,
+            guides: recentGuides.length
+          }
+        });
+      } else {
+        res.status(500).json({ success: false, message: 'Failed to send comprehensive admin notification email.' });
+      }
+    } catch (error) {
+      console.error('Error sending comprehensive admin notification:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: 'Error sending comprehensive admin notification', 
+        error: String(error) 
+      });
+    }
+  });
+  
   // Analytics endpoints
   app.get("/api/analytics/leads", async (req, res) => {
     try {
