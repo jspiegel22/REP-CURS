@@ -24,7 +24,7 @@ export const listings = pgTable("listings", {
   partnerId: integer("partner_id").references(() => users.id),
 });
 
-// Add new resorts table with updated fields
+// Update resorts table to match actual database schema
 export const resorts = pgTable("resorts", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
@@ -35,11 +35,10 @@ export const resorts = pgTable("resorts", {
   description: text("description").notNull(),
   imageUrl: text("image_url").notNull(),
   amenities: jsonb("amenities").notNull(),
-  rooms: integer("rooms").notNull(),
-  maxGuests: integer("max_guests").notNull(),
-  isBeachfront: boolean("is_beachfront").default(false),
-  isOceanfront: boolean("is_oceanfront").default(false),
   googleUrl: text("google_url"),
+  bookingsToday: integer("bookings_today"),
+  category: text("category"),
+  featured: boolean("featured"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

@@ -254,7 +254,11 @@ export default function ResortManager() {
     try {
       // Create a FormData object to send the file to the server
       const formData = new FormData();
-      formData.append('image', file);
+      formData.append('file', file);
+      formData.append('name', isCreate ? createForm.name || 'Resort Image' : selectedResort?.name || 'Resort Image');
+      formData.append('alt_text', `${isCreate ? createForm.name : selectedResort?.name} resort in Cabo San Lucas`);
+      formData.append('description', `Image of ${isCreate ? createForm.name : selectedResort?.name} resort`);
+      formData.append('category', 'resort');
       
       // First, show a temporary preview
       const temporaryUrl = URL.createObjectURL(file);
@@ -370,7 +374,7 @@ export default function ResortManager() {
                       <img 
                         src={resort.imageUrl}
                         alt={resort.name}
-                        className="w-full h-full object-fill"
+                        className="w-full h-full object-cover"
                       />
                       {resort.featured && (
                         <Badge className="absolute top-2 right-2" variant="default">
@@ -552,7 +556,7 @@ export default function ResortManager() {
                       <img 
                         src={editForm.imageUrl}
                         alt="Resort"
-                        className="w-full h-full object-fill"
+                        className="w-full h-full object-cover"
                       />
                       <button
                         type="button"
@@ -745,7 +749,7 @@ export default function ResortManager() {
                       <img 
                         src={createForm.imageUrl}
                         alt="Resort"
-                        className="w-full h-full object-fill"
+                        className="w-full h-full object-cover"
                       />
                       <button
                         type="button"

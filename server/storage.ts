@@ -224,11 +224,23 @@ export class DatabaseStorage implements IStorage {
     try {
       console.log("Updating resort with ID:", id, "with data:", JSON.stringify(updateData));
       
+      // Remove any fields that don't exist in the database schema
+      const validFields = ['name', 'description', 'location', 'rating', 'reviewCount', 
+                          'priceLevel', 'imageUrl', 'amenities', 'googleUrl', 
+                          'bookingsToday', 'category', 'featured'];
+      
+      const filteredData: any = {};
+      for (const key in updateData) {
+        if (validFields.includes(key)) {
+          filteredData[key] = updateData[key as keyof Partial<Resort>];
+        }
+      }
+      
+      // Add the updatedAt field
+      filteredData.updatedAt = new Date();
+      
       const [updatedResort] = await db.update(resorts)
-        .set({
-          ...updateData,
-          updatedAt: new Date()
-        })
+        .set(filteredData)
         .where(eq(resorts.id, id))
         .returning();
       
