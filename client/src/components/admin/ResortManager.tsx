@@ -152,12 +152,18 @@ export default function ResortManager() {
     if (!selectedResort) return;
     
     try {
-      // In a real app, this would be an API call
-      // For demonstration, we're just updating the local state
-      // This would be: await apiRequest('PATCH', `/api/resorts/${selectedResort.id}`, editForm);
+      // Call the API endpoint to update the resort
+      const response = await apiRequest('PUT', `/api/resorts/${selectedResort.id}`, editForm);
       
+      if (!response.ok) {
+        throw new Error(`Failed to update resort: ${response.statusText}`);
+      }
+      
+      const updatedResort = await response.json();
+      
+      // Update local state with the response from the server
       const updatedResorts = resorts.map(resort => 
-        resort.id === selectedResort.id ? {...resort, ...editForm} : resort
+        resort.id === selectedResort.id ? updatedResort : resort
       );
       
       setResorts(updatedResorts);
@@ -168,6 +174,7 @@ export default function ResortManager() {
         description: "The resort has been successfully updated.",
       });
     } catch (error) {
+      console.error("Error updating resort:", error);
       toast({
         title: "Error updating resort",
         description: "Could not update the resort. Please try again.",
@@ -238,27 +245,63 @@ export default function ResortManager() {
     }
   }
 
-  function handleImageUpload(event: React.ChangeEvent<HTMLInputElement>, isCreate: boolean) {
+  async function handleImageUpload(event: React.ChangeEvent<HTMLInputElement>, isCreate: boolean) {
     const files = event.target.files;
     if (!files || files.length === 0) return;
     
     const file = files[0];
     
-    // In a real app, you would upload this file to your server or cloud storage
-    // For demonstration, we'll create a temporary URL
-    const imageUrl = URL.createObjectURL(file);
-    
-    if (isCreate) {
-      setCreateForm(prev => ({...prev, imageUrl}));
-    } else {
-      setEditForm(prev => ({...prev, imageUrl}));
+    try {
+      // Create a FormData object to send the file to the server
+      const formData = new FormData();
+      formData.append('image', file);
+      
+      // First, show a temporary preview
+      const temporaryUrl = URL.createObjectURL(file);
+      
+      if (isCreate) {
+        setCreateForm(prev => ({...prev, imageUrl: temporaryUrl}));
+      } else {
+        setEditForm(prev => ({...prev, imageUrl: temporaryUrl}));
+      }
+      
+      // Upload the image to the server
+      const response = await fetch('/api/images/upload', {
+        method: 'POST',
+        body: formData
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Failed to upload image: ${response.statusText}`);
+      }
+      
+      // Get the permanent image URL from the server response
+      const result = await response.json();
+      const imageUrl = result.file_path || result.url || result.image_url;
+      
+      if (!imageUrl) {
+        throw new Error('No image URL returned from server');
+      }
+      
+      // Update form with permanent URL
+      if (isCreate) {
+        setCreateForm(prev => ({...prev, imageUrl}));
+      } else {
+        setEditForm(prev => ({...prev, imageUrl}));
+      }
+      
+      toast({
+        title: "Image uploaded",
+        description: "The image has been uploaded and will be saved with your changes.",
+      });
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      toast({
+        title: "Image upload failed",
+        description: String(error) || "Failed to upload image. Please try again.",
+        variant: "destructive"
+      });
     }
-    
-    // In a real app, you would handle the actual file upload here
-    toast({
-      title: "Image selected",
-      description: "The image has been selected. It will be uploaded when you save.",
-    });
   }
 
   const amenitiesList = [
@@ -308,7 +351,7 @@ export default function ResortManager() {
                   />
                 </div>
                 
-                <Button onClick={handleCreateResort}>
+                <Button onClick={handleCreateResort} className="bg-green-800 hover:bg-green-700">
                   <Plus className="mr-2 h-4 w-4" />
                   New Resort
                 </Button>
@@ -364,7 +407,7 @@ export default function ResortManager() {
                       </div>
                       <div className="flex justify-between">
                         <Button 
-                          variant="outline" 
+                          className="bg-blue-600 hover:bg-blue-500 text-white"
                           size="sm"
                           onClick={() => handleEditResort(resort)}
                         >

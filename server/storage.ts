@@ -214,6 +214,26 @@ export class DatabaseStorage implements IStorage {
   async getResorts(): Promise<Resort[]> {
     return db.select().from(resorts);
   }
+  
+  async updateResort(id: number, updateData: Partial<Resort>): Promise<Resort | null> {
+    try {
+      console.log("Updating resort with ID:", id, "with data:", JSON.stringify(updateData));
+      
+      const [updatedResort] = await db.update(resorts)
+        .set({
+          ...updateData,
+          updatedAt: new Date()
+        })
+        .where(eq(resorts.id, id))
+        .returning();
+      
+      console.log("Resort updated successfully:", updatedResort);
+      return updatedResort;
+    } catch (error) {
+      console.error("Error updating resort:", error);
+      throw error;
+    }
+  }
 
   // Helper function to generate resort slug
   private generateResortSlug(name: string): string {

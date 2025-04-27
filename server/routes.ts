@@ -19,6 +19,14 @@ import itineraryRoutes from './routes/itinerary';
 import imageRoutes from './routes/image';
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Define admin middleware at the beginning
+  const requireAdmin = (req: any, res: any, next: any) => {
+    if (!req.isAuthenticated() || req.user?.role !== "admin") {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
+    next();
+  };
+  
   // Register Stripe routes for direct bookings
   registerStripeRoutes(app);
   
@@ -299,7 +307,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Resorts endpoint
+  // Resorts endpoints
+  app.get("/api/resorts", async (req, res) => {
+    try {
+      const resorts = await storage.getResorts();
+      res.json(resorts);
+    } catch (error) {
+      console.error("Error fetching resorts:", error);
+      res.status(500).json({ message: "Failed to fetch resorts" });
+    }
+  });
+  
   app.get("/api/resorts/:slug", async (req, res) => {
     try {
       const resorts = await storage.getResorts();
@@ -315,6 +333,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching resort:", error);
       res.status(500).json({ message: "Failed to fetch resort" });
+    }
+  });
+  
+  // Update resort endpoint - protected by admin auth
+  app.put("/api/resorts/:id", requireAdmin, async (req, res) => {
+    try {
+      const resortId = parseInt(req.params.id);
+      if (isNaN(resortId)) {
+        return res.status(400).json({ message: "Invalid resort ID" });
+      }
+
+      console.log("Updating resort:", resortId, "with data:", req.body);
+      
+      const updatedResort = await storage.updateResort(resortId, req.body);
+      
+      if (!updatedResort) {
+        return res.status(404).json({ message: "Resort not found" });
+      }
+      
+      res.json(updatedResort);
+    } catch (error) {
+      console.error("Error updating resort:", error);
+      res.status(500).json({ message: "Failed to update resort" });
     }
   });
 
@@ -408,12 +449,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Protected admin routes
-  const requireAdmin = (req: any, res: any, next: any) => {
-    if (!req.isAuthenticated() || req.user?.role !== "admin") {
-      return res.status(403).json({ message: "Unauthorized" });
-    }
-    next();
-  };
 
   app.get("/api/admin/guide-submissions", requireAdmin, async (req, res) => {
     try {
