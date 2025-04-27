@@ -1,4 +1,4 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, Redirect } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -41,6 +41,8 @@ import PhotoSyncPage from "@/pages/photo-sync-page";
 function ProtectedAdminRoute({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
   
+  console.log("ProtectedAdminRoute - User:", user, "isLoading:", isLoading);
+  
   if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -50,7 +52,10 @@ function ProtectedAdminRoute({ children }: { children: React.ReactNode }) {
   }
   
   if (!user || user.role !== "admin") {
-    return <AdminLoginPage />;
+    console.log("Not authenticated or not admin, redirecting to login");
+    // Use window.location for hard redirect instead of wouter Redirect
+    window.location.href = "/admin/login";
+    return null;
   }
   
   return <>{children}</>;
@@ -64,13 +69,7 @@ function Router() {
         <Switch>
           <Route path="/" component={HomePage} />
           <Route path="/admin/login" component={AdminLoginPage} />
-          <Route path="/admin">
-            {() => (
-              <ProtectedAdminRoute>
-                <AdminDashboard />
-              </ProtectedAdminRoute>
-            )}
-          </Route>
+          <Route path="/admin" component={AdminDashboard} />
           <Route path="/blog" component={BlogIndex} />
           <Route path="/blog/:slug" component={BlogDetail} />
           <Route path="/resorts" component={ResortsLanding} />

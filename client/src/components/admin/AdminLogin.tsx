@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
@@ -8,6 +8,8 @@ import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { useAuth } from '@/hooks/use-auth';
+import { useLocation } from 'wouter';
 
 const loginSchema = z.object({
   username: z.string().min(1, 'Username is required'),
@@ -21,8 +23,10 @@ interface AdminLoginProps {
 }
 
 export default function AdminLogin({ onLoginSuccess }: AdminLoginProps) {
+  const { loginMutation, user, error: authError } = useAuth();
+  const [, navigate] = useLocation();
   const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const isLoading = loginMutation.isPending;
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -32,31 +36,25 @@ export default function AdminLogin({ onLoginSuccess }: AdminLoginProps) {
     },
   });
 
-  const onSubmit = async (data: LoginFormValues) => {
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const response = await fetch('/api/admin/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (response.ok) {
-        onLoginSuccess();
-      } else {
-        const errorData = await response.json();
-        setError(errorData.message || 'Invalid username or password');
-      }
-    } catch (err) {
-      setError('An error occurred. Please try again.');
-      console.error('Login error:', err);
-    } finally {
-      setIsLoading(false);
+  // Redirect to admin dashboard if already logged in
+  useEffect(() => {
+    if (user && user.role === "admin") {
+      console.log("User already logged in, redirecting to admin dashboard");
+      window.location.href = '/admin';
     }
+  }, [user, navigate]);
+
+  const onSubmit = async (data: LoginFormValues) => {
+    loginMutation.mutate(data, {
+      onSuccess: () => {
+        console.log("Login successful via auth hook");
+        // Call the success callback
+        onLoginSuccess();
+        
+        // Force a hard refresh/redirect to the admin page
+        window.location.href = '/admin';
+      }
+    });
   };
 
   return (
@@ -70,10 +68,10 @@ export default function AdminLogin({ onLoginSuccess }: AdminLoginProps) {
         </CardHeader>
 
         <CardContent>
-          {error && (
+          {authError && (
             <Alert variant="destructive" className="mb-4">
               <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{error}</AlertDescription>
+              <AlertDescription>{authError.message}</AlertDescription>
             </Alert>
           )}
 
@@ -111,8 +109,13 @@ export default function AdminLogin({ onLoginSuccess }: AdminLoginProps) {
                 )}
               />
 
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? (
+              <Button 
+                type="submit" 
+                className="w-full bg-primary hover:bg-primary/90 text-white" 
+                variant="default"
+                disabled={loginMutation.isPending}
+              >
+                {loginMutation.isPending ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Logging in...

@@ -36,7 +36,9 @@ import {
   Upload, 
   Image,
   Tag,
-  Plus
+  Plus,
+  Copy,
+  Check
 } from 'lucide-react';
 import {
   Dialog,
@@ -86,6 +88,7 @@ export default function ImageManager() {
   const [tagInput, setTagInput] = useState('');
   const [selectedTags, setSelectedTags] = useState<Set<string>>(new Set());
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [copiedImageUrl, setCopiedImageUrl] = useState<number | null>(null);
   const { toast } = useToast();
 
   // Form states for upload
@@ -480,6 +483,32 @@ export default function ImageManager() {
                       <TableCell>{formatDate(image.created_at)}</TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end space-x-2">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => {
+                              navigator.clipboard.writeText(image.image_url);
+                              setCopiedImageUrl(image.id);
+                              toast({
+                                title: "URL Copied",
+                                description: "Image URL copied to clipboard",
+                                duration: 2000,
+                              });
+                              
+                              // Reset the copied status after 2 seconds
+                              setTimeout(() => {
+                                setCopiedImageUrl(null);
+                              }, 2000);
+                            }}
+                            title="Copy Image URL"
+                          >
+                            {copiedImageUrl === image.id ? (
+                              <Check className="h-4 w-4 text-green-500" />
+                            ) : (
+                              <Copy className="h-4 w-4" />
+                            )}
+                          </Button>
+                        
                           <Button
                             variant="ghost"
                             size="icon"

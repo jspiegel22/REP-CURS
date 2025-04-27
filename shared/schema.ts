@@ -321,5 +321,35 @@ export const insertSiteImageSchema = createInsertSchema(siteImages).omit({
 });
 
 // Export types
+// Adventures table for all Cabo experiences and activities
+export const adventures = pgTable("adventures", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  slug: text("slug").notNull().unique(),
+  description: text("description").notNull(),
+  currentPrice: text("current_price").notNull(),
+  originalPrice: text("original_price"),
+  discount: text("discount"),
+  duration: text("duration").notNull(),
+  imageUrl: text("image_url").notNull(),
+  minAge: text("min_age"),
+  provider: text("provider").notNull(),
+  category: text("category", { enum: ["water", "land", "luxury", "family"] }).notNull().default("water"),
+  rating: decimal("rating"),
+  featured: boolean("featured").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Create schemas for the adventures table
+export const insertAdventureSchema = createInsertSchema(adventures).omit({
+  id: true,
+  createdAt: true, 
+  updatedAt: true,
+});
+
+// Export types
 export type SiteImage = typeof siteImages.$inferSelect;
 export type InsertSiteImage = z.infer<typeof insertSiteImageSchema>;
+export type Adventure = typeof adventures.$inferSelect;
+export type InsertAdventure = z.infer<typeof insertAdventureSchema>;

@@ -13,19 +13,22 @@ import { Label } from "@/components/ui/label";
 import { apiRequest } from "@/lib/queryClient";
 
 interface Adventure {
-  id: string;
+  id: number;
   title: string;
   slug: string;
   currentPrice: string;
-  originalPrice: string;
-  discount: string;
+  originalPrice: string | null;
+  discount: string | null;
   duration: string;
   imageUrl: string;
-  minAge: string;
+  minAge: string | null;
   provider: string;
-  category?: "water" | "land" | "luxury" | "family";
-  rating?: number;
-  description?: string;
+  category: "water" | "land" | "luxury" | "family";
+  rating: number | null;
+  description: string;
+  featured: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export default function AdventureManager() {
@@ -82,43 +85,14 @@ export default function AdventureManager() {
   async function fetchAdventures() {
     setLoading(true);
     try {
-      // In a real app, this would be an API call
-      // For now, we'll use mock data
-      // This would be: const response = await apiRequest('GET', '/api/adventures');
+      // Fetch adventures from the API
+      const response = await apiRequest('GET', '/api/adventures');
+      const data = await response.json();
       
-      const mockAdventures: Adventure[] = [
-        {
-          id: "adv-1",
-          title: "CABO ATV ADVENTURE TOUR",
-          slug: "atv-adventure",
-          currentPrice: "$89 USD",
-          originalPrice: "$129 USD",
-          discount: "-30%",
-          duration: "2.5 Hours",
-          imageUrl: "/uploads/ATV-Tour-Cabo.png",
-          minAge: "Min 16 years old",
-          provider: "Cabo Adventures",
-          category: "land",
-          rating: 4.7
-        },
-        {
-          id: "adv-2",
-          title: "LUXURY CABO SAILING BOAT TOUR",
-          slug: "luxury-sailing",
-          currentPrice: "$104 USD",
-          originalPrice: "$149 USD",
-          discount: "-30%",
-          duration: "4 Hours",
-          imageUrl: "/uploads/luxury-yacht-cabo.png",
-          minAge: "Min 8 years old",
-          provider: "Cabo Adventures",
-          category: "water",
-          rating: 4.8
-        }
-      ];
+      console.log("Fetched adventures:", data);
       
-      setAdventures(mockAdventures);
-      setFilteredAdventures(mockAdventures);
+      setAdventures(data);
+      setFilteredAdventures(data);
     } catch (error) {
       toast({
         title: "Error fetching adventures",
@@ -155,12 +129,17 @@ export default function AdventureManager() {
     if (!selectedAdventure) return;
     
     try {
-      // In a real app, this would be an API call
-      // For demonstration, we're just updating the local state
-      // This would be: await apiRequest('PATCH', `/api/adventures/${selectedAdventure.id}`, editForm);
+      // Make PUT request to update the adventure
+      const response = await apiRequest('PUT', `/api/adventures/${selectedAdventure.id}`, editForm);
+      
+      if (!response.ok) {
+        throw new Error(`Error updating adventure: ${response.statusText}`);
+      }
+      
+      const updatedAdventure = await response.json();
       
       const updatedAdventures = adventures.map(adv => 
-        adv.id === selectedAdventure.id ? {...adv, ...editForm} : adv
+        adv.id === selectedAdventure.id ? updatedAdventure : adv
       );
       
       setAdventures(updatedAdventures);
@@ -171,6 +150,7 @@ export default function AdventureManager() {
         description: "The adventure has been successfully updated.",
       });
     } catch (error) {
+      console.error("Error updating adventure:", error);
       toast({
         title: "Error updating adventure",
         description: "Could not update the adventure. Please try again.",
@@ -181,25 +161,32 @@ export default function AdventureManager() {
 
   async function handleCreateSubmit() {
     try {
-      // In a real app, this would be an API call
-      // For demonstration, we're just updating the local state
-      // This would be: const response = await apiRequest('POST', '/api/adventures', createForm);
-      
-      const newAdventure: Adventure = {
-        id: `adv-${adventures.length + 1}`,
+      // Create a new adventure via API
+      const adventureData = {
         title: createForm.title || '',
         slug: createForm.title?.toLowerCase().replace(/\s+/g, '-') || '',
         currentPrice: createForm.currentPrice || '',
-        originalPrice: createForm.originalPrice || '',
-        discount: createForm.discount || '',
+        originalPrice: createForm.originalPrice || null,
+        discount: createForm.discount || null,
         duration: createForm.duration || '',
         imageUrl: createForm.imageUrl || '/placeholder-adventure.jpg',
-        minAge: createForm.minAge || '',
+        minAge: createForm.minAge || null,
         provider: createForm.provider || 'Cabo Adventures',
-        category: createForm.category as any,
-        rating: createForm.rating
+        category: createForm.category || 'water',
+        rating: createForm.rating || null,
+        description: createForm.description || '',
+        featured: createForm.featured || false
       };
       
+      const response = await apiRequest('POST', '/api/adventures', adventureData);
+      
+      if (!response.ok) {
+        throw new Error(`Error creating adventure: ${response.statusText}`);
+      }
+      
+      const newAdventure = await response.json();
+      
+      // Add the new adventure to the local state
       setAdventures([...adventures, newAdventure]);
       setIsCreateDialogOpen(false);
       
@@ -207,7 +194,11 @@ export default function AdventureManager() {
         title: "Adventure created",
         description: "The new adventure has been successfully created.",
       });
+      
+      // Refresh the adventures list
+      fetchAdventures();
     } catch (error) {
+      console.error("Error creating adventure:", error);
       toast({
         title: "Error creating adventure",
         description: "Could not create the adventure. Please try again.",
@@ -216,16 +207,20 @@ export default function AdventureManager() {
     }
   }
 
-  async function handleDeleteAdventure(id: string) {
+  async function handleDeleteAdventure(id: number) {
     if (!confirm("Are you sure you want to delete this adventure? This action cannot be undone.")) {
       return;
     }
     
     try {
-      // In a real app, this would be an API call
-      // For demonstration, we're just updating the local state
-      // This would be: await apiRequest('DELETE', `/api/adventures/${id}`);
+      // Delete the adventure via API
+      const response = await apiRequest('DELETE', `/api/adventures/${id}`);
       
+      if (!response.ok) {
+        throw new Error(`Error deleting adventure: ${response.statusText}`);
+      }
+      
+      // Remove the adventure from the local state
       const updatedAdventures = adventures.filter(adv => adv.id !== id);
       setAdventures(updatedAdventures);
       
@@ -234,6 +229,7 @@ export default function AdventureManager() {
         description: "The adventure has been successfully deleted.",
       });
     } catch (error) {
+      console.error("Error deleting adventure:", error);
       toast({
         title: "Error deleting adventure",
         description: "Could not delete the adventure. Please try again.",
@@ -347,7 +343,7 @@ export default function AdventureManager() {
                         <div>{adventure.duration} • {adventure.minAge}</div>
                         <div>
                           <span className="font-medium">{adventure.currentPrice}</span>
-                          {adventure.originalPrice !== adventure.currentPrice && (
+                          {adventure.originalPrice && adventure.originalPrice !== adventure.currentPrice && (
                             <span className="line-through ml-2">{adventure.originalPrice}</span>
                           )}
                         </div>
@@ -447,8 +443,8 @@ export default function AdventureManager() {
                 <div className="flex-1">
                   <Label htmlFor="category">Category</Label>
                   <Select
-                    value={editForm.category}
-                    onValueChange={(value) => setEditForm({...editForm, category: value as any})}
+                    value={editForm.category as "water" | "land" | "luxury" | "family" | undefined}
+                    onValueChange={(value: string) => setEditForm({...editForm, category: value as "water" | "land" | "luxury" | "family"})}
                   >
                     <SelectTrigger id="category">
                       <SelectValue placeholder="Select category" />
@@ -472,7 +468,7 @@ export default function AdventureManager() {
                   max="5"
                   step="0.1"
                   value={editForm.rating || ''}
-                  onChange={(e) => setEditForm({...editForm, rating: parseFloat(e.target.value)})}
+                  onChange={(e) => setEditForm({...editForm, rating: e.target.value ? parseFloat(e.target.value) : null})}
                 />
               </div>
             </div>
@@ -619,8 +615,8 @@ export default function AdventureManager() {
                 <div className="flex-1">
                   <Label htmlFor="create-category">Category</Label>
                   <Select
-                    value={createForm.category as string}
-                    onValueChange={(value) => setCreateForm({...createForm, category: value as any})}
+                    value={createForm.category as "water" | "land" | "luxury" | "family" | undefined}
+                    onValueChange={(value: string) => setCreateForm({...createForm, category: value as "water" | "land" | "luxury" | "family"})}
                   >
                     <SelectTrigger id="create-category">
                       <SelectValue placeholder="Select category" />
@@ -644,7 +640,7 @@ export default function AdventureManager() {
                   max="5"
                   step="0.1"
                   value={createForm.rating || ''}
-                  onChange={(e) => setCreateForm({...createForm, rating: parseFloat(e.target.value)})}
+                  onChange={(e) => setCreateForm({...createForm, rating: e.target.value ? parseFloat(e.target.value) : null})}
                 />
               </div>
             </div>

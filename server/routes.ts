@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth } from "./auth";
 import { z } from "zod";
-import { insertBookingSchema, insertLeadSchema, insertGuideSubmissionSchema, insertListingSchema } from "@shared/schema";
+import { insertBookingSchema, insertLeadSchema, insertGuideSubmissionSchema, insertListingSchema, insertAdventureSchema } from "@shared/schema";
 // Use our own version of generateSlug since we need it server-side
 // instead of importing from client utils
 import { nanoid } from "nanoid";
@@ -341,14 +341,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Admin routes
-  app.post("/api/admin/login", passport.authenticate("local"), (req, res) => {
-    if (req.user?.role !== "admin") {
-      req.logout((err) => {
-        if (err) console.error("Logout error:", err);
+  app.post("/api/admin/login", (req, res, next) => {
+    passport.authenticate('local', (err, user, info) => {
+      if (err) {
+        console.error("Authentication error:", err);
+        return next(err);
+      }
+      
+      if (!user) {
+        console.error("Login failed - no user found with credentials:", req.body.username);
+        return res.status(401).json({ message: "Invalid username or password" });
+      }
+      
+      if (user.role !== "admin") {
+        console.error("Login failed - user is not an admin:", user.username);
+        return res.status(403).json({ message: "Unauthorized - Admin access required" });
+      }
+      
+      req.login(user, (err) => {
+        if (err) {
+          console.error("Login session error:", err);
+          return next(err);
+        }
+        
+        console.log("Admin login successful:", user.username);
+        return res.json(user);
       });
-      return res.status(403).json({ message: "Unauthorized" });
-    }
-    res.json(req.user);
+    })(req, res, next);
   });
 
   // Protected admin routes
@@ -576,7 +595,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       try {
         await storage.createUser({
           username: "jefe",
-          password: await hashPassword("cryptoboy"),
+          password: await hashPassword("instacabo"),
           email: "admin@cabo.is",
           role: "admin"
           // created_at and updated_at will be set by database defaults
@@ -585,6 +604,119 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } catch (error) {
         console.error("Error creating admin user:", error);
       }
+    }
+  });
+  
+  // Adventures API endpoints
+  app.get("/api/adventures", async (req, res) => {
+    try {
+      const category = req.query.category as string | undefined;
+      const adventures = await storage.getAdventures(category);
+      res.json(adventures);
+    } catch (error) {
+      console.error("Error fetching adventures:", error);
+      res.status(500).json({ message: "Failed to fetch adventures" });
+    }
+  });
+
+  app.get("/api/adventures/:idOrSlug", async (req, res) => {
+    try {
+      const id = parseInt(req.params.idOrSlug);
+      
+      if (isNaN(id)) {
+        // If not a number, treat as slug
+        const adventure = await storage.getAdventureBySlug(req.params.idOrSlug);
+        if (!adventure) {
+          return res.status(404).json({ message: "Adventure not found" });
+        }
+        return res.json(adventure);
+      }
+      
+      const adventure = await storage.getAdventure(id);
+      if (!adventure) {
+        return res.status(404).json({ message: "Adventure not found" });
+      }
+      res.json(adventure);
+    } catch (error) {
+      console.error("Error fetching adventure:", error);
+      res.status(500).json({ message: "Failed to fetch adventure" });
+    }
+  });
+
+  app.post("/api/adventures", async (req, res) => {
+    try {
+      // Check if user is authenticated and is an admin
+      if (!req.isAuthenticated() || req.user.role !== "admin") {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+
+      // Validate request body
+      const adventureData = insertAdventureSchema.safeParse(req.body);
+      if (!adventureData.success) {
+        return res.status(400).json({ 
+          message: "Invalid adventure data",
+          errors: adventureData.error.errors 
+        });
+      }
+
+      // Create adventure
+      const adventure = await storage.createAdventure(adventureData.data);
+      res.status(201).json(adventure);
+    } catch (error) {
+      console.error("Adventure creation error:", error);
+      res.status(500).json({ message: "Failed to create adventure" });
+    }
+  });
+
+  app.put("/api/adventures/:id", async (req, res) => {
+    try {
+      // Check if user is authenticated and is an admin
+      if (!req.isAuthenticated() || req.user.role !== "admin") {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid adventure ID" });
+      }
+
+      // First check if adventure exists
+      const existingAdventure = await storage.getAdventure(id);
+      if (!existingAdventure) {
+        return res.status(404).json({ message: "Adventure not found" });
+      }
+
+      // Update adventure
+      const updatedAdventure = await storage.updateAdventure(id, req.body);
+      res.json(updatedAdventure);
+    } catch (error) {
+      console.error("Adventure update error:", error);
+      res.status(500).json({ message: "Failed to update adventure" });
+    }
+  });
+
+  app.delete("/api/adventures/:id", async (req, res) => {
+    try {
+      // Check if user is authenticated and is an admin
+      if (!req.isAuthenticated() || req.user.role !== "admin") {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid adventure ID" });
+      }
+
+      // Delete adventure
+      const deleted = await storage.deleteAdventure(id);
+      if (!deleted) {
+        return res.status(404).json({ message: "Adventure not found" });
+      }
+      
+      res.json({ success: true, message: "Adventure deleted successfully" });
+    } catch (error) {
+      console.error("Adventure deletion error:", error);
+      res.status(500).json({ message: "Failed to delete adventure" });
     }
   });
 

@@ -1,7 +1,7 @@
 import { db } from "./db";
 import { eq } from "drizzle-orm";
-import { users, listings, bookings, rewards, socialShares, weatherCache, resorts, villas, leads, guideSubmissions, blogPosts } from "@shared/schema";
-import type { User, InsertUser, Listing, Booking, Reward, SocialShare, WeatherCache, Resort, Villa, Lead, InsertLead, InsertBlogPost } from "@shared/schema";
+import { users, listings, bookings, rewards, socialShares, weatherCache, resorts, villas, leads, guideSubmissions, blogPosts, adventures } from "@shared/schema";
+import type { User, InsertUser, Listing, Booking, Reward, SocialShare, WeatherCache, Resort, Villa, Lead, InsertLead, InsertBlogPost, Adventure, InsertAdventure } from "@shared/schema";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
 import { nanoid } from "nanoid";
@@ -37,6 +37,14 @@ interface IStorage {
   createBlogPost(blogPost: any): Promise<any>;
   getBlogPostBySlug(slug: string): Promise<any>;
   getBlogPosts(limit?: number, category?: string): Promise<any[]>;
+  
+  // Adventures related methods
+  getAdventures(category?: string): Promise<Adventure[]>;
+  getAdventure(id: number): Promise<Adventure | undefined>;
+  getAdventureBySlug(slug: string): Promise<Adventure | undefined>;
+  createAdventure(adventure: InsertAdventure): Promise<Adventure>;
+  updateAdventure(id: number, adventure: Partial<Adventure>): Promise<Adventure>;
+  deleteAdventure(id: number): Promise<boolean>;
 }
 
 const PostgresSessionStore = connectPg(session);
@@ -544,6 +552,96 @@ export class DatabaseStorage implements IStorage {
     } catch (error) {
       console.error("Error fetching blog posts:", error);
       return []; // Return empty array instead of throwing
+    }
+  }
+
+  // Adventure Management
+  async getAdventures(category?: string): Promise<Adventure[]> {
+    try {
+      if (category) {
+        return db.select().from(adventures).where(eq(adventures.category, category));
+      }
+      return db.select().from(adventures);
+    } catch (error) {
+      console.error('Error fetching adventures:', error);
+      return [];
+    }
+  }
+
+  async getAdventure(id: number): Promise<Adventure | undefined> {
+    try {
+      const [adventure] = await db.select().from(adventures).where(eq(adventures.id, id));
+      return adventure;
+    } catch (error) {
+      console.error(`Error fetching adventure with ID ${id}:`, error);
+      return undefined;
+    }
+  }
+
+  async getAdventureBySlug(slug: string): Promise<Adventure | undefined> {
+    try {
+      const [adventure] = await db.select().from(adventures).where(eq(adventures.slug, slug));
+      return adventure;
+    } catch (error) {
+      console.error(`Error fetching adventure with slug ${slug}:`, error);
+      return undefined;
+    }
+  }
+
+  async createAdventure(adventure: InsertAdventure): Promise<Adventure> {
+    try {
+      // Generate a slug from the title if not provided
+      if (!adventure.slug) {
+        adventure.slug = adventure.title
+          .toLowerCase()
+          .replace(/\s+/g, '-')
+          .replace(/[^\w\-]+/g, '')
+          .replace(/\-\-+/g, '-')
+          .replace(/^-+/, '')
+          .replace(/-+$/, '');
+      }
+      
+      const [newAdventure] = await db.insert(adventures).values(adventure).returning();
+      return newAdventure;
+    } catch (error) {
+      console.error('Error creating adventure:', error);
+      throw new Error('Failed to create adventure');
+    }
+  }
+
+  async updateAdventure(id: number, adventure: Partial<Adventure>): Promise<Adventure> {
+    try {
+      // Generate a slug from the title if title is updated and slug is not provided
+      if (adventure.title && !adventure.slug) {
+        adventure.slug = adventure.title
+          .toLowerCase()
+          .replace(/\s+/g, '-')
+          .replace(/[^\w\-]+/g, '')
+          .replace(/\-\-+/g, '-')
+          .replace(/^-+/, '')
+          .replace(/-+$/, '');
+      }
+      
+      const [updatedAdventure] = await db
+        .update(adventures)
+        .set(adventure)
+        .where(eq(adventures.id, id))
+        .returning();
+      
+      return updatedAdventure;
+    } catch (error) {
+      console.error(`Error updating adventure with ID ${id}:`, error);
+      throw new Error('Failed to update adventure');
+    }
+  }
+
+  async deleteAdventure(id: number): Promise<boolean> {
+    try {
+      const result = await db.delete(adventures).where(eq(adventures.id, id)).returning();
+      return result.length > 0;
+    } catch (error) {
+      console.error(`Error deleting adventure with ID ${id}:`, error);
+      return false;
     }
   }
 }

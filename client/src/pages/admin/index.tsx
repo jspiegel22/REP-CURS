@@ -26,6 +26,7 @@ import { Bookings } from "@/components/admin/bookings";
 import { Leads } from "@/components/admin/leads";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
 import AdventureManager from "@/components/admin/AdventureManager";
 import ResortManager from "@/components/admin/ResortManager";
 import VillaManager from "@/components/admin/VillaManager";
@@ -120,43 +121,50 @@ export default function AdminDashboard() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { user, isLoading, logoutMutation } = useAuth();
   
-  // Check if user is authenticated on mount
+  // Check if user is authenticated and redirect if not
   useEffect(() => {
     const checkAuth = async () => {
+      console.log("Checking auth status from AdminDashboard component");
+      
       try {
-        const res = await apiRequest("GET", "/api/user");
+        // Direct API check to bypass any caching issues
+        const res = await fetch('/api/user', { credentials: 'include' });
+        
         if (!res.ok) {
+          console.log("Auth check failed with status:", res.status);
           throw new Error("Not authenticated");
         }
         
-        const user = await res.json();
-        if (user.role !== "admin") {
-          throw new Error("Not authorized");
+        const userData = await res.json();
+        console.log("User data from API:", userData);
+        
+        if (!userData || userData.role !== "admin") {
+          console.log("User is not admin, redirecting");
+          window.location.href = "/admin/login";
+        } else {
+          console.log("User authenticated as admin");
         }
       } catch (error) {
-        // Redirect to login
-        setLocation("/admin/login");
+        console.error("Authentication error:", error);
+        window.location.href = "/admin/login";
       }
     };
     
     checkAuth();
-  }, [setLocation]);
+  }, []);
   
-  const handleLogout = async () => {
-    try {
-      await apiRequest("POST", "/api/logout");
-      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
-      toast({
-        title: "Logged out successfully",
-      });
-      setLocation("/admin/login");
-    } catch (error) {
-      toast({
-        title: "Logout failed",
-        variant: "destructive",
-      });
-    }
+  const handleLogout = () => {
+    logoutMutation.mutate(undefined, {
+      onSuccess: () => {
+        toast({
+          title: "Logged out successfully",
+        });
+        // Use window.location for a hard redirect after logout
+        window.location.href = "/admin/login";
+      }
+    });
   };
 
   const menuItems = [
@@ -314,6 +322,7 @@ export default function AdminDashboard() {
           {activeTab === "guides" && <GuideDownloads />}
           {activeTab === "adventures" && <AdventureManager />}
           {activeTab === "resorts" && <ResortManager />}
+          {activeTab === "villas" && <VillaManager />}
           {activeTab === "blogs" && <BlogManager />}
           {activeTab === "images" && <ImageManager />}
           {activeTab === "integrations" && <Integrations />}
