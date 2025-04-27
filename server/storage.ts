@@ -11,6 +11,7 @@ interface IStorage {
   createGuideSubmission(submission: any): Promise<any>;
   getVillas(): Promise<Villa[]>;
   getVillaByTrackHsId(trackHsId: string): Promise<Villa | undefined>;
+  createVilla(villaData: Partial<Villa>): Promise<Villa>;
   getResorts(): Promise<Resort[]>;
   getResortBySlug(slug: string): Promise<Resort | undefined>;
   getUser(id: number): Promise<User | undefined>;
@@ -221,6 +222,33 @@ export class DatabaseStorage implements IStorage {
   async getVillaByTrackHsId(trackHsId: string): Promise<Villa | undefined> {
     const [villa] = await db.select().from(villas).where(eq(villas.trackHsId, trackHsId));
     return villa;
+  }
+  
+  async createVilla(villaData: Partial<Villa>): Promise<Villa> {
+    try {
+      console.log("Creating new villa:", villaData.name);
+      
+      // Convert any arrays to JSON strings if needed
+      const processedVilla = {
+        ...villaData,
+        imageUrls: Array.isArray(villaData.imageUrls) 
+          ? villaData.imageUrls 
+          : [],
+        amenities: Array.isArray(villaData.amenities) 
+          ? villaData.amenities 
+          : [],
+        featured: villaData.featured || false,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+      
+      const [newVilla] = await db.insert(villas).values(processedVilla as any).returning();
+      console.log("Villa created successfully:", newVilla.id);
+      return newVilla;
+    } catch (error) {
+      console.error("Error creating villa:", error);
+      throw new Error("Failed to create villa");
+    }
   }
 
   // Resort Management

@@ -502,10 +502,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
       .replace(/-+$/, '');            // Trim - from end of text
   }
 
+  // Internal debugging endpoint
+  app.get("/api/debug", async (req, res) => {
+    try {
+      console.log("DEBUG ENDPOINT CALLED - Testing storage functions");
+      
+      // Test villa retrieval
+      console.log("Testing getVillas() function:");
+      const villas = await storage.getVillas();
+      console.log(`Found ${villas.length} villas in the database`);
+      if (villas.length > 0) {
+        console.log(`First villa sample: ${JSON.stringify(villas[0]).substring(0, 200)}...`);
+      }
+      
+      // Test adventure retrieval
+      console.log("Testing getAdventures() function:");
+      const adventures = await storage.getAdventures();
+      console.log(`Found ${adventures.length} adventures in the database`);
+      if (adventures.length > 0) {
+        console.log(`First adventure sample: ${JSON.stringify(adventures[0]).substring(0, 200)}...`);
+      }
+      
+      res.json({ 
+        success: true,
+        villaCount: villas.length,
+        adventureCount: adventures.length
+      });
+    } catch (error) {
+      console.error("DEBUG ENDPOINT ERROR:", error);
+      res.status(500).json({ message: "Debug endpoint failed", error: String(error) });
+    }
+  });
+
   // Keep existing routes
   app.get("/api/villas", async (req, res) => {
     try {
+      console.log("GET /api/villas endpoint called");
       const villas = await storage.getVillas();
+      console.log(`Returning ${villas.length} villas from the database`);
       res.json(villas);
     } catch (error) {
       console.error("Error fetching villas:", error);
@@ -523,6 +557,61 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching villa:", error);
       res.status(500).json({ message: "Failed to fetch villa" });
+    }
+  });
+  
+  // Import villas from JSON
+  app.post("/api/villas/import", requireAdmin, async (req, res) => {
+    try {
+      const { villas } = req.body;
+      
+      if (!Array.isArray(villas)) {
+        return res.status(400).json({ message: "Invalid request. Expected 'villas' array." });
+      }
+      
+      console.log(`Importing ${villas.length} villas from JSON`);
+      
+      let importedCount = 0;
+      let errors = [];
+      
+      for (const villaData of villas) {
+        try {
+          // Adapt the villa data to match our database schema
+          const processedVilla = {
+            name: villaData.name,
+            address: villaData.address || "",
+            location: villaData.location || "Cabo San Lucas",
+            description: villaData.description || "",
+            bedrooms: parseInt(villaData.bedrooms) || 0,
+            bathrooms: parseFloat(villaData.bathrooms) || 0,
+            maxGuests: parseInt(villaData.maxGuests || villaData.sleeps) || 0,
+            pricePerNight: parseInt(villaData.pricePerNight) || 0,
+            imageUrls: Array.isArray(villaData.imageUrls) ? villaData.imageUrls : 
+                      villaData.imageUrl ? [villaData.imageUrl] : [],
+            amenities: Array.isArray(villaData.amenities) ? villaData.amenities : [],
+            featured: Boolean(villaData.featured) || false
+          };
+          
+          await storage.createVilla(processedVilla);
+          importedCount++;
+        } catch (error) {
+          console.error("Error importing villa:", villaData.name, error);
+          errors.push({
+            name: villaData.name,
+            error: String(error)
+          });
+        }
+      }
+      
+      res.json({
+        importedCount,
+        totalVillas: villas.length,
+        errors: errors.length > 0 ? errors : undefined,
+        message: `Successfully imported ${importedCount} out of ${villas.length} villas.`
+      });
+    } catch (error) {
+      console.error("Error importing villas:", error);
+      res.status(500).json({ message: "Failed to import villas", error: String(error) });
     }
   });
 
@@ -901,8 +990,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Adventures API endpoints
   app.get("/api/adventures", async (req, res) => {
     try {
+      console.log("GET /api/adventures endpoint called");
       const category = req.query.category as string | undefined;
       const adventures = await storage.getAdventures(category);
+      console.log(`Returning ${adventures.length} adventures from the database`);
       res.json(adventures);
     } catch (error) {
       console.error("Error fetching adventures:", error);

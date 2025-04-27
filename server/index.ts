@@ -70,6 +70,11 @@ app.use((req, res, next) => {
         const { warmupDatabaseConnection } = await import('./services/init');
         await warmupDatabaseConnection();
         console.log('Database connection warmed up successfully');
+        
+        // Test database connection to verify villas and adventures data
+        const { testDbConnection } = await import('./db');
+        const counts = await testDbConnection();
+        console.log(`Database verification complete - villas: ${counts.villas}, adventures: ${counts.adventures}`);
       } catch (error) {
         console.error('Error during database initialization:', error);
       }

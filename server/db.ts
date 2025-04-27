@@ -11,5 +11,25 @@ if (!process.env.DATABASE_URL) {
   );
 }
 
+console.log("Setting up database connection...");
 export const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 export const db = drizzle({ client: pool, schema });
+
+// Add debug function to test database connection
+export const testDbConnection = async () => {
+  try {
+    const result = await pool.query('SELECT COUNT(*) FROM villas');
+    console.log(`Database connection test: Found ${result.rows[0].count} villas`);
+    
+    const adventuresResult = await pool.query('SELECT COUNT(*) FROM adventures');
+    console.log(`Database connection test: Found ${adventuresResult.rows[0].count} adventures`);
+    
+    return {
+      villas: parseInt(result.rows[0].count),
+      adventures: parseInt(adventuresResult.rows[0].count)
+    };
+  } catch (error) {
+    console.error("Database connection test failed:", error);
+    throw error;
+  }
+};

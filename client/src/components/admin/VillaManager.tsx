@@ -8,9 +8,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2, Search, Plus, Edit, Trash2, Save, Upload, X, Home, Users, Bed } from "lucide-react";
+import { Loader2, Search, Plus, Edit, Trash2, Save, Upload, X, Home, Users, Bed, RefreshCw } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { apiRequest } from "@/lib/queryClient";
+import { queryClient } from "@/lib/queryClient";
+import JsonVillaImporter from "./JsonVillaImporter";
 
 interface Villa {
   id: number;
@@ -91,49 +93,38 @@ export default function VillaManager() {
   async function fetchVillas() {
     setLoading(true);
     try {
-      // In a real app, this would be an API call
-      // For now, we'll use mock data
-      // This would be: const response = await apiRequest('GET', '/api/villas');
+      // Fetch villas from the API
+      const response = await apiRequest('GET', '/api/villas');
+      const apiVillas = await response.json();
       
-      const mockVillas: Villa[] = [
-        {
-          id: 1,
-          name: "Villa Chavez",
-          address: "123 Ocean Drive",
-          location: "Cabo San Lucas",
-          description: "Luxurious beachfront villa with stunning ocean views and private infinity pool.",
-          bedrooms: 5,
-          bathrooms: 5.5,
-          sleeps: 12,
-          price_per_night: 1500,
-          discount_percent: 10,
-          amenities: ["Private Pool", "Ocean View", "Chef's Kitchen", "Beachfront", "Wi-Fi", "Air Conditioning"],
-          images: ["/uploads/Villa_Chavez-2.jpg"],
-          featured: true,
-          rating: 4.9,
-          reviews: 36
-        },
-        {
-          id: 2,
-          name: "Casa del Mar",
-          address: "456 Playa Boulevard",
-          location: "San José del Cabo",
-          description: "Elegant villa in a gated community with sweeping views of the Sea of Cortez.",
-          bedrooms: 4,
-          bathrooms: 4,
-          sleeps: 8,
-          price_per_night: 950,
-          amenities: ["Pool", "Hot Tub", "Gated Community", "Mountain View", "Wi-Fi", "Air Conditioning"],
-          images: ["/uploads/dream-vacation-cabo.JPG"],
-          featured: true,
-          rating: 4.8,
-          reviews: 24
-        }
-      ];
+      // Map the API response to our frontend Villa interface
+      const mappedVillas: Villa[] = apiVillas.map((apiVilla: any) => ({
+        id: apiVilla.id,
+        name: apiVilla.name,
+        address: apiVilla.address || "",
+        location: apiVilla.location || "Cabo San Lucas",
+        description: apiVilla.description || "",
+        bedrooms: apiVilla.bedrooms || 0,
+        bathrooms: apiVilla.bathrooms || 0,
+        sleeps: apiVilla.maxGuests || 0,
+        price_per_night: typeof apiVilla.pricePerNight === 'string' 
+          ? parseFloat(apiVilla.pricePerNight) 
+          : apiVilla.pricePerNight || 0,
+        discount_percent: 0, // Default value if not available
+        amenities: Array.isArray(apiVilla.amenities) ? apiVilla.amenities : [],
+        images: Array.isArray(apiVilla.imageUrls) 
+          ? apiVilla.imageUrls
+          : apiVilla.imageUrl ? [apiVilla.imageUrl] : [],
+        featured: apiVilla.featured || false,
+        rating: 4.8, // Default rating if not available
+        reviews: 0, // Default value if not available
+      }));
       
-      setVillas(mockVillas);
-      setFilteredVillas(mockVillas);
+      console.log(`Fetched ${mappedVillas.length} villas from API`);
+      setVillas(mappedVillas);
+      setFilteredVillas(mappedVillas);
     } catch (error) {
+      console.error("Error fetching villas:", error);
       toast({
         title: "Error fetching villas",
         description: "Could not load villas. Please try again.",
@@ -318,132 +309,149 @@ export default function VillaManager() {
 
   return (
     <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl">Villa Management</CardTitle>
-          <CardDescription>
-            Manage all private vacation rentals. Add, edit, or remove villas from the website.
-          </CardDescription>
-        </CardHeader>
-        
-        <CardContent>
-          <Tabs defaultValue="all" className="space-y-4">
-            <div className="flex justify-between items-center flex-wrap gap-4">
-              <TabsList>
-                <TabsTrigger value="all" onClick={() => setBedroomFilter('all')}>All</TabsTrigger>
-                <TabsTrigger value="1-3" onClick={() => setBedroomFilter('1-3')}>1-3 Bedrooms</TabsTrigger>
-                <TabsTrigger value="4-6" onClick={() => setBedroomFilter('4-6')}>4-6 Bedrooms</TabsTrigger>
-                <TabsTrigger value="7+" onClick={() => setBedroomFilter('7+')}>7+ Bedrooms</TabsTrigger>
-              </TabsList>
-              
-              <div className="flex items-center gap-4">
-                <div className="relative">
-                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    type="search"
-                    placeholder="Search villas..."
-                    className="pl-8 w-[250px]"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="md:col-span-3">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-2xl">Villa Management</CardTitle>
+              <CardDescription>
+                Manage all private vacation rentals. Add, edit, or remove villas from the website.
+              </CardDescription>
+            </CardHeader>
+            
+            <CardContent>
+              <Tabs defaultValue="all" className="space-y-4">
+                <div className="flex justify-between items-center flex-wrap gap-4">
+                  <TabsList>
+                    <TabsTrigger value="all" onClick={() => setBedroomFilter('all')}>All</TabsTrigger>
+                    <TabsTrigger value="1-3" onClick={() => setBedroomFilter('1-3')}>1-3 Bedrooms</TabsTrigger>
+                    <TabsTrigger value="4-6" onClick={() => setBedroomFilter('4-6')}>4-6 Bedrooms</TabsTrigger>
+                    <TabsTrigger value="7+" onClick={() => setBedroomFilter('7+')}>7+ Bedrooms</TabsTrigger>
+                  </TabsList>
+                  
+                  <div className="flex items-center gap-4">
+                    <div className="relative">
+                      <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        type="search"
+                        placeholder="Search villas..."
+                        className="pl-8 w-[250px]"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                      />
+                    </div>
+                    
+                    <div className="flex gap-2">
+                      <Button variant="outline" size="icon" onClick={() => {
+                        queryClient.invalidateQueries({ queryKey: ['/api/villas'] });
+                        fetchVillas();
+                      }} title="Refresh villas">
+                        <RefreshCw className="h-4 w-4" />
+                      </Button>
+                      
+                      <Button onClick={handleCreateVilla}>
+                        <Plus className="mr-2 h-4 w-4" />
+                        New Villa
+                      </Button>
+                    </div>
+                  </div>
                 </div>
                 
-                <Button onClick={handleCreateVilla}>
-                  <Plus className="mr-2 h-4 w-4" />
-                  New Villa
-                </Button>
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filteredVillas.length === 0 ? (
-                <div className="col-span-3 text-center py-12">
-                  <p className="text-muted-foreground">No villas found matching your criteria</p>
-                </div>
-              ) : (
-                filteredVillas.map((villa) => (
-                  <Card key={villa.id} className={`overflow-hidden ${villa.featured ? 'border-primary' : ''}`}>
-                    <div className="aspect-video relative">
-                      <img 
-                        src={villa.images[0] || '/placeholder-villa.jpg'}
-                        alt={villa.name}
-                        className="w-full h-full object-fill"
-                      />
-                      {villa.featured && (
-                        <Badge className="absolute top-2 right-2" variant="default">
-                          Featured
-                        </Badge>
-                      )}
-                      {villa.discount_percent && (
-                        <Badge className="absolute top-2 left-2 bg-red-600" variant="default">
-                          {villa.discount_percent}% OFF
-                        </Badge>
-                      )}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {filteredVillas.length === 0 ? (
+                    <div className="col-span-3 text-center py-12">
+                      <p className="text-muted-foreground">No villas found matching your criteria</p>
                     </div>
-                    <CardContent className="p-4">
-                      <div className="flex justify-between items-start mb-2">
-                        <h3 className="font-semibold text-lg">{villa.name}</h3>
-                        <div className="text-lg font-semibold">
-                          {formatCurrency(villa.price_per_night)}<span className="text-xs text-muted-foreground">/night</span>
+                  ) : (
+                    filteredVillas.map((villa) => (
+                      <Card key={villa.id} className={`overflow-hidden ${villa.featured ? 'border-primary' : ''}`}>
+                        <div className="aspect-video relative">
+                          <img 
+                            src={villa.images[0] || '/placeholder-villa.jpg'}
+                            alt={villa.name}
+                            className="w-full h-full object-fill"
+                          />
+                          {villa.featured && (
+                            <Badge className="absolute top-2 right-2" variant="default">
+                              Featured
+                            </Badge>
+                          )}
+                          {villa.discount_percent && (
+                            <Badge className="absolute top-2 left-2 bg-red-600" variant="default">
+                              {villa.discount_percent}% OFF
+                            </Badge>
+                          )}
                         </div>
-                      </div>
-                      <div className="text-sm text-muted-foreground mb-2">
-                        {villa.location}
-                      </div>
-                      <div className="flex items-center gap-6 mb-3 text-sm">
-                        <div className="flex items-center gap-1">
-                          <Bed className="w-4 h-4" />
-                          <span>{villa.bedrooms} BR</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <span>{villa.bathrooms} BA</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Users className="w-4 h-4" />
-                          <span>Sleeps {villa.sleeps}</span>
-                        </div>
-                      </div>
-                      <div className="mb-4">
-                        <p className="text-sm line-clamp-2">{villa.description}</p>
-                      </div>
-                      <div className="flex flex-wrap gap-1 mb-4">
-                        {villa.amenities.slice(0, 3).map((amenity, i) => (
-                          <Badge key={i} variant="outline" className="text-xs">
-                            {amenity}
-                          </Badge>
-                        ))}
-                        {villa.amenities.length > 3 && (
-                          <Badge variant="outline" className="text-xs">
-                            +{villa.amenities.length - 3} more
-                          </Badge>
-                        )}
-                      </div>
-                      <div className="flex justify-between">
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => handleEditVilla(villa)}
-                        >
-                          <Edit className="mr-1 h-4 w-4" />
-                          Edit
-                        </Button>
-                        <Button 
-                          variant="destructive" 
-                          size="sm"
-                          onClick={() => handleDeleteVilla(villa.id)}
-                        >
-                          <Trash2 className="mr-1 h-4 w-4" />
-                          Delete
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))
-              )}
-            </div>
-          </Tabs>
-        </CardContent>
-      </Card>
+                        <CardContent className="p-4">
+                          <div className="flex justify-between items-start mb-2">
+                            <h3 className="font-semibold text-lg">{villa.name}</h3>
+                            <div className="text-lg font-semibold">
+                              {formatCurrency(villa.price_per_night)}<span className="text-xs text-muted-foreground">/night</span>
+                            </div>
+                          </div>
+                          <div className="text-sm text-muted-foreground mb-2">
+                            {villa.location}
+                          </div>
+                          <div className="flex items-center gap-6 mb-3 text-sm">
+                            <div className="flex items-center gap-1">
+                              <Bed className="w-4 h-4" />
+                              <span>{villa.bedrooms} BR</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <span>{villa.bathrooms} BA</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Users className="w-4 h-4" />
+                              <span>Sleeps {villa.sleeps}</span>
+                            </div>
+                          </div>
+                          <div className="mb-4">
+                            <p className="text-sm line-clamp-2">{villa.description}</p>
+                          </div>
+                          <div className="flex flex-wrap gap-1 mb-4">
+                            {villa.amenities.slice(0, 3).map((amenity, i) => (
+                              <Badge key={i} variant="outline" className="text-xs">
+                                {amenity}
+                              </Badge>
+                            ))}
+                            {villa.amenities.length > 3 && (
+                              <Badge variant="outline" className="text-xs">
+                                +{villa.amenities.length - 3} more
+                              </Badge>
+                            )}
+                          </div>
+                          <div className="flex justify-between">
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => handleEditVilla(villa)}
+                            >
+                              <Edit className="mr-1 h-4 w-4" />
+                              Edit
+                            </Button>
+                            <Button 
+                              variant="destructive" 
+                              size="sm"
+                              onClick={() => handleDeleteVilla(villa.id)}
+                            >
+                              <Trash2 className="mr-1 h-4 w-4" />
+                              Delete
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))
+                  )}
+                </div>
+              </Tabs>
+            </CardContent>
+          </Card>
+        </div>
+        
+        <div>
+          <JsonVillaImporter />
+        </div>
+      </div>
 
       {/* Edit Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
@@ -714,9 +722,9 @@ export default function VillaManager() {
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="create-price_per_night">Price Per Night (USD)</Label>
+                  <Label htmlFor="create-price">Price Per Night (USD)</Label>
                   <Input 
-                    id="create-price_per_night"
+                    id="create-price"
                     type="number"
                     min="0"
                     value={createForm.price_per_night || ''}
@@ -724,9 +732,9 @@ export default function VillaManager() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="create-discount_percent">Discount Percent</Label>
+                  <Label htmlFor="create-discount">Discount Percent</Label>
                   <Input 
-                    id="create-discount_percent"
+                    id="create-discount"
                     type="number"
                     min="0"
                     max="100"
