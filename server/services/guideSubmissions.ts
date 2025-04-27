@@ -1,5 +1,5 @@
 import { GuideSubmission } from '@shared/schema';
-import { sendEmail, createGuideDownloadEmail } from './emailService';
+import { sendEmail, createGuideConfirmationEmail as createGuideDownloadEmail } from './emailService';
 // Import commented out as we're now using Make.com webhook instead
 // import { retryFailedSync, syncGuideSubmissionToAirtable } from './airtable';
 
