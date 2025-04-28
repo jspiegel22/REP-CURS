@@ -65,22 +65,10 @@ const adventures = [
     image: "https://images.unsplash.com/photo-1569263979104-865ab7cd8d13"
   },
   {
-    title: "ATV Tours",
-    href: "/adventures/atv",
-    description: "Thrilling desert and mountain adventures",
-    image: "/uploads/atv-tour-cabo.png"
-  },
-  {
     title: "Private Yachts",
     href: "/adventures/private-yachts",
     description: "Luxury yacht charters and experiences",
     image: "https://images.unsplash.com/photo-1605281317010-fe5ffe798166"
-  },
-  {
-    title: "Whale Watching",
-    href: "/adventures/whale-watching",
-    description: "Unforgettable whale watching experiences",
-    image: "https://images.unsplash.com/photo-1570481662006-a3a1374699e8"
   }
 ];
 
@@ -108,12 +96,6 @@ const groupTrips = [
     href: "/group-trips/luxury-concierge",
     description: "Personalized VIP experiences",
     image: "https://images.unsplash.com/photo-1590073242678-70ee3fc28e8e"
-  },
-  {
-    title: "Influencer Trips",
-    href: "/group-trips/influencer",
-    description: "Special packages for content creators",
-    image: "https://images.unsplash.com/photo-1611162617474-5b21e879e113"
   }
 ];
 
@@ -125,22 +107,10 @@ const moreMenuItems = [
     image: "https://images.unsplash.com/photo-1541532713592-79a0317b6b77"
   },
   {
-    title: "Wellness Retreats",
-    href: "/wellness",
-    description: "Rejuvenating wellness experiences and spa retreats",
-    image: "https://images.unsplash.com/photo-1544161515-4ab6ce6db874"
-  },
-  {
     title: "Real Estate",
     href: "/real-estate",
     description: "Find your dream property in Cabo",
     image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c"
-  },
-  {
-    title: "Property Management",
-    href: "/property-management",
-    description: "Let us manage your Cabo property for optimal returns",
-    image: "https://images.unsplash.com/photo-1560518883-ce09059eeffa"
   },
   {
     title: "Itinerary Builder",
@@ -198,41 +168,61 @@ const NavigationBar = () => {
                   <Menu className="h-6 w-6" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="w-[85vw] bg-white p-0">
-                <nav className="flex flex-col h-full overflow-y-auto">
+              <SheetContent side="left" className="w-[85vw] bg-white p-0" style={{ '--removed-close-button': 'none' } as React.CSSProperties}>
+                <nav className="flex flex-col h-[100vh] max-h-[100vh]">
+                  {/* Close Button */}
+                  <div className="flex justify-end p-3">
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="h-8 w-8 p-0" 
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <X className="h-6 w-6" />
+                    </Button>
+                  </div>
+                  
                   {/* Mobile Menu Grid */}
-                  <div className="p-3">
-                    {/* Main Categories */}
-                    <div className="grid grid-cols-1 gap-2">
-                      {[...stays.filter(item => item.title !== "Real Estate"), ...adventures].map((item) => (
-                        <Link key={item.href} href={item.href} className="block group">
-                          <div className="relative h-32 rounded-lg overflow-hidden">
-                            <img
-                              src={item.image}
-                              alt={item.title}
-                              className="w-full h-full object-fill"
-                              loading="lazy"
-                            />
-                            <div className="absolute inset-0 bg-black/50 flex items-center">
-                              <span className="text-white text-xl font-semibold px-4">{item.title}</span>
+                  <div className="px-2 pb-1 h-full flex flex-col pt-4">
+                    {/* Main Categories - Full Width Buttons */}
+                    <div className="flex flex-col gap-0.5 w-full">
+                      {/* Process each item from stays and adventures with conditional styling */}
+                      {[...stays.filter(item => item.title !== "Real Estate"), ...adventures].map((item) => {
+                        const isFullWidth = ['Villas', 'Resorts', 'All Adventures', 'Private Yachts'].includes(item.title);
+                        
+                        return (
+                          <Link key={item.href} href={item.href} className={`block group ${isFullWidth ? 'col-span-2 w-full' : ''}`}>
+                            <div className={`relative ${isFullWidth ? 'h-[12vh]' : 'h-[10vh]'} rounded-lg overflow-hidden`}>
+                              <img
+                                src={item.image}
+                                alt={item.title}
+                                className="w-full h-full object-cover"
+                                loading="lazy"
+                              />
+                              <div className="absolute inset-0 bg-black/60 backdrop-blur-[0.5px] flex items-center justify-center">
+                                <span className="text-white text-2xl font-bold px-2">{item.title}</span>
+                              </div>
                             </div>
-                          </div>
-                        </Link>
-                      ))}
+                          </Link>
+                        );
+                      })}
                     </div>
 
-                    {/* Group Trips */}
-                    <div className="grid grid-cols-2 gap-2 mt-2">
+                    {/* Divider */}
+                    <div className="w-full border-t border-gray-200 my-1.5"></div>
+                    
+                    {/* Group Trips - Same height as main categories */}
+                    <div className="grid grid-cols-2 gap-0.5 w-full mt-1 mb-1">
                       {groupTrips.map((item) => (
                         <Link key={item.href} href={item.href} className="block group">
-                          <div className="relative aspect-square rounded-lg overflow-hidden">
+                          <div className="relative h-[10vh] rounded-lg overflow-hidden">
                             <img
                               src={item.image}
                               alt={item.title}
-                              className="w-full h-full object-fill"
+                              className="w-full h-full object-cover"
                               loading="lazy"
                             />
-                            <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-center p-2">
+                            <div className="absolute inset-0 bg-black/60 backdrop-blur-[0.5px] flex items-center justify-center text-center p-1">
                               <span className="text-white text-sm font-semibold px-1">{item.title}</span>
                             </div>
                           </div>
@@ -240,28 +230,34 @@ const NavigationBar = () => {
                       ))}
                     </div>
 
-                    {/* Additional Pages */}
-                    <div className="grid grid-cols-3 gap-2 mt-2">
-                      {[...moreMenuItems].slice(0, 8).map((item) => (
+                    {/* Divider */}
+                    <div className="w-full border-t border-gray-200 my-1.5"></div>
+                    
+                    {/* Additional Pages - Smaller Height */}
+                    <div className="grid grid-cols-3 gap-0.5 flex-1 w-full mt-1 mb-1">
+                      {[...moreMenuItems].filter(item => item.title !== "Itinerary Builder").map((item) => (
                         <Link key={item.href} href={item.href} className="block group">
-                          <div className="relative aspect-square rounded-lg overflow-hidden">
+                          <div className="relative h-[7vh] rounded-lg overflow-hidden">
                             <img
                               src={item.image}
                               alt={item.title}
-                              className="w-full h-full object-fill"
+                              className="w-full h-full object-cover"
                               loading="lazy"
                             />
-                            <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-center p-2">
-                              <span className="text-white text-xs font-semibold px-1">{item.title}</span>
+                            <div className="absolute inset-0 bg-black/60 backdrop-blur-[0.5px] flex items-center justify-center text-center p-0.5">
+                              <span className="text-white text-xs font-medium px-0.5">{item.title}</span>
                             </div>
                           </div>
                         </Link>
                       ))}
                     </div>
 
+                    {/* Divider */}
+                    <div className="w-full border-t border-gray-200 my-1.5"></div>
+                    
                     {/* Social Links */}
-                    <div className="mt-3 pt-3 border-t border-gray-200">
-                      <div className="flex justify-center space-x-6">
+                    <div className="w-full mt-1">
+                      <div className="flex justify-center space-x-6 py-2">
                         {socialLinks.map((social) => (
                           <a
                             key={social.label}
@@ -270,7 +266,7 @@ const NavigationBar = () => {
                             rel="noopener noreferrer"
                             className="text-[#2F4F4F] hover:text-[#1F3F3F] transition-colors"
                           >
-                            <social.icon size={20} />
+                            <social.icon size={24} />
                           </a>
                         ))}
                       </div>

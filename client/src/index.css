@@ -22,6 +22,11 @@
     display: none;             /* Chrome, Safari and Opera */
   }
   
+  /* Hide SheetContent close button */
+  [data-radix-sheet-content] [data-radix-sheet-close] {
+    display: none !important;
+  }
+  
   @keyframes wiggle {
     0%, 100% { transform: rotate(0deg); }
     15% { transform: rotate(-2deg); }

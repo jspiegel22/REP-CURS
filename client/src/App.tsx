@@ -10,6 +10,7 @@ import ResortsLanding from "@/pages/resorts-landing";
 import ResortDetail from "@/pages/resort-detail";
 import VillasLanding from "@/pages/villas-landing";
 import VillaDetail from "@/pages/villa-detail";
+import VillaDetailPage from "@/pages/villa/[slug]";
 import AdventuresLanding from "@/pages/adventures-landing";
 import AdventureDetail from "@/pages/adventure-detail";
 import BlogIndex from "@/pages/blog";
@@ -79,6 +80,8 @@ function Router() {
           <Route path="/resorts/:slug" component={ResortDetail} />
           <Route path="/villas" component={VillasLanding} />
           <Route path="/villas/:slug" component={VillaDetail} />
+          {/* Our new individual villa page route */}
+          <Route path="/villa/:slug" component={VillaDetailPage} />
           <Route path="/adventures" component={AdventuresLanding} />
           <Route path="/adventures/atv" component={AdventureDetail} />
           <Route path="/adventures/private-yachts" component={AdventureDetail} />

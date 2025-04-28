@@ -18,6 +18,7 @@ import { registerStripeRoutes } from './routes/stripe';
 import itineraryRoutes from './routes/itinerary';
 import imageRoutes from './routes/image';
 import { importRestaurantData } from './routes/import-restaurant-data';
+import { registerImageOptimizationRoutes } from './routes/image-optimization';
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Define admin middleware at the beginning
@@ -25,6 +26,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     if (!req.isAuthenticated() || req.user?.role !== "admin") {
       return res.status(403).json({ message: "Unauthorized" });
     }
+    next();
+  };
+  
+  // Cache control middleware for read-only public endpoints
+  const publicCacheControl = (req: any, res: any, next: any) => {
+    // Apply cache headers for GET requests to read-only endpoints
+    // In production, set longer cache times 
+    const isDev = process.env.NODE_ENV !== 'production';
+    
+    // Set cache header durations based on environment
+    const maxAge = isDev ? 60 : 3600; // 1 minute in dev, 1 hour in production
+    
+    // Set cache-control header
+    res.set('Cache-Control', `public, max-age=${maxAge}`);
+    
+    next();
+  };
+  
+  // Cache control middleware for private/authenticated endpoints
+  const privateCacheControl = (req: any, res: any, next: any) => {
+    // Prevent caching for private/authenticated endpoints
+    res.set('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+    
     next();
   };
   
@@ -36,6 +62,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Register image management routes
   app.use('/api/images', imageRoutes);
+  
+  // Register image optimization routes
+  registerImageOptimizationRoutes(app);
   
   // Test endpoint for admin notification
   app.get("/api/test-admin-notification", requireAdmin, async (req, res) => {
@@ -210,8 +239,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Analytics endpoints
-  app.get("/api/analytics/leads", async (req, res) => {
+  // Analytics endpoints - protected by admin auth
+  app.get("/api/analytics/leads", requireAdmin, async (req, res) => {
     try {
       // Get lead analytics data
       const leadsData = await storage.getLeadAnalytics();
@@ -222,7 +251,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/analytics/guides", async (req, res) => {
+  app.get("/api/analytics/guides", requireAdmin, async (req, res) => {
     try {
       // Get guide downloads analytics data
       const guideData = await storage.getGuideAnalytics();
@@ -233,7 +262,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/analytics/dashboard", async (req, res) => {
+  app.get("/api/analytics/dashboard", requireAdmin, async (req, res) => {
     try {
       console.log("Dashboard analytics endpoint called");
       // Get combined analytics data for dashboard
@@ -246,8 +275,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Webhook check endpoint
-  app.get("/api/guides/check-webhook", (req, res) => {
+  // Webhook check endpoint - protected by admin auth
+  app.get("/api/guides/check-webhook", requireAdmin, (req, res) => {
     const makeWebhookUrl = process.env.MAKE_WEBHOOK_URL;
     const viteWebhookUrl = process.env.VITE_MAKE_WEBHOOK_URL;
     
@@ -502,8 +531,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       .replace(/-+$/, '');            // Trim - from end of text
   }
 
-  // Internal debugging endpoint
-  app.get("/api/debug", async (req, res) => {
+  // Internal debugging endpoint - protected by admin auth
+  app.get("/api/debug", requireAdmin, async (req, res) => {
     try {
       console.log("DEBUG ENDPOINT CALLED - Testing storage functions");
       
@@ -535,7 +564,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Keep existing routes
-  app.get("/api/villas", async (req, res) => {
+  app.get("/api/villas", publicCacheControl, async (req, res) => {
     try {
       console.log("GET /api/villas endpoint called");
       const villas = await storage.getVillas();
@@ -547,7 +576,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/villas/:trackHsId", async (req, res) => {
+  app.get("/api/villas/:trackHsId", publicCacheControl, async (req, res) => {
     try {
       const villa = await storage.getVillaByTrackHsId(req.params.trackHsId);
       if (!villa) {
@@ -616,7 +645,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Resorts endpoints
-  app.get("/api/resorts", async (req, res) => {
+  app.get("/api/resorts", publicCacheControl, async (req, res) => {
     try {
       const resorts = await storage.getResorts();
       res.json(resorts);
@@ -626,7 +655,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  app.get("/api/resorts/:slug", async (req, res) => {
+  app.get("/api/resorts/:slug", publicCacheControl, async (req, res) => {
     try {
       const resorts = await storage.getResorts();
       const resort = resorts.find(
@@ -669,13 +698,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
 
   // Listings endpoints
-  app.get("/api/listings", async (req, res) => {
+  app.get("/api/listings", publicCacheControl, async (req, res) => {
     const type = req.query.type as string | undefined;
     const listings = await storage.getListings(type);
     res.json(listings);
   });
 
-  app.get("/api/listings/:id", async (req, res) => {
+  app.get("/api/listings/:id", publicCacheControl, async (req, res) => {
     const listing = await storage.getListing(parseInt(req.params.id));
     if (!listing) {
       return res.status(404).json({ message: "Listing not found" });
@@ -988,12 +1017,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   // Adventures API endpoints
-  app.get("/api/adventures", async (req, res) => {
+  app.get("/api/adventures", publicCacheControl, async (req, res) => {
     try {
       console.log("GET /api/adventures endpoint called");
-      const category = req.query.category as string | undefined;
+      
+      // Input validation for category query parameter
+      const categorySchema = z.object({
+        category: z.string().optional()
+          .refine(val => !val || ['luxury', 'yacht', 'family', 'water', 'land'].includes(val), {
+            message: "Category must be one of: luxury, yacht, family, water, land"
+          })
+      });
+      
+      const result = categorySchema.safeParse({ category: req.query.category });
+      
+      if (!result.success) {
+        return res.status(400).json({ 
+          message: "Invalid category parameter", 
+          errors: result.error.errors
+        });
+      }
+      
+      const category = result.data.category;
       const adventures = await storage.getAdventures(category);
+      
       console.log(`Returning ${adventures.length} adventures from the database`);
+      
+      // Set cache control headers for this non-sensitive, public data
+      res.set('Cache-Control', 'public, max-age=300'); // Cache for 5 minutes
       res.json(adventures);
     } catch (error) {
       console.error("Error fetching adventures:", error);
@@ -1001,16 +1052,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/adventures/:idOrSlug", async (req, res) => {
+  app.get("/api/adventures/:idOrSlug", publicCacheControl, async (req, res) => {
     try {
-      const id = parseInt(req.params.idOrSlug);
+      // Input validation for idOrSlug path parameter
+      const idOrSlug = req.params.idOrSlug;
+      
+      // Validate the parameter is either a valid ID (number) or slug (string with allowed characters)
+      const idOrSlugSchema = z.union([
+        z.string().regex(/^[a-z0-9-]+$/, {
+          message: "Slug must contain only lowercase letters, numbers, and hyphens"
+        }).min(3).max(100),
+        z.coerce.number().int().positive()
+      ]);
+      
+      const validationResult = idOrSlugSchema.safeParse(idOrSlug);
+      
+      if (!validationResult.success) {
+        return res.status(400).json({ 
+          message: "Invalid adventure ID or slug", 
+          errors: validationResult.error.errors
+        });
+      }
+      
+      const id = parseInt(idOrSlug);
       
       if (isNaN(id)) {
         // If not a number, treat as slug
-        const adventure = await storage.getAdventureBySlug(req.params.idOrSlug);
+        const sanitizedSlug = idOrSlug.toLowerCase();
+        const adventure = await storage.getAdventureBySlug(sanitizedSlug);
         if (!adventure) {
           return res.status(404).json({ message: "Adventure not found" });
         }
+        
+        // Set cache control headers for this non-sensitive, public data
+        res.set('Cache-Control', 'public, max-age=600'); // Cache for 10 minutes
         return res.json(adventure);
       }
       
@@ -1018,6 +1093,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!adventure) {
         return res.status(404).json({ message: "Adventure not found" });
       }
+      
+      // Set cache control headers
+      res.set('Cache-Control', 'public, max-age=600'); // Cache for 10 minutes
       res.json(adventure);
     } catch (error) {
       console.error("Error fetching adventure:", error);
@@ -1105,10 +1183,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Restaurant API endpoints
   app.post("/api/restaurants/import", requireAdmin, importRestaurantData);
   
-  app.get("/api/restaurants", async (req, res) => {
+  app.get("/api/restaurants", publicCacheControl, async (req, res) => {
     try {
-      const category = req.query.category as string | undefined;
+      // Input validation for category query parameter
+      const categorySchema = z.object({
+        category: z.string().optional()
+          .refine(val => !val || ['seafood', 'mexican', 'italian', 'steakhouse', 'fusion', 'american', 'japanese', 'vegan', 'international'].includes(val), {
+            message: "Category must be one of: seafood, mexican, italian, steakhouse, fusion, american, japanese, vegan, international"
+          })
+      });
+      
+      const result = categorySchema.safeParse({ category: req.query.category });
+      
+      if (!result.success) {
+        return res.status(400).json({ 
+          message: "Invalid category parameter", 
+          errors: result.error.errors
+        });
+      }
+      
+      const category = result.data.category;
       const restaurants = await storage.getRestaurants(category);
+      
+      // Set cache control headers for this non-sensitive, public data
+      res.set('Cache-Control', 'public, max-age=300'); // Cache for 5 minutes
       res.json(restaurants);
     } catch (error) {
       console.error("Error fetching restaurants:", error);
@@ -1116,16 +1214,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/restaurants/:idOrSlug", async (req, res) => {
+  app.get("/api/restaurants/:idOrSlug", publicCacheControl, async (req, res) => {
     try {
-      const id = parseInt(req.params.idOrSlug);
+      // Input validation for idOrSlug path parameter
+      const idOrSlug = req.params.idOrSlug;
+      
+      // Validate the parameter is either a valid ID (number) or slug (string with allowed characters)
+      const idOrSlugSchema = z.union([
+        z.string().regex(/^[a-z0-9-]+$/, {
+          message: "Slug must contain only lowercase letters, numbers, and hyphens"
+        }).min(3).max(100),
+        z.coerce.number().int().positive()
+      ]);
+      
+      const validationResult = idOrSlugSchema.safeParse(idOrSlug);
+      
+      if (!validationResult.success) {
+        return res.status(400).json({ 
+          message: "Invalid restaurant ID or slug", 
+          errors: validationResult.error.errors
+        });
+      }
+      
+      const id = parseInt(idOrSlug);
       
       if (isNaN(id)) {
         // If not a number, treat as slug
-        const restaurant = await storage.getRestaurantBySlug(req.params.idOrSlug);
+        const sanitizedSlug = idOrSlug.toLowerCase();
+        const restaurant = await storage.getRestaurantBySlug(sanitizedSlug);
         if (!restaurant) {
           return res.status(404).json({ message: "Restaurant not found" });
         }
+        
+        // Set cache control headers for this non-sensitive, public data
+        res.set('Cache-Control', 'public, max-age=600'); // Cache for 10 minutes
         return res.json(restaurant);
       }
       
@@ -1133,6 +1255,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!restaurant) {
         return res.status(404).json({ message: "Restaurant not found" });
       }
+      
+      // Set cache control headers
+      res.set('Cache-Control', 'public, max-age=600'); // Cache for 10 minutes
       res.json(restaurant);
     } catch (error) {
       console.error("Error fetching restaurant:", error);

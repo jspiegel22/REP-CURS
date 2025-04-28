@@ -4,11 +4,98 @@ import { setupVite, serveStatic, log } from "./vite";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
 import { scheduleVillaSync } from "./services/trackhs";
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const app = express();
+
+// Add Helmet for security headers
+// In development, use a more permissive configuration to allow local development
+const isDevelopment = process.env.NODE_ENV !== 'production';
+
+app.use(
+  helmet({
+    contentSecurityPolicy: isDevelopment ? false : {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://maps.googleapis.com", "https://js.stripe.com"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+        imgSrc: ["'self'", "data:", "https://*.unsplash.com", "https://*.googleapis.com", "https://images.unsplash.com"],
+        connectSrc: ["'self'", "https://api.stripe.com"],
+        fontSrc: ["'self'", "https://fonts.gstatic.com"],
+        objectSrc: ["'none'"],
+        mediaSrc: ["'self'"],
+        frameSrc: ["'self'", "https://js.stripe.com"],
+      },
+    },
+    // Force HTTPS in production only
+    hsts: isDevelopment ? false : {
+      maxAge: 15552000, // 180 days in seconds
+      includeSubDomains: true,
+      preload: true,
+    },
+    // Prevent MIME type sniffing
+    noSniff: true,
+    // Prevent clickjacking
+    frameguard: {
+      action: isDevelopment ? "sameorigin" : "deny",
+    },
+    // Enable XSS protection
+    xssFilter: true,
+    // Disable DNS prefetching to prevent information leakage
+    dnsPrefetchControl: {
+      allow: isDevelopment,
+    },
+    // Prevent IE from executing downloads in your site's context
+    ieNoOpen: true,
+    // Turn on referrer policy 
+    referrerPolicy: {
+      policy: "strict-origin-when-cross-origin",
+    },
+  })
+);
+
+// Implement HTTPS redirect in production
+if (process.env.NODE_ENV === 'production') {
+  app.use((req, res, next) => {
+    // Check for HTTPS
+    if (!req.secure && req.get('x-forwarded-proto') !== 'https') {
+      // Redirect to HTTPS
+      return res.redirect(`https://${req.get('host')}${req.url}`);
+    }
+    next();
+  });
+}
+
+// Apply general rate limiting to all requests
+const generalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  limit: 200, // Limit each IP to 200 requests per window
+  standardHeaders: 'draft-7', // Return rate limit info in the RateLimit-* headers
+  legacyHeaders: false, // Disable the X-RateLimit-* headers
+  message: 'Too many requests from this IP, please try again after 15 minutes',
+});
+
+// Apply stricter rate limiting to sensitive endpoints
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  limit: 10, // Limit each IP to 10 login/register attempts per window
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  message: 'Too many login attempts from this IP, please try again after 15 minutes',
+});
+
+// Apply general rate limiting to all requests
+app.use(generalLimiter);
+
+// Apply stricter rate limiting to auth routes
+app.use('/api/auth', authLimiter);
+app.use('/api/login', authLimiter);
+app.use('/api/register', authLimiter);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
