@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { Menu, ShoppingCart, X } from "lucide-react";
@@ -155,6 +155,8 @@ const socialLinks = [
 
 const NavigationBar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  
+  // We're using Tailwind CSS to hide the default X button with [&>button]:!hidden
 
   return (
     <nav className="bg-white border-b border-gray-200">
@@ -168,7 +170,7 @@ const NavigationBar = () => {
                   <Menu className="h-6 w-6" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="w-[85vw] bg-white p-0" style={{ '--removed-close-button': 'none' } as React.CSSProperties}>
+              <SheetContent side="left" className="w-[85vw] bg-white p-0 [&>button]:!hidden">
                 <nav className="flex flex-col h-[100vh] max-h-[100vh]">
                   {/* Close Button */}
                   <div className="flex justify-end p-3">
@@ -191,7 +193,12 @@ const NavigationBar = () => {
                         const isFullWidth = ['Villas', 'Resorts', 'All Adventures', 'Private Yachts'].includes(item.title);
                         
                         return (
-                          <Link key={item.href} href={item.href} className={`block group ${isFullWidth ? 'col-span-2 w-full' : ''}`}>
+                          <Link 
+                            key={item.href} 
+                            href={item.href} 
+                            className={`block group ${isFullWidth ? 'col-span-2 w-full' : ''}`}
+                            onClick={() => setIsOpen(false)}
+                          >
                             <div className={`relative ${isFullWidth ? 'h-[12vh]' : 'h-[10vh]'} rounded-lg overflow-hidden`}>
                               <img
                                 src={item.image}
@@ -214,7 +221,12 @@ const NavigationBar = () => {
                     {/* Group Trips - Same height as main categories */}
                     <div className="grid grid-cols-2 gap-0.5 w-full mt-1 mb-1">
                       {groupTrips.map((item) => (
-                        <Link key={item.href} href={item.href} className="block group">
+                        <Link 
+                          key={item.href} 
+                          href={item.href} 
+                          className="block group"
+                          onClick={() => setIsOpen(false)}
+                        >
                           <div className="relative h-[10vh] rounded-lg overflow-hidden">
                             <img
                               src={item.image}
@@ -236,7 +248,12 @@ const NavigationBar = () => {
                     {/* Additional Pages - Smaller Height */}
                     <div className="grid grid-cols-3 gap-0.5 flex-1 w-full mt-1 mb-1">
                       {[...moreMenuItems].filter(item => item.title !== "Itinerary Builder").map((item) => (
-                        <Link key={item.href} href={item.href} className="block group">
+                        <Link 
+                          key={item.href} 
+                          href={item.href} 
+                          className="block group"
+                          onClick={() => setIsOpen(false)}
+                        >
                           <div className="relative h-[7vh] rounded-lg overflow-hidden">
                             <img
                               src={item.image}
@@ -297,7 +314,7 @@ const NavigationBar = () => {
                         <li key={item.href}>
                           <NavigationMenuLink asChild>
                             <Link href={item.href} className="flex gap-4 select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                              <img src={item.image} alt={item.title} className="w-24 h-16 object-fill rounded" />
+                              <img src={item.image} alt={item.title} className="w-24 h-16 object-cover rounded" />
                               <div>
                                 <div className="text-sm font-medium leading-none">{item.title}</div>
                                 <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-1">{item.description}</p>
@@ -319,7 +336,7 @@ const NavigationBar = () => {
                         <li key={item.href}>
                           <NavigationMenuLink asChild>
                             <Link href={item.href} className="flex gap-4 select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                              <img src={item.image} alt={item.title} className="w-24 h-16 object-fill rounded" />
+                              <img src={item.image} alt={item.title} className="w-24 h-16 object-cover rounded" />
                               <div>
                                 <div className="text-sm font-medium leading-none">{item.title}</div>
                                 <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-1">{item.description}</p>
@@ -341,7 +358,7 @@ const NavigationBar = () => {
                         <li key={item.href}>
                           <NavigationMenuLink asChild>
                             <Link href={item.href} className="flex gap-4 select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                              <img src={item.image} alt={item.title} className="w-24 h-16 object-fill rounded" />
+                              <img src={item.image} alt={item.title} className="w-24 h-16 object-cover rounded" />
                               <div>
                                 <div className="text-sm font-medium leading-none">{item.title}</div>
                                 <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-1">{item.description}</p>
@@ -381,7 +398,7 @@ const NavigationBar = () => {
                         <li key={item.href}>
                           <NavigationMenuLink asChild>
                             <Link href={item.href} className="flex gap-4 select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                              <img src={item.image} alt={item.title} className="w-24 h-16 object-fill rounded" />
+                              <img src={item.image} alt={item.title} className="w-24 h-16 object-cover rounded" />
                               <div>
                                 <div className="text-sm font-medium leading-none">{item.title}</div>
                                 <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-1">{item.description}</p>

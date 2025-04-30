@@ -83,9 +83,6 @@ function Router() {
           {/* Our new individual villa page route */}
           <Route path="/villa/:slug" component={VillaDetailPage} />
           <Route path="/adventures" component={AdventuresLanding} />
-          <Route path="/adventures/atv" component={AdventureDetail} />
-          <Route path="/adventures/private-yachts" component={AdventureDetail} />
-          <Route path="/adventures/whale-watching" component={AdventureDetail} />
           <Route path="/adventures/:slug" component={AdventureDetail} />
           <Route path="/restaurants" component={RestaurantsPage} />
           <Route path="/restaurants/:id" component={RestaurantDetails} />

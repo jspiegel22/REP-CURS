@@ -1,75 +1,70 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Link } from "wouter";
 
-interface Experience {
-  id: string;
+interface Adventure {
+  id: number;
   title: string;
-  image: string;
-  price: string;
+  imageUrl: string;
+  price: string | null;
   rating: number;
-  reviewCount: number;
-  duration: string;
-  path: string;
+  reviewCount: number | null;
+  description: string;
+  slug: string;
 }
 
-const experiences: Experience[] = [
-  {
-    id: "exp-1",
-    title: "Sunset Sailing Adventure",
-    image: "https://images.unsplash.com/photo-1564351943427-3d61951984e9?ixlib=rb-4.0.3",
-    price: "$69",
-    rating: 4.9,
-    reviewCount: 123,
-    duration: "Experience the breathtaking Cabo sunset on a luxury catamaran",
-    path: "/adventures/sunset-sailing"
-  },
-  {
-    id: "exp-2",
-    title: "Whale Watching Tour",
-    image: "https://images.unsplash.com/photo-1570481662006-a3a1374699e8?ixlib=rb-4.0.3",
-    price: "$119",
-    rating: 4.8,
-    reviewCount: 87,
-    duration: "Get up close with majestic humpback and gray whales",
-    path: "/adventures/whale-watching"
-  },
-  {
-    id: "exp-3",
-    title: "Los Cabos Luxury Resort Day Pass",
-    image: "https://images.unsplash.com/photo-1605281317010-fe5ffe798166?ixlib=rb-4.0.3",
-    price: "$199",
-    rating: 4.7,
-    reviewCount: 65,
-    duration: "Enjoy a day of luxury at one of Cabo's premier resorts",
-    path: "/experiences/resort-day-pass"
-  },
-  {
-    id: "exp-4",
-    title: "Farm-to-Table Culinary Experience",
-    image: "https://images.unsplash.com/photo-1556761175-b413da4baf72?ixlib=rb-4.0.3",
-    price: "$149",
-    rating: 4.9,
-    reviewCount: 42,
-    duration: "Savor locally sourced cuisine prepared by expert chefs",
-    path: "/experiences/farm-to-table"
-  },
-  {
-    id: "exp-5",
-    title: "Beach Horseback Riding",
-    image: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3",
-    price: "$89",
-    rating: 4.8,
-    reviewCount: 93,
-    duration: "Ride along pristine beaches on a guided tour",
-    path: "/adventures/horseback-riding"
-  }
-];
+// Function to extract price from description
+const extractPrice = (description: string): string => {
+  const priceMatch = description.match(/costs\s+\$(\d+)/i);
+  return priceMatch ? `$${priceMatch[1]}` : "Request Quote";
+};
+
+// Function to extract a shorter description
+const extractShortDescription = (description: string): string => {
+  const firstSentence = description.split('.')[0];
+  return firstSentence;
+};
 
 export default function FeaturedExperiences() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
+  const [experiences, setExperiences] = useState<Adventure[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Fetch adventures from the API
+  useEffect(() => {
+    const fetchAdventures = async () => {
+      try {
+        const response = await fetch('/api/adventures');
+        if (!response.ok) {
+          throw new Error('Failed to fetch adventures');
+        }
+        
+        const data = await response.json();
+        
+        // Filter for featured adventures - select ones with good ratings or specific types
+        const featured = data
+          .filter((adv: any) => 
+            // Select adventures with high ratings or popular types
+            adv.rating >= 4.4 || 
+            adv.title.includes('SUNSET') || 
+            adv.title.includes('YACHT') || 
+            adv.title.includes('WHALE') ||
+            adv.title.includes('LUXURY')
+          )
+          .slice(0, 5); // Take only the first 5 adventures
+          
+        setExperiences(featured);
+      } catch (error) {
+        console.error('Error fetching adventures:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchAdventures();
+  }, []);
 
   const scroll = (direction: 'left' | 'right') => {
     const container = scrollContainerRef.current;
@@ -132,33 +127,58 @@ export default function FeaturedExperiences() {
             setShowRightArrow(container.scrollLeft < container.scrollWidth - container.clientWidth - 10);
           }}
         >
-          {experiences.map((exp) => (
-            <div key={exp.id} className="flex-none w-[300px] snap-start">
-              <Link href={exp.path}>
-                <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow cursor-pointer">
-                  <div className="relative aspect-[4/3]">
-                    <img 
-                      src={exp.image} 
-                      alt={exp.title}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
+          {isLoading ? (
+            // Loading skeleton
+            Array(5).fill(0).map((_, i) => (
+              <div key={i} className="flex-none w-[300px] snap-start">
+                <div className="bg-white rounded-lg overflow-hidden shadow-md animate-pulse">
+                  <div className="relative aspect-[4/3] bg-gray-200"></div>
                   <div className="p-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="flex items-center text-yellow-400">
-                        {"★".repeat(Math.floor(exp.rating))}
-                        {exp.rating % 1 > 0 && "★"}
-                      </div>
-                      <span className="text-sm text-gray-600">({exp.reviewCount} reviews)</span>
-                    </div>
-                    <h3 className="font-semibold mb-1 line-clamp-1">{exp.title}</h3>
-                    <p className="text-sm text-gray-600 mb-3 line-clamp-2">{exp.duration}</p>
-                    <div className="font-bold text-lg">{exp.price}</div>
+                    <div className="h-4 bg-gray-200 rounded w-24 mb-2"></div>
+                    <div className="h-6 bg-gray-200 rounded w-full mb-2"></div>
+                    <div className="h-4 bg-gray-200 rounded w-3/4 mb-3"></div>
+                    <div className="h-6 bg-gray-200 rounded w-16"></div>
                   </div>
                 </div>
-              </Link>
-            </div>
-          ))}
+              </div>
+            ))
+          ) : (
+            experiences.map((exp) => (
+              <div key={exp.id} className="flex-none w-[300px] snap-start">
+                <Link href={`/adventures/${exp.slug}`}>
+                  <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow cursor-pointer">
+                    <div className="relative aspect-[4/3]">
+                      <img 
+                        src={exp.imageUrl} 
+                        alt={exp.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="p-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="flex items-center text-yellow-400">
+                          {"★".repeat(Math.floor(exp.rating))}
+                          {exp.rating % 1 > 0 && "★"}
+                        </div>
+                        <span className="text-sm text-gray-600">
+                          ({exp.reviewCount || 'New'})
+                        </span>
+                      </div>
+                      <h3 className="font-semibold mb-1 line-clamp-1">
+                        {exp.title.charAt(0) + exp.title.slice(1).toLowerCase()}
+                      </h3>
+                      <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                        {extractShortDescription(exp.description)}
+                      </p>
+                      <div className="font-bold text-lg">
+                        {extractPrice(exp.description)}
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              </div>
+            ))
+          )}
         </div>
 
         {/* Right navigation arrow */}

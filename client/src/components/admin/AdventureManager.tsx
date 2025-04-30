@@ -59,6 +59,7 @@ export default function AdventureManager() {
     keyFeatures: [],
     thingsToBring: [],
     topRecommended: false,
+    featured: false,
   });
   const fileInputRef = useRef<HTMLInputElement>(null);
   const createFileInputRef = useRef<HTMLInputElement>(null);
@@ -132,6 +133,7 @@ export default function AdventureManager() {
       keyFeatures: [],
       thingsToBring: [],
       topRecommended: false,
+      featured: false,
     });
     setIsCreateDialogOpen(true);
   }
@@ -366,6 +368,11 @@ export default function AdventureManager() {
                             Top Recommended
                           </Badge>
                         )}
+                        {adventure.featured && (
+                          <Badge variant="secondary" className="bg-blue-600 text-white hover:bg-blue-700">
+                            Featured Experience
+                          </Badge>
+                        )}
                       </div>
                     </div>
                     <CardContent className="p-4">
@@ -519,6 +526,15 @@ export default function AdventureManager() {
                   onCheckedChange={(checked) => setEditForm({...editForm, topRecommended: Boolean(checked)})}
                 />
                 <Label htmlFor="topRecommended" className="cursor-pointer">Top Recommended Adventure</Label>
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="featured" 
+                  checked={editForm.featured || false}
+                  onCheckedChange={(checked) => setEditForm({...editForm, featured: Boolean(checked)})}
+                />
+                <Label htmlFor="featured" className="cursor-pointer">Featured Experience</Label>
               </div>
               
               <div>
@@ -729,6 +745,15 @@ export default function AdventureManager() {
                   onCheckedChange={(checked) => setCreateForm({...createForm, topRecommended: Boolean(checked)})}
                 />
                 <Label htmlFor="create-topRecommended" className="cursor-pointer">Top Recommended Adventure</Label>
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="create-featured" 
+                  checked={createForm.featured || false}
+                  onCheckedChange={(checked) => setCreateForm({...createForm, featured: Boolean(checked)})}
+                />
+                <Label htmlFor="create-featured" className="cursor-pointer">Featured Experience</Label>
               </div>
               
               <div>

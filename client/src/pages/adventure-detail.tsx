@@ -1,30 +1,21 @@
 import { useParams } from "wouter";
-import { Adventure, parseAdventureData } from "@/types/adventure";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState, useEffect } from "react";
-import { Clock, Users, Plus, Minus } from "lucide-react";
+import { Clock, Users, Plus, Minus, Loader2 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ProductFooter } from "@/components/product-footer";
 import { RewardsPanel } from "@/components/rewards-panel";
 import { SocialShare } from "@/components/social-share";
 import TopAdventures from "@/components/top-adventures";
 import InlineBookingForm from "@/components/inline-booking-form";
+import { useToast } from "@/hooks/use-toast";
 
 // Removed next/router import
 import SEO, { generateAdventureSchema } from "@/components/SEO";
-
-// Import complete CSV data
-const adventureData = `group href,h-full src,ais-Highlight-nonHighlighted,text-base,text-xs-4,absolute,font-sans,flex src (2),font-sans (2),gl-font-meta,group href (2)
-https://www.cabo-adventures.com/en/tour/luxury-day-sailing/,https://cdn.sanity.io/images/esqfj3od/production/834cde8965aeeee934450fb9b385ed7ecfa36c16-608x912.webp?w=640&q=65&fit=clip&auto=format,4-HOUR LUXURY CABO SAILING BOAT TOUR,$104 USD,$149 USD,-30%,4 Hours,https://cdn.sanity.io/images/esqfj3od/production/7bba402f8a80a81c964f504de9e5a9cf8a7e0a3a-24x24.svg?w=48&q=65&fit=clip&auto=format,Min 8 years old,ADD TO CART,
-https://www.cabo-adventures.com/en/tour/signature-swim/,https://cdn.sanity.io/images/esqfj3od/production/bd7bfbf824efdf124cf41220ef1830bf4335a462-608x912.webp?w=640&q=65&fit=clip&auto=format,CABO DOLPHIN SWIM SIGNATURE,$146 USD,$209 USD,-30%,40 Minutes,https://cdn.sanity.io/images/esqfj3od/production/7bba402f8a80a81c964f504de9e5a9cf8a7e0a3a-24x24.svg?w=48&q=65&fit=clip&auto=format,Min. 4 years old,ADD TO CART,
-https://www.cabo-adventures.com/en/tour/outdoor-adventure-cabo/,https://cdn.sanity.io/images/esqfj3od/production/82ad01cfa3a513e85d158016f76161a9460e5247-608x912.webp?w=640&q=65&fit=clip&auto=format,OUTDOOR ADVENTURE 4X4 + CABO ZIPLINE + RAPPEL,$97 USD,$139 USD,-30%,3.5 Hours,https://cdn.sanity.io/images/esqfj3od/production/7bba402f8a80a81c964f504de9e5a9cf8a7e0a3a-24x24.svg?w=48&q=65&fit=clip&auto=format,Min 8 years old,ADD TO CART,
-https://www.cabo-adventures.com/en/tour/atv-adventure/,/uploads/ATV-Tour-Cabo.png,CABO ATV ADVENTURE TOUR,$89 USD,$129 USD,-30%,2.5 Hours,https://cdn.sanity.io/images/esqfj3od/production/7bba402f8a80a81c964f504de9e5a9cf8a7e0a3a-24x24.svg?w=48&q=65&fit=clip&auto=format,Min 16 years old,ADD TO CART,`;
-
-const adventures = parseAdventureData(adventureData);
 
 const faqs = [
   {
@@ -74,8 +65,10 @@ const socialProof = {
 };
 
 export default function AdventureDetail() {
+  const { toast } = useToast();
   const { slug } = useParams();
-  const adventure = adventures.find(a => a.slug === slug);
+  const [adventure, setAdventure] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -86,6 +79,44 @@ export default function AdventureDetail() {
     showMobileCTA: false
   });
   const [bookingOpen, setBookingOpen] = useState(false);
+  
+  // Fetch the specific adventure data by slug
+  useEffect(() => {
+    async function fetchAdventure() {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/adventures');
+        if (!response.ok) {
+          throw new Error('Failed to fetch adventure data');
+        }
+        
+        const adventures = await response.json();
+        const foundAdventure = adventures.find((a: any) => a.slug === slug);
+        
+        if (foundAdventure) {
+          setAdventure(foundAdventure);
+        } else {
+          toast({
+            title: "Adventure not found",
+            description: "We couldn't find the adventure you're looking for",
+            variant: "destructive"
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching adventure:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load adventure details. Please try again.",
+          variant: "destructive"
+        });
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    fetchAdventure();
+  }, [slug, toast]);
+  
   const adventureId = adventure?.id || -1;
 
   // Add scroll event handler
@@ -104,10 +135,28 @@ export default function AdventureDetail() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-20 flex justify-center items-center">
+        <div className="text-center">
+          <Loader2 className="h-10 w-10 animate-spin text-primary mx-auto mb-4" />
+          <h2 className="text-xl font-semibold">Loading adventure details...</h2>
+        </div>
+      </div>
+    );
+  }
+  
   if (!adventure) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-2xl font-bold">Adventure not found</h1>
+      <div className="container mx-auto px-4 py-20 text-center">
+        <h1 className="text-2xl font-bold mb-4">Adventure not found</h1>
+        <p className="mb-6">We couldn't find the adventure you're looking for.</p>
+        <Button 
+          onClick={() => window.location.href = '/adventures'}
+          className="bg-[#FF8C38] hover:bg-[#E67D29] text-white"
+        >
+          Browse all adventures
+        </Button>
       </div>
     );
   }
@@ -132,7 +181,7 @@ export default function AdventureDetail() {
           <img
             src={adventure.imageUrl}
             alt={adventure.title}
-            className="w-full h-full object-fill"
+            className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-[#2F4F4F]/40"> {/* Match footer color */}
             <div className="container mx-auto px-4 h-full flex items-end py-8">
@@ -242,7 +291,7 @@ export default function AdventureDetail() {
                         <img
                           src={image.url}
                           alt={`Photo by ${image.author}`}
-                          className="object-fill w-full h-full"
+                          className="object-cover w-full h-full"
                         />
                         <div className="absolute bottom-2 left-2 text-white text-sm bg-black/50 px-2 py-1 rounded">
                           {image.author}
@@ -312,6 +361,7 @@ export default function AdventureDetail() {
                         adventureName={adventure.title}
                         price={parseFloat(adventure.currentPrice.replace(/[^0-9.]/g, ''))}
                         image={adventure.imageUrl}
+                        provider={adventure.provider}
                       />
                     </div>
                   </div>

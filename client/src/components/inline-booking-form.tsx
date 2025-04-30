@@ -15,6 +15,7 @@ type InlineBookingFormProps = {
   adventureName: string;
   price: number;
   image?: string;
+  provider?: string;
 };
 
 // Make sure to call loadStripe outside of a component's render
@@ -35,15 +36,44 @@ const bookingFormSchema = z.object({
 
 export type BookingFormData = z.infer<typeof bookingFormSchema>;
 
-export default function InlineBookingForm({ adventureName, price, image }: InlineBookingFormProps) {
+export default function InlineBookingForm({ adventureName, price, image, provider = "" }: InlineBookingFormProps) {
   const { toast } = useToast();
   const [clientSecret, setClientSecret] = useState<string | null>(null);
+  
+  // Get today and tomorrow dates in AZ timezone (UTC-7)
+  const getArizonaDate = (offsetDays = 0) => {
+    // Arizona is UTC-7 (doesn't observe DST)
+    const today = new Date();
+    // Set to Arizona time (UTC-7)
+    const tzOffset = -7 * 60; // Arizona timezone offset in minutes
+    const nowUtc = today.getTime() + (today.getTimezoneOffset() * 60000);
+    const azTime = new Date(nowUtc + (tzOffset * 60000));
+    
+    // Add the offset days
+    if (offsetDays > 0) {
+      azTime.setDate(azTime.getDate() + offsetDays);
+    }
+    
+    // Format as YYYY-MM-DD for input[type="date"]
+    return azTime.toISOString().split('T')[0];
+  };
+  
+  // Determine minimum booking date based on provider
+  const minBookingDate = provider?.toLowerCase().includes("cabo adventures") 
+    ? getArizonaDate(1) // Next day for Cabo Adventures 
+    : getArizonaDate(0); // Same day for others
+  
+  // Set default date based on provider
+  const defaultDate = provider?.toLowerCase().includes("cabo adventures")
+    ? getArizonaDate(1) // Next day for Cabo Adventures
+    : "";
+  
   const [formData, setFormData] = useState<BookingFormData>({
     first_name: '',
     last_name: '',
     email: '',
     phone: '',
-    date: '',
+    date: defaultDate,
     guests: 1,
     special_requests: '',
     booking_type: 'adventure',
@@ -121,7 +151,7 @@ export default function InlineBookingForm({ adventureName, price, image }: Inlin
       last_name: '',
       email: '',
       phone: '',
-      date: '',
+      date: defaultDate, // Use the default date based on provider
       guests: 1,
       special_requests: '',
       booking_type: 'adventure',
@@ -231,8 +261,14 @@ export default function InlineBookingForm({ adventureName, price, image }: Inlin
                     type="date"
                     value={formData.date}
                     onChange={handleInputChange}
+                    min={minBookingDate}
                     className={errors.date ? "border-red-500" : ""}
                   />
+                  {provider?.toLowerCase().includes("cabo adventures") && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Note: Cabo Adventures requires booking at least 1 day in advance
+                    </p>
+                  )}
                   {errors.date && (
                     <p className="text-sm text-red-500">{errors.date}</p>
                   )}

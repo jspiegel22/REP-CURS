@@ -19,11 +19,15 @@ import itineraryRoutes from './routes/itinerary';
 import imageRoutes from './routes/image';
 import { importRestaurantData } from './routes/import-restaurant-data';
 import { registerImageOptimizationRoutes } from './routes/image-optimization';
+import { updateSitemap } from './services/sitemapGenerator';
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Setup authentication first so isAuthenticated is available
+  setupAuth(app);
+
   // Define admin middleware at the beginning
   const requireAdmin = (req: any, res: any, next: any) => {
-    if (!req.isAuthenticated() || req.user?.role !== "admin") {
+    if (!req.isAuthenticated || !req.isAuthenticated() || req.user?.role !== "admin") {
       return res.status(403).json({ message: "Unauthorized" });
     }
     next();
@@ -287,7 +291,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       status: makeWebhookUrl ? "ready" : "not configured"
     });
   });
-  setupAuth(app);
 
   // Add guide submission endpoint with Airtable integration and email sending
   app.post("/api/guide-submissions", async (req, res) => {
@@ -1121,6 +1124,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Create adventure
       const adventure = await storage.createAdventure(adventureData.data);
+      
+      // Update the sitemap with the new adventure (async, non-blocking)
+      updateSitemap().catch(err => {
+        console.error("Error updating sitemap after adventure creation:", err);
+      });
+      
       res.status(201).json(adventure);
     } catch (error) {
       console.error("Adventure creation error:", error);
@@ -1148,6 +1157,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Update adventure
       const updatedAdventure = await storage.updateAdventure(id, req.body);
+      
+      // Update the sitemap with the updated adventure (async, non-blocking)
+      updateSitemap().catch(err => {
+        console.error("Error updating sitemap after adventure update:", err);
+      });
+      
       res.json(updatedAdventure);
     } catch (error) {
       console.error("Adventure update error:", error);
@@ -1172,6 +1187,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!deleted) {
         return res.status(404).json({ message: "Adventure not found" });
       }
+      
+      // Update the sitemap after deleting an adventure (async, non-blocking)
+      updateSitemap().catch(err => {
+        console.error("Error updating sitemap after adventure deletion:", err);
+      });
       
       res.json({ success: true, message: "Adventure deleted successfully" });
     } catch (error) {
@@ -1283,6 +1303,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Create restaurant
       const restaurant = await storage.createRestaurant(restaurantData.data);
+      
+      // Update the sitemap with the new restaurant (async, non-blocking)
+      updateSitemap().catch(err => {
+        console.error("Error updating sitemap after restaurant creation:", err);
+      });
+      
       res.status(201).json(restaurant);
     } catch (error) {
       console.error("Restaurant creation error:", error);
@@ -1310,6 +1336,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Update restaurant
       const updatedRestaurant = await storage.updateRestaurant(id, req.body);
+      
+      // Update the sitemap with the updated restaurant (async, non-blocking)
+      updateSitemap().catch(err => {
+        console.error("Error updating sitemap after restaurant update:", err);
+      });
+      
       res.json(updatedRestaurant);
     } catch (error) {
       console.error("Restaurant update error:", error);
@@ -1334,6 +1366,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!deleted) {
         return res.status(404).json({ message: "Restaurant not found" });
       }
+      
+      // Update the sitemap after deleting a restaurant (async, non-blocking)
+      updateSitemap().catch(err => {
+        console.error("Error updating sitemap after restaurant deletion:", err);
+      });
       
       res.json({ success: true, message: "Restaurant deleted successfully" });
     } catch (error) {
