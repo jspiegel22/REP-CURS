@@ -223,88 +223,114 @@ export default function TransportationPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Main Google Flights Style Title */}
+      {/* Main Transportation Title */}
       <div className="py-8 bg-white">
         <div className="container mx-auto px-4">
-          <h1 className="text-4xl font-bold text-center mb-0">Flights</h1>
+          <h1 className="text-4xl font-bold text-center mb-0">Transportation</h1>
         </div>
       </div>
 
       {/* Google Flights Style Search Widget */}
       <div className="container mx-auto px-4 mb-16">
         <Card className="shadow-lg border border-gray-200 rounded-xl overflow-hidden">
-          <CardContent className="p-0">
+          <CardContent className="p-6">
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
-                {/* Google Flights Style Search Bar - Exact Match from Screenshot */}
-                <div className="p-4">
-                  {/* Top row with trip type, passenger count, and cabin class */}
-                  <div className="flex flex-wrap items-center justify-between mb-6">
-                    <div className="flex flex-wrap items-center space-x-6">
-                      {/* Trip Type Toggle Dropdown */}
-                      <FormField
-                        control={form.control}
-                        name="tripType"
-                        render={({ field }) => (
-                          <FormItem className="mb-0">
-                            <div className="relative">
-                              <div className="flex items-center cursor-pointer">
-                                <MoveHorizontal className="h-4 w-4 text-gray-500 mr-2" />
-                                <span className="text-sm font-medium">{field.value === "oneWay" ? "One way" : "Round trip"}</span>
-                                <ChevronDown className="h-4 w-4 text-gray-500 ml-1" />
-                              </div>
-                              <FormControl>
-                                <RadioGroup
-                                  onValueChange={field.onChange}
-                                  defaultValue={field.value}
-                                  className="hidden"
-                                >
-                                  <FormItem className="flex items-center space-x-2 space-y-0">
-                                    <FormControl>
-                                      <RadioGroupItem value="oneWay" />
-                                    </FormControl>
-                                    <FormLabel>One way</FormLabel>
-                                  </FormItem>
-                                  <FormItem className="flex items-center space-x-2 space-y-0">
-                                    <FormControl>
-                                      <RadioGroupItem value="roundTrip" />
-                                    </FormControl>
-                                    <FormLabel>Round trip</FormLabel>
-                                  </FormItem>
-                                </RadioGroup>
-                              </FormControl>
-                            </div>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      {/* People Count - Just for visual match */}
-                      <div className="cursor-pointer flex items-center">
-                        <User className="h-4 w-4 text-gray-500 mr-2" />
-                        <span className="text-sm font-medium">1</span>
-                        <ChevronDown className="h-4 w-4 text-gray-500 ml-1" />
-                      </div>
-                      
-                      {/* Economy Class - Just for visual match */}
-                      <div className="cursor-pointer flex items-center">
-                        <span className="text-sm font-medium">Economy</span>
-                        <ChevronDown className="h-4 w-4 text-gray-500 ml-1" />
-                      </div>
-                    </div>
+                {/* Google Flights Style Search Bar - Improved Version */}
+                <div className="space-y-5">
+                  {/* Top row with trip type, passenger count, and vehicle type */}
+                  <div className="flex flex-wrap items-center justify-between gap-4">
+                    {/* Trip Type Toggle */}
+                    <FormField
+                      control={form.control}
+                      name="tripType"
+                      render={({ field }) => (
+                        <FormItem className="mb-0">
+                          <Select
+                            value={field.value}
+                            onValueChange={field.onChange}
+                          >
+                            <SelectTrigger className="w-[140px] bg-white">
+                              <SelectValue>
+                                <div className="flex items-center">
+                                  <MoveHorizontal className="h-4 w-4 text-gray-500 mr-2" />
+                                  <span>{field.value === "oneWay" ? "One way" : "Round trip"}</span>
+                                </div>
+                              </SelectValue>
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="oneWay">One way</SelectItem>
+                              <SelectItem value="roundTrip">Round trip</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                     
-                    {/* Add Hotels Checkbox - For exact visual match */}
-                    <div className="flex items-center mt-2 sm:mt-0">
-                      <Globe className="h-4 w-4 text-purple-500 mr-2" />
-                      <span className="text-sm text-gray-700 mr-2">Also find me hotels</span>
-                      <input type="checkbox" id="hotels" className="rounded border-gray-300" />
-                    </div>
+                    {/* Passenger Count */}
+                    <FormField
+                      control={form.control}
+                      name="numPassengers"
+                      render={({ field }) => (
+                        <FormItem className="mb-0">
+                          <Select
+                            value={field.value || "1"}
+                            onValueChange={field.onChange}
+                          >
+                            <SelectTrigger className="w-[120px] bg-white">
+                              <SelectValue>
+                                <div className="flex items-center">
+                                  <Users className="h-4 w-4 text-gray-500 mr-2" />
+                                  <span>{field.value || "1"} pax</span>
+                                </div>
+                              </SelectValue>
+                            </SelectTrigger>
+                            <SelectContent>
+                              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14].map(num => (
+                                <SelectItem key={num} value={num.toString()}>{num} {num === 1 ? 'passenger' : 'passengers'}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    {/* Vehicle Type */}
+                    <FormField
+                      control={form.control}
+                      name="vehicleType"
+                      render={({ field }) => (
+                        <FormItem className="mb-0">
+                          <Select
+                            value={field.value}
+                            onValueChange={field.onChange}
+                          >
+                            <SelectTrigger className="w-[180px] bg-white">
+                              <SelectValue>
+                                <div className="flex items-center">
+                                  <Car className="h-4 w-4 text-gray-500 mr-2" />
+                                  <span>{field.value}</span>
+                                </div>
+                              </SelectValue>
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="Van (6 pax)">Van (6 pax)</SelectItem>
+                              <SelectItem value="Suburban (5 pax)">Suburban (5 pax)</SelectItem>
+                              <SelectItem value="Large Van (10-14 pax)">Large Van (10-14 pax)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </div>
                   
-                  {/* Main Search Controls - Styled like Google Flights */}
-                  <div className="grid grid-cols-12 gap-4 mt-2">
+                  {/* Main Search Controls Row */}
+                  <div className="grid grid-cols-12 gap-4">
                     {/* From Location - Fixed to SJD */}
-                    <div className="col-span-12 sm:col-span-5 border border-gray-200 rounded-full py-3 px-4 bg-white flex items-center">
+                    <div className="col-span-12 md:col-span-5 border border-gray-200 rounded-full py-3 px-4 bg-white flex items-center">
                       <div className="mr-3 text-gray-500">
                         <Circle className="h-4 w-4" />
                       </div>
@@ -314,8 +340,8 @@ export default function TransportationPage() {
                       </div>
                     </div>
                     
-                    {/* Swap Icon - Just for visual match */}
-                    <div className="hidden sm:flex col-span-0 sm:col-span-2 items-center justify-center">
+                    {/* Swap Icon */}
+                    <div className="hidden md:flex col-span-2 items-center justify-center">
                       <div className="bg-white p-2 rounded-full border border-gray-200 shadow-sm hover:shadow cursor-pointer">
                         <ArrowLeftRight className="h-4 w-4 text-gray-400" />
                       </div>
@@ -326,34 +352,31 @@ export default function TransportationPage() {
                       control={form.control}
                       name="destination"
                       render={({ field }) => (
-                        <FormItem className="col-span-12 sm:col-span-5 mb-0">
-                          <FormControl>
-                            <div className="border border-gray-200 rounded-full py-3 px-4 bg-white">
+                        <FormItem className="col-span-12 md:col-span-5 mb-0">
+                          <Select
+                            value={field.value}
+                            onValueChange={field.onChange}
+                          >
+                            <SelectTrigger className="w-full bg-white rounded-full h-[52px] border-gray-200">
                               <div className="flex items-center">
-                                <div className="mr-3 text-gray-500">
-                                  <MapPin className="h-4 w-4" />
-                                </div>
-                                <div className="w-full">
+                                <MapPin className="h-4 w-4 text-gray-500 mr-3" />
+                                <div className="text-left">
                                   <div className="text-xs text-gray-500">Where to?</div>
-                                  <select 
-                                    className="w-full bg-transparent border-0 focus:ring-0 cursor-pointer p-0 text-sm font-medium"
-                                    onChange={(e) => field.onChange(e.target.value)}
-                                    value={field.value || ""}
-                                  >
-                                    <option value="" disabled>Select destination</option>
-                                    <option value="San Jose (downtown)">San Jose del Cabo (downtown)</option>
-                                    <option value="Palmilla">Palmilla</option>
-                                    <option value="Tourist Corridor">Tourist Corridor</option>
-                                    <option value="Cabo San Lucas (main)">Cabo San Lucas (main)</option>
-                                    <option value="Pedregal">Pedregal</option>
-                                    <option value="Tezal">Tezal</option>
-                                    <option value="Diamante">Diamante</option>
-                                    <option value="Todos Santos">Todos Santos</option>
-                                  </select>
+                                  <SelectValue placeholder="Select destination" />
                                 </div>
                               </div>
-                            </div>
-                          </FormControl>
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="San Jose (downtown)">San Jose del Cabo (downtown)</SelectItem>
+                              <SelectItem value="Palmilla">Palmilla</SelectItem>
+                              <SelectItem value="Tourist Corridor">Tourist Corridor</SelectItem>
+                              <SelectItem value="Cabo San Lucas (main)">Cabo San Lucas (main)</SelectItem>
+                              <SelectItem value="Pedregal">Pedregal</SelectItem>
+                              <SelectItem value="Tezal">Tezal</SelectItem>
+                              <SelectItem value="Diamante">Diamante</SelectItem>
+                              <SelectItem value="Todos Santos">Todos Santos</SelectItem>
+                            </SelectContent>
+                          </Select>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -361,43 +384,71 @@ export default function TransportationPage() {
                   </div>
                   
                   {/* Date Fields Row */}
-                  <div className="grid grid-cols-12 gap-4 mt-4">
-                    {/* Date Fields (Combined) */}
-                    <div className={`${watchTripType === "roundTrip" ? "col-span-12 sm:col-span-12" : "col-span-12 sm:col-span-6 sm:col-start-4"} border border-gray-200 rounded-full py-3 px-4 bg-white`}>
-                      <div className="flex justify-between items-center">
-                        <div className="flex items-center flex-1">
-                          <Calendar className="h-4 w-4 text-gray-500 mr-3" />
-                          <div>
-                            <div className="text-xs text-gray-500">Departure</div>
-                            <input 
-                              type="text" 
-                              placeholder="Add date" 
-                              className="border-0 p-0 w-full text-sm font-medium focus:ring-0" 
-                            />
-                          </div>
-                        </div>
+                  <div className="grid grid-cols-12 gap-4">
+                    <div className={`${watchTripType === "roundTrip" ? "col-span-12" : "col-span-12 md:col-span-6 md:col-start-4"}`}>
+                      <div className="flex flex-col md:flex-row gap-4">
+                        {/* Pickup Date Field */}
+                        <FormField
+                          control={form.control}
+                          name="pickupDate"
+                          render={({ field }) => (
+                            <FormItem className="flex-1 mb-0">
+                              <div className="border border-gray-200 rounded-full py-3 px-4 bg-white">
+                                <div className="flex items-center">
+                                  <Calendar className="h-4 w-4 text-gray-500 mr-3" />
+                                  <div className="w-full">
+                                    <div className="text-xs text-gray-500">Departure</div>
+                                    <FormControl>
+                                      <input 
+                                        type="date"
+                                        className="border-0 p-0 w-full text-sm font-medium focus:ring-0 bg-transparent" 
+                                        {...field}
+                                      />
+                                    </FormControl>
+                                  </div>
+                                </div>
+                              </div>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        {/* Return Date Field (shown conditionally) */}
                         {watchTripType === "roundTrip" && (
-                          <>
-                            <div className="border-r border-gray-200 h-8 mx-4"></div>
-                            <div className="flex-1">
-                              <div className="text-xs text-gray-500">Return</div>
-                              <input 
-                                type="text" 
-                                placeholder="Add date" 
-                                className="border-0 p-0 w-full text-sm font-medium focus:ring-0" 
-                              />
-                            </div>
-                          </>
+                          <FormField
+                            control={form.control}
+                            name="returnDate"
+                            render={({ field }) => (
+                              <FormItem className="flex-1 mb-0">
+                                <div className="border border-gray-200 rounded-full py-3 px-4 bg-white">
+                                  <div className="flex items-center">
+                                    <Calendar className="h-4 w-4 text-gray-500 mr-3" />
+                                    <div className="w-full">
+                                      <div className="text-xs text-gray-500">Return</div>
+                                      <FormControl>
+                                        <input 
+                                          type="date"
+                                          className="border-0 p-0 w-full text-sm font-medium focus:ring-0 bg-transparent" 
+                                          {...field}
+                                        />
+                                      </FormControl>
+                                    </div>
+                                  </div>
+                                </div>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
                         )}
                       </div>
                     </div>
                   </div>
                   
-                  {/* Centered Search Button - Floating */}
-                  <div className="flex justify-center relative mt-8 mb-4">
+                  {/* Centered Search Button */}
+                  <div className="flex justify-center relative mt-6 mb-2">
                     <Button 
                       type="button" 
-                      className="px-8 py-2 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-medium shadow-md"
+                      className="px-8 py-6 h-auto rounded-full bg-blue-600 hover:bg-blue-700 text-white font-medium shadow-md"
                       onClick={() => {
                         if (watchDestination) {
                           const element = document.getElementById('vehicle-options');
@@ -415,8 +466,8 @@ export default function TransportationPage() {
                         }
                       }}
                     >
-                      <Search className="h-4 w-4 mr-2" />
-                      Explore
+                      <Search className="h-5 w-5 mr-2" />
+                      <span className="text-base">Explore</span>
                     </Button>
                   </div>
                 </div>
