@@ -201,10 +201,12 @@ const NavigationBar = () => {
                           >
                             <div className={`relative ${isFullWidth ? 'h-[12vh]' : 'h-[10vh]'} rounded-lg overflow-hidden`}>
                               <img
-                                src={item.image}
+                                src={`${item.image}?auto=format,compress&w=300&q=75`}
                                 alt={item.title}
                                 className="w-full h-full object-cover"
                                 loading="lazy"
+                                decoding="async"
+                                fetchPriority="low"
                               />
                               <div className="absolute inset-0 bg-black/60 backdrop-blur-[0.5px] flex items-center justify-center">
                                 <span className="text-white text-2xl font-bold px-2">{item.title}</span>
@@ -229,10 +231,12 @@ const NavigationBar = () => {
                         >
                           <div className="relative h-[10vh] rounded-lg overflow-hidden">
                             <img
-                              src={item.image}
+                              src={`${item.image}?auto=format,compress&w=300&q=75`}
                               alt={item.title}
                               className="w-full h-full object-cover"
                               loading="lazy"
+                              decoding="async"
+                              fetchPriority="low"
                             />
                             <div className="absolute inset-0 bg-black/60 backdrop-blur-[0.5px] flex items-center justify-center text-center p-1">
                               <span className="text-white text-sm font-semibold px-1">{item.title}</span>
@@ -256,10 +260,12 @@ const NavigationBar = () => {
                         >
                           <div className="relative h-[7vh] rounded-lg overflow-hidden">
                             <img
-                              src={item.image}
+                              src={`${item.image}?auto=format,compress&w=300&q=75`}
                               alt={item.title}
                               className="w-full h-full object-cover"
                               loading="lazy"
+                              decoding="async"
+                              fetchPriority="low"
                             />
                             <div className="absolute inset-0 bg-black/60 backdrop-blur-[0.5px] flex items-center justify-center text-center p-0.5">
                               <span className="text-white text-xs font-medium px-0.5">{item.title}</span>
@@ -314,7 +320,13 @@ const NavigationBar = () => {
                         <li key={item.href}>
                           <NavigationMenuLink asChild>
                             <Link href={item.href} className="flex gap-4 select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                              <img src={item.image} alt={item.title} className="w-24 h-16 object-cover rounded" />
+                              <img 
+                                src={`${item.image}?auto=format,compress&w=200&q=80`} 
+                                alt={item.title} 
+                                className="w-24 h-16 object-cover rounded"
+                                loading="lazy"
+                                decoding="async" 
+                              />
                               <div>
                                 <div className="text-sm font-medium leading-none">{item.title}</div>
                                 <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-1">{item.description}</p>
@@ -336,7 +348,13 @@ const NavigationBar = () => {
                         <li key={item.href}>
                           <NavigationMenuLink asChild>
                             <Link href={item.href} className="flex gap-4 select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                              <img src={item.image} alt={item.title} className="w-24 h-16 object-cover rounded" />
+                              <img 
+                                src={`${item.image}?auto=format,compress&w=200&q=80`} 
+                                alt={item.title} 
+                                className="w-24 h-16 object-cover rounded"
+                                loading="lazy"
+                                decoding="async" 
+                              />
                               <div>
                                 <div className="text-sm font-medium leading-none">{item.title}</div>
                                 <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-1">{item.description}</p>
@@ -358,7 +376,13 @@ const NavigationBar = () => {
                         <li key={item.href}>
                           <NavigationMenuLink asChild>
                             <Link href={item.href} className="flex gap-4 select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                              <img src={item.image} alt={item.title} className="w-24 h-16 object-cover rounded" />
+                              <img 
+                                src={`${item.image}?auto=format,compress&w=200&q=80`} 
+                                alt={item.title} 
+                                className="w-24 h-16 object-cover rounded"
+                                loading="lazy"
+                                decoding="async" 
+                              />
                               <div>
                                 <div className="text-sm font-medium leading-none">{item.title}</div>
                                 <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-1">{item.description}</p>
@@ -398,7 +422,13 @@ const NavigationBar = () => {
                         <li key={item.href}>
                           <NavigationMenuLink asChild>
                             <Link href={item.href} className="flex gap-4 select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                              <img src={item.image} alt={item.title} className="w-24 h-16 object-cover rounded" />
+                              <img 
+                                src={`${item.image}?auto=format,compress&w=200&q=80`} 
+                                alt={item.title} 
+                                className="w-24 h-16 object-cover rounded"
+                                loading="lazy"
+                                decoding="async" 
+                              />
                               <div>
                                 <div className="text-sm font-medium leading-none">{item.title}</div>
                                 <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-1">{item.description}</p>

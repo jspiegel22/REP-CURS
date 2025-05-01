@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sitemap - Cabo Adventures</title>
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    .sitemap-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+    .sitemap-section {
+      margin-bottom: 40px;
+    }
+    .sitemap-section h2 {
+      color: #1e3a8a;
+      border-bottom: 1px solid #e5e7eb;
+      padding-bottom: 8px;
+      margin-bottom: 16px;
+    }
+    .sitemap-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    .sitemap-list li {
+      margin-bottom: 6px;
+    }
+    .sitemap-list a {
+      color: #1e3a8a;
+      text-decoration: none;
+      display: inline-block;
+      padding: 4px 0;
+    }
+    .sitemap-list a:hover {
+      color: #f97316;
+      text-decoration: underline;
+    }
+    .sitemap-description {
+      margin-bottom: 30px;
+      color: #4b5563;
+      max-width: 80ch;
+    }
+    .last-updated {
+      font-style: italic;
+      color: #6b7280;
+      margin-top: 40px;
+      font-size: 0.9rem;
+    }
+    @media (max-width: 768px) {
+      .sitemap-list {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="sitemap-container">
+    <h1>Sitemap</h1>
+    
+    <p class="sitemap-description">
+      Welcome to the Cabo Adventures sitemap. This page provides an overview of all the content available on our website
+      to help you easily navigate to the information you're looking for.
+    </p>
+
+    <div class="sitemap-section">
+      <h2>Main Pages</h2>
+      <ul class="sitemap-list">
+        <li><a href="/">Home</a></li>
+        <li><a href="/adventures">All Adventures</a></li>
+        <li><a href="/villas">Luxury Villas</a></li>
+        <li><a href="/resorts">Resorts</a></li>
+        <li><a href="/restaurants">Restaurants</a></li>
+        <li><a href="/yachts">Private Yachts</a></li>
+        <li><a href="/contact">Contact Us</a></li>
+        <li><a href="/about">About Us</a></li>
+      </ul>
+    </div>
+
+    <div class="sitemap-section">
+      <h2>Special Experiences</h2>
+      <ul class="sitemap-list">
+        <li><a href="/party">Bachelor/Bachelorette</a></li>
+        <li><a href="/wellness">Wellness & Spas</a></li>
+        <li><a href="/blog">Travel Blog</a></li>
+      </ul>
+    </div>
+
+    <div class="sitemap-section">
+      <h2>Adventure Categories</h2>
+      <ul class="sitemap-list">
+        <li><a href="/adventures?category=water">Water Adventures</a></li>
+        <li><a href="/adventures?category=land">Land Adventures</a></li>
+        <li><a href="/adventures?category=luxury">Luxury Experiences</a></li>
+        <li><a href="/adventures?category=family">Family-Friendly</a></li>
+        <li><a href="/adventures?category=yacht">Yacht Charters</a></li>
+      </ul>
+    </div>
+
+    <div class="sitemap-section">
+      <h2>Restaurant Types</h2>
+      <ul class="sitemap-list">
+        <li><a href="/restaurants?category=fine-dining">Fine Dining</a></li>
+        <li><a href="/restaurants?category=local-cuisine">Local Cuisine</a></li>
+        <li><a href="/restaurants?category=seafood">Seafood</a></li>
+        <li><a href="/restaurants?category=international">International</a></li>
+      </ul>
+    </div>
+
+    <div class="sitemap-section">
+      <h2>Resources</h2>
+      <ul class="sitemap-list">
+        <li><a href="/sitemap.xml">XML Sitemap</a> (for search engines)</li>
+        <li><a href="/privacy-policy">Privacy Policy</a></li>
+        <li><a href="/terms-of-service">Terms of Service</a></li>
+      </ul>
+    </div>
+
+    <p class="last-updated">Last updated: May 1, 2025</p>
+  </div>
+
+  <script>
+    // Update the last updated date
+    document.querySelector('.last-updated').textContent = 'Last updated: ' + new Date().toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    });
+  </script>
+</body>
+</html>

@@ -77,6 +77,13 @@ export default function Footer() {
               <SiPinterest size={24} />
             </a>
           </div>
+          <div className="flex justify-center space-x-4 text-sm text-gray-300 mb-2">
+            <a href="/sitemap.html" className="hover:text-white">Sitemap</a>
+            <span>|</span>
+            <Link href="/privacy-policy" className="hover:text-white">Privacy Policy</Link>
+            <span>|</span>
+            <Link href="/terms-of-service" className="hover:text-white">Terms of Service</Link>
+          </div>
           <p className="text-center text-sm text-gray-300">&copy; {new Date().getFullYear()} Cabo Travels. All rights reserved.</p>
         </div>
       </div>
