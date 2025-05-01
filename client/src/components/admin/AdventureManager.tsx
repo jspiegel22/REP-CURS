@@ -533,6 +533,7 @@ export default function AdventureManager() {
                   id="featured" 
                   checked={editForm.featured || false}
                   onCheckedChange={(checked) => setEditForm({...editForm, featured: Boolean(checked)})}
+                  className="border-black"
                 />
                 <Label htmlFor="featured" className="cursor-pointer">Featured Experience</Label>
               </div>
@@ -632,7 +633,7 @@ export default function AdventureManager() {
             <Button variant="secondary" onClick={() => setIsEditDialogOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleSaveEdit}>
+            <Button onClick={handleSaveEdit} className="bg-[#004d40] hover:bg-[#00695c] text-white">
               <Save className="mr-2 h-4 w-4" />
               Save Changes
             </Button>
@@ -752,6 +753,7 @@ export default function AdventureManager() {
                   id="create-featured" 
                   checked={createForm.featured || false}
                   onCheckedChange={(checked) => setCreateForm({...createForm, featured: Boolean(checked)})}
+                  className="border-black"
                 />
                 <Label htmlFor="create-featured" className="cursor-pointer">Featured Experience</Label>
               </div>
@@ -851,7 +853,7 @@ export default function AdventureManager() {
             <Button variant="secondary" onClick={() => setIsCreateDialogOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleCreateSubmit}>
+            <Button onClick={handleCreateSubmit} className="bg-[#004d40] hover:bg-[#00695c] text-white">
               <Plus className="mr-2 h-4 w-4" />
               Create Adventure
             </Button>

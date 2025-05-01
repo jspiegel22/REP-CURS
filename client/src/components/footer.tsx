@@ -49,7 +49,7 @@ export default function Footer() {
             
             <h3 className="text-xl font-bold mb-4">Contact</h3>
             <ul className="space-y-2">
-              <li>Email: info@cabotravels.com</li>
+              <li>Email: info@atcabo.com</li>
               <li>Phone: +1 (888) 123-4567</li>
               <li>WhatsApp: +52 624 244 6303</li>
             </ul>
@@ -84,7 +84,7 @@ export default function Footer() {
             <span>|</span>
             <Link href="/terms-of-service" className="hover:text-white">Terms of Service</Link>
           </div>
-          <p className="text-center text-sm text-gray-300">&copy; {new Date().getFullYear()} Cabo Travels. All rights reserved.</p>
+          <p className="text-center text-sm text-gray-300">&copy; {new Date().getFullYear()} @cabo. All rights reserved.</p>
         </div>
       </div>
     </footer>

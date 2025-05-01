@@ -2,7 +2,6 @@ import { sampleBlogs } from "@/data/sample-blogs";
 import { Link } from "wouter";
 import { format } from "date-fns";
 import SEO from "@/components/SEO";
-import Footer from "@/components/footer";
 
 export default function BlogIndex() {
   const categories = Array.from(new Set(sampleBlogs.map(blog => blog.category)));
@@ -118,8 +117,7 @@ export default function BlogIndex() {
           </div>
         </div>
       </main>
-
-      <Footer />
+      {/* Footer removed to prevent duplication with App.tsx global Footer */}
     </>
   );
 }

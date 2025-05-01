@@ -11,7 +11,6 @@ import {
   FaLinkedinIn,
   FaWhatsapp,
 } from "react-icons/fa";
-import Footer from "@/components/footer";
 
 export default function BlogPost() {
   const { slug } = useParams();
@@ -215,8 +214,7 @@ export default function BlogPost() {
           </div>
         </div>
       </main>
-
-      <Footer />
+      {/* Footer removed to prevent duplication with App.tsx global Footer */}
     </>
   );
 }

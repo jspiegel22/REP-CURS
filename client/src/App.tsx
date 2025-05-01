@@ -33,6 +33,8 @@ import WorkWithUsPage from "@/pages/work-with-us";
 import ItineraryBuilderPage from "@/pages/itinerary-builder-page";
 import TestFormsPage from "@/pages/test-forms";
 import { ImageManagementPage } from "@/pages/image-management";
+import PrivacyPolicy from "@/pages/privacy-policy";
+import TermsOfService from "@/pages/terms-of-service";
 import NavigationBar from "./components/navigation-bar";
 import { ChatButton } from "./components/chat-button";
 import { AuthProvider, useAuth } from "@/hooks/use-auth";
@@ -124,6 +126,8 @@ function Router() {
           </Route>
           <Route path="/photo-sync" component={PhotoSyncPage} />
           <Route path="/image-management" component={ImageManagementPage} />
+          <Route path="/privacy-policy" component={PrivacyPolicy} />
+          <Route path="/terms-of-service" component={TermsOfService} />
           <Route component={NotFound} />
         </Switch>
       </div>

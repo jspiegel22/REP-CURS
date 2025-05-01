@@ -1,5 +1,4 @@
 import { useParams } from "wouter";
-import Footer from "@/components/footer";
 import VillaBookingTemplate from "@/components/templates/VillaBookingTemplate";
 import { ImageGallery } from "@/components/ImageGallery";
 import SEO, { generateVillaSchema } from "@/components/SEO";
@@ -58,7 +57,7 @@ export default function VillaDetail() {
             <p>Sorry, we couldn't find the villa you're looking for.</p>
           </div>
         </main>
-        <Footer />
+        {/* Footer removed to prevent duplication with App.tsx global Footer */}
       </div>
     );
   }
@@ -191,7 +190,7 @@ export default function VillaDetail() {
           </div>
         </div>
       </main>
-      <Footer />
+      {/* Footer removed to prevent duplication with App.tsx global Footer */}
     </div>
   );
 }

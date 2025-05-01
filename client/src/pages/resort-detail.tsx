@@ -1,5 +1,4 @@
 import { useParams } from "wouter";
-import Footer from "@/components/footer";
 import { resorts } from "@/data/resorts";
 import ResortBookingTemplate from "@/components/templates/ResortBookingTemplate";
 import { generateSlug } from "@/lib/utils";
@@ -84,7 +83,7 @@ export default function ResortDetail() {
             <p>Sorry, we couldn't find the resort you're looking for.</p>
           </div>
         </main>
-        <Footer />
+        {/* Footer removed to prevent duplication with App.tsx global Footer */}
       </div>
     );
   }
@@ -130,7 +129,7 @@ export default function ResortDetail() {
           reviews={reviews}
         />
       </main>
-      <Footer />
+      {/* Footer removed to prevent duplication with App.tsx global Footer */}
     </div>
   );
 }

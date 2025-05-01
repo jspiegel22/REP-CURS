@@ -763,9 +763,24 @@ export class DatabaseStorage implements IStorage {
         throw new Error('Adventure not found');
       }
       
+      // Create a clean adventure object for the update
+      const adventureToUpdate: Partial<Adventure> = {...adventure};
+      
+      // Remove or fix date/timestamp fields to prevent errors
+      if (adventureToUpdate.createdAt && !(adventureToUpdate.createdAt instanceof Date)) {
+        delete adventureToUpdate.createdAt;
+      }
+      
+      if (adventureToUpdate.updatedAt && !(adventureToUpdate.updatedAt instanceof Date)) {
+        delete adventureToUpdate.updatedAt;
+      }
+      
+      // Set updatedAt to current timestamp
+      adventureToUpdate.updatedAt = new Date();
+      
       // Generate a slug from the title if title is updated and slug is not provided
-      if (adventure.title && !adventure.slug) {
-        let baseSlug = adventure.title
+      if (adventureToUpdate.title && !adventureToUpdate.slug) {
+        let baseSlug = adventureToUpdate.title
           .toLowerCase()
           .replace(/\s+/g, '-')
           .replace(/[^\w\-]+/g, '')
@@ -791,33 +806,33 @@ export class DatabaseStorage implements IStorage {
             if (existingSlugs.length > 0) {
               // If slug already exists, keep current slug or add timestamp
               if (currentAdventure.slug) {
-                adventure.slug = currentAdventure.slug;
+                adventureToUpdate.slug = currentAdventure.slug;
               } else {
                 // Add timestamp to make it unique
-                adventure.slug = `${baseSlug}-${Date.now()}`;
+                adventureToUpdate.slug = `${baseSlug}-${Date.now()}`;
               }
             } else {
-              adventure.slug = baseSlug;
+              adventureToUpdate.slug = baseSlug;
             }
           } catch (error) {
             // If there's an error checking, keep the existing slug
             console.log('Error checking slug, keeping current one:', error);
-            adventure.slug = currentAdventure.slug;
+            adventureToUpdate.slug = currentAdventure.slug;
           }
         } else {
           // Keep the same slug if title hasn't changed
-          adventure.slug = currentAdventure.slug;
+          adventureToUpdate.slug = currentAdventure.slug;
         }
       }
       
       // Format rating to one decimal place if provided
-      if (adventure.rating) {
-        adventure.rating = Number(Number(adventure.rating).toFixed(1));
+      if (adventureToUpdate.rating) {
+        adventureToUpdate.rating = Number(Number(adventureToUpdate.rating).toFixed(1));
       }
       
       const [updatedAdventure] = await db
         .update(adventures)
-        .set(adventure)
+        .set(adventureToUpdate)
         .where(eq(adventures.id, id))
         .returning();
       
