@@ -46,7 +46,12 @@ import {
   Star,
   Luggage,
   Users,
-  Bus 
+  Bus,
+  Circle,
+  MoveHorizontal,
+  User,
+  Globe,
+  ArrowLeftRight
 } from "lucide-react";
 import { CaboImage, ResponsiveCaboImage } from "@/components/ui/cabo-image";
 import { Separator } from "@/components/ui/separator";
@@ -58,6 +63,7 @@ import {
 } from "@/components/ui/accordion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 
@@ -153,19 +159,30 @@ export default function TransportationPage() {
   const watchVehicleType = form.watch("vehicleType");
   const watchDestination = form.watch("destination");
 
+  // Helper function to get price
+  const getPrice = (destination: string, vehicleType: string, tripType: string): number | null => {
+    if (!destination || !vehicleType || !tripType) return null;
+    
+    try {
+      // Type assertion to handle the indexing more safely
+      type DestKey = keyof typeof transportationPricing;
+      const dest = destination as DestKey;
+      
+      if (!transportationPricing[dest]) return null;
+      
+      const vehicleData = transportationPricing[dest][vehicleType as keyof typeof transportationPricing[DestKey]];
+      if (!vehicleData) return null;
+      
+      return vehicleData[tripType as keyof typeof vehicleData];
+    } catch (error) {
+      console.error("Error calculating price:", error);
+      return null;
+    }
+  };
+
   // Calculate price whenever relevant fields change
   useEffect(() => {
-    if (watchDestination && watchVehicleType && watchTripType) {
-      const destinationData = transportationPricing[watchDestination as keyof typeof transportationPricing];
-      if (destinationData) {
-        const vehicleData = destinationData[watchVehicleType as keyof typeof destinationData];
-        if (vehicleData) {
-          setPrice(vehicleData[watchTripType as keyof typeof vehicleData]);
-        }
-      }
-    } else {
-      setPrice(null);
-    }
+    setPrice(getPrice(watchDestination, watchVehicleType, watchTripType));
   }, [watchTripType, watchVehicleType, watchDestination]);
 
   // Show/hide return date based on trip type
@@ -206,325 +223,374 @@ export default function TransportationPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero Section */}
-      <div className="relative">
-        <div className="h-[40vh] md:h-[60vh] relative">
-          <ResponsiveCaboImage 
-            src="https://images.unsplash.com/photo-1610647752706-3bb12202b035" 
-            alt="Airport transportation in Cabo"
-            category="luxury"
-            objectFit="cover"
-            className="w-full h-full"
-          />
-          <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center text-white p-4">
-            <div className="max-w-4xl mx-auto text-center">
-              <Badge variant="outline" className="mb-4 text-white border-white px-4 py-1 text-sm">RELIABLE & COMFORTABLE</Badge>
-              <h1 className="text-4xl md:text-6xl font-bold mb-4">Los Cabos Airport Transportation</h1>
-              <p className="text-xl max-w-2xl mx-auto">
-                Safe, on-time private transfers between Los Cabos International Airport and your accommodation
-              </p>
-            </div>
-          </div>
+      {/* Main Google Flights Style Title */}
+      <div className="py-8 bg-white">
+        <div className="container mx-auto px-4">
+          <h1 className="text-4xl font-bold text-center mb-0">Flights</h1>
         </div>
       </div>
 
       {/* Google Flights Style Search Widget */}
-      <div className="container mx-auto px-4 -mt-12 relative z-10 mb-16">
-        <Card className="shadow-xl border-0">
-          <CardContent className="p-6">
+      <div className="container mx-auto px-4 mb-16">
+        <Card className="shadow-lg border border-gray-200 rounded-xl overflow-hidden">
+          <CardContent className="p-0">
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                {/* Google Flights Style Search Bar */}
-                <div className="rounded-xl bg-white p-1">
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
-                    {/* Trip Type Toggle */}
-                    <FormField
-                      control={form.control}
-                      name="tripType"
-                      render={({ field }) => (
-                        <FormItem className="mb-0">
-                          <div className="flex h-14 items-center justify-center bg-gray-50 rounded-lg px-3">
-                            <FormControl>
-                              <RadioGroup
-                                onValueChange={field.onChange}
-                                defaultValue={field.value}
-                                className="flex space-x-4"
-                              >
-                                <FormItem className="flex items-center space-x-2 space-y-0">
-                                  <FormControl>
-                                    <RadioGroupItem value="oneWay" />
-                                  </FormControl>
-                                  <FormLabel className="font-normal cursor-pointer text-sm">
-                                    One Way
-                                  </FormLabel>
-                                </FormItem>
-                                <FormItem className="flex items-center space-x-2 space-y-0">
-                                  <FormControl>
-                                    <RadioGroupItem value="roundTrip" />
-                                  </FormControl>
-                                  <FormLabel className="font-normal cursor-pointer text-sm">
-                                    Round Trip
-                                  </FormLabel>
-                                </FormItem>
-                              </RadioGroup>
-                            </FormControl>
-                          </div>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    {/* Destination */}
-                    <FormField
-                      control={form.control}
-                      name="destination"
-                      render={({ field }) => (
-                        <FormItem className="mb-0">
-                          <div className="rounded-lg overflow-hidden">
-                            <FormControl>
-                              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <SelectTrigger className="h-14 border-0 bg-gray-50 rounded-lg focus:ring-0">
-                                  <div className="flex flex-col items-start text-left">
-                                    <span className="text-xs text-gray-500">Destination</span>
-                                    <SelectValue placeholder="Where are you going?" className="text-sm" />
-                                  </div>
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="San Jose (downtown)">San Jose del Cabo (downtown)</SelectItem>
-                                  <SelectItem value="Palmilla">Palmilla</SelectItem>
-                                  <SelectItem value="Tourist Corridor">Tourist Corridor</SelectItem>
-                                  <SelectItem value="Cabo San Lucas (main)">Cabo San Lucas (main)</SelectItem>
-                                  <SelectItem value="Pedregal">Pedregal</SelectItem>
-                                  <SelectItem value="Tezal">Tezal</SelectItem>
-                                  <SelectItem value="Diamante">Diamante</SelectItem>
-                                  <SelectItem value="Todos Santos">Todos Santos</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </FormControl>
-                          </div>
-                        </FormItem>
-                      )}
-                    />
-
-                    {/* Dates */}
-                    <div className="flex space-x-1">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
+                {/* Google Flights Style Search Bar - Exact Match from Screenshot */}
+                <div className="p-4">
+                  {/* Top row with trip type, passenger count, and cabin class */}
+                  <div className="flex flex-wrap items-center justify-between mb-6">
+                    <div className="flex flex-wrap items-center space-x-6">
+                      {/* Trip Type Toggle Dropdown */}
                       <FormField
                         control={form.control}
-                        name="pickupDate"
+                        name="tripType"
                         render={({ field }) => (
-                          <FormItem className="flex-1 mb-0">
-                            <div className="rounded-lg overflow-hidden">
+                          <FormItem className="mb-0">
+                            <div className="relative">
+                              <div className="flex items-center cursor-pointer">
+                                <MoveHorizontal className="h-4 w-4 text-gray-500 mr-2" />
+                                <span className="text-sm font-medium">{field.value === "oneWay" ? "One way" : "Round trip"}</span>
+                                <ChevronDown className="h-4 w-4 text-gray-500 ml-1" />
+                              </div>
                               <FormControl>
-                                <div className="relative h-14 bg-gray-50 rounded-lg px-3 flex flex-col justify-center">
-                                  <span className="text-xs text-gray-500">Pickup Date</span>
-                                  <input
-                                    type="date"
-                                    className="bg-transparent border-0 p-0 outline-none text-sm"
-                                    {...field}
-                                  />
-                                  <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                                </div>
+                                <RadioGroup
+                                  onValueChange={field.onChange}
+                                  defaultValue={field.value}
+                                  className="hidden"
+                                >
+                                  <FormItem className="flex items-center space-x-2 space-y-0">
+                                    <FormControl>
+                                      <RadioGroupItem value="oneWay" />
+                                    </FormControl>
+                                    <FormLabel>One way</FormLabel>
+                                  </FormItem>
+                                  <FormItem className="flex items-center space-x-2 space-y-0">
+                                    <FormControl>
+                                      <RadioGroupItem value="roundTrip" />
+                                    </FormControl>
+                                    <FormLabel>Round trip</FormLabel>
+                                  </FormItem>
+                                </RadioGroup>
                               </FormControl>
                             </div>
                             <FormMessage />
                           </FormItem>
                         )}
                       />
-
-                      {watchTripType === "roundTrip" && (
-                        <FormField
-                          control={form.control}
-                          name="returnDate"
-                          render={({ field }) => (
-                            <FormItem className="flex-1 mb-0">
-                              <div className="rounded-lg overflow-hidden">
-                                <FormControl>
-                                  <div className="relative h-14 bg-gray-50 rounded-lg px-3 flex flex-col justify-center">
-                                    <span className="text-xs text-gray-500">Return Date</span>
-                                    <input
-                                      type="date"
-                                      className="bg-transparent border-0 p-0 outline-none text-sm"
-                                      {...field}
-                                    />
-                                    <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                                  </div>
-                                </FormControl>
-                              </div>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      )}
+                      
+                      {/* People Count - Just for visual match */}
+                      <div className="cursor-pointer flex items-center">
+                        <User className="h-4 w-4 text-gray-500 mr-2" />
+                        <span className="text-sm font-medium">1</span>
+                        <ChevronDown className="h-4 w-4 text-gray-500 ml-1" />
+                      </div>
+                      
+                      {/* Economy Class - Just for visual match */}
+                      <div className="cursor-pointer flex items-center">
+                        <span className="text-sm font-medium">Economy</span>
+                        <ChevronDown className="h-4 w-4 text-gray-500 ml-1" />
+                      </div>
                     </div>
-
-                    {/* Search Button */}
-                    <div className="flex justify-center items-center">
-                      <Button 
-                        type="button" 
-                        className="h-14 w-full bg-blue-900 hover:bg-blue-800 text-white"
-                        onClick={() => {
-                          if (watchDestination) {
+                    
+                    {/* Add Hotels Checkbox - For exact visual match */}
+                    <div className="flex items-center mt-2 sm:mt-0">
+                      <Globe className="h-4 w-4 text-purple-500 mr-2" />
+                      <span className="text-sm text-gray-700 mr-2">Also find me hotels</span>
+                      <input type="checkbox" id="hotels" className="rounded border-gray-300" />
+                    </div>
+                  </div>
+                  
+                  {/* Main Search Controls - Styled like Google Flights */}
+                  <div className="grid grid-cols-12 gap-4 mt-2">
+                    {/* From Location - Fixed to SJD */}
+                    <div className="col-span-12 sm:col-span-5 border border-gray-200 rounded-full py-3 px-4 bg-white flex items-center">
+                      <div className="mr-3 text-gray-500">
+                        <Circle className="h-4 w-4" />
+                      </div>
+                      <div>
+                        <div className="text-xs text-gray-500">From</div>
+                        <div className="font-medium text-sm">San José del Cabo</div>
+                      </div>
+                    </div>
+                    
+                    {/* Swap Icon - Just for visual match */}
+                    <div className="hidden sm:flex col-span-0 sm:col-span-2 items-center justify-center">
+                      <div className="bg-white p-2 rounded-full border border-gray-200 shadow-sm hover:shadow cursor-pointer">
+                        <ArrowLeftRight className="h-4 w-4 text-gray-400" />
+                      </div>
+                    </div>
+                    
+                    {/* Destination Dropdown */}
+                    <FormField
+                      control={form.control}
+                      name="destination"
+                      render={({ field }) => (
+                        <FormItem className="col-span-12 sm:col-span-5 mb-0">
+                          <FormControl>
+                            <div className="border border-gray-200 rounded-full py-3 px-4 bg-white">
+                              <div className="flex items-center">
+                                <div className="mr-3 text-gray-500">
+                                  <MapPin className="h-4 w-4" />
+                                </div>
+                                <div className="w-full">
+                                  <div className="text-xs text-gray-500">Where to?</div>
+                                  <select 
+                                    className="w-full bg-transparent border-0 focus:ring-0 cursor-pointer p-0 text-sm font-medium"
+                                    onChange={(e) => field.onChange(e.target.value)}
+                                    value={field.value || ""}
+                                  >
+                                    <option value="" disabled>Select destination</option>
+                                    <option value="San Jose (downtown)">San Jose del Cabo (downtown)</option>
+                                    <option value="Palmilla">Palmilla</option>
+                                    <option value="Tourist Corridor">Tourist Corridor</option>
+                                    <option value="Cabo San Lucas (main)">Cabo San Lucas (main)</option>
+                                    <option value="Pedregal">Pedregal</option>
+                                    <option value="Tezal">Tezal</option>
+                                    <option value="Diamante">Diamante</option>
+                                    <option value="Todos Santos">Todos Santos</option>
+                                  </select>
+                                </div>
+                              </div>
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  
+                  {/* Date Fields Row */}
+                  <div className="grid grid-cols-12 gap-4 mt-4">
+                    {/* Date Fields (Combined) */}
+                    <div className={`${watchTripType === "roundTrip" ? "col-span-12 sm:col-span-12" : "col-span-12 sm:col-span-6 sm:col-start-4"} border border-gray-200 rounded-full py-3 px-4 bg-white`}>
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center flex-1">
+                          <Calendar className="h-4 w-4 text-gray-500 mr-3" />
+                          <div>
+                            <div className="text-xs text-gray-500">Departure</div>
+                            <input 
+                              type="text" 
+                              placeholder="Add date" 
+                              className="border-0 p-0 w-full text-sm font-medium focus:ring-0" 
+                            />
+                          </div>
+                        </div>
+                        {watchTripType === "roundTrip" && (
+                          <>
+                            <div className="border-r border-gray-200 h-8 mx-4"></div>
+                            <div className="flex-1">
+                              <div className="text-xs text-gray-500">Return</div>
+                              <input 
+                                type="text" 
+                                placeholder="Add date" 
+                                className="border-0 p-0 w-full text-sm font-medium focus:ring-0" 
+                              />
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Centered Search Button - Floating */}
+                  <div className="flex justify-center relative mt-8 mb-4">
+                    <Button 
+                      type="button" 
+                      className="px-8 py-2 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-medium shadow-md"
+                      onClick={() => {
+                        if (watchDestination) {
+                          const element = document.getElementById('vehicle-options');
+                          if (element) {
                             window.scrollTo({
-                              top: document.getElementById('vehicle-options')?.offsetTop - 100 || 0,
+                              top: element.offsetTop - 100,
                               behavior: 'smooth'
                             });
-                          } else {
-                            form.setError('destination', { 
-                              type: 'manual', 
-                              message: 'Please select a destination' 
-                            });
                           }
-                        }}
-                      >
-                        <MapPin className="mr-2 h-4 w-4" />
-                        Find Transfers
-                      </Button>
-                    </div>
+                        } else {
+                          form.setError('destination', { 
+                            type: 'manual', 
+                            message: 'Please select a destination' 
+                          });
+                        }
+                      }}
+                    >
+                      <Search className="h-4 w-4 mr-2" />
+                      Explore
+                    </Button>
                   </div>
                 </div>
 
-                {/* Vehicle Cards - Only show when destination is selected */}
+                {/* Google Flights Style Map + Results Display */}
                 {watchDestination && (
                   <div id="vehicle-options" className="mt-8">
-                    <h3 className="text-lg font-semibold mb-4">Available Options</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      {/* Suburban Card */}
-                      <div 
-                        className={`relative rounded-xl border p-0 overflow-hidden transition-all ${
-                          watchVehicleType === "Suburban (5 pax)" 
-                            ? "ring-2 ring-blue-500 shadow-lg" 
-                            : "hover:border-blue-200 cursor-pointer"
-                        }`}
-                        onClick={() => form.setValue("vehicleType", "Suburban (5 pax)")}
-                      >
-                        {watchVehicleType === "Suburban (5 pax)" && (
-                          <div className="absolute top-2 right-2 z-10">
-                            <Badge className="bg-blue-500">Selected</Badge>
-                          </div>
-                        )}
-                        <div className="h-32 relative">
+                    <div className="flex text-sm mb-4 border-b">
+                      <div className="px-4 py-2 text-blue-600 font-medium border-b-2 border-blue-600">Best Vehicles</div>
+                      <div className="px-4 py-2 text-gray-600">Price</div>
+                      <div className="px-4 py-2 text-gray-600">Capacity</div>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-4">
+                      {/* Map Section on Left */}
+                      <div className="md:col-span-1 h-[300px] bg-blue-50 rounded-lg overflow-hidden relative">
+                        {/* Simplified Map Visualization */}
+                        <div className="h-full w-full bg-blue-50 relative">
+                          {/* Map Image Background */}
                           <ResponsiveCaboImage
-                            src="https://images.unsplash.com/photo-1533473359331-0135ef1b58bf"
-                            alt="Suburban SUV"
+                            src="https://images.unsplash.com/photo-1585152968992-d2b9444408cc"
+                            alt="Map of Los Cabos"
                             category="luxury"
                             objectFit="cover"
-                            className="w-full h-full"
+                            className="w-full h-full opacity-40"
                           />
+                          
+                          {/* Route Visualization */}
+                          <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
+                            <div className="bg-white p-1 rounded-full z-10">
+                              <div className="h-3 w-3 bg-blue-600 rounded-full"></div>
+                            </div>
+                            <div className="h-[2px] w-32 bg-blue-600"></div>
+                            <div className="bg-white p-1 rounded-full z-10">
+                              <div className="h-3 w-3 bg-red-600 rounded-full"></div>
+                            </div>
+                          </div>
+                          
+                          {/* Location Labels */}
+                          <div className="absolute bottom-4 left-0 w-full flex justify-between px-6">
+                            <div className="bg-white px-2 py-1 rounded text-xs shadow">
+                              San José del Cabo
+                            </div>
+                            <div className="bg-white px-2 py-1 rounded text-xs shadow">
+                              {watchDestination}
+                            </div>
+                          </div>
                         </div>
-                        <div className="p-4">
-                          <div className="flex justify-between items-start mb-2">
-                            <div>
-                              <h4 className="font-semibold">Suburban SUV</h4>
-                              <p className="text-sm text-gray-500">Up to 5 passengers</p>
-                            </div>
-                            <div className="text-right">
-                              <p className="font-bold text-lg">
-                                ${transportationPricing[watchDestination as keyof typeof transportationPricing]?.["Suburban (5 pax)"]?.[watchTripType as keyof typeof transportationPricing[typeof watchDestination][typeof watchVehicleType]]}
-                              </p>
-                              <p className="text-xs text-gray-500">{watchTripType === "oneWay" ? "One way" : "Round trip"}</p>
-                            </div>
-                          </div>
-                          <div className="flex items-center space-x-4 text-sm">
-                            <span className="flex items-center text-gray-500">
-                              <Car className="h-3 w-3 mr-1" /> Luxury SUV
-                            </span>
-                            <span className="flex items-center text-gray-500">
-                              <MapPin className="h-3 w-3 mr-1" /> 4 bags
-                            </span>
-                          </div>
+                        
+                        {/* Distance Display */}
+                        <div className="absolute bottom-0 left-0 w-full bg-white p-2 text-xs text-center border-t">
+                          <span className="font-medium">Estimated Travel Time:</span> 20-45 minutes
                         </div>
                       </div>
+                      
+                      {/* Vehicle Cards on Right */}
+                      <div className="md:col-span-2 space-y-2">
+                        {/* Suburban Card - Google Flights Style */}
+                        <div 
+                          className={`border rounded-lg overflow-hidden transition-all hover:shadow-md ${
+                            watchVehicleType === "Suburban (5 pax)" 
+                              ? "border-blue-500 ring-1 ring-blue-500" 
+                              : ""
+                          }`}
+                          onClick={() => form.setValue("vehicleType", "Suburban (5 pax)")}
+                        >
+                          <div className="p-4 cursor-pointer">
+                            <div className="flex items-center">
+                              <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mr-4">
+                                <Car className="h-6 w-6 text-gray-500" />
+                              </div>
+                              <div className="flex-grow">
+                                <div className="flex justify-between items-center">
+                                  <div>
+                                    <h4 className="font-semibold">Suburban SUV</h4>
+                                    <div className="flex text-xs text-gray-500 mt-1">
+                                      <span className="flex items-center mr-3">
+                                        <Users className="h-3 w-3 mr-1" /> Up to 5 passengers
+                                      </span>
+                                      <span className="flex items-center">
+                                        <Luggage className="h-3 w-3 mr-1" /> 4 bags
+                                      </span>
+                                    </div>
+                                  </div>
+                                  <div className="text-right">
+                                    <p className="font-bold text-lg">
+                                      ${getPrice(watchDestination, "Suburban (5 pax)", watchTripType) || '--'}
+                                    </p>
+                                    <p className="text-xs text-gray-500">{watchTripType === "oneWay" ? "One way" : "Round trip"}</p>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
 
-                      {/* Passenger Van Card */}
-                      <div 
-                        className={`relative rounded-xl border p-0 overflow-hidden transition-all ${
-                          watchVehicleType === "Van (6 pax)" 
-                            ? "ring-2 ring-blue-500 shadow-lg" 
-                            : "hover:border-blue-200 cursor-pointer"
-                        }`}
-                        onClick={() => form.setValue("vehicleType", "Van (6 pax)")}
-                      >
-                        {watchVehicleType === "Van (6 pax)" && (
-                          <div className="absolute top-2 right-2 z-10">
-                            <Badge className="bg-blue-500">Selected</Badge>
-                          </div>
-                        )}
-                        <div className="h-32 relative">
-                          <ResponsiveCaboImage
-                            src="https://images.unsplash.com/photo-1519641471654-76ce0107ad1b"
-                            alt="Passenger Van"
-                            category="luxury"
-                            objectFit="cover"
-                            className="w-full h-full"
-                          />
-                        </div>
-                        <div className="p-4">
-                          <div className="flex justify-between items-start mb-2">
-                            <div>
-                              <h4 className="font-semibold">Passenger Van</h4>
-                              <p className="text-sm text-gray-500">Up to 6 passengers</p>
+                        {/* Passenger Van Card - Google Flights Style */}
+                        <div 
+                          className={`border rounded-lg overflow-hidden transition-all hover:shadow-md ${
+                            watchVehicleType === "Van (6 pax)" 
+                              ? "border-blue-500 ring-1 ring-blue-500" 
+                              : ""
+                          }`}
+                          onClick={() => form.setValue("vehicleType", "Van (6 pax)")}
+                        >
+                          <div className="p-4 cursor-pointer">
+                            <div className="flex items-center">
+                              <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mr-4">
+                                <Car className="h-6 w-6 text-gray-500" />
+                              </div>
+                              <div className="flex-grow">
+                                <div className="flex justify-between items-center">
+                                  <div>
+                                    <h4 className="font-semibold">Passenger Van</h4>
+                                    <div className="flex text-xs text-gray-500 mt-1">
+                                      <span className="flex items-center mr-3">
+                                        <Users className="h-3 w-3 mr-1" /> Up to 6 passengers
+                                      </span>
+                                      <span className="flex items-center">
+                                        <Luggage className="h-3 w-3 mr-1" /> 6 bags
+                                      </span>
+                                    </div>
+                                  </div>
+                                  <div className="text-right">
+                                    <p className="font-bold text-lg">
+                                      ${getPrice(watchDestination, "Van (6 pax)", watchTripType) || '--'}
+                                    </p>
+                                    <p className="text-xs text-gray-500">{watchTripType === "oneWay" ? "One way" : "Round trip"}</p>
+                                  </div>
+                                </div>
+                              </div>
                             </div>
-                            <div className="text-right">
-                              <p className="font-bold text-lg">
-                                ${transportationPricing[watchDestination as keyof typeof transportationPricing]?.["Van (6 pax)"]?.[watchTripType as keyof typeof transportationPricing[typeof watchDestination][typeof watchVehicleType]]}
-                              </p>
-                              <p className="text-xs text-gray-500">{watchTripType === "oneWay" ? "One way" : "Round trip"}</p>
-                            </div>
-                          </div>
-                          <div className="flex items-center space-x-4 text-sm">
-                            <span className="flex items-center text-gray-500">
-                              <Car className="h-3 w-3 mr-1" /> Group
-                            </span>
-                            <span className="flex items-center text-gray-500">
-                              <MapPin className="h-3 w-3 mr-1" /> 6 bags
-                            </span>
                           </div>
                         </div>
-                      </div>
 
-                      {/* Large Van Card */}
-                      <div 
-                        className={`relative rounded-xl border p-0 overflow-hidden transition-all ${
-                          watchVehicleType === "Large Van (10-14 pax)" 
-                            ? "ring-2 ring-blue-500 shadow-lg" 
-                            : "hover:border-blue-200 cursor-pointer"
-                        }`}
-                        onClick={() => form.setValue("vehicleType", "Large Van (10-14 pax)")}
-                      >
-                        {watchVehicleType === "Large Van (10-14 pax)" && (
-                          <div className="absolute top-2 right-2 z-10">
-                            <Badge className="bg-blue-500">Selected</Badge>
-                          </div>
-                        )}
-                        <div className="h-32 relative">
-                          <ResponsiveCaboImage
-                            src="https://images.unsplash.com/photo-1464219222984-216ebffaaf85"
-                            alt="Large Van"
-                            category="luxury"
-                            objectFit="cover"
-                            className="w-full h-full"
-                          />
-                        </div>
-                        <div className="p-4">
-                          <div className="flex justify-between items-start mb-2">
-                            <div>
-                              <h4 className="font-semibold">Large Van</h4>
-                              <p className="text-sm text-gray-500">10-14 passengers</p>
+                        {/* Large Van Card - Google Flights Style */}
+                        <div 
+                          className={`border rounded-lg overflow-hidden transition-all hover:shadow-md ${
+                            watchVehicleType === "Large Van (10-14 pax)" 
+                              ? "border-blue-500 ring-1 ring-blue-500" 
+                              : ""
+                          }`}
+                          onClick={() => form.setValue("vehicleType", "Large Van (10-14 pax)")}
+                        >
+                          <div className="p-4 cursor-pointer">
+                            <div className="flex items-center">
+                              <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mr-4">
+                                <Bus className="h-6 w-6 text-gray-500" />
+                              </div>
+                              <div className="flex-grow">
+                                <div className="flex justify-between items-center">
+                                  <div>
+                                    <div className="flex items-center">
+                                      <h4 className="font-semibold">Large Van</h4>
+                                      <Badge variant="outline" className="ml-2 text-xs">Best for groups</Badge>
+                                    </div>
+                                    <div className="flex text-xs text-gray-500 mt-1">
+                                      <span className="flex items-center mr-3">
+                                        <Users className="h-3 w-3 mr-1" /> 10-14 passengers
+                                      </span>
+                                      <span className="flex items-center">
+                                        <Luggage className="h-3 w-3 mr-1" /> 12+ bags
+                                      </span>
+                                    </div>
+                                  </div>
+                                  <div className="text-right">
+                                    <p className="font-bold text-lg">
+                                      ${getPrice(watchDestination, "Large Van (10-14 pax)", watchTripType) || '--'}
+                                    </p>
+                                    <p className="text-xs text-gray-500">{watchTripType === "oneWay" ? "One way" : "Round trip"}</p>
+                                  </div>
+                                </div>
+                              </div>
                             </div>
-                            <div className="text-right">
-                              <p className="font-bold text-lg">
-                                ${transportationPricing[watchDestination as keyof typeof transportationPricing]?.["Large Van (10-14 pax)"]?.[watchTripType as keyof typeof transportationPricing[typeof watchDestination][typeof watchVehicleType]]}
-                              </p>
-                              <p className="text-xs text-gray-500">{watchTripType === "oneWay" ? "One way" : "Round trip"}</p>
-                            </div>
-                          </div>
-                          <div className="flex items-center space-x-4 text-sm">
-                            <span className="flex items-center text-gray-500">
-                              <Car className="h-3 w-3 mr-1" /> Large group
-                            </span>
-                            <span className="flex items-center text-gray-500">
-                              <MapPin className="h-3 w-3 mr-1" /> 12+ bags
-                            </span>
                           </div>
                         </div>
                       </div>
@@ -707,316 +773,200 @@ export default function TransportationPage() {
         </Card>
       </div>
 
-      {/* Features Section */}
-      <div className="container mx-auto px-4 py-16">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold mb-4">Why Choose Our Transportation Service</h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            We provide reliable, comfortable, and safe transportation services in Los Cabos
-          </p>
+      {/* Google Flights Style Map - Match to reference image */}
+      <div className="container mx-auto px-4 py-8">
+        <div className="mb-4">
+          <h2 className="text-xl font-medium">Find cheap flights from San José del Cabo to anywhere</h2>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <Card className="border-0 shadow-md">
-            <CardContent className="pt-6">
-              <div className="flex flex-col items-center text-center">
-                <div className="p-3 bg-blue-100 rounded-full mb-4">
-                  <Shield className="h-6 w-6 text-blue-900" />
-                </div>
-                <h3 className="text-xl font-semibold mb-2">Safe & Reliable</h3>
-                <p className="text-gray-600">
-                  All our drivers are professionally trained and our vehicles are regularly maintained for your safety.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+        {/* Location Pills */}
+        <div className="mb-4 flex space-x-2">
+          <div className="bg-blue-100 text-blue-800 font-medium px-4 py-1 rounded-full text-sm">
+            San José del Cabo
+          </div>
+          <div className="bg-gray-100 text-gray-800 font-medium px-4 py-1 rounded-full text-sm">
+            La Paz
+          </div>
+        </div>
+        
+        {/* Map View - Exactly like Google Flights */}
+        <div className="rounded-lg overflow-hidden h-[300px] w-full relative bg-blue-50">
+          <ResponsiveCaboImage
+            src="https://images.unsplash.com/photo-1585152968992-d2b9444408cc" 
+            alt="Map of Los Cabos area"
+            category="luxury"
+            objectFit="cover"
+            className="w-full h-full"
+          />
           
-          <Card className="border-0 shadow-md">
-            <CardContent className="pt-6">
-              <div className="flex flex-col items-center text-center">
-                <div className="p-3 bg-blue-100 rounded-full mb-4">
-                  <Clock className="h-6 w-6 text-blue-900" />
-                </div>
-                <h3 className="text-xl font-semibold mb-2">On-Time Service</h3>
-                <p className="text-gray-600">
-                  We track your flight and adjust pickup times accordingly, guaranteeing we'll be there when you arrive.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+          {/* Dots on map */}
+          <div className="absolute top-[40%] left-[40%]">
+            <div className="h-3 w-3 bg-blue-600 rounded-full"></div>
+          </div>
           
-          <Card className="border-0 shadow-md">
-            <CardContent className="pt-6">
-              <div className="flex flex-col items-center text-center">
-                <div className="p-3 bg-blue-100 rounded-full mb-4">
-                  <DollarSign className="h-6 w-6 text-blue-900" />
-                </div>
-                <h3 className="text-xl font-semibold mb-2">No Hidden Fees</h3>
-                <p className="text-gray-600">
-                  Our pricing is transparent with no hidden charges. What you see is what you pay.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+          <div className="absolute top-[30%] left-[50%]">
+            <div className="h-3 w-3 bg-blue-600 rounded-full"></div>
+          </div>
+          
+          <div className="absolute top-[20%] right-[30%]">
+            <div className="h-3 w-3 bg-blue-600 rounded-full"></div>
+          </div>
+          
+          <div className="absolute top-[25%] right-[40%]">
+            <div className="h-3 w-3 bg-blue-600 rounded-full"></div>
+          </div>
+          
+          {/* Explore Destinations Button */}
+          <div className="absolute bottom-4 left-0 w-full flex justify-center">
+            <button className="bg-white py-2 px-6 rounded-full text-sm text-blue-600 font-medium shadow-md">
+              Explore destinations
+            </button>
+          </div>
+          
+          {/* Google map data attribution */}
+          <div className="absolute bottom-1 right-1 text-[10px] text-gray-700 bg-white/80 px-1">
+            Map data ©2025 Google, INEGI
+          </div>
         </div>
       </div>
 
-      {/* Image Gallery */}
-      <div className="bg-gray-100 py-16">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Our Fleet</h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Modern, comfortable vehicles to meet all your transportation needs in Los Cabos
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="rounded-xl overflow-hidden shadow-md">
-              <div className="h-64">
-                <ResponsiveCaboImage
-                  src="https://images.unsplash.com/photo-1533473359331-0135ef1b58bf"
-                  alt="Suburban SUV"
-                  category="luxury"
-                  objectFit="cover"
-                  className="w-full h-full"
-                />
+      {/* Vehicle Comparison Section (Google Flights Style) */}
+      <div className="container mx-auto px-4 py-8 border-t">
+        <div className="mb-4">
+          <h2 className="text-xl font-medium">Compare our vehicles</h2>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="border rounded-lg overflow-hidden">
+            <div className="px-4 py-3 bg-blue-50">
+              <h3 className="font-medium">Suburban SUV</h3>
+            </div>
+            <div className="p-4">
+              <div className="flex items-center mb-3">
+                <Car className="h-5 w-5 text-gray-500 mr-2" />
+                <span className="text-sm">Up to 5 passengers</span>
               </div>
-              <div className="p-4 bg-white">
-                <h3 className="font-bold text-lg">Suburban SUV</h3>
-                <p className="text-gray-600">Luxury SUV with seating for up to 5 passengers plus luggage</p>
+              <div className="flex items-center mb-3">
+                <Luggage className="h-5 w-5 text-gray-500 mr-2" />
+                <span className="text-sm">4 standard suitcases</span>
+              </div>
+              <div className="flex items-center">
+                <Info className="h-5 w-5 text-gray-500 mr-2" />
+                <span className="text-sm">Air-conditioned, leather seats</span>
+              </div>
+              <div className="mt-4 text-center">
+                <span className="text-sm text-gray-500 block mb-1">Starting from</span>
+                <span className="font-bold text-lg">$55 one way</span>
               </div>
             </div>
+          </div>
+          
+          <div className="border rounded-lg overflow-hidden">
+            <div className="px-4 py-3 bg-blue-50">
+              <h3 className="font-medium">Passenger Van</h3>
+            </div>
+            <div className="p-4">
+              <div className="flex items-center mb-3">
+                <Users className="h-5 w-5 text-gray-500 mr-2" />
+                <span className="text-sm">Up to 6 passengers</span>
+              </div>
+              <div className="flex items-center mb-3">
+                <Luggage className="h-5 w-5 text-gray-500 mr-2" />
+                <span className="text-sm">6 standard suitcases</span>
+              </div>
+              <div className="flex items-center">
+                <Info className="h-5 w-5 text-gray-500 mr-2" />
+                <span className="text-sm">Perfect for small groups</span>
+              </div>
+              <div className="mt-4 text-center">
+                <span className="text-sm text-gray-500 block mb-1">Starting from</span>
+                <span className="font-bold text-lg">$45 one way</span>
+              </div>
+            </div>
+          </div>
+          
+          <div className="border rounded-lg overflow-hidden">
+            <div className="px-4 py-3 bg-blue-50">
+              <h3 className="font-medium">Large Van</h3>
+            </div>
+            <div className="p-4">
+              <div className="flex items-center mb-3">
+                <Users className="h-5 w-5 text-gray-500 mr-2" />
+                <span className="text-sm">10-14 passengers</span>
+              </div>
+              <div className="flex items-center mb-3">
+                <Luggage className="h-5 w-5 text-gray-500 mr-2" />
+                <span className="text-sm">12+ suitcases</span>
+              </div>
+              <div className="flex items-center">
+                <Info className="h-5 w-5 text-gray-500 mr-2" />
+                <span className="text-sm">Ideal for large groups & families</span>
+              </div>
+              <div className="mt-4 text-center">
+                <span className="text-sm text-gray-500 block mb-1">Starting from</span>
+                <span className="font-bold text-lg">$70 one way</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* FAQs (Google Flights Style) */}
+      <div className="container mx-auto px-4 py-8 border-t">
+        <h2 className="text-xl font-medium mb-4">Frequently asked questions</h2>
+        
+        <div className="max-w-3xl">
+          <Accordion type="single" collapsible className="space-y-2">
+            <AccordionItem value="item-1" className="border rounded-lg overflow-hidden">
+              <AccordionTrigger className="px-4 py-3 hover:no-underline">
+                <span className="text-sm font-medium">How do I locate my driver at the airport?</span>
+              </AccordionTrigger>
+              <AccordionContent className="px-4 pb-3 text-sm">
+                Our driver will be waiting for you in the arrival area with a sign displaying your name. For international arrivals at Los Cabos Airport, exit the terminal after customs and look for your driver in the designated pickup area.
+              </AccordionContent>
+            </AccordionItem>
             
-            <div className="rounded-xl overflow-hidden shadow-md">
-              <div className="h-64">
-                <ResponsiveCaboImage
-                  src="https://images.unsplash.com/photo-1519641471654-76ce0107ad1b"
-                  alt="Passenger Van"
-                  category="luxury"
-                  objectFit="cover"
-                  className="w-full h-full"
-                />
-              </div>
-              <div className="p-4 bg-white">
-                <h3 className="font-bold text-lg">Passenger Van</h3>
-                <p className="text-gray-600">Comfortable van with seating for up to 6 passengers plus luggage</p>
-              </div>
-            </div>
+            <AccordionItem value="item-2" className="border rounded-lg overflow-hidden">
+              <AccordionTrigger className="px-4 py-3 hover:no-underline">
+                <span className="text-sm font-medium">What happens if my flight is delayed?</span>
+              </AccordionTrigger>
+              <AccordionContent className="px-4 pb-3 text-sm">
+                Don't worry! We monitor all flight arrivals. If your flight is delayed, we will adjust your pickup time accordingly at no additional cost. Your driver will be waiting for you when you arrive.
+              </AccordionContent>
+            </AccordionItem>
             
-            <div className="rounded-xl overflow-hidden shadow-md">
-              <div className="h-64">
-                <ResponsiveCaboImage
-                  src="https://images.unsplash.com/photo-1464219222984-216ebffaaf85"
-                  alt="Large Van"
-                  category="luxury"
-                  objectFit="cover"
-                  className="w-full h-full"
-                />
-              </div>
-              <div className="p-4 bg-white">
-                <h3 className="font-bold text-lg">Large Van</h3>
-                <p className="text-gray-600">Spacious van for groups of 10-14 passengers plus luggage</p>
-              </div>
-            </div>
-          </div>
+            <AccordionItem value="item-3" className="border rounded-lg overflow-hidden">
+              <AccordionTrigger className="px-4 py-3 hover:no-underline">
+                <span className="text-sm font-medium">Is the price per person or per vehicle?</span>
+              </AccordionTrigger>
+              <AccordionContent className="px-4 pb-3 text-sm">
+                Our prices are per vehicle, not per person. This means you pay one flat rate regardless of how many passengers are in your group (up to the maximum capacity of the vehicle).
+              </AccordionContent>
+            </AccordionItem>
+            
+            <AccordionItem value="item-4" className="border rounded-lg overflow-hidden">
+              <AccordionTrigger className="px-4 py-3 hover:no-underline">
+                <span className="text-sm font-medium">Do you provide car seats for children?</span>
+              </AccordionTrigger>
+              <AccordionContent className="px-4 pb-3 text-sm">
+                Yes, we can provide car seats for infants and children upon request. Please specify this in the "Special Requests" section when booking, and let us know the age and weight of the child.
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
         </div>
       </div>
 
-      {/* Service Process */}
-      <div className="container mx-auto px-4 py-16">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold mb-4">How It Works</h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Easy booking process from start to finish
-          </p>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div className="flex flex-col items-center text-center">
-            <div className="w-12 h-12 bg-blue-900 text-white rounded-full flex items-center justify-center text-xl font-bold mb-4">1</div>
-            <h3 className="text-xl font-semibold mb-2">Book Online</h3>
-            <p className="text-gray-600">
-              Complete our simple booking form with your trip details and preferences.
-            </p>
+      {/* Footer - Simplified (Google Flights Style) */}
+      <div className="container mx-auto px-4 py-8 border-t">
+        <div className="flex flex-wrap justify-between items-center">
+          <div className="text-sm text-gray-500">
+            © 2025 @Cabo. All rights reserved.
           </div>
-          
-          <div className="flex flex-col items-center text-center">
-            <div className="w-12 h-12 bg-blue-900 text-white rounded-full flex items-center justify-center text-xl font-bold mb-4">2</div>
-            <h3 className="text-xl font-semibold mb-2">Confirmation</h3>
-            <p className="text-gray-600">
-              Receive instant confirmation with all your booking details.
-            </p>
+          <div className="flex space-x-6 text-sm mt-4 md:mt-0">
+            <a href="#" className="text-gray-600 hover:text-blue-600">Privacy Policy</a>
+            <a href="#" className="text-gray-600 hover:text-blue-600">Terms of Service</a>
+            <a href="#" className="text-gray-600 hover:text-blue-600">Contact Us</a>
           </div>
-          
-          <div className="flex flex-col items-center text-center">
-            <div className="w-12 h-12 bg-blue-900 text-white rounded-full flex items-center justify-center text-xl font-bold mb-4">3</div>
-            <h3 className="text-xl font-semibold mb-2">Meet & Greet</h3>
-            <p className="text-gray-600">
-              Your driver will meet you at the airport with a sign bearing your name.
-            </p>
-          </div>
-          
-          <div className="flex flex-col items-center text-center">
-            <div className="w-12 h-12 bg-blue-900 text-white rounded-full flex items-center justify-center text-xl font-bold mb-4">4</div>
-            <h3 className="text-xl font-semibold mb-2">Enjoy Your Ride</h3>
-            <p className="text-gray-600">
-              Relax and enjoy a comfortable ride to your destination.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* FAQs */}
-      <div className="bg-gray-50 py-16">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Frequently Asked Questions</h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Find answers to common questions about our transportation services
-            </p>
-          </div>
-          
-          <div className="max-w-3xl mx-auto">
-            <Accordion type="single" collapsible className="space-y-4">
-              <AccordionItem value="item-1" className="bg-white rounded-lg border">
-                <AccordionTrigger className="px-6 py-4 hover:no-underline">
-                  How do I locate my driver at the airport?
-                </AccordionTrigger>
-                <AccordionContent className="px-6 pb-4">
-                  Our driver will be waiting for you in the arrival area with a sign displaying your name. For international arrivals at Los Cabos Airport, exit the terminal after customs and look for your driver in the designated pickup area.
-                </AccordionContent>
-              </AccordionItem>
-              
-              <AccordionItem value="item-2" className="bg-white rounded-lg border">
-                <AccordionTrigger className="px-6 py-4 hover:no-underline">
-                  What happens if my flight is delayed?
-                </AccordionTrigger>
-                <AccordionContent className="px-6 pb-4">
-                  Don't worry! We monitor all flight arrivals. If your flight is delayed, we will adjust your pickup time accordingly at no additional cost. Your driver will be waiting for you when you arrive.
-                </AccordionContent>
-              </AccordionItem>
-              
-              <AccordionItem value="item-3" className="bg-white rounded-lg border">
-                <AccordionTrigger className="px-6 py-4 hover:no-underline">
-                  Is the price per person or per vehicle?
-                </AccordionTrigger>
-                <AccordionContent className="px-6 pb-4">
-                  Our prices are per vehicle, not per person. This means you pay one flat rate regardless of how many passengers are in your group (up to the maximum capacity of the vehicle).
-                </AccordionContent>
-              </AccordionItem>
-              
-              <AccordionItem value="item-4" className="bg-white rounded-lg border">
-                <AccordionTrigger className="px-6 py-4 hover:no-underline">
-                  Do you provide car seats for children?
-                </AccordionTrigger>
-                <AccordionContent className="px-6 pb-4">
-                  Yes, we can provide car seats for infants and children upon request. Please specify this in the "Special Requests" section when booking, and let us know the age and weight of the child.
-                </AccordionContent>
-              </AccordionItem>
-              
-              <AccordionItem value="item-5" className="bg-white rounded-lg border">
-                <AccordionTrigger className="px-6 py-4 hover:no-underline">
-                  What is your cancellation policy?
-                </AccordionTrigger>
-                <AccordionContent className="px-6 pb-4">
-                  We offer free cancellation up to 24 hours before your scheduled pickup time. Cancellations made less than 24 hours before the scheduled service may be subject to a cancellation fee.
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-          </div>
-        </div>
-      </div>
-
-      {/* Testimonials */}
-      <div className="container mx-auto px-4 py-16">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold mb-4">What Our Customers Say</h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Hear from travelers who have used our transportation services
-          </p>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <Card className="border-0 shadow-md">
-            <CardContent className="pt-6">
-              <div className="flex flex-col">
-                <div className="flex text-yellow-400 mb-4">
-                  <Star className="h-5 w-5 fill-current" />
-                  <Star className="h-5 w-5 fill-current" />
-                  <Star className="h-5 w-5 fill-current" />
-                  <Star className="h-5 w-5 fill-current" />
-                  <Star className="h-5 w-5 fill-current" />
-                </div>
-                <p className="text-gray-600 mb-4 italic">
-                  "Our driver was waiting for us when we arrived, despite our flight being delayed by 2 hours. The vehicle was clean and comfortable, and our driver was very knowledgeable about the area."
-                </p>
-                <div className="mt-auto">
-                  <p className="font-semibold">Michael R.</p>
-                  <p className="text-sm text-gray-500">San Diego, CA</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="border-0 shadow-md">
-            <CardContent className="pt-6">
-              <div className="flex flex-col">
-                <div className="flex text-yellow-400 mb-4">
-                  <Star className="h-5 w-5 fill-current" />
-                  <Star className="h-5 w-5 fill-current" />
-                  <Star className="h-5 w-5 fill-current" />
-                  <Star className="h-5 w-5 fill-current" />
-                  <Star className="h-5 w-5 fill-current" />
-                </div>
-                <p className="text-gray-600 mb-4 italic">
-                  "Booking was easy and the service was excellent. We had a large group and the van was spacious with plenty of room for our luggage. Will definitely use this service again on our next trip to Cabo."
-                </p>
-                <div className="mt-auto">
-                  <p className="font-semibold">Jennifer T.</p>
-                  <p className="text-sm text-gray-500">Chicago, IL</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="border-0 shadow-md">
-            <CardContent className="pt-6">
-              <div className="flex flex-col">
-                <div className="flex text-yellow-400 mb-4">
-                  <Star className="h-5 w-5 fill-current" />
-                  <Star className="h-5 w-5 fill-current" />
-                  <Star className="h-5 w-5 fill-current" />
-                  <Star className="h-5 w-5 fill-current" />
-                  <Star className="h-5 w-5" />
-                </div>
-                <p className="text-gray-600 mb-4 italic">
-                  "Professional service from start to finish. Our driver gave us great recommendations for restaurants and activities in the area. The SUV was luxurious and made our arrival in Cabo stress-free."
-                </p>
-                <div className="mt-auto">
-                  <p className="font-semibold">David L.</p>
-                  <p className="text-sm text-gray-500">Seattle, WA</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-
-      {/* CTA Section */}
-      <div className="bg-blue-900 py-16">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold text-white mb-4">Ready to Book Your Transportation?</h2>
-          <p className="text-xl text-blue-100 max-w-2xl mx-auto mb-8">
-            Secure your reliable airport transfer today and start your Cabo vacation without stress
-          </p>
-          <Button 
-            className="bg-white text-blue-900 hover:bg-blue-50 px-8 py-6 text-lg font-semibold"
-            onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}
-          >
-            Book Transportation Now
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </Button>
         </div>
       </div>
     </div>
