@@ -27,11 +27,39 @@ import {
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Loader2, ChevronRight, Car, MapPin, Calendar, Info } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import { ResponsiveCaboImage } from "@/components/ui/cabo-image";
+import { 
+  Loader2, 
+  ChevronRight, 
+  Car, 
+  MapPin, 
+  Calendar, 
+  Info, 
+  ChevronDown, 
+  ArrowRight, 
+  MessageSquare, 
+  Check, 
+  RefreshCw,
+  Shield,
+  Clock,
+  DollarSign,
+  Search,
+  Star,
+  Luggage,
+  Users,
+  Bus 
+} from "lucide-react";
+import { CaboImage, ResponsiveCaboImage } from "@/components/ui/cabo-image";
 import { Separator } from "@/components/ui/separator";
+import { 
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
 import { Link } from "wouter";
+import { useToast } from "@/hooks/use-toast";
 
 // Define pricing data
 const transportationPricing = {
@@ -180,7 +208,7 @@ export default function TransportationPage() {
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
       <div className="relative">
-        <div className="h-[40vh] md:h-[50vh] relative">
+        <div className="h-[40vh] md:h-[60vh] relative">
           <ResponsiveCaboImage 
             src="https://images.unsplash.com/photo-1610647752706-3bb12202b035" 
             alt="Airport transportation in Cabo"
@@ -190,395 +218,805 @@ export default function TransportationPage() {
           />
           <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center text-white p-4">
             <div className="max-w-4xl mx-auto text-center">
-              <h1 className="text-4xl md:text-6xl font-bold mb-4">Airport Transportation</h1>
+              <Badge variant="outline" className="mb-4 text-white border-white px-4 py-1 text-sm">RELIABLE & COMFORTABLE</Badge>
+              <h1 className="text-4xl md:text-6xl font-bold mb-4">Los Cabos Airport Transportation</h1>
               <p className="text-xl max-w-2xl mx-auto">
-                Reliable and comfortable transfers between Los Cabos airports and your destination
+                Safe, on-time private transfers between Los Cabos International Airport and your accommodation
               </p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Booking Form */}
-          <div className="md:col-span-2">
-            <Card>
-              <CardHeader>
-                <CardTitle>Book Your Transportation</CardTitle>
-                <CardDescription>
-                  Fill out the form below to book your airport transfer service
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                    {/* Trip Type Selection */}
+      {/* Google Flights Style Search Widget */}
+      <div className="container mx-auto px-4 -mt-12 relative z-10 mb-16">
+        <Card className="shadow-xl border-0">
+          <CardContent className="p-6">
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                {/* Google Flights Style Search Bar */}
+                <div className="rounded-xl bg-white p-1">
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
+                    {/* Trip Type Toggle */}
                     <FormField
                       control={form.control}
                       name="tripType"
                       render={({ field }) => (
-                        <FormItem className="space-y-3">
-                          <FormLabel>Trip Type</FormLabel>
-                          <FormControl>
-                            <RadioGroup
-                              onValueChange={field.onChange}
-                              defaultValue={field.value}
-                              className="flex flex-col space-y-1 sm:flex-row sm:space-x-4 sm:space-y-0"
-                            >
-                              <FormItem className="flex items-center space-x-3 space-y-0">
-                                <FormControl>
-                                  <RadioGroupItem value="oneWay" />
-                                </FormControl>
-                                <FormLabel className="font-normal cursor-pointer">
-                                  One Way
-                                </FormLabel>
-                              </FormItem>
-                              <FormItem className="flex items-center space-x-3 space-y-0">
-                                <FormControl>
-                                  <RadioGroupItem value="roundTrip" />
-                                </FormControl>
-                                <FormLabel className="font-normal cursor-pointer">
-                                  Round Trip
-                                </FormLabel>
-                              </FormItem>
-                            </RadioGroup>
-                          </FormControl>
+                        <FormItem className="mb-0">
+                          <div className="flex h-14 items-center justify-center bg-gray-50 rounded-lg px-3">
+                            <FormControl>
+                              <RadioGroup
+                                onValueChange={field.onChange}
+                                defaultValue={field.value}
+                                className="flex space-x-4"
+                              >
+                                <FormItem className="flex items-center space-x-2 space-y-0">
+                                  <FormControl>
+                                    <RadioGroupItem value="oneWay" />
+                                  </FormControl>
+                                  <FormLabel className="font-normal cursor-pointer text-sm">
+                                    One Way
+                                  </FormLabel>
+                                </FormItem>
+                                <FormItem className="flex items-center space-x-2 space-y-0">
+                                  <FormControl>
+                                    <RadioGroupItem value="roundTrip" />
+                                  </FormControl>
+                                  <FormLabel className="font-normal cursor-pointer text-sm">
+                                    Round Trip
+                                  </FormLabel>
+                                </FormItem>
+                              </RadioGroup>
+                            </FormControl>
+                          </div>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
 
-                    {/* Vehicle Type Selection */}
-                    <FormField
-                      control={form.control}
-                      name="vehicleType"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Vehicle Type</FormLabel>
-                          <FormControl>
-                            <Select 
-                              onValueChange={field.onChange} 
-                              defaultValue={field.value}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select a vehicle" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="Suburban (5 pax)">Suburban SUV (up to 5 passengers)</SelectItem>
-                                <SelectItem value="Van (6 pax)">Passenger Van (up to 6 passengers)</SelectItem>
-                                <SelectItem value="Large Van (10-14 pax)">Large Van (10-14 passengers)</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    {/* Destination Selection */}
+                    {/* Destination */}
                     <FormField
                       control={form.control}
                       name="destination"
                       render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Destination</FormLabel>
-                          <FormControl>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select your destination" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="San Jose (downtown)">San Jose del Cabo (downtown)</SelectItem>
-                                <SelectItem value="Palmilla">Palmilla</SelectItem>
-                                <SelectItem value="Tourist Corridor">Tourist Corridor</SelectItem>
-                                <SelectItem value="Cabo San Lucas (main)">Cabo San Lucas (main)</SelectItem>
-                                <SelectItem value="Pedregal">Pedregal</SelectItem>
-                                <SelectItem value="Tezal">Tezal</SelectItem>
-                                <SelectItem value="Diamante">Diamante</SelectItem>
-                                <SelectItem value="Todos Santos">Todos Santos</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    {/* Pickup Date */}
-                    <FormField
-                      control={form.control}
-                      name="pickupDate"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Pickup Date</FormLabel>
-                          <FormControl>
-                            <input
-                              type="date"
-                              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    {/* Return Date (Only shown for Round Trip) */}
-                    {watchTripType === "roundTrip" && (
-                      <FormField
-                        control={form.control}
-                        name="returnDate"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Return Date</FormLabel>
+                        <FormItem className="mb-0">
+                          <div className="rounded-lg overflow-hidden">
                             <FormControl>
-                              <input
-                                type="date"
-                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                                {...field}
-                              />
+                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <SelectTrigger className="h-14 border-0 bg-gray-50 rounded-lg focus:ring-0">
+                                  <div className="flex flex-col items-start text-left">
+                                    <span className="text-xs text-gray-500">Destination</span>
+                                    <SelectValue placeholder="Where are you going?" className="text-sm" />
+                                  </div>
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="San Jose (downtown)">San Jose del Cabo (downtown)</SelectItem>
+                                  <SelectItem value="Palmilla">Palmilla</SelectItem>
+                                  <SelectItem value="Tourist Corridor">Tourist Corridor</SelectItem>
+                                  <SelectItem value="Cabo San Lucas (main)">Cabo San Lucas (main)</SelectItem>
+                                  <SelectItem value="Pedregal">Pedregal</SelectItem>
+                                  <SelectItem value="Tezal">Tezal</SelectItem>
+                                  <SelectItem value="Diamante">Diamante</SelectItem>
+                                  <SelectItem value="Todos Santos">Todos Santos</SelectItem>
+                                </SelectContent>
+                              </Select>
                             </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    )}
-
-                    {/* Number of Passengers */}
-                    <FormField
-                      control={form.control}
-                      name="numPassengers"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Number of Passengers</FormLabel>
-                          <FormControl>
-                            <input
-                              type="number"
-                              min="1"
-                              max={watchVehicleType === "Large Van (10-14 pax)" ? "14" : watchVehicleType === "Van (6 pax)" ? "6" : "5"}
-                              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                              placeholder="Enter number of passengers"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    {/* Contact Details Section */}
-                    <div className="space-y-4">
-                      <h3 className="text-lg font-medium">Contact Details</h3>
-                      
-                      {/* Name */}
-                      <FormField
-                        control={form.control}
-                        name="name"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Full Name</FormLabel>
-                            <FormControl>
-                              <input
-                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                                placeholder="Enter your full name"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      {/* Email */}
-                      <FormField
-                        control={form.control}
-                        name="email"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Email</FormLabel>
-                            <FormControl>
-                              <input
-                                type="email"
-                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                                placeholder="Enter your email"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      {/* Phone */}
-                      <FormField
-                        control={form.control}
-                        name="phone"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Phone Number</FormLabel>
-                            <FormControl>
-                              <input
-                                type="tel"
-                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                                placeholder="Enter your phone number"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      {/* Special Requests */}
-                      <FormField
-                        control={form.control}
-                        name="specialRequests"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Special Requests</FormLabel>
-                            <FormControl>
-                              <textarea
-                                className="flex min-h-[100px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                                placeholder="Enter any special requests or requirements"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-                    {/* Price Display */}
-                    {price && (
-                      <div className="p-4 bg-[#2F4F4F]/5 rounded-md">
-                        <div className="flex justify-between items-center">
-                          <div>
-                            <p className="text-sm font-medium">Total Price:</p>
-                            <p className="text-sm text-muted-foreground">
-                              {watchTripType === "oneWay" ? "One-way" : "Round-trip"} • {watchVehicleType}
-                            </p>
                           </div>
-                          <div className="text-2xl font-bold text-[#2F4F4F]">${price}</div>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Submit Button */}
-                    <Button 
-                      type="submit" 
-                      className="w-full bg-[#2F4F4F] hover:bg-[#1F3F3F]"
-                      disabled={isSubmitting}
-                    >
-                      {isSubmitting ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Processing...
-                        </>
-                      ) : (
-                        "Book Transportation"
+                        </FormItem>
                       )}
-                    </Button>
-                  </form>
-                </Form>
-              </CardContent>
-            </Card>
-          </div>
-          
-          {/* Info Panel */}
-          <div>
-            <Card>
-              <CardHeader>
-                <CardTitle>About Our Transportation</CardTitle>
-                <CardDescription>
-                  Reliable airport transfers between SJD (Los Cabos International Airport) and your destination
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-start gap-3">
-                    <Car className="h-5 w-5 text-[#2F4F4F] mt-0.5" />
-                    <div>
-                      <h3 className="font-medium">Modern Vehicles</h3>
-                      <p className="text-sm text-muted-foreground">
-                        Our fleet includes air-conditioned suburban SUVs and passenger vans for your comfort.
-                      </p>
+                    />
+
+                    {/* Dates */}
+                    <div className="flex space-x-1">
+                      <FormField
+                        control={form.control}
+                        name="pickupDate"
+                        render={({ field }) => (
+                          <FormItem className="flex-1 mb-0">
+                            <div className="rounded-lg overflow-hidden">
+                              <FormControl>
+                                <div className="relative h-14 bg-gray-50 rounded-lg px-3 flex flex-col justify-center">
+                                  <span className="text-xs text-gray-500">Pickup Date</span>
+                                  <input
+                                    type="date"
+                                    className="bg-transparent border-0 p-0 outline-none text-sm"
+                                    {...field}
+                                  />
+                                  <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                </div>
+                              </FormControl>
+                            </div>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      {watchTripType === "roundTrip" && (
+                        <FormField
+                          control={form.control}
+                          name="returnDate"
+                          render={({ field }) => (
+                            <FormItem className="flex-1 mb-0">
+                              <div className="rounded-lg overflow-hidden">
+                                <FormControl>
+                                  <div className="relative h-14 bg-gray-50 rounded-lg px-3 flex flex-col justify-center">
+                                    <span className="text-xs text-gray-500">Return Date</span>
+                                    <input
+                                      type="date"
+                                      className="bg-transparent border-0 p-0 outline-none text-sm"
+                                      {...field}
+                                    />
+                                    <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                  </div>
+                                </FormControl>
+                              </div>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      )}
                     </div>
-                  </div>
-                  
-                  <div className="flex items-start gap-3">
-                    <Calendar className="h-5 w-5 text-[#2F4F4F] mt-0.5" />
-                    <div>
-                      <h3 className="font-medium">Flexible Scheduling</h3>
-                      <p className="text-sm text-muted-foreground">
-                        We monitor flight arrivals and departures to ensure timely pickup and drop-off.
-                      </p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-start gap-3">
-                    <MapPin className="h-5 w-5 text-[#2F4F4F] mt-0.5" />
-                    <div>
-                      <h3 className="font-medium">All Destinations</h3>
-                      <p className="text-sm text-muted-foreground">
-                        We service all areas in Los Cabos including San Jose del Cabo, Cabo San Lucas, and the Tourist Corridor.
-                      </p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-start gap-3">
-                    <Info className="h-5 w-5 text-[#2F4F4F] mt-0.5" />
-                    <div>
-                      <h3 className="font-medium">What to Expect</h3>
-                      <p className="text-sm text-muted-foreground">
-                        Professional, English-speaking drivers will meet you with a name sign and assist with luggage.
-                      </p>
-                    </div>
-                  </div>
-                  
-                  <Separator className="my-4" />
-                  
-                  <div>
-                    <h3 className="font-medium mb-2">Why Book with @cabo?</h3>
-                    <ul className="text-sm text-muted-foreground space-y-2">
-                      <li className="flex items-start gap-2">
-                        <ChevronRight className="h-4 w-4 text-[#2F4F4F] mt-0.5 flex-shrink-0" />
-                        <span>No hidden fees - prices include taxes and gratuity</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <ChevronRight className="h-4 w-4 text-[#2F4F4F] mt-0.5 flex-shrink-0" />
-                        <span>24/7 support and service</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <ChevronRight className="h-4 w-4 text-[#2F4F4F] mt-0.5 flex-shrink-0" />
-                        <span>Free cancellation up to 48 hours before pickup</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <ChevronRight className="h-4 w-4 text-[#2F4F4F] mt-0.5 flex-shrink-0" />
-                        <span>Complimentary bottled water</span>
-                      </li>
-                    </ul>
-                  </div>
-                  
-                  <Separator className="my-4" />
-                  
-                  <div>
-                    <h3 className="font-medium mb-2">Need Help?</h3>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      For group transfers or special requirements, contact our concierge team.
-                    </p>
-                    <Link href="/group-trips/luxury-concierge">
-                      <Button className="w-full bg-white text-[#2F4F4F] border border-[#2F4F4F] hover:bg-[#2F4F4F]/10">
-                        Contact Concierge
+
+                    {/* Search Button */}
+                    <div className="flex justify-center items-center">
+                      <Button 
+                        type="button" 
+                        className="h-14 w-full bg-blue-900 hover:bg-blue-800 text-white"
+                        onClick={() => {
+                          if (watchDestination) {
+                            window.scrollTo({
+                              top: document.getElementById('vehicle-options')?.offsetTop - 100 || 0,
+                              behavior: 'smooth'
+                            });
+                          } else {
+                            form.setError('destination', { 
+                              type: 'manual', 
+                              message: 'Please select a destination' 
+                            });
+                          }
+                        }}
+                      >
+                        <MapPin className="mr-2 h-4 w-4" />
+                        Find Transfers
                       </Button>
-                    </Link>
+                    </div>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+
+                {/* Vehicle Cards - Only show when destination is selected */}
+                {watchDestination && (
+                  <div id="vehicle-options" className="mt-8">
+                    <h3 className="text-lg font-semibold mb-4">Available Options</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {/* Suburban Card */}
+                      <div 
+                        className={`relative rounded-xl border p-0 overflow-hidden transition-all ${
+                          watchVehicleType === "Suburban (5 pax)" 
+                            ? "ring-2 ring-blue-500 shadow-lg" 
+                            : "hover:border-blue-200 cursor-pointer"
+                        }`}
+                        onClick={() => form.setValue("vehicleType", "Suburban (5 pax)")}
+                      >
+                        {watchVehicleType === "Suburban (5 pax)" && (
+                          <div className="absolute top-2 right-2 z-10">
+                            <Badge className="bg-blue-500">Selected</Badge>
+                          </div>
+                        )}
+                        <div className="h-32 relative">
+                          <ResponsiveCaboImage
+                            src="https://images.unsplash.com/photo-1533473359331-0135ef1b58bf"
+                            alt="Suburban SUV"
+                            category="luxury"
+                            objectFit="cover"
+                            className="w-full h-full"
+                          />
+                        </div>
+                        <div className="p-4">
+                          <div className="flex justify-between items-start mb-2">
+                            <div>
+                              <h4 className="font-semibold">Suburban SUV</h4>
+                              <p className="text-sm text-gray-500">Up to 5 passengers</p>
+                            </div>
+                            <div className="text-right">
+                              <p className="font-bold text-lg">
+                                ${transportationPricing[watchDestination as keyof typeof transportationPricing]?.["Suburban (5 pax)"]?.[watchTripType as keyof typeof transportationPricing[typeof watchDestination][typeof watchVehicleType]]}
+                              </p>
+                              <p className="text-xs text-gray-500">{watchTripType === "oneWay" ? "One way" : "Round trip"}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-4 text-sm">
+                            <span className="flex items-center text-gray-500">
+                              <Car className="h-3 w-3 mr-1" /> Luxury SUV
+                            </span>
+                            <span className="flex items-center text-gray-500">
+                              <MapPin className="h-3 w-3 mr-1" /> 4 bags
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Passenger Van Card */}
+                      <div 
+                        className={`relative rounded-xl border p-0 overflow-hidden transition-all ${
+                          watchVehicleType === "Van (6 pax)" 
+                            ? "ring-2 ring-blue-500 shadow-lg" 
+                            : "hover:border-blue-200 cursor-pointer"
+                        }`}
+                        onClick={() => form.setValue("vehicleType", "Van (6 pax)")}
+                      >
+                        {watchVehicleType === "Van (6 pax)" && (
+                          <div className="absolute top-2 right-2 z-10">
+                            <Badge className="bg-blue-500">Selected</Badge>
+                          </div>
+                        )}
+                        <div className="h-32 relative">
+                          <ResponsiveCaboImage
+                            src="https://images.unsplash.com/photo-1519641471654-76ce0107ad1b"
+                            alt="Passenger Van"
+                            category="luxury"
+                            objectFit="cover"
+                            className="w-full h-full"
+                          />
+                        </div>
+                        <div className="p-4">
+                          <div className="flex justify-between items-start mb-2">
+                            <div>
+                              <h4 className="font-semibold">Passenger Van</h4>
+                              <p className="text-sm text-gray-500">Up to 6 passengers</p>
+                            </div>
+                            <div className="text-right">
+                              <p className="font-bold text-lg">
+                                ${transportationPricing[watchDestination as keyof typeof transportationPricing]?.["Van (6 pax)"]?.[watchTripType as keyof typeof transportationPricing[typeof watchDestination][typeof watchVehicleType]]}
+                              </p>
+                              <p className="text-xs text-gray-500">{watchTripType === "oneWay" ? "One way" : "Round trip"}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-4 text-sm">
+                            <span className="flex items-center text-gray-500">
+                              <Car className="h-3 w-3 mr-1" /> Group
+                            </span>
+                            <span className="flex items-center text-gray-500">
+                              <MapPin className="h-3 w-3 mr-1" /> 6 bags
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Large Van Card */}
+                      <div 
+                        className={`relative rounded-xl border p-0 overflow-hidden transition-all ${
+                          watchVehicleType === "Large Van (10-14 pax)" 
+                            ? "ring-2 ring-blue-500 shadow-lg" 
+                            : "hover:border-blue-200 cursor-pointer"
+                        }`}
+                        onClick={() => form.setValue("vehicleType", "Large Van (10-14 pax)")}
+                      >
+                        {watchVehicleType === "Large Van (10-14 pax)" && (
+                          <div className="absolute top-2 right-2 z-10">
+                            <Badge className="bg-blue-500">Selected</Badge>
+                          </div>
+                        )}
+                        <div className="h-32 relative">
+                          <ResponsiveCaboImage
+                            src="https://images.unsplash.com/photo-1464219222984-216ebffaaf85"
+                            alt="Large Van"
+                            category="luxury"
+                            objectFit="cover"
+                            className="w-full h-full"
+                          />
+                        </div>
+                        <div className="p-4">
+                          <div className="flex justify-between items-start mb-2">
+                            <div>
+                              <h4 className="font-semibold">Large Van</h4>
+                              <p className="text-sm text-gray-500">10-14 passengers</p>
+                            </div>
+                            <div className="text-right">
+                              <p className="font-bold text-lg">
+                                ${transportationPricing[watchDestination as keyof typeof transportationPricing]?.["Large Van (10-14 pax)"]?.[watchTripType as keyof typeof transportationPricing[typeof watchDestination][typeof watchVehicleType]]}
+                              </p>
+                              <p className="text-xs text-gray-500">{watchTripType === "oneWay" ? "One way" : "Round trip"}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-4 text-sm">
+                            <span className="flex items-center text-gray-500">
+                              <Car className="h-3 w-3 mr-1" /> Large group
+                            </span>
+                            <span className="flex items-center text-gray-500">
+                              <MapPin className="h-3 w-3 mr-1" /> 12+ bags
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Booking Details */}
+                    {watchVehicleType && watchDestination && (
+                      <div className="mt-8">
+                        <h3 className="text-lg font-semibold mb-4">Complete Your Booking</h3>
+                        
+                        <Card>
+                          <CardContent className="p-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                              {/* Passenger Details */}
+                              <div>
+                                <h4 className="text-base font-medium mb-4">Passenger Details</h4>
+                                
+                                <div className="space-y-4">
+                                  <FormField
+                                    control={form.control}
+                                    name="numPassengers"
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <FormLabel>Number of Passengers</FormLabel>
+                                        <FormControl>
+                                          <input
+                                            type="number"
+                                            min="1"
+                                            max={watchVehicleType === "Large Van (10-14 pax)" ? "14" : watchVehicleType === "Van (6 pax)" ? "6" : "5"}
+                                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                            placeholder="Number of passengers"
+                                            {...field}
+                                          />
+                                        </FormControl>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
+                                  />
+                                  
+                                  <FormField
+                                    control={form.control}
+                                    name="name"
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <FormLabel>Full Name</FormLabel>
+                                        <FormControl>
+                                          <input
+                                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                            placeholder="Enter your full name"
+                                            {...field}
+                                          />
+                                        </FormControl>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
+                                  />
+                                  
+                                  <FormField
+                                    control={form.control}
+                                    name="email"
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <FormLabel>Email</FormLabel>
+                                        <FormControl>
+                                          <input
+                                            type="email"
+                                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                            placeholder="Enter your email"
+                                            {...field}
+                                          />
+                                        </FormControl>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
+                                  />
+                                  
+                                  <FormField
+                                    control={form.control}
+                                    name="phone"
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <FormLabel>Phone</FormLabel>
+                                        <FormControl>
+                                          <input
+                                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                            placeholder="Enter your phone number"
+                                            {...field}
+                                          />
+                                        </FormControl>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
+                                  />
+                                </div>
+                              </div>
+                              
+                              {/* Trip Details & Special Requests */}
+                              <div>
+                                <h4 className="text-base font-medium mb-4">Trip Details</h4>
+                                
+                                <div className="mb-6 bg-gray-50 rounded-lg p-4">
+                                  <div className="grid grid-cols-2 gap-3 text-sm">
+                                    <div>
+                                      <p className="text-gray-500">Trip type</p>
+                                      <p className="font-medium">{watchTripType === "oneWay" ? "One Way" : "Round Trip"}</p>
+                                    </div>
+                                    <div>
+                                      <p className="text-gray-500">Vehicle</p>
+                                      <p className="font-medium">{watchVehicleType}</p>
+                                    </div>
+                                    <div>
+                                      <p className="text-gray-500">Destination</p>
+                                      <p className="font-medium">{watchDestination}</p>
+                                    </div>
+                                    <div>
+                                      <p className="text-gray-500">Pickup date</p>
+                                      <p className="font-medium">{form.watch("pickupDate") || "Not set"}</p>
+                                    </div>
+                                    {watchTripType === "roundTrip" && (
+                                      <div>
+                                        <p className="text-gray-500">Return date</p>
+                                        <p className="font-medium">{form.watch("returnDate") || "Not set"}</p>
+                                      </div>
+                                    )}
+                                    <div>
+                                      <p className="text-gray-500">Price</p>
+                                      <p className="font-bold text-blue-900">${price}</p>
+                                    </div>
+                                  </div>
+                                </div>
+                                
+                                <FormField
+                                  control={form.control}
+                                  name="specialRequests"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel>Special Requests</FormLabel>
+                                      <FormControl>
+                                        <textarea
+                                          className="flex min-h-[100px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                          placeholder="Enter any special requests or flight details"
+                                          {...field}
+                                        />
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                              </div>
+                            </div>
+                            
+                            <div className="mt-6 flex justify-end">
+                              <Button 
+                                type="submit" 
+                                disabled={isSubmitting}
+                                className="bg-blue-900 hover:bg-blue-800 text-white px-6"
+                              >
+                                {isSubmitting ? (
+                                  <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    Processing...
+                                  </>
+                                ) : (
+                                  <>
+                                    Complete Booking
+                                    <ArrowRight className="ml-2 h-4 w-4" />
+                                  </>
+                                )}
+                              </Button>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </form>
+            </Form>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Features Section */}
+      <div className="container mx-auto px-4 py-16">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold mb-4">Why Choose Our Transportation Service</h2>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            We provide reliable, comfortable, and safe transportation services in Los Cabos
+          </p>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <Card className="border-0 shadow-md">
+            <CardContent className="pt-6">
+              <div className="flex flex-col items-center text-center">
+                <div className="p-3 bg-blue-100 rounded-full mb-4">
+                  <Shield className="h-6 w-6 text-blue-900" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">Safe & Reliable</h3>
+                <p className="text-gray-600">
+                  All our drivers are professionally trained and our vehicles are regularly maintained for your safety.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card className="border-0 shadow-md">
+            <CardContent className="pt-6">
+              <div className="flex flex-col items-center text-center">
+                <div className="p-3 bg-blue-100 rounded-full mb-4">
+                  <Clock className="h-6 w-6 text-blue-900" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">On-Time Service</h3>
+                <p className="text-gray-600">
+                  We track your flight and adjust pickup times accordingly, guaranteeing we'll be there when you arrive.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card className="border-0 shadow-md">
+            <CardContent className="pt-6">
+              <div className="flex flex-col items-center text-center">
+                <div className="p-3 bg-blue-100 rounded-full mb-4">
+                  <DollarSign className="h-6 w-6 text-blue-900" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">No Hidden Fees</h3>
+                <p className="text-gray-600">
+                  Our pricing is transparent with no hidden charges. What you see is what you pay.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      {/* Image Gallery */}
+      <div className="bg-gray-100 py-16">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">Our Fleet</h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Modern, comfortable vehicles to meet all your transportation needs in Los Cabos
+            </p>
           </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="rounded-xl overflow-hidden shadow-md">
+              <div className="h-64">
+                <ResponsiveCaboImage
+                  src="https://images.unsplash.com/photo-1533473359331-0135ef1b58bf"
+                  alt="Suburban SUV"
+                  category="luxury"
+                  objectFit="cover"
+                  className="w-full h-full"
+                />
+              </div>
+              <div className="p-4 bg-white">
+                <h3 className="font-bold text-lg">Suburban SUV</h3>
+                <p className="text-gray-600">Luxury SUV with seating for up to 5 passengers plus luggage</p>
+              </div>
+            </div>
+            
+            <div className="rounded-xl overflow-hidden shadow-md">
+              <div className="h-64">
+                <ResponsiveCaboImage
+                  src="https://images.unsplash.com/photo-1519641471654-76ce0107ad1b"
+                  alt="Passenger Van"
+                  category="luxury"
+                  objectFit="cover"
+                  className="w-full h-full"
+                />
+              </div>
+              <div className="p-4 bg-white">
+                <h3 className="font-bold text-lg">Passenger Van</h3>
+                <p className="text-gray-600">Comfortable van with seating for up to 6 passengers plus luggage</p>
+              </div>
+            </div>
+            
+            <div className="rounded-xl overflow-hidden shadow-md">
+              <div className="h-64">
+                <ResponsiveCaboImage
+                  src="https://images.unsplash.com/photo-1464219222984-216ebffaaf85"
+                  alt="Large Van"
+                  category="luxury"
+                  objectFit="cover"
+                  className="w-full h-full"
+                />
+              </div>
+              <div className="p-4 bg-white">
+                <h3 className="font-bold text-lg">Large Van</h3>
+                <p className="text-gray-600">Spacious van for groups of 10-14 passengers plus luggage</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Service Process */}
+      <div className="container mx-auto px-4 py-16">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold mb-4">How It Works</h2>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Easy booking process from start to finish
+          </p>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className="flex flex-col items-center text-center">
+            <div className="w-12 h-12 bg-blue-900 text-white rounded-full flex items-center justify-center text-xl font-bold mb-4">1</div>
+            <h3 className="text-xl font-semibold mb-2">Book Online</h3>
+            <p className="text-gray-600">
+              Complete our simple booking form with your trip details and preferences.
+            </p>
+          </div>
+          
+          <div className="flex flex-col items-center text-center">
+            <div className="w-12 h-12 bg-blue-900 text-white rounded-full flex items-center justify-center text-xl font-bold mb-4">2</div>
+            <h3 className="text-xl font-semibold mb-2">Confirmation</h3>
+            <p className="text-gray-600">
+              Receive instant confirmation with all your booking details.
+            </p>
+          </div>
+          
+          <div className="flex flex-col items-center text-center">
+            <div className="w-12 h-12 bg-blue-900 text-white rounded-full flex items-center justify-center text-xl font-bold mb-4">3</div>
+            <h3 className="text-xl font-semibold mb-2">Meet & Greet</h3>
+            <p className="text-gray-600">
+              Your driver will meet you at the airport with a sign bearing your name.
+            </p>
+          </div>
+          
+          <div className="flex flex-col items-center text-center">
+            <div className="w-12 h-12 bg-blue-900 text-white rounded-full flex items-center justify-center text-xl font-bold mb-4">4</div>
+            <h3 className="text-xl font-semibold mb-2">Enjoy Your Ride</h3>
+            <p className="text-gray-600">
+              Relax and enjoy a comfortable ride to your destination.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* FAQs */}
+      <div className="bg-gray-50 py-16">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">Frequently Asked Questions</h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Find answers to common questions about our transportation services
+            </p>
+          </div>
+          
+          <div className="max-w-3xl mx-auto">
+            <Accordion type="single" collapsible className="space-y-4">
+              <AccordionItem value="item-1" className="bg-white rounded-lg border">
+                <AccordionTrigger className="px-6 py-4 hover:no-underline">
+                  How do I locate my driver at the airport?
+                </AccordionTrigger>
+                <AccordionContent className="px-6 pb-4">
+                  Our driver will be waiting for you in the arrival area with a sign displaying your name. For international arrivals at Los Cabos Airport, exit the terminal after customs and look for your driver in the designated pickup area.
+                </AccordionContent>
+              </AccordionItem>
+              
+              <AccordionItem value="item-2" className="bg-white rounded-lg border">
+                <AccordionTrigger className="px-6 py-4 hover:no-underline">
+                  What happens if my flight is delayed?
+                </AccordionTrigger>
+                <AccordionContent className="px-6 pb-4">
+                  Don't worry! We monitor all flight arrivals. If your flight is delayed, we will adjust your pickup time accordingly at no additional cost. Your driver will be waiting for you when you arrive.
+                </AccordionContent>
+              </AccordionItem>
+              
+              <AccordionItem value="item-3" className="bg-white rounded-lg border">
+                <AccordionTrigger className="px-6 py-4 hover:no-underline">
+                  Is the price per person or per vehicle?
+                </AccordionTrigger>
+                <AccordionContent className="px-6 pb-4">
+                  Our prices are per vehicle, not per person. This means you pay one flat rate regardless of how many passengers are in your group (up to the maximum capacity of the vehicle).
+                </AccordionContent>
+              </AccordionItem>
+              
+              <AccordionItem value="item-4" className="bg-white rounded-lg border">
+                <AccordionTrigger className="px-6 py-4 hover:no-underline">
+                  Do you provide car seats for children?
+                </AccordionTrigger>
+                <AccordionContent className="px-6 pb-4">
+                  Yes, we can provide car seats for infants and children upon request. Please specify this in the "Special Requests" section when booking, and let us know the age and weight of the child.
+                </AccordionContent>
+              </AccordionItem>
+              
+              <AccordionItem value="item-5" className="bg-white rounded-lg border">
+                <AccordionTrigger className="px-6 py-4 hover:no-underline">
+                  What is your cancellation policy?
+                </AccordionTrigger>
+                <AccordionContent className="px-6 pb-4">
+                  We offer free cancellation up to 24 hours before your scheduled pickup time. Cancellations made less than 24 hours before the scheduled service may be subject to a cancellation fee.
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </div>
+        </div>
+      </div>
+
+      {/* Testimonials */}
+      <div className="container mx-auto px-4 py-16">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold mb-4">What Our Customers Say</h2>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Hear from travelers who have used our transportation services
+          </p>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <Card className="border-0 shadow-md">
+            <CardContent className="pt-6">
+              <div className="flex flex-col">
+                <div className="flex text-yellow-400 mb-4">
+                  <Star className="h-5 w-5 fill-current" />
+                  <Star className="h-5 w-5 fill-current" />
+                  <Star className="h-5 w-5 fill-current" />
+                  <Star className="h-5 w-5 fill-current" />
+                  <Star className="h-5 w-5 fill-current" />
+                </div>
+                <p className="text-gray-600 mb-4 italic">
+                  "Our driver was waiting for us when we arrived, despite our flight being delayed by 2 hours. The vehicle was clean and comfortable, and our driver was very knowledgeable about the area."
+                </p>
+                <div className="mt-auto">
+                  <p className="font-semibold">Michael R.</p>
+                  <p className="text-sm text-gray-500">San Diego, CA</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card className="border-0 shadow-md">
+            <CardContent className="pt-6">
+              <div className="flex flex-col">
+                <div className="flex text-yellow-400 mb-4">
+                  <Star className="h-5 w-5 fill-current" />
+                  <Star className="h-5 w-5 fill-current" />
+                  <Star className="h-5 w-5 fill-current" />
+                  <Star className="h-5 w-5 fill-current" />
+                  <Star className="h-5 w-5 fill-current" />
+                </div>
+                <p className="text-gray-600 mb-4 italic">
+                  "Booking was easy and the service was excellent. We had a large group and the van was spacious with plenty of room for our luggage. Will definitely use this service again on our next trip to Cabo."
+                </p>
+                <div className="mt-auto">
+                  <p className="font-semibold">Jennifer T.</p>
+                  <p className="text-sm text-gray-500">Chicago, IL</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card className="border-0 shadow-md">
+            <CardContent className="pt-6">
+              <div className="flex flex-col">
+                <div className="flex text-yellow-400 mb-4">
+                  <Star className="h-5 w-5 fill-current" />
+                  <Star className="h-5 w-5 fill-current" />
+                  <Star className="h-5 w-5 fill-current" />
+                  <Star className="h-5 w-5 fill-current" />
+                  <Star className="h-5 w-5" />
+                </div>
+                <p className="text-gray-600 mb-4 italic">
+                  "Professional service from start to finish. Our driver gave us great recommendations for restaurants and activities in the area. The SUV was luxurious and made our arrival in Cabo stress-free."
+                </p>
+                <div className="mt-auto">
+                  <p className="font-semibold">David L.</p>
+                  <p className="text-sm text-gray-500">Seattle, WA</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      {/* CTA Section */}
+      <div className="bg-blue-900 py-16">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-3xl font-bold text-white mb-4">Ready to Book Your Transportation?</h2>
+          <p className="text-xl text-blue-100 max-w-2xl mx-auto mb-8">
+            Secure your reliable airport transfer today and start your Cabo vacation without stress
+          </p>
+          <Button 
+            className="bg-white text-blue-900 hover:bg-blue-50 px-8 py-6 text-lg font-semibold"
+            onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}
+          >
+            Book Transportation Now
+            <ArrowRight className="ml-2 h-5 w-5" />
+          </Button>
         </div>
       </div>
     </div>
