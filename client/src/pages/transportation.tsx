@@ -1,16 +1,12 @@
-import { useEffect } from "react";
-import { useLocation } from "wouter";
+import React from "react";
 
-export default function TransportationRedirect() {
-  const [_, setLocation] = useLocation();
-  
-  useEffect(() => {
-    setLocation("/transportation/");
-  }, [setLocation]);
-  
+const TransportationPage = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <p className="text-gray-500">Redirecting to transportation page...</p>
+    <div>
+      <h1>Cabo Transportation</h1>
+      <p>This is a simplified transportation booking page.</p>
     </div>
   );
-}
+};
+
+export default TransportationPage;
