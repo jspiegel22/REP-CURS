@@ -31,6 +31,7 @@ import EventsPage from "@/pages/events";
 import GuidesPage from "@/pages/guides";
 import WorkWithUsPage from "@/pages/work-with-us";
 import ItineraryBuilderPage from "@/pages/itinerary-builder-page";
+import TransportationPage from "@/pages/transportation";
 import TestFormsPage from "@/pages/test-forms";
 import { ImageManagementPage } from "@/pages/image-management";
 import PrivacyPolicy from "@/pages/privacy-policy";
@@ -102,6 +103,7 @@ function Router() {
           <Route path="/guides" component={GuidesPage} />
           <Route path="/work-with-us" component={WorkWithUsPage} />
           <Route path="/itinerary-builder" component={ItineraryBuilderPage} />
+          <Route path="/transportation" component={TransportationPage} />
           <Route path="/test-forms" component={TestFormsPage} />
           <Route path="/admin/images">
             {() => (

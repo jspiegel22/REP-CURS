@@ -107,6 +107,12 @@ const moreMenuItems = [
     image: "https://images.unsplash.com/photo-1541532713592-79a0317b6b77"
   },
   {
+    title: "Transportation",
+    href: "/transportation",
+    description: "Book airport transfers and private transport services",
+    image: "https://images.unsplash.com/photo-1610647752706-3bb12202b035"
+  },
+  {
     title: "Real Estate",
     href: "/real-estate",
     description: "Find your dream property in Cabo",
