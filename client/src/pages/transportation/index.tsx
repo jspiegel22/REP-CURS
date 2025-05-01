@@ -39,7 +39,8 @@ import {
 } from "lucide-react";
 import { Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";
-import { Badge } from "@/components/ui/badge";
+// Badge component is imported but not used
+// import { Badge } from "@/components/ui/badge";
 
 // Define pricing data
 const transportationPricing = {
