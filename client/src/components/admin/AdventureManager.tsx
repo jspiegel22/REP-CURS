@@ -519,16 +519,17 @@ export default function AdventureManager() {
                 />
               </div>
 
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-2 mb-2">
                 <Checkbox 
                   id="topRecommended" 
                   checked={editForm.topRecommended || false}
                   onCheckedChange={(checked) => setEditForm({...editForm, topRecommended: Boolean(checked)})}
+                  className="border-black"
                 />
                 <Label htmlFor="topRecommended" className="cursor-pointer">Top Recommended Adventure</Label>
               </div>
               
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-2 mb-2">
                 <Checkbox 
                   id="featured" 
                   checked={editForm.featured || false}

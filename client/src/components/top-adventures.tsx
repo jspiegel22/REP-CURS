@@ -38,17 +38,32 @@ export default function TopAdventures({ currentAdventureId }: TopAdventuresProps
         }
         
         const allAdventures = await response.json();
+        console.log("Fetched adventures:", allAdventures);
         
-        // Filter out the current adventure and select top rated adventures
-        const filteredAdventures = allAdventures
-          .filter((adventure: Adventure) => 
-            currentAdventureId === undefined || adventure.id !== currentAdventureId
-          )
-          // Sort by rating (highest first)
-          .sort((a: Adventure, b: Adventure) => b.rating - a.rating)
-          .slice(0, 3); // Take top 3
+        // First, filter out the current adventure
+        let filtered = allAdventures.filter((adventure: Adventure) => 
+          currentAdventureId === undefined || adventure.id !== currentAdventureId
+        );
+        
+        // Next, try to get adventures marked as "topRecommended" in the database
+        let topAdventures = filtered.filter((adventure: any) => adventure.topRecommended === true);
+        
+        // If we don't have enough topRecommended adventures, or none at all,
+        // fall back to our original algorithm
+        if (topAdventures.length < 3) {
+          // Sort by rating (highest first) for remaining slots
+          const remainingAdventures = filtered
+            .filter((adventure: any) => adventure.topRecommended !== true)
+            .sort((a: Adventure, b: Adventure) => b.rating - a.rating)
+            .slice(0, 3 - topAdventures.length);
+            
+          topAdventures = [...topAdventures, ...remainingAdventures];
+        } else if (topAdventures.length > 3) {
+          // If we have more than 3 topRecommended adventures, just take the first 3
+          topAdventures = topAdventures.slice(0, 3);
+        }
           
-        setAdventures(filteredAdventures);
+        setAdventures(topAdventures);
       } catch (err) {
         console.error('Error fetching adventures:', err);
         setError('Failed to load adventures');

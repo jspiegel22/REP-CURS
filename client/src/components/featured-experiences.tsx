@@ -42,18 +42,27 @@ export default function FeaturedExperiences() {
         }
         
         const data = await response.json();
+        console.log("Fetched adventures:", data);
         
-        // Filter for featured adventures - select ones with good ratings or specific types
-        const featured = data
-          .filter((adv: any) => 
-            // Select adventures with high ratings or popular types
-            adv.rating >= 4.4 || 
-            adv.title.includes('SUNSET') || 
-            adv.title.includes('YACHT') || 
-            adv.title.includes('WHALE') ||
-            adv.title.includes('LUXURY')
-          )
-          .slice(0, 5); // Take only the first 5 adventures
+        // Filter for adventures marked as "featured" in the database
+        let featured = data.filter((adv: any) => adv.featured === true);
+        
+        // If no adventures are explicitly marked as featured, fall back to our previous algorithm
+        if (featured.length === 0) {
+          featured = data
+            .filter((adv: any) => 
+              // Select adventures with high ratings or popular types
+              adv.rating >= 4.4 || 
+              adv.title.includes('SUNSET') || 
+              adv.title.includes('YACHT') || 
+              adv.title.includes('WHALE') ||
+              adv.title.includes('LUXURY')
+            )
+            .slice(0, 5); // Take only the first 5 adventures
+        } else if (featured.length > 5) {
+          // If there are more than 5 featured adventures, only show the first 5
+          featured = featured.slice(0, 5);
+        }
           
         setExperiences(featured);
       } catch (error) {
