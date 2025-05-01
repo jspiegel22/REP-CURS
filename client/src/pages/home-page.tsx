@@ -229,6 +229,7 @@ export default function HomePage() {
                   alt="Grand Velas Los Cabos luxury resort with yacht"
                   category="luxury"
                   aspectRatio="16/9"
+                  objectFit="cover"
                   className="rounded-xl"
                 />
               </div>
@@ -357,6 +358,7 @@ export default function HomePage() {
                   alt="Friends celebrating on a yacht at El Arco in Cabo San Lucas"
                   category="activity"
                   aspectRatio="16/9"
+                  objectFit="cover"
                   className="rounded-xl"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>

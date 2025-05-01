@@ -1,6 +1,7 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { Link } from "wouter";
+import { useQuery } from "@tanstack/react-query";
 
 interface Adventure {
   id: number;
@@ -11,6 +12,7 @@ interface Adventure {
   reviewCount: number | null;
   description: string;
   slug: string;
+  featured: boolean;
 }
 
 // Function to extract price from description
@@ -29,51 +31,38 @@ export default function FeaturedExperiences() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
-  const [experiences, setExperiences] = useState<Adventure[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
 
-  // Fetch adventures from the API
-  useEffect(() => {
-    const fetchAdventures = async () => {
-      try {
-        const response = await fetch('/api/adventures');
-        if (!response.ok) {
-          throw new Error('Failed to fetch adventures');
-        }
-        
-        const data = await response.json();
-        console.log("Fetched adventures:", data);
-        
-        // Filter for adventures marked as "featured" in the database
-        let featured = data.filter((adv: any) => adv.featured === true);
-        
-        // If no adventures are explicitly marked as featured, fall back to our previous algorithm
-        if (featured.length === 0) {
-          featured = data
-            .filter((adv: any) => 
-              // Select adventures with high ratings or popular types
-              adv.rating >= 4.4 || 
-              adv.title.includes('SUNSET') || 
-              adv.title.includes('YACHT') || 
-              adv.title.includes('WHALE') ||
-              adv.title.includes('LUXURY')
-            )
-            .slice(0, 5); // Take only the first 5 adventures
-        } else if (featured.length > 5) {
-          // If there are more than 5 featured adventures, only show the first 5
-          featured = featured.slice(0, 5);
-        }
-          
-        setExperiences(featured);
-      } catch (error) {
-        console.error('Error fetching adventures:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  // Use React Query to fetch adventures with cache invalidation support
+  const { data: allAdventures = [], isLoading } = useQuery<Adventure[]>({
+    queryKey: ['/api/adventures'],
+    staleTime: 60000, // Consider data fresh for 1 minute
+    refetchOnMount: true // Always refetch when component mounts
+  });
+  
+  // Process adventures for display
+  const experiences = (() => {
+    // Filter for adventures marked as "featured" in the database
+    let featured = allAdventures.filter((adv: any) => adv.featured === true);
     
-    fetchAdventures();
-  }, []);
+    // If no adventures are explicitly marked as featured, fall back to our previous algorithm
+    if (featured.length === 0) {
+      featured = allAdventures
+        .filter((adv: any) => 
+          // Select adventures with high ratings or popular types
+          adv.rating >= 4.4 || 
+          adv.title.includes('SUNSET') || 
+          adv.title.includes('YACHT') || 
+          adv.title.includes('WHALE') ||
+          adv.title.includes('LUXURY')
+        )
+        .slice(0, 5); // Take only the first 5 adventures
+    } else if (featured.length > 5) {
+      // If there are more than 5 featured adventures, only show the first 5
+      featured = featured.slice(0, 5);
+    }
+    
+    return featured;
+  })();
 
   const scroll = (direction: 'left' | 'right') => {
     const container = scrollContainerRef.current;
@@ -108,7 +97,7 @@ export default function FeaturedExperiences() {
         <p className="text-gray-700 mt-3 mb-2">
           Discover the best activities and adventures in Cabo
         </p>
-        <Link href="/adventures" className="inline-flex items-center mt-2 text-[#FF8C38] hover:text-[#E67D29] font-medium">
+        <Link href="/adventures/all" className="inline-flex items-center mt-2 text-[#FF8C38] hover:text-[#E67D29] font-medium">
           View All Experiences <ChevronRight className="w-4 h-4 ml-1" />
         </Link>
       </div>

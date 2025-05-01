@@ -11,7 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Loader2, Search, Plus, Edit, Trash2, Save, Upload, X } from "lucide-react";
 import { Label } from "@/components/ui/label";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import JsonAdventureImporter from './JsonAdventureImporter';
 
 interface Adventure {
@@ -158,6 +158,9 @@ export default function AdventureManager() {
       setAdventures(updatedAdventures);
       setIsEditDialogOpen(false);
       
+      // Invalidate the adventures cache to ensure featured and top recommended sections update
+      queryClient.invalidateQueries({ queryKey: ['/api/adventures'] });
+      
       toast({
         title: "Adventure updated",
         description: "The adventure has been successfully updated.",
@@ -205,6 +208,9 @@ export default function AdventureManager() {
       // Add the new adventure to the local state
       setAdventures([...adventures, newAdventure]);
       setIsCreateDialogOpen(false);
+      
+      // Invalidate the adventures cache to ensure featured and top recommended sections update
+      queryClient.invalidateQueries({ queryKey: ['/api/adventures'] });
       
       toast({
         title: "Adventure created",

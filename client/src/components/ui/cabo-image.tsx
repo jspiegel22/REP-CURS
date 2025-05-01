@@ -119,7 +119,7 @@ export function ResponsiveCaboImage({
   imageId,
   imageName,
   aspectRatio = "16/9",
-  objectFit = "fill",
+  objectFit = "cover",
   ...props
 }: CaboImageProps & {
   aspectRatio?: string;

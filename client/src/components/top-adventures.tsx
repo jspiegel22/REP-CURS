@@ -2,7 +2,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { Clock, Users, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 interface Adventure {
   id: number;
@@ -17,6 +18,7 @@ interface Adventure {
   provider: string;
   rating: number;
   description: string;
+  topRecommended: boolean;
 }
 
 interface TopAdventuresProps {
@@ -24,56 +26,44 @@ interface TopAdventuresProps {
 }
 
 export default function TopAdventures({ currentAdventureId }: TopAdventuresProps) {
-  const [adventures, setAdventures] = useState<Adventure[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // Use React Query to fetch adventures
+  const { 
+    data: allAdventures = [], 
+    isLoading, 
+    error 
+  } = useQuery<Adventure[]>({
+    queryKey: ['/api/adventures'],
+    staleTime: 60000, // Consider data fresh for 1 minute
+    refetchOnMount: true // Always refetch when component mounts
+  });
   
-  useEffect(() => {
-    async function fetchAdventures() {
-      try {
-        setLoading(true);
-        const response = await fetch('/api/adventures');
-        if (!response.ok) {
-          throw new Error('Failed to fetch adventures');
-        }
-        
-        const allAdventures = await response.json();
-        console.log("Fetched adventures:", allAdventures);
-        
-        // First, filter out the current adventure
-        let filtered = allAdventures.filter((adventure: Adventure) => 
-          currentAdventureId === undefined || adventure.id !== currentAdventureId
-        );
-        
-        // Next, try to get adventures marked as "topRecommended" in the database
-        let topAdventures = filtered.filter((adventure: any) => adventure.topRecommended === true);
-        
-        // If we don't have enough topRecommended adventures, or none at all,
-        // fall back to our original algorithm
-        if (topAdventures.length < 3) {
-          // Sort by rating (highest first) for remaining slots
-          const remainingAdventures = filtered
-            .filter((adventure: any) => adventure.topRecommended !== true)
-            .sort((a: Adventure, b: Adventure) => b.rating - a.rating)
-            .slice(0, 3 - topAdventures.length);
-            
-          topAdventures = [...topAdventures, ...remainingAdventures];
-        } else if (topAdventures.length > 3) {
-          // If we have more than 3 topRecommended adventures, just take the first 3
-          topAdventures = topAdventures.slice(0, 3);
-        }
-          
-        setAdventures(topAdventures);
-      } catch (err) {
-        console.error('Error fetching adventures:', err);
-        setError('Failed to load adventures');
-      } finally {
-        setLoading(false);
-      }
-    }
+  // Process adventures to display
+  const adventures = (() => {
+    // First, filter out the current adventure
+    let filtered = allAdventures.filter(adventure => 
+      currentAdventureId === undefined || adventure.id !== currentAdventureId
+    );
     
-    fetchAdventures();
-  }, [currentAdventureId]);
+    // Next, try to get adventures marked as "topRecommended" in the database
+    let topAdventures = filtered.filter(adventure => adventure.topRecommended === true);
+    
+    // If we don't have enough topRecommended adventures, or none at all,
+    // fall back to our original algorithm
+    if (topAdventures.length < 3) {
+      // Sort by rating (highest first) for remaining slots
+      const remainingAdventures = filtered
+        .filter(adventure => !adventure.topRecommended)
+        .sort((a, b) => b.rating - a.rating)
+        .slice(0, 3 - topAdventures.length);
+        
+      topAdventures = [...topAdventures, ...remainingAdventures];
+    } else if (topAdventures.length > 3) {
+      // If we have more than 3 topRecommended adventures, just take the first 3
+      topAdventures = topAdventures.slice(0, 3);
+    }
+      
+    return topAdventures;
+  })();
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
@@ -103,7 +93,7 @@ export default function TopAdventures({ currentAdventureId }: TopAdventuresProps
   };
 
   // If there are no other adventures to show, return null
-  if (!loading && adventures.length === 0 && !error) {
+  if (!isLoading && adventures.length === 0 && !error) {
     return null;
   }
 
@@ -112,18 +102,18 @@ export default function TopAdventures({ currentAdventureId }: TopAdventuresProps
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center mb-8">
           <h2 className="text-2xl font-bold text-[#2F4F4F]">Other Top Adventures</h2>
-          <Link href="/adventures" className="text-[#FF8C38] hover:underline font-medium">
+          <Link href="/adventures/all" className="text-[#FF8C38] hover:underline font-medium">
             View all adventures
           </Link>
         </div>
 
-        {loading ? (
+        {isLoading ? (
           <div className="flex justify-center py-8">
             <Loader2 className="h-8 w-8 animate-spin text-[#FF8C38]" />
           </div>
         ) : error ? (
           <div className="bg-red-50 border border-red-200 text-red-800 rounded-md p-4 text-center">
-            {error}
+            {error instanceof Error ? error.message : 'An error occurred'}
           </div>
         ) : (
           <div className="relative">

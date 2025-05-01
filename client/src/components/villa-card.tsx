@@ -24,6 +24,7 @@ export function VillaCard({ villa, className = "" }: VillaCardProps) {
             alt={villa.name}
             category="villa"
             aspectRatio="16/9"
+            objectFit="cover"
             className="rounded-t-lg"
             loading="lazy"
             decoding="async"
