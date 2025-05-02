@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { eq, and, ne, SQL } from "drizzle-orm";
+import { eq, and, ne, SQL, desc } from "drizzle-orm";
 import { users, listings, bookings, rewards, socialShares, weatherCache, resorts, villas, leads, guideSubmissions, blogPosts, adventures, restaurants } from "@shared/schema";
 import type { User, InsertUser, Listing, Booking, Reward, SocialShare, WeatherCache, Resort, Villa, Lead, InsertLead, InsertBlogPost, Adventure, InsertAdventure, Restaurant, InsertRestaurant } from "@shared/schema";
 import session from "express-session";
@@ -38,20 +38,20 @@ interface IStorage {
   createBlogPost(blogPost: any): Promise<any>;
   getBlogPostBySlug(slug: string): Promise<any>;
   getBlogPosts(limit?: number, category?: string): Promise<any[]>;
-  
+
   // Recent data retrieval for admin notification
   getRecentLeads(limit: number): Promise<Lead[]>;
   getRecentBookings(limit: number): Promise<Booking[]>;
   getRecentGuideSubmissions(limit: number): Promise<any[]>;
-  
+
   // Adventures related methods
-  getAdventures(category?: string): Promise<Adventure[]>;
+  getAdventures(category?: string, includeHidden?: boolean): Promise<Adventure[]>;
   getAdventure(id: number): Promise<Adventure | undefined>;
   getAdventureBySlug(slug: string): Promise<Adventure | undefined>;
   createAdventure(adventure: InsertAdventure): Promise<Adventure>;
   updateAdventure(id: number, adventure: Partial<Adventure>): Promise<Adventure>;
   deleteAdventure(id: number): Promise<boolean>;
-  
+
   // Restaurant related methods
   getRestaurants(category?: string): Promise<Restaurant[]>;
   getRestaurant(id: number): Promise<Restaurant | undefined>;
@@ -59,7 +59,7 @@ interface IStorage {
   createRestaurant(restaurant: InsertRestaurant): Promise<Restaurant>;
   updateRestaurant(id: number, restaurant: Partial<Restaurant>): Promise<Restaurant>;
   deleteRestaurant(id: number): Promise<boolean>;
-  
+
   // Analytics methods
   getLeadAnalytics(): Promise<any>;
   getGuideAnalytics(): Promise<any>;
@@ -87,7 +87,7 @@ export class DatabaseStorage implements IStorage {
   async createGuideSubmission(submission: any): Promise<any> {
     try {
       console.log("Creating guide submission with data:", submission);
-      
+
       // Store form data as JSON with all the additional fields
       const formData = {
         ...(submission.formData || {}),
@@ -98,12 +98,12 @@ export class DatabaseStorage implements IStorage {
         download_link: "https://drive.google.com/file/d/1iM6eeb5P5aKLcSiE1ZI_7Vu3XsJqgOs6/view?usp=sharing",
         interest_type: submission.guideType || "Cabo Travel Guide"
       };
-      
+
       // Format interest areas as a string if it's an array for Airtable compatibility
       const interestAreasJson = Array.isArray(submission.interestAreas) 
         ? JSON.stringify(submission.interestAreas)
         : JSON.stringify([submission.interestAreas || "Travel Guide"]);
-      
+
       // Only include columns that actually exist in the database
       // Use camelCase field names matching the schema definition in shared/schema.ts
       const result = await db.insert(guideSubmissions).values({
@@ -126,7 +126,7 @@ export class DatabaseStorage implements IStorage {
       }).returning();
 
       const [newSubmission] = result;
-      
+
       // Transform snake_case back to camelCase for the response
       // Direct return of newSubmission since it's already in camelCase format
       const formattedSubmission = {
@@ -150,12 +150,12 @@ export class DatabaseStorage implements IStorage {
       };
 
       console.log("Successfully created guide submission:", formattedSubmission);
-      
+
       // Send to Make.com webhook if configured
       try {
         if (process.env.MAKE_WEBHOOK_URL) {
           console.log("Sending guide request to Make.com webhook");
-          
+
           // Format the data according to Airtable column structure
           const webhookData = {
             "First Name": submission.first_name || submission.firstName,
@@ -182,7 +182,7 @@ export class DatabaseStorage implements IStorage {
             "Referrer": submission.referrer || "",
             "Tags": Array.isArray(submission.tags) ? submission.tags.join(", ") : "Guide Request, Website"
           };
-          
+
           // Send to Make.com in the background
           fetch(process.env.MAKE_WEBHOOK_URL, {
             method: 'POST',
@@ -196,7 +196,7 @@ export class DatabaseStorage implements IStorage {
         console.error("Failed to send to webhook, but submission was saved:", webhookError);
         // Don't fail the main request if webhook sending fails
       }
-      
+
       return formattedSubmission;
     } catch (error) {
       console.error("Error creating guide submission:", error);
@@ -223,11 +223,11 @@ export class DatabaseStorage implements IStorage {
     const [villa] = await db.select().from(villas).where(eq(villas.trackHsId, trackHsId));
     return villa;
   }
-  
+
   async createVilla(villaData: Partial<Villa>): Promise<Villa> {
     try {
       console.log("Creating new villa:", villaData.name);
-      
+
       // Convert any arrays to JSON strings if needed
       const processedVilla = {
         ...villaData,
@@ -241,7 +241,7 @@ export class DatabaseStorage implements IStorage {
         createdAt: new Date(),
         updatedAt: new Date()
       };
-      
+
       const [newVilla] = await db.insert(villas).values(processedVilla as any).returning();
       console.log("Villa created successfully:", newVilla.id);
       return newVilla;
@@ -255,31 +255,31 @@ export class DatabaseStorage implements IStorage {
   async getResorts(): Promise<Resort[]> {
     return db.select().from(resorts);
   }
-  
+
   async updateResort(id: number, updateData: Partial<Resort>): Promise<Resort | null> {
     try {
       console.log("Updating resort with ID:", id, "with data:", JSON.stringify(updateData));
-      
+
       // Remove any fields that don't exist in the database schema
       const validFields = ['name', 'description', 'location', 'rating', 'reviewCount', 
                           'priceLevel', 'imageUrl', 'imageUrls', 'amenities', 'googleUrl', 
                           'bookingsToday', 'category', 'featured'];
-      
+
       const filteredData: any = {};
       for (const key in updateData) {
         if (validFields.includes(key)) {
           filteredData[key] = updateData[key as keyof Partial<Resort>];
         }
       }
-      
+
       // Add the updatedAt field
       filteredData.updatedAt = new Date();
-      
+
       const [updatedResort] = await db.update(resorts)
         .set(filteredData)
         .where(eq(resorts.id, id))
         .returning();
-      
+
       console.log("Resort updated successfully:", updatedResort);
       return updatedResort;
     } catch (error) {
@@ -502,11 +502,11 @@ export class DatabaseStorage implements IStorage {
         form_data, points_earned, payment_intent_id, status 
         FROM bookings ORDER BY id DESC`
       );
-      
+
       return result.map(row => {
         // Extract form data safely
         const formData = row.form_data || {};
-        
+
         return {
           id: row.id,
           bookingType: (formData.bookingType || "resort") as any,
@@ -519,7 +519,7 @@ export class DatabaseStorage implements IStorage {
           pointsEarned: row.points_earned,
           paymentIntentId: row.payment_intent_id,
           status: row.status,
-          
+
           // Extract data from form_data or use defaults
           firstName: formData.firstName || "Guest",
           lastName: formData.lastName || "",
@@ -527,7 +527,7 @@ export class DatabaseStorage implements IStorage {
           phone: formData.phone || null,
           source: "website",
           guests: formData.guests || 2,
-          
+
           // Set defaults for schema compatibility
           createdAt: null,
           updatedAt: null,
@@ -569,11 +569,11 @@ export class DatabaseStorage implements IStorage {
         `SELECT * FROM bookings WHERE payment_intent_id = $1 LIMIT 1`,
         [paymentIntentId]
       );
-      
+
       if (result.rows.length === 0) {
         return undefined;
       }
-      
+
       return result.rows[0] as Booking;
     } catch (error) {
       console.error("Error fetching booking by payment intent ID:", error);
@@ -588,14 +588,14 @@ export class DatabaseStorage implements IStorage {
         `UPDATE bookings SET status = $1, updated_at = $2 WHERE id = $3`,
         [status, new Date(), bookingId]
       );
-      
+
       // Fetch the updated booking
       const [booking] = await db.select().from(bookings).where(eq(bookings.id, bookingId));
-      
+
       if (!booking) {
         throw new Error(`Booking with ID ${bookingId} not found after update`);
       }
-      
+
       // Send to webhook
       try {
         await retryFailedSync(syncBookingToAirtable, booking);
@@ -603,19 +603,19 @@ export class DatabaseStorage implements IStorage {
         console.error("Failed to sync updated booking to Airtable:", error);
         // Don't throw error here - we still want to return the booking
       }
-      
+
       return booking;
     } catch (error) {
       console.error("Error updating booking status:", error);
       throw new Error(`Failed to update booking status to ${status}`);
     }
   }
-  
+
   // Blog post management
   async createBlogPost(blogPost: any): Promise<any> {
     try {
       console.log("Creating blog post:", blogPost.title);
-      
+
       // Insert into database
       const [newBlogPost] = await db.insert(blogPosts).values({
         title: blogPost.title,
@@ -631,7 +631,7 @@ export class DatabaseStorage implements IStorage {
         createdAt: new Date(),
         updatedAt: new Date()
       }).returning();
-      
+
       console.log(`Blog post created successfully: ${newBlogPost.slug}`);
       return newBlogPost;
     } catch (error: any) {
@@ -639,7 +639,7 @@ export class DatabaseStorage implements IStorage {
       throw new Error(`Failed to create blog post: ${error.message}`);
     }
   }
-  
+
   async getBlogPostBySlug(slug: string): Promise<any> {
     try {
       const [blogPost] = await db.select().from(blogPosts).where(eq(blogPosts.slug, slug));
@@ -649,7 +649,7 @@ export class DatabaseStorage implements IStorage {
       throw new Error(`Failed to fetch blog post: ${error.message}`);
     }
   }
-  
+
   async getBlogPosts(limit = 10, category?: string): Promise<any[]> {
     try {
       // If category is provided, filter by it
@@ -678,15 +678,17 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Adventure Management
-  async getAdventures(category?: string): Promise<Adventure[]> {
+  async getAdventures(category?: string, includeHidden = false): Promise<Adventure[]> {
     try {
-      let results;
+      let query = db.select().from(adventures);
       if (category) {
-        results = await db.select().from(adventures).where(eq(adventures.category, category));
-      } else {
-        results = await db.select().from(adventures);
+        query = query.where(eq(adventures.category, category));
       }
-      
+      if (!includeHidden) {
+        query = query.where(eq(adventures.hidden, false));
+      }
+      const results = await query;
+
       // Format ratings to show only one decimal place
       return results.map(adventure => {
         if (adventure.rating) {
@@ -741,12 +743,12 @@ export class DatabaseStorage implements IStorage {
           .replace(/^-+/, '')
           .replace(/-+$/, '');
       }
-      
+
       // Format rating to one decimal place if provided
       if (adventure.rating) {
         adventure.rating = Number(Number(adventure.rating).toFixed(1));
       }
-      
+
       const [newAdventure] = await db.insert(adventures).values(adventure).returning();
       return newAdventure;
     } catch (error) {
@@ -762,22 +764,22 @@ export class DatabaseStorage implements IStorage {
       if (!currentAdventure) {
         throw new Error('Adventure not found');
       }
-      
+
       // Create a clean adventure object for the update
       const adventureToUpdate: Partial<Adventure> = {...adventure};
-      
+
       // Remove or fix date/timestamp fields to prevent errors
       if (adventureToUpdate.createdAt && !(adventureToUpdate.createdAt instanceof Date)) {
         delete adventureToUpdate.createdAt;
       }
-      
+
       if (adventureToUpdate.updatedAt && !(adventureToUpdate.updatedAt instanceof Date)) {
         delete adventureToUpdate.updatedAt;
       }
-      
+
       // Set updatedAt to current timestamp
       adventureToUpdate.updatedAt = new Date();
-      
+
       // Generate a slug from the title if title is updated and slug is not provided
       if (adventureToUpdate.title && !adventureToUpdate.slug) {
         let baseSlug = adventureToUpdate.title
@@ -787,7 +789,7 @@ export class DatabaseStorage implements IStorage {
           .replace(/\-\-+/g, '-')
           .replace(/^-+/, '')
           .replace(/-+$/, '');
-        
+
         // If slug is being changed, check for potential conflicts
         if (baseSlug !== currentAdventure.slug) {
           // If the slug we're trying to use already exists, keep the original slug
@@ -802,7 +804,7 @@ export class DatabaseStorage implements IStorage {
                 eq(adventures.slug, baseSlug),
                 ne(adventures.id, id)
               ));
-            
+
             if (existingSlugs.length > 0) {
               // If slug already exists, keep current slug or add timestamp
               if (currentAdventure.slug) {
@@ -824,18 +826,18 @@ export class DatabaseStorage implements IStorage {
           adventureToUpdate.slug = currentAdventure.slug;
         }
       }
-      
+
       // Format rating to one decimal place if provided
       if (adventureToUpdate.rating) {
         adventureToUpdate.rating = Number(Number(adventureToUpdate.rating).toFixed(1));
       }
-      
+
       const [updatedAdventure] = await db
         .update(adventures)
         .set(adventureToUpdate)
         .where(eq(adventures.id, id))
         .returning();
-      
+
       return updatedAdventure;
     } catch (error) {
       console.error(`Error updating adventure with ID ${id}:`, error);
@@ -852,7 +854,7 @@ export class DatabaseStorage implements IStorage {
       return false;
     }
   }
-  
+
   // Restaurant related methods
   async getRestaurants(category?: string): Promise<Restaurant[]> {
     try {
@@ -890,7 +892,7 @@ export class DatabaseStorage implements IStorage {
   async getRestaurantBySlug(slug: string): Promise<Restaurant | undefined> {
     // We don't have a slug field in the restaurants table, so we'll generate slugs on the fly
     const allRestaurants = await this.getRestaurants();
-    
+
     // Find the restaurant by matching the slug with the generated slug of each restaurant
     return allRestaurants.find(restaurant => {
       const restaurantSlug = this.generateResortSlug(restaurant.name);
@@ -901,7 +903,7 @@ export class DatabaseStorage implements IStorage {
   async createRestaurant(restaurant: InsertRestaurant): Promise<Restaurant> {
     try {
       console.log("Creating new restaurant:", restaurant);
-      
+
       // Set default values for optional fields if not provided
       const restaurantWithDefaults = {
         ...restaurant,
@@ -911,11 +913,11 @@ export class DatabaseStorage implements IStorage {
         reviews: restaurant.reviews || [],
         featured: restaurant.featured !== undefined ? restaurant.featured : false
       };
-      
+
       const [newRestaurant] = await db.insert(restaurants)
         .values(restaurantWithDefaults)
         .returning();
-      
+
       console.log("Restaurant created successfully:", newRestaurant);
       return newRestaurant;
     } catch (error) {
@@ -927,18 +929,18 @@ export class DatabaseStorage implements IStorage {
   async updateRestaurant(id: number, restaurant: Partial<Restaurant>): Promise<Restaurant> {
     try {
       console.log("Updating restaurant with ID:", id, "with data:", JSON.stringify(restaurant));
-      
+
       // Add the updatedAt field
       const updatedData = {
         ...restaurant,
         updatedAt: new Date()
       };
-      
+
       const [updatedRestaurant] = await db.update(restaurants)
         .set(updatedData)
         .where(eq(restaurants.id, id))
         .returning();
-      
+
       console.log("Restaurant updated successfully:", updatedRestaurant);
       return updatedRestaurant;
     } catch (error) {
@@ -952,14 +954,14 @@ export class DatabaseStorage implements IStorage {
       const result = await db.delete(restaurants)
         .where(eq(restaurants.id, id))
         .returning();
-      
+
       return result.length > 0;
     } catch (error) {
       console.error("Error deleting restaurant:", error);
       return false;
     }
   }
-  
+
   // Recent data retrieval for admin notification
   async getRecentLeads(limit: number): Promise<Lead[]> {
     try {
@@ -969,14 +971,14 @@ export class DatabaseStorage implements IStorage {
         .from(leads)
         .orderBy(leads.createdAt, 'desc')
         .limit(limit);
-      
+
       return recentLeads;
     } catch (error) {
       console.error("Error retrieving recent leads:", error);
       return [];
     }
   }
-  
+
   async getRecentBookings(limit: number): Promise<Booking[]> {
     try {
       // Get the most recent bookings, sorted by creation date (descending)
@@ -985,14 +987,14 @@ export class DatabaseStorage implements IStorage {
         .from(bookings)
         .orderBy(bookings.createdAt, 'desc')
         .limit(limit);
-      
+
       return recentBookings;
     } catch (error) {
       console.error("Error retrieving recent bookings:", error);
       return [];
     }
   }
-  
+
   async getRecentGuideSubmissions(limit: number): Promise<any[]> {
     try {
       // Get the most recent guide submissions, sorted by creation date (descending)
@@ -1001,7 +1003,7 @@ export class DatabaseStorage implements IStorage {
         .from(guideSubmissions)
         .orderBy(guideSubmissions.createdAt, 'desc')
         .limit(limit);
-      
+
       return recentGuideSubmissions;
     } catch (error) {
       console.error("Error retrieving recent guide submissions:", error);
@@ -1014,7 +1016,7 @@ export class DatabaseStorage implements IStorage {
     try {
       // Get leads by type
       const leads = await this.getAllLeads();
-      
+
       const leadsByType = {
         villa: leads.filter(l => l.interestType === 'villa').length,
         resort: leads.filter(l => l.interestType === 'resort').length,
@@ -1024,26 +1026,26 @@ export class DatabaseStorage implements IStorage {
         influencer: leads.filter(l => l.interestType === 'influencer').length,
         concierge: leads.filter(l => l.interestType === 'concierge').length,
       };
-      
+
       // Get leads by month (last 12 months)
       const now = new Date();
       const monthLabels = [];
       const leadsByMonth = [];
-      
+
       for (let i = 11; i >= 0; i--) {
         const month = new Date(now.getFullYear(), now.getMonth() - i, 1);
         const monthName = month.toLocaleString('default', { month: 'short', year: '2-digit' });
         monthLabels.push(monthName);
-        
+
         const monthLeads = leads.filter(lead => {
           const leadDate = new Date(lead.createdAt);
           return leadDate.getMonth() === month.getMonth() && 
                  leadDate.getFullYear() === month.getFullYear();
         }).length;
-        
+
         leadsByMonth.push(monthLeads);
       }
-      
+
       return {
         total: leads.length,
         byType: leadsByType,
@@ -1069,38 +1071,38 @@ export class DatabaseStorage implements IStorage {
       };
     }
   }
-  
+
   async getGuideAnalytics(): Promise<any> {
     try {
       // Get guide submissions
       const guides = await this.getGuideSubmissions();
-      
+
       // Get guides by month (last 12 months)
       const now = new Date();
       const monthLabels = [];
       const guidesByMonth = [];
-      
+
       for (let i = 11; i >= 0; i--) {
         const month = new Date(now.getFullYear(), now.getMonth() - i, 1);
         const monthName = month.toLocaleString('default', { month: 'short', year: '2-digit' });
         monthLabels.push(monthName);
-        
+
         const monthGuides = guides.filter(guide => {
           const guideDate = new Date(guide.createdAt);
           return guideDate.getMonth() === month.getMonth() && 
                  guideDate.getFullYear() === month.getFullYear();
         }).length;
-        
+
         guidesByMonth.push(monthGuides);
       }
-      
+
       // Get guides by type
       const guidesByType = {};
       guides.forEach(guide => {
         const type = guide.guideType || 'Ultimate Cabo Guide';
         guidesByType[type] = (guidesByType[type] || 0) + 1;
       });
-      
+
       return {
         total: guides.length,
         byType: guidesByType,
@@ -1124,11 +1126,11 @@ export class DatabaseStorage implements IStorage {
       };
     }
   }
-  
+
   async getDashboardAnalytics(): Promise<any> {
     try {
       console.time('getDashboardAnalytics');
-      
+
       // Get all data for dashboard
       // Limit the data for better performance - only get what's necessary for the dashboard
       const [leadsData, guidesData, listings, allRestaurants] = await Promise.all([
@@ -1137,9 +1139,9 @@ export class DatabaseStorage implements IStorage {
         this.getListings(),
         this.getRestaurants()
       ]);
-      
+
       console.timeLog('getDashboardAnalytics', 'Got analytics data');
-      
+
       // Listing/booking counts by type
       const listingsByType = {
         villa: listings.filter(l => l.type === 'villa').length,
@@ -1148,30 +1150,30 @@ export class DatabaseStorage implements IStorage {
         restaurant: listings.filter(l => l.type === 'restaurant').length,
         hotel: listings.filter(l => l.type === 'hotel').length,
       };
-      
+
       // Get recent leads and recent guide downloads - optimized to only fetch what we need
       console.timeLog('getDashboardAnalytics', 'Starting to fetch recent data');
-      
+
       // Function to get only the most recent records directly from the database
       const getRecentRecords = async (table, limit = 5) => {
         return await db.select().from(table).orderBy(desc(table.createdAt)).limit(limit);
       };
-      
+
       // Fetch recent data in parallel
       const [recentLeads, recentGuides] = await Promise.all([
         getRecentRecords(leads, 5),
         getRecentRecords(guideSubmissions, 5)
       ]);
-      
+
       console.timeLog('getDashboardAnalytics', 'Finished fetching recent data');
-      
+
       // Restaurant analytics
       const restaurantsByCategory = {};
       allRestaurants.forEach(restaurant => {
         const category = restaurant.category;
         restaurantsByCategory[category] = (restaurantsByCategory[category] || 0) + 1;
       });
-      
+
       return {
         leads: leadsData,
         guides: guidesData,

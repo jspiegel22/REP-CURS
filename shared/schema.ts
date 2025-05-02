@@ -27,6 +27,7 @@ export const listings = pgTable("listings", {
 // Update resorts table to match actual database schema
 export const resorts = pgTable("resorts", {
   id: serial("id").primaryKey(),
+  hidden: boolean("hidden").default(false),
   name: text("name").notNull(),
   rating: decimal("rating").notNull(),
   reviewCount: integer("review_count").notNull(),
@@ -228,6 +229,7 @@ export type InsertResort = z.infer<typeof insertResortSchema>;
 // Add villas table definition after existing tables
 export const villas = pgTable("villas", {
   id: serial("id").primaryKey(),
+  hidden: boolean("hidden").default(false),
   name: text("name").notNull(),
   description: text("description").notNull(),
   bedrooms: integer("bedrooms").notNull(),
@@ -355,6 +357,7 @@ export const restaurants = pgTable("restaurants", {
 // Adventures table for all Cabo experiences and activities (including yacht tours)
 export const adventures = pgTable("adventures", {
   id: serial("id").primaryKey(),
+  hidden: boolean("hidden").default(false),
   title: text("title").notNull(),
   slug: text("slug").notNull().unique(),
   description: text("description").notNull(),

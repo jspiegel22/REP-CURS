@@ -34,6 +34,7 @@ interface Adventure {
   featured: boolean;
   createdAt: string;
   updatedAt: string;
+  hidden: boolean; // Added hidden flag
 }
 
 export default function AdventureManager() {
@@ -60,6 +61,7 @@ export default function AdventureManager() {
     thingsToBring: [],
     topRecommended: false,
     featured: false,
+    hidden: false, // Added hidden flag to createForm
   });
   const fileInputRef = useRef<HTMLInputElement>(null);
   const createFileInputRef = useRef<HTMLInputElement>(null);
@@ -88,6 +90,9 @@ export default function AdventureManager() {
       filtered = filtered.filter(adventure => adventure.category === categoryFilter);
     }
 
+    //Filter out hidden adventures
+    filtered = filtered.filter(adventure => !adventure.hidden);
+
     setFilteredAdventures(filtered);
   }, [adventures, searchTerm, categoryFilter]);
 
@@ -101,7 +106,7 @@ export default function AdventureManager() {
       console.log("Fetched adventures:", data);
 
       setAdventures(data);
-      setFilteredAdventures(data);
+      setFilteredAdventures(data.filter(adventure => !adventure.hidden)); //Filter out hidden adventures on load
     } catch (error) {
       toast({
         title: "Error fetching adventures",
@@ -134,6 +139,7 @@ export default function AdventureManager() {
       thingsToBring: [],
       topRecommended: false,
       featured: false,
+      hidden: false, // Added hidden flag
     });
     setIsCreateDialogOpen(true);
   }
@@ -143,7 +149,7 @@ export default function AdventureManager() {
 
     try {
       // Make PUT request to update the adventure
-      const response = await apiRequest('PUT', `/api/adventures/${selectedAdventure.id}`, editForm);
+      const response = await apiRequest('PUT', `/api/adventures/${selectedAdventure.id}`, {...editForm, hidden: selectedAdventure.hidden}); //Include hidden state
 
       if (!response.ok) {
         throw new Error(`Error updating adventure: ${response.statusText}`);
@@ -199,7 +205,8 @@ export default function AdventureManager() {
         topRecommended: createForm.topRecommended || false,
         rating: createForm.rating || null,
         description: createForm.description || '',
-        featured: createForm.featured || false
+        featured: createForm.featured || false,
+        hidden: createForm.hidden || false, // Added hidden flag
       };
 
       const response = await apiRequest('POST', '/api/adventures', adventureData);
@@ -287,6 +294,24 @@ export default function AdventureManager() {
       description: "The image has been selected. It will be uploaded when you save.",
     });
   }
+
+  async function handleToggleHidden(id: number, hidden: boolean) {
+    try {
+      const response = await apiRequest('PUT', `/api/adventures/${id}`, { hidden });
+      if (!response.ok) {
+        throw new Error(`Error updating adventure: ${response.statusText}`);
+      }
+      const updatedAdventure = await response.json();
+      const updatedAdventures = adventures.map(adv => adv.id === id ? updatedAdventure : adv);
+      setAdventures(updatedAdventures);
+      queryClient.invalidateQueries({ queryKey: ['/api/adventures'] });
+      toast({ title: 'Adventure visibility updated', description: `Adventure is now ${hidden ? 'hidden' : 'visible'}` });
+    } catch (error) {
+      console.error('Error toggling hidden:', error);
+      toast({ title: 'Error updating adventure', description: 'Could not update adventure visibility. Please try again.', variant: 'destructive' });
+    }
+  }
+
 
   if (loading) {
     return (
@@ -384,6 +409,12 @@ export default function AdventureManager() {
                             Featured Experience
                           </Badge>
                         )}
+                        <button
+                          onClick={() => handleToggleHidden(adventure.id, !adventure.hidden)}
+                          className={`px-2 py-1 rounded ${adventure.hidden ? 'bg-red-600' : 'bg-green-600'} text-white`}
+                        >
+                          {adventure.hidden ? 'Hidden' : 'Visible'}
+                        </button>
                       </div>
                     </div>
                     <CardContent className="p-4">
@@ -548,6 +579,15 @@ export default function AdventureManager() {
                   className="border-black"
                 />
                 <Label htmlFor="featured" className="cursor-pointer">Featured Experience</Label>
+              </div>
+              <div className="flex items-center space-x-2 mb-2">
+                <Checkbox
+                  id="hidden"
+                  checked={editForm.hidden || false}
+                  onCheckedChange={(checked) => setEditForm({ ...editForm, hidden: Boolean(checked) })}
+                  className="border-black"
+                />
+                <Label htmlFor="hidden" className="cursor-pointer">Hide Adventure</Label>
               </div>
 
               <div>
@@ -769,7 +809,15 @@ export default function AdventureManager() {
                 />
                 <Label htmlFor="create-featured" className="cursor-pointer">Featured Experience</Label>
               </div>
-
+              <div className="flex items-center space-x-2 mb-2">
+                <Checkbox
+                  id="create-hidden"
+                  checked={createForm.hidden || false}
+                  onCheckedChange={(checked) => setCreateForm({ ...createForm, hidden: Boolean(checked) })}
+                  className="border-black"
+                />
+                <Label htmlFor="create-hidden" className="cursor-pointer">Hide Adventure</Label>
+              </div>
               <div>
                 <Label htmlFor="create-keyFeatures">Key Features (one per line)</Label>
                 <Textarea 
@@ -831,7 +879,7 @@ export default function AdventureManager() {
                       />
                       <button
                         type="button"
-                        className="absolute top-2 right-2 p-1 bg-black/50 rounded-full text-white"
+                        className="absolute top-2 right-2 p-1 bg-black/50 rounded-full textwhite"
                         onClick={() => setCreateForm({...createForm, imageUrl: ''})}
                       >
                         <X className="h-4 w-4" />
