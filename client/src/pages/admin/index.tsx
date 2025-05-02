@@ -69,7 +69,14 @@ function Integrations() {
                 size="sm"
                 onClick={() => window.location.href = "/admin/test-notification"}
               >
-                Test Email Notification
+                Test ActiveCampaign
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => window.location.href = "/admin/email-notifications"}
+              >
+                Test SendGrid
               </Button>
             </div>
           </div>
@@ -108,6 +115,31 @@ function Integrations() {
             <Button variant="outline" size="sm">
               Test Connection
             </Button>
+          </div>
+        </div>
+
+        <div className="bg-white p-6 rounded-lg shadow mt-6">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="text-xl font-bold">SendGrid</h3>
+              <p className="text-muted-foreground">Email notifications for leads, bookings and guides</p>
+            </div>
+            <div className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
+              Connected
+            </div>
+          </div>
+          <div className="border-t pt-4">
+            <p className="text-sm text-muted-foreground mb-2">API Key: {process.env.SENDGRID_API_KEY ? `${process.env.SENDGRID_API_KEY.slice(0, 4)}****` : "Not configured"}</p>
+            <p className="text-sm text-muted-foreground mb-4">Used for: Lead notifications, booking confirmations, guide download notifications</p>
+            <div className="flex gap-2">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => window.location.href = "/admin/email-notifications"}
+              >
+                Test Email Notifications
+              </Button>
+            </div>
           </div>
         </div>
       </div>

@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import { loadStripe } from "@stripe/stripe-js";
-import { FaCcVisa, FaCcMastercard, FaCcPaypal, FaApplePay } from 'react-icons/fa';
+import { FaCcVisa, FaCcMastercard, FaCcPaypal, FaApplePay, FaCcAmex } from 'react-icons/fa';
+import { SiVenmo, SiCashapp, SiGooglepay } from 'react-icons/si';
+import { BiTransfer } from 'react-icons/bi';
+import { FiCalendar, FiUsers, FiCheck } from 'react-icons/fi';
+import { MdAirportShuttle } from "react-icons/md";
 
 // Initialize Stripe
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
@@ -206,35 +210,41 @@ const TransportationPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-12">
-      {/* Simple header */}
-      <header className="bg-white shadow-sm py-3 border-b">
+      {/* Google Flights-style header */}
+      <header className="bg-blue-600 py-3 border-b border-blue-700">
         <div className="container mx-auto px-4">
-          <h1 className="text-xl font-semibold text-gray-800">Cabo Transportation</h1>
+          <div className="flex items-center">
+            <MdAirportShuttle className="text-white text-2xl mr-2" />
+            <h1 className="text-xl font-medium text-white">Cabo Transportation</h1>
+          </div>
         </div>
       </header>
 
       <main>
         <div className="container mx-auto px-4 py-8">
-          {/* Main booking card */}
-          <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-md border border-gray-200">
+          {/* Google Flights style search card */}
+          <div className="max-w-5xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
+            {/* Search Header */}
+            <div className="p-6 bg-gradient-to-r from-blue-500 to-blue-600 text-white">
+              <h2 className="text-2xl font-medium mb-1">Book Airport Transportation</h2>
+              <p className="text-blue-100">Premium, reliable transportation service in Los Cabos</p>
+            </div>
+            
             <div className="p-6">
-              <h2 className="text-xl font-semibold mb-2">Book Airport Transportation</h2>
-              <p className="text-gray-600 mb-6">Reliable transportation service in Cabo San Lucas</p>
-              
-              {/* Trip type selector */}
-              <div className="mb-6">
-                <div className="inline-flex rounded-md p-1 bg-gray-100">
+              {/* Trip type selector - Google Flights style pill */}
+              <div className="mb-8 flex justify-center">
+                <div className="inline-flex rounded-full p-1 bg-gray-100 shadow-sm">
                   <button
-                    className={`px-4 py-2 rounded-md text-sm font-medium transition ${
-                      tripType === "oneWay" ? "bg-white shadow-sm text-blue-600" : "text-gray-600"
+                    className={`px-6 py-2 rounded-full text-sm font-medium transition-all ${
+                      tripType === "oneWay" ? "bg-white shadow text-blue-600" : "text-gray-600 hover:text-gray-800"
                     }`}
                     onClick={() => setTripType("oneWay")}
                   >
                     One Way
                   </button>
                   <button
-                    className={`px-4 py-2 rounded-md text-sm font-medium transition ${
-                      tripType === "roundTrip" ? "bg-white shadow-sm text-blue-600" : "text-gray-600"
+                    className={`px-6 py-2 rounded-full text-sm font-medium transition-all ${
+                      tripType === "roundTrip" ? "bg-white shadow text-blue-600" : "text-gray-600 hover:text-gray-800"
                     }`}
                     onClick={() => setTripType("roundTrip")}
                   >
@@ -243,171 +253,254 @@ const TransportationPage: React.FC = () => {
                 </div>
               </div>
               
-              {/* From/To selection */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">From</label>
-                  <select
-                    className="w-full p-3 border rounded-md focus:ring-blue-500 focus:border-blue-500"
-                    value={fromLocation}
-                    onChange={(e) => {
-                      setFromLocation(e.target.value);
-                      // Reset to location if it's not a valid option for the new from location
-                      if (e.target.value && toLocation && !priceData[e.target.value]?.[toLocation]) {
-                        setToLocation("");
-                      }
-                    }}
-                  >
-                    <option value="">Select pickup location</option>
-                    {locations.map((loc) => (
-                      <option key={loc} value={loc}>
-                        {loc}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">To</label>
-                  <select
-                    className="w-full p-3 border rounded-md focus:ring-blue-500 focus:border-blue-500"
-                    value={toLocation}
-                    onChange={(e) => setToLocation(e.target.value)}
-                    disabled={!fromLocation}
-                  >
-                    <option value="">Select drop-off location</option>
-                    {getAvailableToLocations().map((loc) => (
-                      <option key={loc} value={loc}>
-                        {loc}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              {/* Date selection */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Departure Date</label>
-                  <input
-                    type="date"
-                    className="w-full p-3 border rounded-md focus:ring-blue-500 focus:border-blue-500"
-                    value={departureDate}
-                    onChange={(e) => setDepartureDate(e.target.value)}
-                    min={getTodayFormatted()}
-                  />
-                </div>
-                {tripType === "roundTrip" && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Return Date</label>
-                    <input
-                      type="date"
-                      className="w-full p-3 border rounded-md focus:ring-blue-500 focus:border-blue-500"
-                      value={returnDate}
-                      onChange={(e) => setReturnDate(e.target.value)}
-                      min={departureDate || getTodayFormatted()}
-                    />
+              {/* Google Flights style search form */}
+              <div className="flex flex-col md:flex-row gap-2 mb-8">
+                <div className="flex-1">
+                  {/* From/To locations - Merged in single line for Google Flights style */}
+                  <div className="border border-gray-300 rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition-shadow group flex items-center">
+                    <div className="flex-1">
+                      <label className="block text-xs font-medium text-gray-500 mb-1">From</label>
+                      <select
+                        className="w-full border-none p-0 text-gray-900 text-lg focus:ring-0 focus:outline-none bg-transparent"
+                        value={fromLocation}
+                        onChange={(e) => {
+                          setFromLocation(e.target.value);
+                          // Reset to location if it's not a valid option for the new from location
+                          if (e.target.value && toLocation && !priceData[e.target.value]?.[toLocation]) {
+                            setToLocation("");
+                          }
+                        }}
+                      >
+                        <option value="">Select pickup location</option>
+                        {locations.map((loc) => (
+                          <option key={loc} value={loc}>
+                            {loc}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    
+                    <div className="px-2">
+                      <BiTransfer className="text-gray-400 text-lg transform rotate-90 md:rotate-0" />
+                    </div>
+                    
+                    <div className="flex-1">
+                      <label className="block text-xs font-medium text-gray-500 mb-1">To</label>
+                      <select
+                        className="w-full border-none p-0 text-gray-900 text-lg focus:ring-0 focus:outline-none bg-transparent"
+                        value={toLocation}
+                        onChange={(e) => setToLocation(e.target.value)}
+                        disabled={!fromLocation}
+                      >
+                        <option value="">Select drop-off location</option>
+                        {getAvailableToLocations().map((loc) => (
+                          <option key={loc} value={loc}>
+                            {loc}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
-                )}
-              </div>
-
-              {/* Passenger count */}
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Passengers</label>
-                <select
-                  className="w-full p-3 border rounded-md focus:ring-blue-500 focus:border-blue-500"
-                  value={passengers}
-                  onChange={(e) => setPassengers(Number(e.target.value))}
-                >
-                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14].map((num) => (
-                    <option key={num} value={num}>
-                      {num} {num === 1 ? 'passenger' : 'passengers'}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Vehicle selection with images */}
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Select Vehicle</label>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {vehicleTypes.map((vehicle, index) => (
-                    <div 
-                      key={index}
-                      className={`border rounded-lg overflow-hidden transition-all cursor-pointer ${
-                        selectedVehicle === index 
-                          ? 'border-blue-500 ring-2 ring-blue-200' 
-                          : 'border-gray-200 hover:border-gray-300'
-                      } ${passengers > vehicle.capacity ? 'opacity-50' : ''}`}
-                      onClick={() => {
-                        if (passengers <= vehicle.capacity) {
-                          setSelectedVehicle(index);
-                        }
-                      }}
-                    >
-                      <div className="aspect-video relative bg-gray-100">
-                        <img 
-                          src={vehicle.image} 
-                          alt={vehicle.name}
-                          className="w-full h-full object-contain p-2"
-                          onError={(e) => {
-                            // Fallback if image doesn't load
-                            const target = e.target as HTMLImageElement;
-                            target.src = 'https://via.placeholder.com/300x200?text=Vehicle+Image';
-                          }}
+                </div>
+                
+                {/* Date selection - Google Flights style */}
+                <div className="flex-1">
+                  <div className="border border-gray-300 rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition-shadow flex items-center">
+                    <div className="flex-1">
+                      <label className="block text-xs font-medium text-gray-500 mb-1">Departure</label>
+                      <div className="flex items-center">
+                        <FiCalendar className="text-gray-400 mr-2" />
+                        <input
+                          type="date"
+                          className="w-full border-none p-0 text-gray-900 text-lg focus:ring-0 focus:outline-none bg-transparent"
+                          value={departureDate}
+                          onChange={(e) => setDepartureDate(e.target.value)}
+                          min={getTodayFormatted()}
                         />
                       </div>
-                      <div className="p-3">
-                        <h3 className="font-medium text-gray-900">{vehicle.name}</h3>
-                        <p className="text-sm text-gray-500">Up to {vehicle.capacity} passengers</p>
-                        {passengers > vehicle.capacity && (
-                          <p className="text-xs text-red-500 mt-1">Too small for your group</p>
-                        )}
-                      </div>
                     </div>
-                  ))}
+                    
+                    {tripType === "roundTrip" && (
+                      <>
+                        <div className="px-2">
+                          <div className="h-8 border-r border-gray-300"></div>
+                        </div>
+                        <div className="flex-1">
+                          <label className="block text-xs font-medium text-gray-500 mb-1">Return</label>
+                          <div className="flex items-center">
+                            <FiCalendar className="text-gray-400 mr-2" />
+                            <input
+                              type="date"
+                              className="w-full border-none p-0 text-gray-900 text-lg focus:ring-0 focus:outline-none bg-transparent"
+                              value={returnDate}
+                              onChange={(e) => setReturnDate(e.target.value)}
+                              min={departureDate || getTodayFormatted()}
+                            />
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
+                
+                {/* Passenger count - Google Flights style */}
+                <div className="md:w-48">
+                  <div className="border border-gray-300 rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition-shadow">
+                    <label className="block text-xs font-medium text-gray-500 mb-1">Passengers</label>
+                    <div className="flex items-center">
+                      <FiUsers className="text-gray-400 mr-2" />
+                      <select
+                        className="w-full border-none p-0 text-gray-900 text-lg focus:ring-0 focus:outline-none bg-transparent"
+                        value={passengers}
+                        onChange={(e) => setPassengers(Number(e.target.value))}
+                      >
+                        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14].map((num) => (
+                          <option key={num} value={num}>
+                            {num} {num === 1 ? 'passenger' : 'passengers'}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              {/* Price estimate and Book Now button */}
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between pt-4 border-t">
+              {/* Google Flights-style vehicle selection */}
+              <div className="mb-8">
+                <h3 className="text-md font-medium text-gray-700 mb-4">Select your vehicle</h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {vehicleTypes.map((vehicle, index) => {
+                    const isSelected = selectedVehicle === index;
+                    const isDisabled = passengers > vehicle.capacity;
+                    
+                    return (
+                      <div 
+                        key={index}
+                        className={`rounded-xl overflow-hidden transition-all ${
+                          isDisabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:shadow-md'
+                        } ${
+                          isSelected 
+                            ? 'border-2 border-blue-500 shadow-md' 
+                            : 'border border-gray-200'
+                        }`}
+                        onClick={() => {
+                          if (!isDisabled) {
+                            setSelectedVehicle(index);
+                          }
+                        }}
+                      >
+                        {/* Vehicle Image */}
+                        <div className="aspect-video relative bg-gray-50">
+                          <img 
+                            src={vehicle.image} 
+                            alt={vehicle.name}
+                            className="w-full h-full object-contain p-2"
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement;
+                              target.src = 'https://via.placeholder.com/300x200?text=Vehicle+Image';
+                            }}
+                          />
+                          
+                          {/* Google Flights style selection indicator */}
+                          {isSelected && (
+                            <div className="absolute top-2 right-2 bg-blue-600 text-white p-1 rounded-full">
+                              <FiCheck size={16} />
+                            </div>
+                          )}
+                        </div>
+                        
+                        {/* Vehicle Info */}
+                        <div className="p-4">
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <h3 className="font-medium text-gray-900">{vehicle.name}</h3>
+                              <p className="text-sm text-gray-500 mt-1">Up to {vehicle.capacity} passengers</p>
+                            </div>
+                            
+                            {vehicle.surcharge > 0 && (
+                              <div className="text-right">
+                                <span className="text-sm font-medium text-blue-600">+${vehicle.surcharge}</span>
+                                <p className="text-xs text-gray-500">surcharge</p>
+                              </div>
+                            )}
+                          </div>
+                          
+                          {/* Feature list */}
+                          <ul className="mt-3 space-y-1">
+                            <li className="text-xs text-gray-600 flex items-center">
+                              <span className="mr-1 text-green-500">✓</span> Air conditioning
+                            </li>
+                            <li className="text-xs text-gray-600 flex items-center">
+                              <span className="mr-1 text-green-500">✓</span> Professional driver
+                            </li>
+                            <li className="text-xs text-gray-600 flex items-center">
+                              <span className="mr-1 text-green-500">✓</span> Bottled water included
+                            </li>
+                          </ul>
+
+                          {isDisabled && (
+                            <p className="text-xs font-medium text-red-500 mt-2">Too small for your group</p>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Google Flights-style price and booking section */}
+              <div className="mt-6 bg-blue-50 rounded-xl p-6 flex flex-col md:flex-row md:items-center md:justify-between">
                 <div className="mb-4 md:mb-0">
                   {fromLocation && toLocation ? (
                     <div>
-                      <span className="text-gray-600">Total price: </span>
-                      <span className="text-2xl font-semibold">${getEstimatedPrice()}</span>
-                      <span className="text-gray-600 text-sm ml-1">USD</span>
+                      <div className="text-gray-500 text-sm">Total price</div>
+                      <div className="flex items-baseline">
+                        <span className="text-3xl font-bold text-blue-700">${getEstimatedPrice()}</span>
+                        <span className="text-gray-600 text-sm ml-1">USD</span>
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1">
+                        {tripType === "roundTrip" ? "Round trip" : "One way"} · {vehicleTypes[selectedVehicle].name}
+                      </div>
                     </div>
                   ) : (
-                    <span className="text-gray-500">Select locations to see the price</span>
+                    <span className="text-gray-500">Please complete your selection</span>
                   )}
                 </div>
-                <button
-                  className="bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-md font-medium transition duration-150 flex items-center justify-center"
-                  disabled={!isValidBooking || isProcessing}
-                  onClick={handleBookNow}
-                >
-                  {isProcessing ? (
-                    <>
-                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      Processing...
-                    </>
-                  ) : (
-                    "Book Now"
-                  )}
-                </button>
-              </div>
-              
-              {/* Payment methods */}
-              <div className="mt-4 flex items-center justify-end space-x-2">
-                <span className="text-xs text-gray-500">Pay with:</span>
-                <div className="flex space-x-3">
-                  <FaCcVisa size={24} className="text-blue-600" />
-                  <FaCcMastercard size={24} className="text-red-500" />
-                  <FaCcPaypal size={24} className="text-blue-700" />
-                  <FaApplePay size={24} className="text-gray-800" />
+                
+                <div className="flex flex-col">
+                  <button
+                    className={`px-8 py-3 rounded-full font-medium transition-all flex items-center justify-center ${
+                      !isValidBooking || isProcessing 
+                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
+                      : 'bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white shadow-md hover:shadow-lg'
+                    }`}
+                    disabled={!isValidBooking || isProcessing}
+                    onClick={handleBookNow}
+                  >
+                    {isProcessing ? (
+                      <>
+                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Processing...
+                      </>
+                    ) : (
+                      "Book Now"
+                    )}
+                  </button>
+                  
+                  {/* Payment methods */}
+                  <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
+                    <FaCcVisa size={20} className="text-blue-600" />
+                    <FaCcMastercard size={20} className="text-red-500" />
+                    <FaCcAmex size={20} className="text-blue-700" />
+                    <FaCcPaypal size={20} className="text-blue-800" />
+                    <FaApplePay size={20} className="text-gray-800" />
+                    <SiGooglepay size={20} className="text-gray-600" />
+                    <SiVenmo size={16} className="text-blue-500" />
+                  </div>
                 </div>
               </div>
             </div>

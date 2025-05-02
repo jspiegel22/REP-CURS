@@ -8,15 +8,17 @@ import { insertBookingSchema, insertLeadSchema, insertGuideSubmissionSchema, ins
 // instead of importing from client utils
 import { nanoid } from "nanoid";
 import passport from "passport";
+// Import from enhanced webhook client with email notifications
 import { 
   sendLeadWebhook, 
   sendBookingWebhook, 
   sendGuideRequestWebhook 
-} from './services/webhookClient';
+} from './services/webhookClient.enhanced';
 
 import { registerStripeRoutes } from './routes/stripe';
 import itineraryRoutes from './routes/itinerary';
 import imageRoutes from './routes/image';
+import notificationsRouter from './routes/notifications';
 import { importRestaurantData } from './routes/import-restaurant-data';
 import { registerImageOptimizationRoutes } from './routes/image-optimization';
 import { updateSitemap } from './services/sitemapGenerator';
@@ -67,6 +69,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Register image management routes
   app.use('/api/images', imageRoutes);
+  
+  // Register notification routes (email, webhook tests, etc.)
+  app.use('/api/notifications', notificationsRouter);
   
   // Register image optimization routes
   registerImageOptimizationRoutes(app);

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "wouter";
 import { loadStripe } from "@stripe/stripe-js";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
@@ -9,6 +11,39 @@ const TransportationConfirmation: React.FC = () => {
   const [confirmationNumber, setConfirmationNumber] = useState<string>("");
   const [paymentInfo, setPaymentInfo] = useState<any>(null);
   const [error, setError] = useState<string>("");
+  const [emailSent, setEmailSent] = useState<boolean>(false);
+  const { toast } = useToast();
+
+  const sendConfirmationEmail = async (bookingDetails: any) => {
+    try {
+      const userEmail = localStorage.getItem("transportationEmail") || "";
+      const userName = localStorage.getItem("transportationName") || "Customer";
+      
+      if (!userEmail) {
+        console.warn("No email address found in localStorage, skipping confirmation email");
+        return false;
+      }
+
+      const response = await apiRequest("POST", "/api/send-booking-confirmation", {
+        email: userEmail,
+        name: userName,
+        bookingType: "transportation",
+        confirmationNumber,
+        booking: bookingDetails
+      });
+
+      if (response.ok) {
+        setEmailSent(true);
+        return true;
+      } else {
+        console.error("Failed to send confirmation email:", await response.text());
+        return false;
+      }
+    } catch (error) {
+      console.error("Error sending confirmation email:", error);
+      return false;
+    }
+  };
 
   useEffect(() => {
     // Get URL parameters
@@ -23,10 +58,10 @@ const TransportationConfirmation: React.FC = () => {
         setConfirmationNumber(generatedConfirmation);
         setStatus("success");
 
-        // In a real app, you would verify the payment with your backend here
-        // and retrieve the booking details to display to the user
-        setPaymentInfo({
+        // Prepare booking details
+        const bookingDetails = {
           id: paymentIntentId,
+          confirmationNumber: generatedConfirmation,
           date: new Date().toLocaleDateString(),
           amount: localStorage.getItem("transportationAmount") || "N/A",
           fromLocation: localStorage.getItem("transportationFrom") || "N/A",
@@ -35,6 +70,44 @@ const TransportationConfirmation: React.FC = () => {
           returnDate: localStorage.getItem("transportationReturnDate") || "N/A",
           passengers: localStorage.getItem("transportationPassengers") || "N/A",
           vehicleType: localStorage.getItem("transportationVehicle") || "N/A",
+          name: localStorage.getItem("transportationName") || "N/A",
+          email: localStorage.getItem("transportationEmail") || "N/A",
+          phone: localStorage.getItem("transportationPhone") || "N/A"
+        };
+
+        setPaymentInfo(bookingDetails);
+        
+        // Send confirmation email
+        sendConfirmationEmail(bookingDetails).then(sent => {
+          if (sent) {
+            toast({
+              title: "Confirmation Email Sent",
+              description: "We've sent your booking details to your email address.",
+              variant: "default"
+            });
+          } else {
+            toast({
+              title: "Email Notification",
+              description: "Your booking is confirmed, but we couldn't send the confirmation email.",
+              variant: "destructive"
+            });
+          }
+        });
+        
+        // Also save the booking to the database via API
+        apiRequest("POST", "/api/bookings", {
+          type: "transportation",
+          status: "confirmed",
+          firstName: localStorage.getItem("transportationName")?.split(" ")[0] || "",
+          lastName: localStorage.getItem("transportationName")?.split(" ").slice(1).join(" ") || "",
+          email: localStorage.getItem("transportationEmail") || "",
+          phone: localStorage.getItem("transportationPhone") || "",
+          details: bookingDetails,
+          paymentId: paymentIntentId,
+          amount: parseFloat(localStorage.getItem("transportationAmount") || "0"),
+          notes: `Transportation booking from ${bookingDetails.fromLocation} to ${bookingDetails.toLocation}`
+        }).catch(err => {
+          console.error("Failed to save booking to database:", err);
         });
       } else {
         setStatus("failed");

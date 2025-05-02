@@ -1,341 +1,769 @@
 /**
- * Comprehensive Email Service
- * 
- * This service provides a unified interface for sending emails
- * with multiple fallback methods for reliability.
+ * Email Service for handling all types of email notifications
+ * Uses SendGrid for email delivery
  */
+import sgMail from '@sendgrid/mail';
 
-import nodemailer from 'nodemailer';
-import * as activeCampaign from './activeCampaign';
+// Initialize SendGrid API key from environment
+if (!process.env.SENDGRID_API_KEY) {
+  console.warn("SENDGRID_API_KEY environment variable is not set. Email notifications will not work.");
+} else {
+  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+}
 
-// Email Configuration Types
-export interface EmailOptions {
+// Default configuration
+const DEFAULT_SENDER = {
+  email: process.env.DEFAULT_SENDER_EMAIL || 'notifications@cabo.is',
+  name: process.env.DEFAULT_SENDER_NAME || 'Cabo San Lucas Experiences'
+};
+
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@cabo.is';
+
+/**
+ * Send an email using SendGrid
+ */
+export async function sendEmail(params: {
   to: string;
-  from?: string;
+  from?: { email: string; name: string };
   subject: string;
-  html: string;
   text?: string;
-}
-
-export interface EmailResult {
-  success: boolean;
-  method?: string;
-  messageId?: string;
-  previewUrl?: string;
-  error?: string;
-}
-
-/**
- * Main function to send an email using the most reliable available method
- * 
- * This attempts multiple methods in sequence:
- * 1. SMTP (if configured)
- * 2. ActiveCampaign API
- * 3. Ethereal (test/development only)
- * 
- * @param options Email options including recipient, subject, and content
- * @returns Promise resolving to the email send result
- */
-export async function sendEmail(options: EmailOptions): Promise<EmailResult> {
-  // Default sender if not provided
-  const emailOptions = {
-    ...options,
-    from: options.from || 'Cabo San Lucas <no-reply@cabo.is>'
-  };
-
-  // Try sending via SMTP
-  const smtpResult = await sendViaSmtp(emailOptions);
-  if (smtpResult.success) {
-    return { ...smtpResult, method: 'smtp' };
-  }
-
-  // Try sending via ActiveCampaign API
-  const acResult = await sendViaActiveCampaign(emailOptions);
-  if (acResult.success) {
-    return { ...acResult, method: 'activecampaign' };
-  }
-
-  // Finally, try Ethereal for testing/development
-  const etherealResult = await sendViaEthereal(emailOptions);
-  if (etherealResult.success) {
-    return { ...etherealResult, method: 'ethereal' };
-  }
-
-  // All methods failed
-  return {
-    success: false,
-    error: 'All email delivery methods failed'
-  };
-}
-
-/**
- * Attempts to send email via configured SMTP server
- */
-async function sendViaSmtp(options: EmailOptions): Promise<EmailResult> {
-  // Check if SMTP configuration is available
-  if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
-    return { success: false, error: 'SMTP configuration not available' };
-  }
-
+  html: string;
+  cc?: string[];
+  bcc?: string[];
+}): Promise<boolean> {
   try {
-    // Create SMTP transporter
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: parseInt(process.env.SMTP_PORT || '587'),
-      secure: process.env.SMTP_SECURE === 'true',
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS
-      }
-    });
-
-    // Send mail
-    const info = await transporter.sendMail({
-      from: options.from,
-      to: options.to,
-      subject: options.subject,
-      text: options.text || '',
-      html: options.html
-    });
-
-    return {
-      success: true,
-      messageId: info.messageId
-    };
-  } catch (error) {
-    console.error('SMTP email error:', error);
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown SMTP error'
-    };
-  }
-}
-
-/**
- * Attempts to send email via ActiveCampaign API
- */
-async function sendViaActiveCampaign(options: EmailOptions): Promise<EmailResult> {
-  try {
-    const success = await activeCampaign.sendAdminNotification(
-      options.subject,
-      options.html
-    );
-
-    return {
-      success: !!success,
-      error: success ? undefined : 'ActiveCampaign email failed'
-    };
-  } catch (error) {
-    console.error('ActiveCampaign email error:', error);
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown ActiveCampaign error'
-    };
-  }
-}
-
-/**
- * Attempts to send email via Ethereal (for testing/development)
- */
-async function sendViaEthereal(options: EmailOptions): Promise<EmailResult> {
-  try {
-    // Only use in development
-    if (process.env.NODE_ENV === 'production') {
-      return { success: false, error: 'Ethereal not available in production' };
+    // Skip sending if SendGrid API key is not configured
+    if (!process.env.SENDGRID_API_KEY) {
+      console.warn("Cannot send email: SENDGRID_API_KEY not configured");
+      return false;
     }
 
-    // Create test account
-    const testAccount = await nodemailer.createTestAccount();
-
-    // Create transporter
-    const transporter = nodemailer.createTransport({
-      host: 'smtp.ethereal.email',
-      port: 587,
-      secure: false,
-      auth: {
-        user: testAccount.user,
-        pass: testAccount.pass
-      }
-    });
-
-    // Send mail
-    const info = await transporter.sendMail({
-      from: options.from,
-      to: options.to,
-      subject: options.subject,
-      text: options.text || '',
-      html: options.html
-    });
-
-    console.log('Test email sent. Preview URL:', nodemailer.getTestMessageUrl(info));
-
-    return {
-      success: true,
-      messageId: info.messageId,
-      previewUrl: nodemailer.getTestMessageUrl(info)
+    const message = {
+      to: params.to,
+      from: params.from || DEFAULT_SENDER,
+      subject: params.subject,
+      text: params.text || '',
+      html: params.html,
+      cc: params.cc,
+      bcc: params.bcc || [ADMIN_EMAIL]  // Always BCC admin by default
     };
+
+    await sgMail.send(message);
+    console.log(`Email sent successfully to ${params.to}`);
+    return true;
   } catch (error) {
-    console.error('Ethereal email error:', error);
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown Ethereal error'
-    };
+    console.error('Error sending email:', error);
+    if (error.response) {
+      console.error('SendGrid API Error:', error.response.body);
+    }
+    return false;
   }
 }
 
-// Email Content Templates
-
 /**
- * Creates a formatted email for booking confirmations
+ * Create a booking confirmation email for transportation bookings
  */
-export function createBookingConfirmationEmail(booking: any): EmailOptions {
-  const formattedStartDate = new Date(booking.startDate).toLocaleDateString();
-  const formattedEndDate = new Date(booking.endDate).toLocaleDateString();
+export function createTransportationConfirmationEmail(params: {
+  name: string;
+  confirmationNumber: string;
+  booking: any;
+}): string {
+  const { name, confirmationNumber, booking } = params;
   
-  return {
-    to: booking.email,
-    subject: 'Your Cabo San Lucas Booking Confirmation',
-    html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <div style="background-color: #2F4F4F; padding: 20px; text-align: center; color: white;">
-          <h1 style="margin: 0;">Booking Confirmation</h1>
+  // Format currency
+  const formattedAmount = parseFloat(booking.amount).toLocaleString('en-US', {
+    style: 'currency',
+    currency: 'USD'
+  });
+
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Transportation Booking Confirmation</title>
+      <style>
+        body { 
+          font-family: Arial, sans-serif;
+          line-height: 1.6;
+          color: #333;
+          margin: 0;
+          padding: 0;
+        }
+        .container {
+          max-width: 600px;
+          margin: 0 auto;
+          padding: 20px;
+        }
+        .header {
+          background-color: #2F4F4F;
+          color: white;
+          padding: 20px;
+          text-align: center;
+        }
+        .content {
+          padding: 20px;
+          border: 1px solid #ddd;
+          border-top: none;
+        }
+        .booking-details {
+          margin: 20px 0;
+          border: 1px solid #ddd;
+          border-radius: 4px;
+        }
+        .booking-header {
+          background-color: #f5f5f5;
+          padding: 10px 15px;
+          border-bottom: 1px solid #ddd;
+          font-weight: bold;
+        }
+        .booking-body {
+          padding: 15px;
+        }
+        .booking-row {
+          display: flex;
+          margin-bottom: 10px;
+        }
+        .booking-label {
+          width: 40%;
+          font-weight: bold;
+          color: #666;
+        }
+        .booking-value {
+          width: 60%;
+        }
+        .footer {
+          background-color: #f5f5f5;
+          padding: 15px;
+          text-align: center;
+          font-size: 12px;
+          color: #666;
+        }
+        .btn {
+          display: inline-block;
+          background-color: #2F4F4F;
+          color: white;
+          padding: 10px 20px;
+          text-decoration: none;
+          border-radius: 4px;
+          margin-top: 20px;
+        }
+        .important-info {
+          background-color: #f8f9fa;
+          border-left: 4px solid #2F4F4F;
+          padding: 15px;
+          margin: 20px 0;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>Transportation Booking Confirmation</h1>
         </div>
-        
-        <div style="padding: 20px; border: 1px solid #ddd; border-top: none;">
-          <p>Dear ${booking.firstName} ${booking.lastName || ''},</p>
+        <div class="content">
+          <p>Hello ${name},</p>
+          <p>Thank you for booking your transportation with us. Your booking has been confirmed!</p>
           
-          <p>Thank you for your booking with Cabo San Lucas! We're excited to help make your trip amazing.</p>
-          
-          <div style="background-color: #f9f9f9; padding: 15px; margin: 20px 0; border-radius: 5px;">
-            <h3 style="margin-top: 0; color: #2F4F4F;">Booking Details:</h3>
-            <p><strong>Booking Type:</strong> ${booking.bookingType}</p>
-            <p><strong>Check-in:</strong> ${formattedStartDate}</p>
-            <p><strong>Check-out:</strong> ${formattedEndDate}</p>
-            <p><strong>Guests:</strong> ${booking.guests}</p>
-            ${booking.totalAmount ? `<p><strong>Total Amount:</strong> $${booking.totalAmount}</p>` : ''}
-            ${booking.specialRequests ? `<p><strong>Your Special Requests:</strong> ${booking.specialRequests}</p>` : ''}
+          <div class="important-info">
+            <p><strong>Confirmation Number:</strong> ${confirmationNumber}</p>
           </div>
           
-          <p>Our team will be in touch with you shortly to confirm all the details and answer any questions you may have.</p>
+          <div class="booking-details">
+            <div class="booking-header">Trip Details</div>
+            <div class="booking-body">
+              <div class="booking-row">
+                <div class="booking-label">From:</div>
+                <div class="booking-value">${booking.fromLocation}</div>
+              </div>
+              <div class="booking-row">
+                <div class="booking-label">To:</div>
+                <div class="booking-value">${booking.toLocation}</div>
+              </div>
+              <div class="booking-row">
+                <div class="booking-label">Departure Date:</div>
+                <div class="booking-value">${booking.departureDate}</div>
+              </div>
+              ${booking.returnDate && booking.returnDate !== "null" ? `
+              <div class="booking-row">
+                <div class="booking-label">Return Date:</div>
+                <div class="booking-value">${booking.returnDate}</div>
+              </div>
+              ` : ''}
+              <div class="booking-row">
+                <div class="booking-label">Vehicle Type:</div>
+                <div class="booking-value">${booking.vehicleType}</div>
+              </div>
+              <div class="booking-row">
+                <div class="booking-label">Passengers:</div>
+                <div class="booking-value">${booking.passengers}</div>
+              </div>
+              <div class="booking-row">
+                <div class="booking-label">Total Amount:</div>
+                <div class="booking-value">${formattedAmount}</div>
+              </div>
+            </div>
+          </div>
           
-          <p>We look forward to welcoming you to Cabo San Lucas!</p>
+          <div class="important-info">
+            <h3>Important Information</h3>
+            <ul>
+              <li>Your driver will meet you at the designated location with a sign displaying your name.</li>
+              <li>For airport pickups, please look for your driver in the arrivals area after you clear customs.</li>
+              <li>Your driver will monitor your flight status and adjust for any delays.</li>
+            </ul>
+          </div>
           
-          <p>Warm regards,<br>The Cabo San Lucas Team</p>
+          <p>If you need to modify or cancel your booking, please contact us at least 24 hours before your scheduled pickup time.</p>
+          
+          <p>We look forward to providing you with safe and comfortable transportation in Cabo San Lucas!</p>
+          
+          <p>Best regards,<br>Cabo Transportation Team</p>
         </div>
-        
-        <div style="padding: 15px; background-color: #f5f5f5; text-align: center; font-size: 12px; color: #666;">
-          <p>This is a confirmation of your booking. Please do not reply to this email.</p>
-          <p>© ${new Date().getFullYear()} Cabo San Lucas. All rights reserved.</p>
+        <div class="footer">
+          <p>This is an automated confirmation email. Please do not reply to this message.</p>
+          <p>For assistance, please contact support@cabotransportation.com</p>
+          <p>&copy; ${new Date().getFullYear()} Cabo Transportation. All rights reserved.</p>
         </div>
       </div>
-    `
-  };
+    </body>
+    </html>
+  `;
 }
 
 /**
- * Creates a formatted email for lead confirmations
+ * Create a lead notification email for new transportation inquiry
  */
-export function createLeadConfirmationEmail(lead: any): EmailOptions {
-  return {
-    to: lead.email,
-    subject: 'Thank You for Your Interest in Cabo San Lucas',
-    html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <div style="background-color: #2F4F4F; padding: 20px; text-align: center; color: white;">
-          <h1 style="margin: 0;">Thank You</h1>
+export function createLeadNotificationEmail(params: {
+  lead: any;
+}): string {
+  const { lead } = params;
+  
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>New Transportation Lead</title>
+      <style>
+        body { 
+          font-family: Arial, sans-serif;
+          line-height: 1.6;
+          color: #333;
+          margin: 0;
+          padding: 0;
+        }
+        .container {
+          max-width: 600px;
+          margin: 0 auto;
+          padding: 20px;
+        }
+        .header {
+          background-color: #2F4F4F;
+          color: white;
+          padding: 20px;
+          text-align: center;
+        }
+        .content {
+          padding: 20px;
+          border: 1px solid #ddd;
+          border-top: none;
+        }
+        .lead-details {
+          margin: 20px 0;
+          border: 1px solid #ddd;
+          border-radius: 4px;
+        }
+        .lead-header {
+          background-color: #f5f5f5;
+          padding: 10px 15px;
+          border-bottom: 1px solid #ddd;
+          font-weight: bold;
+        }
+        .lead-body {
+          padding: 15px;
+        }
+        .lead-row {
+          display: flex;
+          margin-bottom: 10px;
+        }
+        .lead-label {
+          width: 40%;
+          font-weight: bold;
+          color: #666;
+        }
+        .lead-value {
+          width: 60%;
+        }
+        .footer {
+          background-color: #f5f5f5;
+          padding: 15px;
+          text-align: center;
+          font-size: 12px;
+          color: #666;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>New Transportation Lead</h1>
         </div>
-        
-        <div style="padding: 20px; border: 1px solid #ddd; border-top: none;">
-          <p>Dear ${lead.firstName} ${lead.lastName || ''},</p>
+        <div class="content">
+          <p>A new transportation inquiry has been received:</p>
           
-          <p>Thank you for your interest in Cabo San Lucas! We've received your inquiry and are excited to help you plan your perfect getaway.</p>
-          
-          <p>Our team will review your request and be in touch with you shortly to discuss how we can best assist you.</p>
-          
-          <div style="background-color: #f9f9f9; padding: 15px; margin: 20px 0; border-radius: 5px;">
-            <h3 style="margin-top: 0; color: #2F4F4F;">Your Information:</h3>
-            <p><strong>Interest:</strong> ${lead.interestType || 'Cabo San Lucas Experience'}</p>
-            ${lead.budget ? `<p><strong>Budget Range:</strong> ${lead.budget}</p>` : ''}
-            ${lead.timeline ? `<p><strong>Travel Timeline:</strong> ${lead.timeline}</p>` : ''}
+          <div class="lead-details">
+            <div class="lead-header">Lead Details</div>
+            <div class="lead-body">
+              <div class="lead-row">
+                <div class="lead-label">Name:</div>
+                <div class="lead-value">${lead.firstName} ${lead.lastName || ''}</div>
+              </div>
+              <div class="lead-row">
+                <div class="lead-label">Email:</div>
+                <div class="lead-value">${lead.email}</div>
+              </div>
+              ${lead.phone ? `
+              <div class="lead-row">
+                <div class="lead-label">Phone:</div>
+                <div class="lead-value">${lead.phone}</div>
+              </div>
+              ` : ''}
+              <div class="lead-row">
+                <div class="lead-label">Interest:</div>
+                <div class="lead-value">Transportation</div>
+              </div>
+              <div class="lead-row">
+                <div class="lead-label">From:</div>
+                <div class="lead-value">${lead.details?.from || 'N/A'}</div>
+              </div>
+              <div class="lead-row">
+                <div class="lead-label">To:</div>
+                <div class="lead-value">${lead.details?.to || 'N/A'}</div>
+              </div>
+              <div class="lead-row">
+                <div class="lead-label">Date:</div>
+                <div class="lead-value">${lead.details?.date || 'N/A'}</div>
+              </div>
+              <div class="lead-row">
+                <div class="lead-label">Passengers:</div>
+                <div class="lead-value">${lead.details?.passengers || 'N/A'}</div>
+              </div>
+              <div class="lead-row">
+                <div class="lead-label">Created At:</div>
+                <div class="lead-value">${new Date().toLocaleString()}</div>
+              </div>
+            </div>
           </div>
           
-          <p>In the meantime, feel free to explore our website for more inspiration for your Cabo adventure.</p>
-          
-          <p>Warm regards,<br>The Cabo San Lucas Team</p>
+          <p>Please follow up with this lead as soon as possible.</p>
         </div>
-        
-        <div style="padding: 15px; background-color: #f5f5f5; text-align: center; font-size: 12px; color: #666;">
-          <p>This email confirms we've received your inquiry. Please do not reply to this email.</p>
-          <p>© ${new Date().getFullYear()} Cabo San Lucas. All rights reserved.</p>
+        <div class="footer">
+          <p>This is an automated notification from the Cabo San Lucas website.</p>
+          <p>&copy; ${new Date().getFullYear()} Cabo San Lucas. All rights reserved.</p>
         </div>
       </div>
-    `
-  };
+    </body>
+    </html>
+  `;
 }
 
 /**
- * Creates a formatted email for guide download confirmations
+ * Create a booking confirmation email (generic)
  */
-export function createGuideConfirmationEmail(guide: any): EmailOptions {
-  return {
-    to: guide.email,
-    subject: 'Your Cabo San Lucas Guide is Ready!',
-    html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <div style="background-color: #2F4F4F; padding: 20px; text-align: center; color: white;">
-          <h1 style="margin: 0;">Your Cabo Guide</h1>
+export function createBookingConfirmationEmail(params: {
+  name: string;
+  email: string;
+  bookingType: string;
+  confirmationNumber: string;
+  booking: any;
+}): string {
+  // For transportation bookings, use the dedicated template
+  if (params.bookingType === 'transportation') {
+    return createTransportationConfirmationEmail({
+      name: params.name,
+      confirmationNumber: params.confirmationNumber,
+      booking: params.booking
+    });
+  }
+  
+  // For other booking types, use a generic template
+  // TODO: Implement specific templates for other booking types
+  
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Booking Confirmation</title>
+      <style>
+        body { 
+          font-family: Arial, sans-serif;
+          line-height: 1.6;
+          color: #333;
+          margin: 0;
+          padding: 0;
+        }
+        .container {
+          max-width: 600px;
+          margin: 0 auto;
+          padding: 20px;
+        }
+        .header {
+          background-color: #2F4F4F;
+          color: white;
+          padding: 20px;
+          text-align: center;
+        }
+        .content {
+          padding: 20px;
+          border: 1px solid #ddd;
+          border-top: none;
+        }
+        .footer {
+          background-color: #f5f5f5;
+          padding: 15px;
+          text-align: center;
+          font-size: 12px;
+          color: #666;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>Booking Confirmation</h1>
         </div>
-        
-        <div style="padding: 20px; border: 1px solid #ddd; border-top: none;">
-          <p>Dear ${guide.firstName} ${guide.lastName || ''},</p>
+        <div class="content">
+          <p>Hello ${params.name},</p>
+          <p>Thank you for your booking. Your confirmation number is <strong>${params.confirmationNumber}</strong>.</p>
           
-          <p>Thank you for requesting our ${guide.guideType || 'Cabo San Lucas'} guide! We're excited to help you plan your perfect Cabo experience.</p>
+          <p>We have received your booking and will be in touch shortly with more details.</p>
           
-          <div style="background-color: #f9f9f9; padding: 15px; margin: 20px 0; border-radius: 5px; text-align: center;">
-            <h3 style="margin-top: 0; color: #2F4F4F;">Your Guide is Ready!</h3>
-            <p>Click the button below to access your guide:</p>
-            <a href="https://cabo.is/guides/${guide.guideType || 'general'}" 
-               style="display: inline-block; background-color: #2F4F4F; color: white; padding: 12px 25px; text-decoration: none; border-radius: 4px; margin: 15px 0;">
-              Download Your Guide
-            </a>
-          </div>
-          
-          <p>Our team is also available to answer any specific questions you might have about planning your trip.</p>
-          
-          <p>Warm regards,<br>The Cabo San Lucas Team</p>
+          <p>Best regards,<br>Cabo Experiences Team</p>
         </div>
-        
-        <div style="padding: 15px; background-color: #f5f5f5; text-align: center; font-size: 12px; color: #666;">
-          <p>This email confirms your guide download. Please do not reply to this email.</p>
-          <p>© ${new Date().getFullYear()} Cabo San Lucas. All rights reserved.</p>
+        <div class="footer">
+          <p>This is an automated confirmation email. Please do not reply to this message.</p>
+          <p>For assistance, please contact support@cabo.is</p>
+          <p>&copy; ${new Date().getFullYear()} Cabo San Lucas. All rights reserved.</p>
         </div>
       </div>
-    `
-  };
+    </body>
+    </html>
+  `;
 }
 
 /**
- * Creates a formatted email for admin notifications
+ * Create a test email for verifying the email service is working
  */
-export function createAdminNotificationEmail(subject: string, content: string): EmailOptions {
-  return {
-    to: process.env.ADMIN_EMAIL || 'jeff@instacabo.com',
-    subject: `[Cabo Admin] ${subject}`,
-    html: `
-      <div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto;">
-        <div style="background-color: #2F4F4F; padding: 15px; color: white;">
-          <h1 style="margin: 0; font-size: 24px;">Cabo San Lucas Admin Notification</h1>
+/**
+ * Create a guide request email with download link
+ */
+export function createGuideRequestEmail(params: {
+  name: string;
+  email: string;
+  downloadLink: string;
+}): string {
+  const { name, email, downloadLink } = params;
+  
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Guide Download Confirmation</title>
+      <style>
+        body { 
+          font-family: Arial, sans-serif;
+          line-height: 1.6;
+          color: #333;
+          margin: 0;
+          padding: 0;
+        }
+        .container {
+          max-width: 600px;
+          margin: 0 auto;
+          padding: 20px;
+        }
+        .header {
+          background-color: #2F4F4F;
+          color: white;
+          padding: 20px;
+          text-align: center;
+        }
+        .content {
+          padding: 20px;
+          border: 1px solid #ddd;
+          border-top: none;
+        }
+        .download-button {
+          display: inline-block;
+          background-color: #2F4F4F;
+          color: white;
+          padding: 12px 24px;
+          text-decoration: none;
+          border-radius: 4px;
+          margin: 20px 0;
+          font-weight: bold;
+        }
+        .footer {
+          background-color: #f5f5f5;
+          padding: 15px;
+          text-align: center;
+          font-size: 12px;
+          color: #666;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>Your Cabo San Lucas Guide</h1>
         </div>
-        
-        <div style="padding: 20px; border: 1px solid #ddd; border-top: none;">
-          ${content}
+        <div class="content">
+          <p>Hello ${name},</p>
+          <p>Thank you for your interest in Cabo San Lucas! Your exclusive travel guide is ready to download.</p>
+          
+          <p>Click the button below to access your guide:</p>
+          
+          <p style="text-align: center;">
+            <a href="${downloadLink}" class="download-button">Download Your Guide</a>
+          </p>
+          
+          <p>This guide includes:</p>
+          <ul>
+            <li>Insider tips for the best experiences in Cabo</li>
+            <li>Top restaurant recommendations</li>
+            <li>Hidden beaches and attractions</li>
+            <li>Transportation and accommodation suggestions</li>
+          </ul>
+          
+          <p>If you have any questions about planning your trip to Cabo San Lucas, please don't hesitate to reply to this email.</p>
+          
+          <p>We look forward to helping you create an unforgettable Cabo experience!</p>
+          
+          <p>Best regards,<br>The Cabo San Lucas Team</p>
         </div>
-        
-        <div style="background-color: #f5f5f5; padding: 15px; font-size: 12px; text-align: center; color: #666;">
-          <p>This is an automated notification from your Cabo San Lucas website.</p>
-          <p>© ${new Date().getFullYear()} Cabo San Lucas. All rights reserved.</p>
+        <div class="footer">
+          <p>This email was sent to ${email}. If you didn't request this guide, please disregard this email.</p>
+          <p>&copy; ${new Date().getFullYear()} Cabo San Lucas. All rights reserved.</p>
         </div>
       </div>
-    `
-  };
+    </body>
+    </html>
+  `;
+}
+
+/**
+ * Create a guide notification email for admin
+ */
+export function createGuideNotificationEmail(params: {
+  guide: any;
+}): string {
+  const { guide } = params;
+  
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>New Guide Download</title>
+      <style>
+        body { 
+          font-family: Arial, sans-serif;
+          line-height: 1.6;
+          color: #333;
+          margin: 0;
+          padding: 0;
+        }
+        .container {
+          max-width: 600px;
+          margin: 0 auto;
+          padding: 20px;
+        }
+        .header {
+          background-color: #2F4F4F;
+          color: white;
+          padding: 20px;
+          text-align: center;
+        }
+        .content {
+          padding: 20px;
+          border: 1px solid #ddd;
+          border-top: none;
+        }
+        .guide-details {
+          margin: 20px 0;
+          border: 1px solid #ddd;
+          border-radius: 4px;
+        }
+        .guide-header {
+          background-color: #f5f5f5;
+          padding: 10px 15px;
+          border-bottom: 1px solid #ddd;
+          font-weight: bold;
+        }
+        .guide-body {
+          padding: 15px;
+        }
+        .guide-row {
+          display: flex;
+          margin-bottom: 10px;
+        }
+        .guide-label {
+          width: 40%;
+          font-weight: bold;
+          color: #666;
+        }
+        .guide-value {
+          width: 60%;
+        }
+        .footer {
+          background-color: #f5f5f5;
+          padding: 15px;
+          text-align: center;
+          font-size: 12px;
+          color: #666;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>New Guide Download</h1>
+        </div>
+        <div class="content">
+          <p>A new guide download request has been received:</p>
+          
+          <div class="guide-details">
+            <div class="guide-header">Guide Request Details</div>
+            <div class="guide-body">
+              <div class="guide-row">
+                <div class="guide-label">Name:</div>
+                <div class="guide-value">${guide.firstName} ${guide.lastName || ''}</div>
+              </div>
+              <div class="guide-row">
+                <div class="guide-label">Email:</div>
+                <div class="guide-value">${guide.email}</div>
+              </div>
+              ${guide.phone ? `
+              <div class="guide-row">
+                <div class="guide-label">Phone:</div>
+                <div class="guide-value">${guide.phone}</div>
+              </div>
+              ` : ''}
+              <div class="guide-row">
+                <div class="guide-label">Guide Type:</div>
+                <div class="guide-value">${guide.guideType || 'General'}</div>
+              </div>
+              ${guide.interestAreas ? `
+              <div class="guide-row">
+                <div class="guide-label">Interest Areas:</div>
+                <div class="guide-value">${
+                  Array.isArray(guide.interestAreas) 
+                    ? guide.interestAreas.join(', ') 
+                    : guide.interestAreas
+                }</div>
+              </div>
+              ` : ''}
+              <div class="guide-row">
+                <div class="guide-label">Source:</div>
+                <div class="guide-value">${guide.source || 'Website'}</div>
+              </div>
+              <div class="guide-row">
+                <div class="guide-label">Created At:</div>
+                <div class="guide-value">${new Date().toLocaleString()}</div>
+              </div>
+            </div>
+          </div>
+          
+          <p>Please follow up with this guide request as soon as possible.</p>
+        </div>
+        <div class="footer">
+          <p>This is an automated notification from the Cabo San Lucas website.</p>
+          <p>&copy; ${new Date().getFullYear()} Cabo San Lucas. All rights reserved.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
+export function createTestEmail(params: {
+  recipient: string;
+}): string {
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Email Service Test</title>
+      <style>
+        body { 
+          font-family: Arial, sans-serif;
+          line-height: 1.6;
+          color: #333;
+          margin: 0;
+          padding: 0;
+        }
+        .container {
+          max-width: 600px;
+          margin: 0 auto;
+          padding: 20px;
+        }
+        .header {
+          background-color: #2F4F4F;
+          color: white;
+          padding: 20px;
+          text-align: center;
+        }
+        .content {
+          padding: 20px;
+          border: 1px solid #ddd;
+          border-top: none;
+        }
+        .footer {
+          background-color: #f5f5f5;
+          padding: 15px;
+          text-align: center;
+          font-size: 12px;
+          color: #666;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>Email System Test</h1>
+        </div>
+        <div class="content">
+          <p>This is a test email from the Cabo San Lucas website.</p>
+          <p>If you're receiving this email, it means the email notification system is working correctly.</p>
+          <p><strong>Test Details:</strong></p>
+          <ul>
+            <li>Recipient: ${params.recipient}</li>
+            <li>Timestamp: ${new Date().toLocaleString()}</li>
+            <li>Environment: ${process.env.NODE_ENV || 'development'}</li>
+          </ul>
+          <p>This email service is configured to send:</p>
+          <ul>
+            <li>Booking confirmations</li>
+            <li>Lead notifications</li>
+            <li>Guide download notifications</li>
+          </ul>
+        </div>
+        <div class="footer">
+          <p>This is an automated test email. Please do not reply to this message.</p>
+          <p>&copy; ${new Date().getFullYear()} Cabo San Lucas. All rights reserved.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
 }
