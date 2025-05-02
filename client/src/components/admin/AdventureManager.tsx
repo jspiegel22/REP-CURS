@@ -73,9 +73,9 @@ export default function AdventureManager() {
   // Filter adventures based on search term and category
   useEffect(() => {
     if (!adventures.length) return;
-    
+
     let filtered = [...adventures];
-    
+
     if (searchTerm) {
       filtered = filtered.filter(adventure => 
         adventure.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -83,11 +83,11 @@ export default function AdventureManager() {
         adventure.category?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
-    
+
     if (categoryFilter !== 'all') {
       filtered = filtered.filter(adventure => adventure.category === categoryFilter);
     }
-    
+
     setFilteredAdventures(filtered);
   }, [adventures, searchTerm, categoryFilter]);
 
@@ -97,9 +97,9 @@ export default function AdventureManager() {
       // Fetch adventures from the API
       const response = await apiRequest('GET', '/api/adventures');
       const data = await response.json();
-      
+
       console.log("Fetched adventures:", data);
-      
+
       setAdventures(data);
       setFilteredAdventures(data);
     } catch (error) {
@@ -140,27 +140,27 @@ export default function AdventureManager() {
 
   async function handleSaveEdit() {
     if (!selectedAdventure) return;
-    
+
     try {
       // Make PUT request to update the adventure
       const response = await apiRequest('PUT', `/api/adventures/${selectedAdventure.id}`, editForm);
-      
+
       if (!response.ok) {
         throw new Error(`Error updating adventure: ${response.statusText}`);
       }
-      
+
       const updatedAdventure = await response.json();
-      
+
       const updatedAdventures = adventures.map(adv => 
         adv.id === selectedAdventure.id ? updatedAdventure : adv
       );
-      
+
       setAdventures(updatedAdventures);
       setIsEditDialogOpen(false);
-      
+
       // Invalidate the adventures cache to ensure featured and top recommended sections update
       queryClient.invalidateQueries({ queryKey: ['/api/adventures'] });
-      
+
       toast({
         title: "Adventure updated",
         description: "The adventure has been successfully updated.",
@@ -177,10 +177,15 @@ export default function AdventureManager() {
 
   async function handleCreateSubmit() {
     try {
+      // Generate slug from title
+      const slug = createForm.title?.toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)/g, '') || '';
+
       // Create a new adventure via API
       const adventureData = {
         title: createForm.title || '',
-        slug: createForm.title?.toLowerCase().replace(/\s+/g, '-') || '',
+        slug: slug,
         currentPrice: createForm.currentPrice || '',
         originalPrice: createForm.originalPrice || null,
         discount: createForm.discount || null,
@@ -196,27 +201,27 @@ export default function AdventureManager() {
         description: createForm.description || '',
         featured: createForm.featured || false
       };
-      
+
       const response = await apiRequest('POST', '/api/adventures', adventureData);
-      
+
       if (!response.ok) {
         throw new Error(`Error creating adventure: ${response.statusText}`);
       }
-      
+
       const newAdventure = await response.json();
-      
+
       // Add the new adventure to the local state
       setAdventures([...adventures, newAdventure]);
       setIsCreateDialogOpen(false);
-      
+
       // Invalidate the adventures cache to ensure featured and top recommended sections update
       queryClient.invalidateQueries({ queryKey: ['/api/adventures'] });
-      
+
       toast({
         title: "Adventure created",
         description: "The new adventure has been successfully created.",
       });
-      
+
       // Refresh the adventures list
       fetchAdventures();
     } catch (error) {
@@ -233,19 +238,19 @@ export default function AdventureManager() {
     if (!confirm("Are you sure you want to delete this adventure? This action cannot be undone.")) {
       return;
     }
-    
+
     try {
       // Delete the adventure via API
       const response = await apiRequest('DELETE', `/api/adventures/${id}`);
-      
+
       if (!response.ok) {
         throw new Error(`Error deleting adventure: ${response.statusText}`);
       }
-      
+
       // Remove the adventure from the local state
       const updatedAdventures = adventures.filter(adv => adv.id !== id);
       setAdventures(updatedAdventures);
-      
+
       toast({
         title: "Adventure deleted",
         description: "The adventure has been successfully deleted.",
@@ -263,19 +268,19 @@ export default function AdventureManager() {
   function handleImageUpload(event: React.ChangeEvent<HTMLInputElement>, isCreate: boolean) {
     const files = event.target.files;
     if (!files || files.length === 0) return;
-    
+
     const file = files[0];
-    
+
     // In a real app, you would upload this file to your server or cloud storage
     // For demonstration, we'll create a temporary URL
     const imageUrl = URL.createObjectURL(file);
-    
+
     if (isCreate) {
       setCreateForm(prev => ({...prev, imageUrl}));
     } else {
       setEditForm(prev => ({...prev, imageUrl}));
     }
-    
+
     // In a real app, you would handle the actual file upload here
     toast({
       title: "Image selected",
@@ -300,7 +305,7 @@ export default function AdventureManager() {
             Manage all adventure tours and activities. Add, edit, or remove adventures from the website.
           </CardDescription>
         </CardHeader>
-        
+
         <CardContent>
           <div className="mb-8 grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="col-span-1 md:col-span-2">
@@ -334,7 +339,7 @@ export default function AdventureManager() {
                 <TabsTrigger value="family" onClick={() => setCategoryFilter('family')}>Family</TabsTrigger>
                 <TabsTrigger value="yacht" onClick={() => setCategoryFilter('yacht')}>Yacht</TabsTrigger>
               </TabsList>
-              
+
               <div className="flex items-center gap-4">
                 <div className="relative">
                   <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -348,7 +353,7 @@ export default function AdventureManager() {
                 </div>
               </div>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredAdventures.length === 0 ? (
                 <div className="col-span-3 text-center py-12">
@@ -433,7 +438,7 @@ export default function AdventureManager() {
           <DialogHeader>
             <DialogTitle>Edit Adventure</DialogTitle>
           </DialogHeader>
-          
+
           <div className="grid grid-cols-2 gap-6 py-4">
             <div className="space-y-4">
               <div>
@@ -444,7 +449,7 @@ export default function AdventureManager() {
                   onChange={(e) => setEditForm({...editForm, title: e.target.value})}
                 />
               </div>
-              
+
               <div className="flex gap-4">
                 <div className="flex-1">
                   <Label htmlFor="currentPrice">Current Price</Label>
@@ -463,7 +468,7 @@ export default function AdventureManager() {
                   />
                 </div>
               </div>
-              
+
               <div className="flex gap-4">
                 <div className="flex-1">
                   <Label htmlFor="discount">Discount</Label>
@@ -482,7 +487,7 @@ export default function AdventureManager() {
                   />
                 </div>
               </div>
-              
+
               <div className="flex gap-4">
                 <div className="flex-1">
                   <Label htmlFor="minAge">Minimum Age</Label>
@@ -511,7 +516,7 @@ export default function AdventureManager() {
                   </Select>
                 </div>
               </div>
-              
+
               <div>
                 <Label htmlFor="rating">Rating (1-5)</Label>
                 <Input 
@@ -534,7 +539,7 @@ export default function AdventureManager() {
                 />
                 <Label htmlFor="topRecommended" className="cursor-pointer">Top Recommended Adventure</Label>
               </div>
-              
+
               <div className="flex items-center space-x-2 mb-2">
                 <Checkbox 
                   id="featured" 
@@ -544,7 +549,7 @@ export default function AdventureManager() {
                 />
                 <Label htmlFor="featured" className="cursor-pointer">Featured Experience</Label>
               </div>
-              
+
               <div>
                 <Label htmlFor="keyFeatures">Key Features (one per line)</Label>
                 <Textarea 
@@ -559,7 +564,7 @@ export default function AdventureManager() {
                 />
               </div>
             </div>
-            
+
             <div className="space-y-4">
               <div>
                 <Label htmlFor="thingsToBring">Things to Bring (one per line)</Label>
@@ -574,7 +579,7 @@ export default function AdventureManager() {
                   placeholder="Swimwear&#10;Sunscreen&#10;Camera"
                 />
               </div>
-            
+
               <div>
                 <Label htmlFor="description">Description</Label>
                 <Textarea 
@@ -584,7 +589,7 @@ export default function AdventureManager() {
                   onChange={(e) => setEditForm({...editForm, description: e.target.value})}
                 />
               </div>
-              
+
               <div>
                 <Label htmlFor="provider">Provider</Label>
                 <Input 
@@ -593,7 +598,7 @@ export default function AdventureManager() {
                   onChange={(e) => setEditForm({...editForm, provider: e.target.value})}
                 />
               </div>
-              
+
               <div>
                 <Label>Adventure Image</Label>
                 <div className="mt-2">
@@ -635,7 +640,7 @@ export default function AdventureManager() {
               </div>
             </div>
           </div>
-          
+
           <DialogFooter>
             <Button variant="secondary" onClick={() => setIsEditDialogOpen(false)}>
               Cancel
@@ -654,7 +659,7 @@ export default function AdventureManager() {
           <DialogHeader>
             <DialogTitle>Create New Adventure</DialogTitle>
           </DialogHeader>
-          
+
           <div className="grid grid-cols-2 gap-6 py-4">
             <div className="space-y-4">
               <div>
@@ -665,7 +670,7 @@ export default function AdventureManager() {
                   onChange={(e) => setCreateForm({...createForm, title: e.target.value})}
                 />
               </div>
-              
+
               <div className="flex gap-4">
                 <div className="flex-1">
                   <Label htmlFor="create-currentPrice">Current Price</Label>
@@ -684,7 +689,7 @@ export default function AdventureManager() {
                   />
                 </div>
               </div>
-              
+
               <div className="flex gap-4">
                 <div className="flex-1">
                   <Label htmlFor="create-discount">Discount</Label>
@@ -703,7 +708,7 @@ export default function AdventureManager() {
                   />
                 </div>
               </div>
-              
+
               <div className="flex gap-4">
                 <div className="flex-1">
                   <Label htmlFor="create-minAge">Minimum Age</Label>
@@ -732,7 +737,7 @@ export default function AdventureManager() {
                   </Select>
                 </div>
               </div>
-              
+
               <div>
                 <Label htmlFor="create-rating">Rating (1-5)</Label>
                 <Input 
@@ -754,7 +759,7 @@ export default function AdventureManager() {
                 />
                 <Label htmlFor="create-topRecommended" className="cursor-pointer">Top Recommended Adventure</Label>
               </div>
-              
+
               <div className="flex items-center space-x-2">
                 <Checkbox 
                   id="create-featured" 
@@ -764,7 +769,7 @@ export default function AdventureManager() {
                 />
                 <Label htmlFor="create-featured" className="cursor-pointer">Featured Experience</Label>
               </div>
-              
+
               <div>
                 <Label htmlFor="create-keyFeatures">Key Features (one per line)</Label>
                 <Textarea 
@@ -779,7 +784,7 @@ export default function AdventureManager() {
                 />
               </div>
             </div>
-            
+
             <div className="space-y-4">
               <div>
                 <Label htmlFor="create-thingsToBring">Things to Bring (one per line)</Label>
@@ -794,7 +799,7 @@ export default function AdventureManager() {
                   placeholder="Swimwear&#10;Sunscreen&#10;Camera"
                 />
               </div>
-            
+
               <div>
                 <Label htmlFor="create-description">Description</Label>
                 <Textarea 
@@ -804,7 +809,7 @@ export default function AdventureManager() {
                   onChange={(e) => setCreateForm({...createForm, description: e.target.value})}
                 />
               </div>
-              
+
               <div>
                 <Label htmlFor="create-provider">Provider</Label>
                 <Input 
@@ -813,7 +818,7 @@ export default function AdventureManager() {
                   onChange={(e) => setCreateForm({...createForm, provider: e.target.value})}
                 />
               </div>
-              
+
               <div>
                 <Label>Adventure Image</Label>
                 <div className="mt-2">
@@ -855,7 +860,7 @@ export default function AdventureManager() {
               </div>
             </div>
           </div>
-          
+
           <DialogFooter>
             <Button variant="secondary" onClick={() => setIsCreateDialogOpen(false)}>
               Cancel
