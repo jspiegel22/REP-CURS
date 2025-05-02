@@ -338,69 +338,69 @@ export default function AdventureDetail() {
                     <h2 className="text-2xl font-semibold mb-4">Key Features</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                       <Card>
-                        <CardContent className="p-4 flex items-start space-x-3">
-                          <Users className="w-5 h-5 text-blue-500 mt-1" />
-                          <div>
-                            <h3 className="font-semibold">Professional Crew</h3>
-                            <p className="text-sm text-muted-foreground">Experienced captain and attentive crew</p>
+                        <CardContent className="p-6 text-center">
+                          <div className="flex justify-center mb-4">
+                            <Users className="w-16 h-16 text-blue-500" />
                           </div>
+                          <h3 className="font-semibold text-lg">Professional Crew</h3>
+                          <p className="text-sm text-muted-foreground mt-2">Experienced captain and attentive crew</p>
                         </CardContent>
                       </Card>
                       <Card>
-                        <CardContent className="p-4 flex items-start space-x-3">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-blue-500 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 15a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h14a2 2 0 012 2v10z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m-6 0h6" />
-                          </svg>
-                          <div>
-                            <h3 className="font-semibold">Luxury Amenities</h3>
-                            <p className="text-sm text-muted-foreground">Premium yacht with modern amenities</p>
+                        <CardContent className="p-6 text-center">
+                          <div className="flex justify-center mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="w-16 h-16 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 15a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h14a2 2 0 012 2v10z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m-6 0h6" />
+                            </svg>
                           </div>
+                          <h3 className="font-semibold text-lg">Luxury Amenities</h3>
+                          <p className="text-sm text-muted-foreground mt-2">Premium yacht with modern amenities</p>
                         </CardContent>
                       </Card>
                       <Card>
-                        <CardContent className="p-4 flex items-start space-x-3">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-blue-500 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                          </svg>
-                          <div>
-                            <h3 className="font-semibold">Drinks Included</h3>
-                            <p className="text-sm text-muted-foreground">Open bar with premium beverages</p>
+                        <CardContent className="p-6 text-center">
+                          <div className="flex justify-center mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="w-16 h-16 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
                           </div>
+                          <h3 className="font-semibold text-lg">Drinks Included</h3>
+                          <p className="text-sm text-muted-foreground mt-2">Open bar with premium beverages</p>
                         </CardContent>
                       </Card>
                       <Card>
-                        <CardContent className="p-4 flex items-start space-x-3">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-blue-500 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
-                          </svg>
-                          <div>
-                            <h3 className="font-semibold">Scenic Views</h3>
-                            <p className="text-sm text-muted-foreground">Panoramic views of Cabo's coast</p>
+                        <CardContent className="p-6 text-center">
+                          <div className="flex justify-center mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="w-16 h-16 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                            </svg>
                           </div>
+                          <h3 className="font-semibold text-lg">Scenic Views</h3>
+                          <p className="text-sm text-muted-foreground mt-2">Panoramic views of Cabo's coast</p>
                         </CardContent>
                       </Card>
                       <Card>
-                        <CardContent className="p-4 flex items-start space-x-3">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-blue-500 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                          </svg>
-                          <div>
-                            <h3 className="font-semibold">Photo Opportunities</h3>
-                            <p className="text-sm text-muted-foreground">Perfect spots for photos at iconic landmarks</p>
+                        <CardContent className="p-6 text-center">
+                          <div className="flex justify-center mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="w-16 h-16 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
                           </div>
+                          <h3 className="font-semibold text-lg">Photo Opportunities</h3>
+                          <p className="text-sm text-muted-foreground mt-2">Perfect spots for photos at iconic landmarks</p>
                         </CardContent>
                       </Card>
                       <Card>
-                        <CardContent className="p-4 flex items-start space-x-3">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-blue-500 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.121 15.536c-1.171 1.952-3.07 1.952-4.242 0-1.172-1.953-1.172-5.119 0-7.072 1.171-1.952 3.07-1.952 4.242 0M8 10.5h4m-4 3h4m9-1.5a9 9 0 11-18 0 9 9 0 0118 0z" />
-                          </svg>
-                          <div>
-                            <h3 className="font-semibold">Customizable Experience</h3>
-                            <p className="text-sm text-muted-foreground">Personalized route based on your preferences</p>
+                        <CardContent className="p-6 text-center">
+                          <div className="flex justify-center mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="w-16 h-16 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M14.121 15.536c-1.171 1.952-3.07 1.952-4.242 0-1.172-1.953-1.172-5.119 0-7.072 1.171-1.952 3.07-1.952 4.242 0M8 10.5h4m-4 3h4m9-1.5a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
                           </div>
+                          <h3 className="font-semibold text-lg">Customizable Experience</h3>
+                          <p className="text-sm text-muted-foreground mt-2">Personalized route based on your preferences</p>
                         </CardContent>
                       </Card>
                     </div>
