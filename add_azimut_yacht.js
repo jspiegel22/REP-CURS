@@ -1,62 +1,72 @@
-// Script to add Azimut Yacht to the adventures collection
-// Using direct database access via execute_sql_tool
-require('dotenv').config();
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+import fs from 'fs';
+import path from 'path';
+import fetch from 'node-fetch';
 
 async function addAzimutYacht() {
   try {
-    console.log('Starting to add Azimut Yacht adventure...');
-    
-    // Create the Azimut Yacht adventure
-    const azimutYachtData = {
+    // Login to get the auth cookie
+    const loginResponse = await fetch('http://localhost:3000/api/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        username: 'jefe',
+        password: 'cabofeed2023',
+      }),
+    });
+
+    if (!loginResponse.ok) {
+      throw new Error(`Login failed: ${loginResponse.statusText}`);
+    }
+
+    const cookies = loginResponse.headers.get('set-cookie');
+    console.log('Login successful');
+
+    // Create the yacht adventure data
+    const yachtData = {
       title: "Azimut 68ft Luxury Yacht Charter",
       slug: "azimut-68ft-luxury-yacht-charter",
-      description: `Step aboard the iconic Azimut 68ft Yacht and experience the ultimate luxury yacht charter in Cabo San Lucas. With its sleek Italian design and world-class amenities, this yacht is your gateway to the turquoise waters of the Sea of Cortez, famously known as the Aquarium of the World.
+      description: `# Azimut 68ft Luxury Yacht Charter
 
-We offer a private yacht rental experience unlike any other, complete with gourmet cuisine, an open bar, and breathtaking coastal views. Your unforgettable Cabo adventure begins here.
+Embark on the ultimate luxury experience aboard our stunning Azimut 68ft yacht. This premium vessel combines Italian craftsmanship with extraordinary amenities to create the perfect day at sea in Cabo San Lucas.
 
-## LUXURY AZIMUT 68 FT YACHT CHARTER IN CABO SAN LUCAS
+## The Ultimate Luxury Experience
 
-Step into refined elegance aboard the Azimut 68ft, a masterpiece of Italian craftsmanship designed for ultimate comfort and style. Perfect for private events, romantic getaways, or unforgettable celebrations with friends and family, this luxury yacht features spacious interiors, a stunning flybridge, elegant cabins, and an expansive sun deck ideal for soaking in the Cabo sunshine.
+The Azimut 68ft yacht features expansive entertainment areas, including a spacious flybridge with panoramic views, elegant salon, and multiple sunbathing areas. With its sleek design and powerful engines, this yacht provides both comfort and performance.
 
-Whether you're cruising along the iconic Arch, snorkeling in the crystal-clear waters of Santa María Bay, or enjoying a sunset dinner at sea, every detail of your charter is curated to perfection by the Papillon Yachts team.
+## Inclusive Amenities
 
-## KEY FEATURES:
-- Air conditioned
-- 2 VIP Cabins
-- 3 bathrooms
-- Spacious living room
-- Luxury Interiors
-- Sunbathing area
-- Dining table
-- Fly Bridge
+* Professional captain and crew
+* Premium open bar
+* Gourmet lunch or dinner options
+* Snorkeling equipment
+* Paddleboards and water toys
+* Bluetooth sound system
+* Air-conditioned interior
+* Fresh water shower
 
-## INCLUSIONS:
-- Roundtrip Transportation
-- Bilingual & Friendly Crew
-- Unlimited Open Bar (Rum, Tequila, Vodka, Beer, Juices, Sodas, Mixers, Water)
-- Food Menu (Ceviche, Mix fajitas, Guacamole, Pico de gallo, Chips, Fruit platter)
-- Water Toys (1 paddle board, Large floating mat, Complete snorkel gear, Life vests)
+## Route Options
 
-## WHAT TO BRING:
-- Sunscreen
-- Phone to play music (optional)
-- Swimsuits, hats, sunglasses
+Choose from several popular routes:
+- Lands End & Arch Tour with swimming at Pelican Rock
+- Santa Maria and Chileno Bay for premier snorkeling
+- Cabo Pulmo Marine Park (full-day charters only)
+- Custom routes available upon request
 
-## PRICING:
-- 3-Hours: $3,650 USD for 1 to 12 guests
-- Extra Guest: $100 USD per guest (max. cap. 30 guests)
-- Extra Hour: $1,000 USD per extra hour
-- Special 2-Hour Sunset Cruise: From $2,690 USD for 1-12 guests`,
-      currentPrice: "$3,650",
-      originalPrice: "$4,200",
-      discount: "13% OFF",
-      duration: "3 Hours",
+## Capacity and Options
+
+Perfect for groups of up to 16 passengers. Available for half-day (4 hours), full-day (8 hours), or sunset cruises (2.5 hours).
+
+Book this extraordinary Azimut yacht for your next celebration, family gathering, or romantic escape in Cabo San Lucas.`,
+      currentPrice: "$2,800",
+      originalPrice: "$3,200",
+      discount: "15% OFF",
+      duration: "4-8 hours",
       imageUrl: "/yachts/azimut-yacht-main.jpg",
       imageUrls: [
-        "/yachts/azimut-yacht-1.jpg", 
-        "/yachts/azimut-yacht-2.jpg", 
+        "/yachts/azimut-yacht-1.jpg",
+        "/yachts/azimut-yacht-2.jpg",
         "/yachts/azimut-yacht-3.jpg",
         "/yachts/azimut-yacht-4.jpg",
         "/yachts/azimut-yacht-5.jpg"
@@ -65,49 +75,53 @@ Whether you're cruising along the iconic Arch, snorkeling in the crystal-clear w
       provider: "Papillon Yachts",
       category: "yacht",
       keyFeatures: [
-        "Private luxury yacht charter",
-        "Italian craftsmanship",
-        "Complimentary transportation",
-        "Gourmet food included",
-        "Open bar included",
-        "Professional crew",
-        "Snorkeling equipment provided",
-        "Special sunset cruise option available"
+        "Luxury 68ft Yacht",
+        "Premium Open Bar",
+        "Professional Crew",
+        "Gourmet Food",
+        "Snorkeling Equipment",
+        "Paddle Boards",
+        "Bluetooth Sound System",
+        "Air Conditioning"
       ],
       thingsToBring: [
+        "Swimwear",
+        "Towel",
         "Sunscreen",
-        "Swimsuit",
         "Sunglasses",
-        "Hat",
         "Camera",
         "Light jacket (for evening cruises)"
       ],
       topRecommended: true,
-      rating: 4.9,
+      rating: 5,
       featured: true,
-      hidden: false,
-      createdAt: new Date(),
-      updatedAt: new Date()
+      hidden: false
     };
-    
-    // Create the adventure record in the database
-    const adventure = await prisma.adventures.create({
-      data: azimutYachtData
+
+    // Send the POST request to create the adventure
+    const response = await fetch('http://localhost:3000/api/adventures', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Cookie': cookies,
+      },
+      body: JSON.stringify(yachtData),
     });
-    
-    console.log(`Successfully created Azimut Yacht adventure with ID: ${adventure.id}`);
-    console.log('Adventure details:', adventure);
-    
+
+    if (!response.ok) {
+      throw new Error(`Failed to add yacht: ${response.statusText}`);
+    }
+
+    const adventure = await response.json();
+    console.log('Yacht added successfully:', adventure);
     return adventure;
   } catch (error) {
-    console.error('Error adding Azimut Yacht adventure:', error);
+    console.error('Error adding yacht adventure:', error);
     throw error;
-  } finally {
-    await prisma.$disconnect();
   }
 }
 
 // Execute the function
 addAzimutYacht()
-  .then(() => console.log('Completed adding Azimut Yacht adventure'))
+  .then(() => console.log('Script completed successfully.'))
   .catch(err => console.error('Script failed:', err));
