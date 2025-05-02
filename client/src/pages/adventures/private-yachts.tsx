@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Link, useLocation } from 'wouter';
-import { FaStar, FaRegCalendarAlt, FaAnchor, FaWineGlass, FaSwimmer, FaUmbrellaBeach } from 'react-icons/fa';
-import { MdOutlineFoodBank, MdOutlineLocalBar } from 'react-icons/md';
-import { GiSailboat, GiSpeedBoat, GiSunset } from 'react-icons/gi';
+import { FaStar, FaRegCalendarAlt, FaAnchor, FaWineGlass, FaSwimmer, FaUmbrellaBeach, FaGlassMartiniAlt, FaWifi, FaMusic } from 'react-icons/fa';
+import { MdOutlineFoodBank, MdOutlineLocalBar, MdOutlinePeopleAlt, MdAir, MdSupportAgent } from 'react-icons/md';
+import { GiSailboat, GiSpeedBoat, GiSunset, GiSnorkel, GiChampagneCork, GiCaptainHatProfile, GiLifeJacket } from 'react-icons/gi';
+import { BiSpa } from 'react-icons/bi';
+import { IoFishOutline } from 'react-icons/io5';
+import { LuLifeBuoy } from 'react-icons/lu';
 import { yachtTestimonials } from '@/data/testimonials';
 
 interface Adventure {
@@ -110,7 +113,7 @@ const YachtAdventuresPage: React.FC = () => {
             alt="Luxury Yacht Charter in Cabo San Lucas" 
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent flex flex-col justify-end p-6 md:p-12">
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent flex flex-col justify-end p-6 md:p-12">
             <div className="container mx-auto">
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4">
                 Luxury Yacht Charters in Cabo
@@ -192,14 +195,53 @@ const YachtAdventuresPage: React.FC = () => {
                           {getShortDescription(adventure.description)}
                         </p>
                         
-                        {/* Key Features */}
+                        {/* Key Features with Icons */}
                         <div className="mb-4">
                           <div className="flex flex-wrap gap-2">
-                            {adventure.keyFeatures?.slice(0, 4).map((feature, index) => (
-                              <span key={index} className="bg-blue-50 text-blue-700 text-xs px-3 py-1 rounded-full">
-                                {feature}
-                              </span>
-                            ))}
+                            {adventure.keyFeatures?.slice(0, 4).map((feature, index) => {
+                              // Select appropriate icon based on feature content
+                              let FeatureIcon = GiSailboat; // Default icon
+                              if (feature.toLowerCase().includes('bar') || feature.toLowerCase().includes('drink')) {
+                                FeatureIcon = MdOutlineLocalBar;
+                              } else if (feature.toLowerCase().includes('food') || feature.toLowerCase().includes('meal') || feature.toLowerCase().includes('dining')) {
+                                FeatureIcon = MdOutlineFoodBank;
+                              } else if (feature.toLowerCase().includes('captain') || feature.toLowerCase().includes('crew')) {
+                                FeatureIcon = GiCaptainHatProfile;
+                              } else if (feature.toLowerCase().includes('swim') || feature.toLowerCase().includes('snorkel')) {
+                                FeatureIcon = FaSwimmer;
+                              } else if (feature.toLowerCase().includes('music') || feature.toLowerCase().includes('sound')) {
+                                FeatureIcon = FaMusic;
+                              } else if (feature.toLowerCase().includes('people') || feature.toLowerCase().includes('passenger') || feature.toLowerCase().includes('guest')) {
+                                FeatureIcon = MdOutlinePeopleAlt;
+                              } else if (feature.toLowerCase().includes('wifi')) {
+                                FeatureIcon = FaWifi;
+                              } else if (feature.toLowerCase().includes('air conditioning') || feature.toLowerCase().includes('climate')) {
+                                FeatureIcon = MdAir;
+                              } else if (feature.toLowerCase().includes('fishing')) {
+                                FeatureIcon = IoFishOutline;
+                              } else if (feature.toLowerCase().includes('champagne') || feature.toLowerCase().includes('wine')) {
+                                FeatureIcon = GiChampagneCork;
+                              } else if (feature.toLowerCase().includes('jacuzzi') || feature.toLowerCase().includes('spa')) {
+                                FeatureIcon = BiSpa;
+                              } else if (feature.toLowerCase().includes('safety') || feature.toLowerCase().includes('life')) {
+                                FeatureIcon = GiLifeJacket;
+                              } else if (feature.toLowerCase().includes('support') || feature.toLowerCase().includes('assistance')) {
+                                FeatureIcon = MdSupportAgent;
+                              } else if (feature.toLowerCase().includes('beach')) {
+                                FeatureIcon = FaUmbrellaBeach;
+                              } else if (feature.toLowerCase().includes('luxury') || feature.toLowerCase().includes('premium')) {
+                                FeatureIcon = FaGlassMartiniAlt;
+                              } else if (feature.toLowerCase().includes('speed') || feature.toLowerCase().includes('fast')) {
+                                FeatureIcon = GiSpeedBoat;
+                              }
+                              
+                              return (
+                                <span key={index} className="bg-blue-50 text-blue-700 text-xs px-3 py-1 rounded-full flex items-center gap-1">
+                                  <FeatureIcon className="h-3.5 w-3.5" />
+                                  {feature}
+                                </span>
+                              );
+                            })}
                           </div>
                         </div>
                         

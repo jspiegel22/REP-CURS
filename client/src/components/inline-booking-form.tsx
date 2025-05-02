@@ -16,6 +16,7 @@ type InlineBookingFormProps = {
   price: number;
   image?: string;
   provider?: string;
+  isYacht?: boolean;
 };
 
 // Make sure to call loadStripe outside of a component's render
@@ -36,9 +37,10 @@ const bookingFormSchema = z.object({
 
 export type BookingFormData = z.infer<typeof bookingFormSchema>;
 
-export default function InlineBookingForm({ adventureName, price, image, provider = "" }: InlineBookingFormProps) {
+export default function InlineBookingForm({ adventureName, price, image, provider = "", isYacht = false }: InlineBookingFormProps) {
   const { toast } = useToast();
   const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [payFullAmount, setPayFullAmount] = useState(true); // Default to full payment
   
   // Get today and tomorrow dates in AZ timezone (UTC-7)
   const getArizonaDate = (offsetDays = 0) => {
@@ -107,12 +109,17 @@ export default function InlineBookingForm({ adventureName, price, image, provide
     
     setLoading(true);
     try {
+      // For yacht bookings, use deposit amount if selected
+      const paymentAmount = isYacht && !payFullAmount ? 500 : price * formData.guests;
+      
       // Convert the price to cents for Stripe
-      const amount = Math.round(price * 100);
+      const amount = Math.round(paymentAmount * 100);
       
       const response = await apiRequest('POST', '/api/create-payment-intent', {
         amount,
-        description: `Booking for ${adventureName}`,
+        description: isYacht && !payFullAmount 
+          ? `Deposit for ${adventureName}` 
+          : `Booking for ${adventureName}`,
         bookingData: formData
       });
       
@@ -299,10 +306,44 @@ export default function InlineBookingForm({ adventureName, price, image, provide
                   placeholder="Any special requirements or questions?"
                 />
               </div>
+              {/* Yacht Booking Payment Options */}
+              {isYacht && (
+                <div className="rounded-lg border p-4 mb-4 bg-blue-50">
+                  <div className="font-medium mb-2">Choose Payment Option:</div>
+                  <div className="flex flex-col gap-2">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input 
+                        type="radio" 
+                        checked={payFullAmount} 
+                        onChange={() => setPayFullAmount(true)}
+                        className="h-4 w-4 text-blue-600"
+                      />
+                      <span>Pay Full Amount (${(price * formData.guests).toFixed(2)} USD)</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input 
+                        type="radio" 
+                        checked={!payFullAmount} 
+                        onChange={() => setPayFullAmount(false)}
+                        className="h-4 w-4 text-blue-600"
+                      />
+                      <span>Pay Deposit Only ($500.00 USD)</span>
+                    </label>
+                    <p className="text-xs text-gray-600 mt-1">
+                      The remaining balance can be paid on the day of your charter.
+                    </p>
+                  </div>
+                </div>
+              )}
+
               <div className="py-2">
                 <div className="flex justify-between items-center mb-4">
-                  <span className="font-medium">Total Price:</span>
-                  <span className="text-xl font-bold">${(price * formData.guests).toFixed(2)} USD</span>
+                  <span className="font-medium">
+                    {isYacht && !payFullAmount ? 'Deposit Amount:' : 'Total Price:'}
+                  </span>
+                  <span className="text-xl font-bold">
+                    ${isYacht && !payFullAmount ? '500.00' : (price * formData.guests).toFixed(2)} USD
+                  </span>
                 </div>
                 <Button 
                   onClick={proceedToPayment} 
@@ -330,10 +371,27 @@ export default function InlineBookingForm({ adventureName, price, image, provide
                       <span>{adventureName}</span>
                       <span>${price.toFixed(2)} × {formData.guests}</span>
                     </div>
-                    <div className="flex justify-between font-bold">
-                      <span>Total</span>
-                      <span>${(price * formData.guests).toFixed(2)} USD</span>
-                    </div>
+                    {isYacht && !payFullAmount ? (
+                      <>
+                        <div className="flex justify-between">
+                          <span>Total</span>
+                          <span className="text-gray-500">${(price * formData.guests).toFixed(2)} USD</span>
+                        </div>
+                        <div className="flex justify-between font-bold mt-2 pt-2 border-t">
+                          <span>Deposit (Due Now)</span>
+                          <span>$500.00 USD</span>
+                        </div>
+                        <div className="flex justify-between text-sm text-gray-500 mt-1">
+                          <span>Balance (Due Day of Charter)</span>
+                          <span>${((price * formData.guests) - 500).toFixed(2)} USD</span>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="flex justify-between font-bold">
+                        <span>Total</span>
+                        <span>${(price * formData.guests).toFixed(2)} USD</span>
+                      </div>
+                    )}
                   </div>
                   <StripePayment />
                   <div className="mt-4">

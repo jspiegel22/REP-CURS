@@ -1,11 +1,11 @@
-import { useParams } from "wouter";
+import { useParams, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState, useEffect } from "react";
-import { Clock, Users, Plus, Minus, Loader2 } from "lucide-react";
+import { Clock, Users, Plus, Minus, Loader2, X } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ProductFooter } from "@/components/product-footer";
 import { RewardsPanel } from "@/components/rewards-panel";
@@ -69,6 +69,7 @@ export default function AdventureDetail() {
   const { slug } = useParams();
   const [adventure, setAdventure] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -78,6 +79,18 @@ export default function AdventureDetail() {
     message: "",
     showMobileCTA: false
   });
+  
+  // Function to open image modal
+  const openImageModal = (imageUrl: string) => {
+    setSelectedImage(imageUrl);
+    document.body.style.overflow = 'hidden';
+  };
+  
+  // Function to close image modal
+  const closeImageModal = () => {
+    setSelectedImage(null);
+    document.body.style.overflow = 'auto';
+  };
   const [bookingOpen, setBookingOpen] = useState(false);
   
   // Fetch the specific adventure data by slug
@@ -176,6 +189,34 @@ export default function AdventureDetail() {
         }}
       />
       <div className="min-h-screen bg-background">
+        {/* Image Modal */}
+        {selectedImage && (
+          <div 
+            className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4" 
+            onClick={closeImageModal}
+          >
+            <div className="relative max-w-4xl w-full">
+              <button 
+                className="absolute top-4 right-4 text-white bg-black/50 rounded-full p-2 hover:bg-black/70"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  closeImageModal();
+                }}
+              >
+                <X className="h-6 w-6" />
+              </button>
+              
+              <div className="relative">
+                <img 
+                  src={selectedImage} 
+                  alt={adventure?.title || 'Adventure image'} 
+                  className="w-full h-auto object-contain max-h-[80vh]"
+                />
+              </div>
+            </div>
+          </div>
+        )}
+        
         {/* Hero Section */}
         <div className="relative h-[60vh] w-full">
           <img
@@ -183,7 +224,7 @@ export default function AdventureDetail() {
             alt={adventure.title}
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-[#2F4F4F]/40"> {/* Match footer color */}
+          <div className="absolute inset-0 bg-black/40"> {/* Black overlay with 40% opacity */}
             <div className="container mx-auto px-4 h-full flex items-end py-8">
               <div className="text-white w-full max-w-4xl">
                 <h1 className="text-4xl font-bold mb-2">{adventure.title}</h1>
@@ -260,10 +301,111 @@ export default function AdventureDetail() {
             {/* Main Content */}
             <div className="lg:col-span-2">
               <div className="prose max-w-none">
+                {/* Gallery Section for Yacht Photos - Only show for yacht category */}
+                {adventure.category === 'yacht' && adventure.imageUrls && adventure.imageUrls.length > 0 && (
+                  <div className="mb-8">
+                    <h2 className="text-2xl font-semibold mb-4">Yacht Gallery</h2>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      {[adventure.imageUrl, ...adventure.imageUrls].map((imageUrl, index) => (
+                        <div 
+                          key={index} 
+                          className="aspect-square relative overflow-hidden rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
+                          onClick={() => {
+                            if (openImageModal) {
+                              openImageModal(imageUrl);
+                            }
+                          }}
+                        >
+                          <img 
+                            src={imageUrl} 
+                            alt={`${adventure.title} - Photo ${index + 1}`} 
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 <h2 className="text-2xl font-semibold mb-4">About This Adventure</h2>
                 <p className="text-muted-foreground mb-8">
                   Experience an unforgettable adventure with {adventure.provider}. This {adventure.duration.toLowerCase()} tour offers an exciting opportunity to explore Cabo's natural wonders. Our professional guides ensure your safety while providing an engaging and memorable experience. Perfect for {adventure.minAge.toLowerCase()} looking for adventure!
                 </p>
+                
+                {/* Key Features Section for Yacht Adventures */}
+                {adventure.category === 'yacht' && (
+                  <div className="mb-8">
+                    <h2 className="text-2xl font-semibold mb-4">Key Features</h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                      <Card>
+                        <CardContent className="p-4 flex items-start space-x-3">
+                          <Users className="w-5 h-5 text-blue-500 mt-1" />
+                          <div>
+                            <h3 className="font-semibold">Professional Crew</h3>
+                            <p className="text-sm text-muted-foreground">Experienced captain and attentive crew</p>
+                          </div>
+                        </CardContent>
+                      </Card>
+                      <Card>
+                        <CardContent className="p-4 flex items-start space-x-3">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-blue-500 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 15a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h14a2 2 0 012 2v10z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m-6 0h6" />
+                          </svg>
+                          <div>
+                            <h3 className="font-semibold">Luxury Amenities</h3>
+                            <p className="text-sm text-muted-foreground">Premium yacht with modern amenities</p>
+                          </div>
+                        </CardContent>
+                      </Card>
+                      <Card>
+                        <CardContent className="p-4 flex items-start space-x-3">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-blue-500 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          <div>
+                            <h3 className="font-semibold">Drinks Included</h3>
+                            <p className="text-sm text-muted-foreground">Open bar with premium beverages</p>
+                          </div>
+                        </CardContent>
+                      </Card>
+                      <Card>
+                        <CardContent className="p-4 flex items-start space-x-3">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-blue-500 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                          </svg>
+                          <div>
+                            <h3 className="font-semibold">Scenic Views</h3>
+                            <p className="text-sm text-muted-foreground">Panoramic views of Cabo's coast</p>
+                          </div>
+                        </CardContent>
+                      </Card>
+                      <Card>
+                        <CardContent className="p-4 flex items-start space-x-3">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-blue-500 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                          </svg>
+                          <div>
+                            <h3 className="font-semibold">Photo Opportunities</h3>
+                            <p className="text-sm text-muted-foreground">Perfect spots for photos at iconic landmarks</p>
+                          </div>
+                        </CardContent>
+                      </Card>
+                      <Card>
+                        <CardContent className="p-4 flex items-start space-x-3">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-blue-500 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.121 15.536c-1.171 1.952-3.07 1.952-4.242 0-1.172-1.953-1.172-5.119 0-7.072 1.171-1.952 3.07-1.952 4.242 0M8 10.5h4m-4 3h4m9-1.5a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          <div>
+                            <h3 className="font-semibold">Customizable Experience</h3>
+                            <p className="text-sm text-muted-foreground">Personalized route based on your preferences</p>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </div>
+                )}
 
                 {/* What's Included Section */}
                 <h2 className="text-2xl font-semibold mb-4">What's Included</h2>
@@ -362,16 +504,14 @@ export default function AdventureDetail() {
                         price={parseFloat(adventure.currentPrice.replace(/[^0-9.]/g, ''))}
                         image={adventure.imageUrl}
                         provider={adventure.provider}
+                        isYacht={adventure.category === 'yacht'}
                       />
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              {/* Rewards Section */}
-              <div className="mb-6">
-                <RewardsPanel />
-              </div>
+              {/* Rewards Section removed as requested */}
 
               {/* Social Share */}
               <SocialShare
