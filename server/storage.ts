@@ -205,16 +205,19 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Villa Management
-  async getVillas(): Promise<Villa[]> {
+  async getVillas(includeHidden = false): Promise<Villa[]> {
     try {
-      const villaList = await db.select().from(villas);
+      let query = db.select().from(villas);
+      if (!includeHidden) {
+        query = query.where(eq(villas.hidden, false));
+      }
+      const villaList = await query;
       if (villaList.length === 0) {
         console.log('No villas found in database');
       }
       return villaList;
     } catch (error) {
       console.error('Error fetching villas:', error);
-      // Return empty array instead of throwing
       return [];
     }
   }
@@ -862,7 +865,7 @@ export class DatabaseStorage implements IStorage {
         // Filter by category if provided
         return db.select().from(restaurants).where(eq(restaurants.category, category));
       }
-      returndb.select().from(restaurants);
+      return db.select().from(restaurants).where(eq(restaurants.hidden, false));
     } catch (error) {
       console.error('Error fetching restaurants:', error);
       return [];

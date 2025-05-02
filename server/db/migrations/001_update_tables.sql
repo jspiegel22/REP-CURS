@@ -50,7 +50,29 @@ ADD COLUMN IF NOT EXISTS interest_areas TEXT[],
 ADD COLUMN IF NOT EXISTS travel_dates TEXT,
 ADD COLUMN IF NOT EXISTS number_of_travelers INTEGER,
 ADD COLUMN IF NOT EXISTS download_link TEXT,
-ADD COLUMN IF NOT EXISTS processed_at TIMESTAMP; 
+ADD COLUMN IF NOT EXISTS processed_at TIMESTAMP;
+
+-- Add hidden column to villas if it doesn't exist
+DO $$ 
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_name = 'villas' AND column_name = 'hidden'
+  ) THEN
+    ALTER TABLE villas ADD COLUMN hidden BOOLEAN DEFAULT false;
+  END IF;
+END $$;
+
+-- Add hidden column to restaurants if it doesn't exist  
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_name = 'restaurants' AND column_name = 'hidden'
+  ) THEN
+    ALTER TABLE restaurants ADD COLUMN hidden BOOLEAN DEFAULT false;
+  END IF;
+END $$; 
 
 CREATE TABLE IF NOT EXISTS adventures (
   id SERIAL PRIMARY KEY,
