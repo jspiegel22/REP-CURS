@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { eq, and, ne, SQL, desc } from "drizzle-orm";
+import { eq, and, ne, SQL, desc, sql } from "drizzle-orm";
 import { users, listings, bookings, rewards, socialShares, weatherCache, resorts, villas, leads, guideSubmissions, blogPosts, adventures, restaurants } from "@shared/schema";
 import type { User, InsertUser, Listing, Booking, Reward, SocialShare, WeatherCache, Resort, Villa, Lead, InsertLead, InsertBlogPost, Adventure, InsertAdventure, Restaurant, InsertRestaurant } from "@shared/schema";
 import session from "express-session";
@@ -862,7 +862,7 @@ export class DatabaseStorage implements IStorage {
         // Filter by category if provided
         return db.select().from(restaurants).where(eq(restaurants.category, category));
       }
-      return db.select().from(restaurants);
+      returndb.select().from(restaurants);
     } catch (error) {
       console.error('Error fetching restaurants:', error);
       return [];
