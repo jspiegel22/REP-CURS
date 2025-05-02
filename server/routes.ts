@@ -20,6 +20,7 @@ import imageRoutes from './routes/image';
 import { importRestaurantData } from './routes/import-restaurant-data';
 import { registerImageOptimizationRoutes } from './routes/image-optimization';
 import { updateSitemap } from './services/sitemapGenerator';
+import { createPaymentIntent } from './routes/payment';
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication first so isAuthenticated is available
@@ -69,6 +70,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Register image optimization routes
   registerImageOptimizationRoutes(app);
+  
+  // Transportation payment processing endpoint
+  app.post("/api/create-payment-intent", async (req, res) => {
+    await createPaymentIntent(req, res);
+  });
   
   // Test endpoint for admin notification
   app.get("/api/test-admin-notification", requireAdmin, async (req, res) => {
