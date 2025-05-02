@@ -212,10 +212,13 @@ export class DatabaseStorage implements IStorage {
         query = query.where(eq(villas.hidden, false));
       }
       const villaList = await query;
-      if (villaList.length === 0) {
-        console.log('No villas found in database');
-      }
-      return villaList;
+      
+      // Add default values for missing images
+      return villaList.map(villa => ({
+        ...villa,
+        imageUrl: villa.imageUrl || '/images/villas/default.jpg',
+        imageUrls: Array.isArray(villa.imageUrls) ? villa.imageUrls : []
+      }));
     } catch (error) {
       console.error('Error fetching villas:', error);
       return [];
@@ -861,11 +864,20 @@ export class DatabaseStorage implements IStorage {
   // Restaurant related methods
   async getRestaurants(category?: string): Promise<Restaurant[]> {
     try {
+      let query = db.select().from(restaurants);
+      
       if (category) {
-        // Filter by category if provided
-        return db.select().from(restaurants).where(eq(restaurants.category, category));
+        query = query.where(eq(restaurants.category, category));
       }
-      return db.select().from(restaurants).where(eq(restaurants.hidden, false));
+      
+      const results = await query.where(eq(restaurants.hidden, false));
+      
+      // Ensure imageUrl and imageUrls have default values
+      return results.map(restaurant => ({
+        ...restaurant,
+        imageUrl: restaurant.imageUrl || '/images/restaurants/default.jpg',
+        imageUrls: restaurant.imageUrls || []
+      }));
     } catch (error) {
       console.error('Error fetching restaurants:', error);
       return [];
