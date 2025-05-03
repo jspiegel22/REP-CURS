@@ -2,13 +2,24 @@
  * Email Service for handling all types of email notifications
  * Uses SendGrid for email delivery
  */
-import sgMail from '@sendgrid/mail';
+import ActiveCampaign from 'activecampaign';
 
-// Initialize SendGrid API key from environment
-if (!process.env.SENDGRID_API_KEY) {
-  console.warn("SENDGRID_API_KEY environment variable is not set. Email notifications will not work.");
-} else {
-  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+// Initialize ActiveCampaign client
+let ac: any;
+try {
+  if (process.env.ACTIVECAMPAIGN_API_URL && process.env.ACTIVECAMPAIGN_API_KEY) {
+    ac = new ActiveCampaign({
+      url: process.env.ACTIVECAMPAIGN_API_URL,
+      token: process.env.ACTIVECAMPAIGN_API_KEY,
+    });
+    console.log('ActiveCampaign client initialized successfully');
+  } else {
+    console.warn("ACTIVECAMPAIGN_API_URL or ACTIVECAMPAIGN_API_KEY environment variables are not set. Email notifications will not work.");
+    ac = null;
+  }
+} catch (error) {
+  console.error('Error initializing ActiveCampaign client:', error);
+  ac = null;
 }
 
 // Default configuration
@@ -32,30 +43,33 @@ export async function sendEmail(params: {
   bcc?: string[];
 }): Promise<boolean> {
   try {
-    // Skip sending if SendGrid API key is not configured
-    if (!process.env.SENDGRID_API_KEY) {
-      console.warn("Cannot send email: SENDGRID_API_KEY not configured");
+    if (!ac) {
+      console.warn("Cannot send email: ActiveCampaign client not initialized");
       return false;
     }
 
-    const message = {
-      to: params.to,
-      from: params.from || DEFAULT_SENDER,
-      subject: params.subject,
-      text: params.text || '',
-      html: params.html,
-      cc: params.cc,
-      bcc: params.bcc || [ADMIN_EMAIL]  // Always BCC admin by default
-    };
+    // Use ActiveCampaign's legacy API for reliable email sending
+    const baseUrl = process.env.ACTIVECAMPAIGN_API_URL?.replace('https://', '').replace('.api-us1.com', '');
+    const response = await ac.request({
+      api: '/api/3/emails/send',
+      method: 'POST',
+      body: {
+        email: {
+          to: params.to,
+          from: params.from?.email || DEFAULT_SENDER.email,
+          fromName: params.from?.name || DEFAULT_SENDER.name,
+          subject: params.subject,
+          html: params.html,
+          ...(params.cc && { cc: params.cc.join(',') }),
+          ...(params.bcc && { bcc: [...(params.bcc || []), ADMIN_EMAIL].join(',') })
+        }
+      }
+    });
 
-    await sgMail.send(message);
     console.log(`Email sent successfully to ${params.to}`);
     return true;
   } catch (error) {
     console.error('Error sending email:', error);
-    if (error.response) {
-      console.error('SendGrid API Error:', error.response.body);
-    }
     return false;
   }
 }
