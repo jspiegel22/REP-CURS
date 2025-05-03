@@ -1,5 +1,5 @@
 import { GuideSubmission } from '@shared/schema';
-import { sendEmail, createGuideConfirmationEmail as createGuideDownloadEmail } from './emailService';
+import { sendEmail, createGuideConfirmationEmail } from './emailService';
 // Import commented out as we're now using Make.com webhook instead
 // import { retryFailedSync, syncGuideSubmissionToAirtable } from './airtable';
 
@@ -8,16 +8,21 @@ export async function processGuideSubmission(submission: GuideSubmission): Promi
     // Step 1: Skip Airtable sync (now using Make.com webhook instead)
     // Airtable sync commented out to avoid authorization errors
     // await retryFailedSync(syncGuideSubmissionToAirtable, submission);
-    
+
     // Send confirmation email
-    const emailOptions = createGuideDownloadEmail(
-      submission.firstName,
-      submission.email,
-      submission.guideType
-    );
-    
-    await sendEmail(emailOptions);
-    
+    const { firstName, lastName, email, guideType } = submission;
+    const name = `${firstName} ${lastName}`;
+
+    await sendEmail({
+      to: email,
+      subject: 'Cabo Guide Download Confirmation',
+      html: createGuideConfirmationEmail({
+        name,
+        email,
+        guideType: guideType || 'Cabo Travel'
+      })
+    });
+
     console.log(`Guide submission processed successfully for ${submission.email}`);
     return true;
   } catch (error) {

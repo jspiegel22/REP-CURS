@@ -498,6 +498,40 @@ export function createBookingConfirmationEmail(params: {
 /**
  * Create a guide request email with download link
  */
+export function createGuideConfirmationEmail(params: {
+  name: string;
+  email: string;
+  guideType: string;
+  confirmationNumber?: string;
+}): string {
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <title>Guide Download Confirmation</title>
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #2F4F4F; color: white; padding: 20px; text-align: center; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>Guide Download Confirmation</h1>
+        </div>
+        <p>Hello ${params.name},</p>
+        <p>Thank you for requesting our ${params.guideType || 'Cabo'} guide! Your download is being processed.</p>
+        <p>We'll send you the guide shortly in a separate email.</p>
+        ${params.confirmationNumber ? `<p>Your confirmation number: ${params.confirmationNumber}</p>` : ''}
+        <p>Best regards,<br>Cabo San Lucas Team</p>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
 export function createGuideRequestEmail(params: {
   name: string;
   email: string;
