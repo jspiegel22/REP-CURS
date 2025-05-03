@@ -1,81 +1,61 @@
-import { useState, useEffect } from "react";
-import { shimmer, toBase64, getOptimizedImageUrl, getResponsiveSizes } from "@/lib/image-utils";
+import { cn } from '@/lib/utils';
+import { useState } from 'react';
 
-interface OptimizedImageProps {
+interface OptimizedImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   src: string;
   alt: string;
-  width?: number;
-  height?: number;
-  size?: 'small' | 'medium' | 'large' | 'hero';
+  fallbackSrc?: string;
   className?: string;
-  priority?: boolean;
-  objectFit?: 'cover' | 'contain' | 'fill' | 'none' | 'scale-down';
-  onLoad?: () => void;
 }
 
+/**
+ * OptimizedImage Component
+ * 
+ * This component tries to load a WebP version of an image first,
+ * and falls back to the original format if WebP is not available.
+ * 
+ * Usage:
+ * <OptimizedImage src="/path/to/image.jpg" alt="Description" />
+ */
 export function OptimizedImage({
   src,
   alt,
-  width,
-  height,
-  size = 'medium',
-  className = '',
-  priority = false,
-  objectFit = 'cover',
-  onLoad,
+  className,
+  fallbackSrc,
+  ...props
 }: OptimizedImageProps) {
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [imgSrc, setImgSrc] = useState('');
-  const [error, setError] = useState(false);
-
-  useEffect(() => {
-    // Convert to WebP and optimize if possible
-    setImgSrc(getOptimizedImageUrl(src, width));
-  }, [src, width]);
-
-  const responsiveConfig = getResponsiveSizes(size);
-  const finalWidth = width || responsiveConfig.width;
-  const finalHeight = height || responsiveConfig.height;
-
-  const handleLoad = () => {
-    setIsLoaded(true);
-    if (onLoad) onLoad();
-  };
+  const [imgSrc, setImgSrc] = useState<string>(() => {
+    // Try to use WebP version first
+    if (src) {
+      const extension = src.split('.').pop()?.toLowerCase();
+      if (extension && ['jpg', 'jpeg', 'png', 'gif'].includes(extension)) {
+        return src.substring(0, src.lastIndexOf('.')) + '.webp';
+      }
+    }
+    return src;
+  });
+  
+  const [imgError, setImgError] = useState(false);
 
   const handleError = () => {
-    setError(true);
-    setImgSrc(src); // Fallback to original src
+    if (!imgError) {
+      // If WebP failed, try the original format or provided fallback
+      setImgSrc(fallbackSrc || src);
+      setImgError(true);
+    }
   };
 
   return (
-    <div 
-      className={`relative overflow-hidden ${isLoaded ? '' : 'bg-gray-200'} ${className}`}
-      style={{ width: '100%', height: '100%' }}
-    >
-      {!isLoaded && !error && (
-        <div
-          className="absolute inset-0 animate-pulse" 
-          dangerouslySetInnerHTML={{
-            __html: shimmer(finalWidth, finalHeight)
-          }}
-        />
-      )}
-      
-      <img
-        src={error ? src : imgSrc} 
-        alt={alt}
-        width={finalWidth}
-        height={finalHeight}
-        loading={priority ? "eager" : "lazy"}
-        onLoad={handleLoad}
-        onError={handleError}
-        style={{
-          objectFit,
-          opacity: isLoaded ? 1 : 0,
-          transition: 'opacity 0.3s ease-in-out',
-        }}
-        className="w-full h-full transition-opacity"
-      />
-    </div>
+    <img
+      src={imgSrc}
+      alt={alt}
+      onError={handleError}
+      className={cn('', className)}
+      loading="lazy"
+      decoding="async"
+      {...props}
+    />
   );
 }
+
+export default OptimizedImage;

@@ -55,9 +55,6 @@ const formSchema = z.object({
     .max(20, { message: 'Maximum 20 guests allowed' }),
   specialRequests: z.string().optional(),
   depositOnly: z.boolean().default(false),
-  termsAccepted: z.boolean().refine(val => val === true, {
-    message: 'You must accept the terms and conditions'
-  }),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -112,7 +109,6 @@ const AdventureBookingForm: React.FC<AdventureBookingFormProps> = ({
       guests: 1,
       specialRequests: '',
       depositOnly: false,
-      termsAccepted: false,
     },
   });
   
@@ -172,15 +168,18 @@ const AdventureBookingForm: React.FC<AdventureBookingFormProps> = ({
     }
   };
   
+  // Add custom styles for form messages on dark background
+  const formMessageClass = "text-white/90";
+  
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 bg-[#2F4F4F] p-5 rounded-lg">
         <FormField
           control={form.control}
           name="date"
           render={({ field }) => (
             <FormItem className="flex flex-col">
-              <FormLabel>Date</FormLabel>
+              <FormLabel className="text-white">Date</FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
                   <FormControl>
@@ -210,7 +209,7 @@ const AdventureBookingForm: React.FC<AdventureBookingFormProps> = ({
                   />
                 </PopoverContent>
               </Popover>
-              <FormMessage />
+              <FormMessage className={formMessageClass} />
             </FormItem>
           )}
         />
@@ -220,7 +219,7 @@ const AdventureBookingForm: React.FC<AdventureBookingFormProps> = ({
           name="schedule"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Time Slot</FormLabel>
+              <FormLabel className="text-white">Time Slot</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
@@ -235,7 +234,7 @@ const AdventureBookingForm: React.FC<AdventureBookingFormProps> = ({
                   ))}
                 </SelectContent>
               </Select>
-              <FormMessage />
+              <FormMessage className={formMessageClass} />
             </FormItem>
           )}
         />
@@ -246,11 +245,11 @@ const AdventureBookingForm: React.FC<AdventureBookingFormProps> = ({
             name="firstName"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>First Name</FormLabel>
+                <FormLabel className="text-white">First Name</FormLabel>
                 <FormControl>
                   <Input placeholder="John" {...field} />
                 </FormControl>
-                <FormMessage />
+                <FormMessage className={formMessageClass} />
               </FormItem>
             )}
           />
@@ -260,11 +259,11 @@ const AdventureBookingForm: React.FC<AdventureBookingFormProps> = ({
             name="lastName"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Last Name</FormLabel>
+                <FormLabel className="text-white">Last Name</FormLabel>
                 <FormControl>
                   <Input placeholder="Doe" {...field} />
                 </FormControl>
-                <FormMessage />
+                <FormMessage className={formMessageClass} />
               </FormItem>
             )}
           />
@@ -276,11 +275,11 @@ const AdventureBookingForm: React.FC<AdventureBookingFormProps> = ({
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel className="text-white">Email</FormLabel>
                 <FormControl>
                   <Input type="email" placeholder="john.doe@example.com" {...field} />
                 </FormControl>
-                <FormMessage />
+                <FormMessage className={formMessageClass} />
               </FormItem>
             )}
           />
@@ -290,11 +289,11 @@ const AdventureBookingForm: React.FC<AdventureBookingFormProps> = ({
             name="phone"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Phone</FormLabel>
+                <FormLabel className="text-white">Phone</FormLabel>
                 <FormControl>
                   <Input type="tel" placeholder="+1 (123) 456-7890" {...field} />
                 </FormControl>
-                <FormMessage />
+                <FormMessage className={formMessageClass} />
               </FormItem>
             )}
           />
@@ -305,7 +304,7 @@ const AdventureBookingForm: React.FC<AdventureBookingFormProps> = ({
           name="guests"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Number of Guests</FormLabel>
+              <FormLabel className="text-white">Number of Guests</FormLabel>
               <FormControl>
                 <Input
                   type="number"
@@ -315,8 +314,8 @@ const AdventureBookingForm: React.FC<AdventureBookingFormProps> = ({
                   onChange={(e) => field.onChange(parseInt(e.target.value))}
                 />
               </FormControl>
-              <FormDescription>Maximum {maxGuests} guests allowed</FormDescription>
-              <FormMessage />
+              <FormDescription className="text-white/70">Maximum {maxGuests} guests allowed</FormDescription>
+              <FormMessage className={formMessageClass} />
             </FormItem>
           )}
         />
@@ -326,7 +325,7 @@ const AdventureBookingForm: React.FC<AdventureBookingFormProps> = ({
           name="specialRequests"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Special Requests</FormLabel>
+              <FormLabel className="text-white">Special Requests</FormLabel>
               <FormControl>
                 <Textarea
                   placeholder="Any special requirements or requests?"
@@ -334,7 +333,7 @@ const AdventureBookingForm: React.FC<AdventureBookingFormProps> = ({
                   {...field}
                 />
               </FormControl>
-              <FormMessage />
+              <FormMessage className={formMessageClass} />
             </FormItem>
           )}
         />
@@ -344,16 +343,17 @@ const AdventureBookingForm: React.FC<AdventureBookingFormProps> = ({
             control={form.control}
             name="depositOnly"
             render={({ field }) => (
-              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border border-[#263F3F] p-4 bg-[#263F3F]">
                 <FormControl>
                   <Checkbox
                     checked={field.value}
                     onCheckedChange={field.onChange}
+                    className="border-2 border-white"
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">
-                  <FormLabel>Pay deposit only</FormLabel>
-                  <FormDescription>
+                  <FormLabel className="text-white">Pay deposit only</FormLabel>
+                  <FormDescription className="text-xs italic text-white/70">
                     Pay {depositPrice} deposit now instead of the full amount. The balance will be collected on the day of the charter.
                   </FormDescription>
                 </div>
@@ -362,28 +362,11 @@ const AdventureBookingForm: React.FC<AdventureBookingFormProps> = ({
           />
         )}
         
-        <FormField
-          control={form.control}
-          name="termsAccepted"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-              <FormControl>
-                <Checkbox
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
-              </FormControl>
-              <div className="space-y-1 leading-none">
-                <FormLabel>
-                  I agree to the <a href="/terms-of-service" target="_blank" className="text-blue-600 hover:underline">terms and conditions</a>
-                </FormLabel>
-                <FormMessage />
-              </div>
-            </FormItem>
-          )}
-        />
-        
-        <Button type="submit" className="w-full" disabled={isLoading}>
+        <Button 
+          type="submit" 
+          className="w-full bg-[#F47C3E] hover:bg-[#E36C2E] text-white" 
+          disabled={isLoading}
+        >
           {isLoading ? (
             <>
               <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>

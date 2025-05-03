@@ -4,6 +4,7 @@ import { FaStar, FaRegCalendarAlt, FaUsers, FaSwimmer, FaUmbrellaBeach } from 'r
 import { MdOutlineFoodBank, MdOutlineLocalBar, MdAir } from 'react-icons/md';
 import { GiCaptainHatProfile, GiSailboat } from 'react-icons/gi';
 import AdventureBookingForm from '@/components/adventure-booking-form';
+import OptimizedImage from '@/components/ui/optimized-image';
 
 const SeaRaySundancer45Page: React.FC = () => {
   const [activeImage, setActiveImage] = useState('/yachts/sea-ray-45/main.jpg');
@@ -92,7 +93,7 @@ const SeaRaySundancer45Page: React.FC = () => {
       
       {/* Hero Section */}
       <div className="relative h-[60vh] md:h-[70vh] overflow-hidden">
-        <img 
+        <OptimizedImage 
           src="/yachts/sea-ray-45/main.jpg" 
           alt="Sea Ray Sundancer 45ft Yacht Charter" 
           className="w-full h-full object-cover"
@@ -125,7 +126,7 @@ const SeaRaySundancer45Page: React.FC = () => {
             {/* Gallery */}
             <div className="mb-8">
               <div className="rounded-xl overflow-hidden">
-                <img 
+                <OptimizedImage 
                   src={activeImage} 
                   alt="Sea Ray Sundancer 45 Yacht" 
                   className="w-full h-[300px] md:h-[500px] object-cover"
@@ -138,13 +139,44 @@ const SeaRaySundancer45Page: React.FC = () => {
                     className={`cursor-pointer rounded-lg overflow-hidden border-2 ${activeImage === image.src ? 'border-blue-600' : 'border-transparent'}`}
                     onClick={() => setActiveImage(image.src)}
                   >
-                    <img 
+                    <OptimizedImage 
                       src={image.src} 
                       alt={image.alt} 
                       className="w-full h-20 object-cover"
                     />
                   </div>
                 ))}
+              </div>
+            </div>
+            
+            {/* Quick Book CTA */}
+            <div className="mb-8">
+              <div className="bg-green-800 text-white rounded-xl p-6 shadow-lg">
+                <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+                  <div>
+                    <h2 className="text-2xl font-bold">Ready to Book This Yacht?</h2>
+                    <div className="flex flex-wrap gap-4 mt-2">
+                      <div className="flex items-center">
+                        <FaRegCalendarAlt className="mr-2" />
+                        <span>3 Hours</span>
+                      </div>
+                      <div className="flex items-center">
+                        <FaUsers className="mr-2" />
+                        <span>Up to 14 guests</span>
+                      </div>
+                      <div className="flex items-center">
+                        <span className="font-bold">$990</span>
+                        <span className="text-sm ml-1">per charter</span>
+                      </div>
+                    </div>
+                  </div>
+                  <a 
+                    href="#book" 
+                    className="bg-orange-500 hover:bg-orange-600 text-white font-bold px-6 py-3 rounded-lg transition-colors"
+                  >
+                    Book Now
+                  </a>
+                </div>
               </div>
             </div>
             
@@ -263,7 +295,7 @@ const SeaRaySundancer45Page: React.FC = () => {
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="rounded-lg overflow-hidden border border-gray-200">
-                  <img 
+                  <OptimizedImage 
                     src="/activities/snorkel-tour.jpg" 
                     alt="Private Snorkel Tour" 
                     className="w-full h-48 object-cover"
@@ -275,7 +307,7 @@ const SeaRaySundancer45Page: React.FC = () => {
                 </div>
                 
                 <div className="rounded-lg overflow-hidden border border-gray-200">
-                  <img 
+                  <OptimizedImage 
                     src="/activities/arch-tour.jpg" 
                     alt="Visit to the Arch" 
                     className="w-full h-48 object-cover"
@@ -287,7 +319,7 @@ const SeaRaySundancer45Page: React.FC = () => {
                 </div>
                 
                 <div className="rounded-lg overflow-hidden border border-gray-200">
-                  <img 
+                  <OptimizedImage 
                     src="/activities/sunset-cruise.jpg" 
                     alt="Sunset Cruise" 
                     className="w-full h-48 object-cover"

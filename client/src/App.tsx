@@ -19,6 +19,11 @@ import ExpressYachtDetailPage from "@/pages/adventures/express-bay-liner-35ft";
 import SilvertonYachtDetailPage from "@/pages/adventures/silverton-sport-bridge-42";
 import SeaRaySundancerPage from "@/pages/adventures/sea-ray-sundancer-45";
 import Sunseeker80SaviPage from "@/pages/adventures/sunseeker-80-savi";
+import Azimut95Page from "@/pages/adventures/azimut-95";
+import PatronFerretti88Page from "@/pages/adventures/patron-ferretti-88";
+import PapillonCatamaran47Page from "@/pages/adventures/papillon-catamaran-47";
+import Lagoon65Page from "@/pages/adventures/lagoon-65";
+import LeopardCatamaranPage from "@/pages/adventures/leopard-catamaran";
 import BlogIndex from "@/pages/blog";
 import BlogDetail from "@/pages/blog/[slug]";
 import RestaurantsPage from "@/pages/restaurants";
@@ -101,6 +106,11 @@ function Router() {
           <Route path="/adventures/silverton-sport-bridge-42" component={SilvertonYachtDetailPage} />
           <Route path="/adventures/sea-ray-sundancer-45" component={SeaRaySundancerPage} />
           <Route path="/adventures/sunseeker-80-savi" component={Sunseeker80SaviPage} />
+          <Route path="/adventures/azimut-95" component={Azimut95Page} />
+          <Route path="/adventures/patron-ferretti-88" component={PatronFerretti88Page} />
+          <Route path="/adventures/papillon-catamaran-47" component={PapillonCatamaran47Page} />
+          <Route path="/adventures/lagoon-65" component={Lagoon65Page} />
+          <Route path="/adventures/leopard-catamaran" component={LeopardCatamaranPage} />
           <Route path="/adventures/:slug" component={AdventureDetail} />
           <Route path="/restaurants" component={RestaurantsPage} />
           <Route path="/restaurants/:id" component={RestaurantDetails} />

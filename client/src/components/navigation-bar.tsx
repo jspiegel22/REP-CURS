@@ -136,12 +136,7 @@ const moreMenuItems = [
     description: "Expert tips and local insights",
     image: "https://images.unsplash.com/photo-1516546453174-5e1098a4b4af"
   },
-  {
-    title: "Work with Us",
-    href: "/work-with-us",
-    description: "Partnership opportunities",
-    image: "https://images.unsplash.com/photo-1552664730-d307ca884978"
-  },
+
   {
     title: "Weddings",
     href: "/weddings",
@@ -178,8 +173,12 @@ const NavigationBar = () => {
               </SheetTrigger>
               <SheetContent side="left" className="w-[85vw] bg-white p-0 [&>button]:!hidden">
                 <nav className="flex flex-col h-[100vh] max-h-[100vh]">
-                  {/* Close Button */}
-                  <div className="flex justify-end p-3">
+                  {/* Logo and Close Button */}
+                  <div className="flex justify-between items-center p-3 border-b border-gray-100">
+                    <div className="flex-1"></div>
+                    <div className="flex items-center justify-center flex-1">
+                      <span className="text-2xl font-bold text-[#2F4F4F]">@cabo</span>
+                    </div>
                     <Button 
                       variant="ghost" 
                       size="sm" 
@@ -257,7 +256,7 @@ const NavigationBar = () => {
                     
                     {/* Additional Pages - Smaller Height */}
                     <div className="grid grid-cols-3 gap-0.5 flex-1 w-full mt-1 mb-1">
-                      {[...moreMenuItems].filter(item => item.title !== "Itinerary Builder").map((item) => (
+                      {[...moreMenuItems].filter(item => item.title !== "Itinerary Builder" && item.title !== "Work With Us").map((item) => (
                         <Link 
                           key={item.href} 
                           href={item.href} 
