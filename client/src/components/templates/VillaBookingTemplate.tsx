@@ -105,6 +105,7 @@ interface VillaBookingTemplateProps {
   features?: string[];
   amenities?: string[];
   villaId: string;
+  hideReviews?: boolean;
   reviews?: Array<{
     author: string;
     date: string;
@@ -128,6 +129,7 @@ export default function VillaBookingTemplate({
   amenities = [],
   villaId,
   reviews = [],
+  hideReviews = false,
 }: VillaBookingTemplateProps) {
   const { toast } = useToast();
   const [clientSecret, setClientSecret] = useState<string | null>(null);
@@ -294,7 +296,7 @@ export default function VillaBookingTemplate({
         )}
 
         {/* Recent reviews section */}
-        {reviews.length > 0 && (
+        {reviews.length > 0 && !hideReviews && (
           <div className="mt-10">
             <h3 className="text-lg font-semibold mb-4">Guest Reviews</h3>
             <div className="space-y-4">

@@ -125,6 +125,7 @@ export default function VillaExamplePage() {
           ]}
           amenities={exampleVilla.amenities}
           villaId={exampleVilla.id}
+          hideReviews={true}
           reviews={reviews}
         />
 

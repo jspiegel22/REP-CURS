@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Link, useLocation } from 'wouter';
-import { FaStar, FaRegCalendarAlt, FaAnchor, FaWineGlass, FaSwimmer, FaUmbrellaBeach, FaGlassMartiniAlt, FaWifi, FaMusic } from 'react-icons/fa';
+import { FaStar, FaRegCalendarAlt, FaAnchor, FaWineGlass, FaSwimmer, FaUmbrellaBeach, FaGlassMartiniAlt, FaWifi, FaMusic, FaUsers } from 'react-icons/fa';
 import { MdOutlineFoodBank, MdOutlineLocalBar, MdOutlinePeopleAlt, MdAir, MdSupportAgent } from 'react-icons/md';
 import { GiSailboat, GiSpeedBoat, GiSunset, GiSnorkel, GiChampagneCork, GiCaptainHatProfile, GiLifeJacket } from 'react-icons/gi';
 import { BiSpa } from 'react-icons/bi';
@@ -29,6 +29,7 @@ interface Adventure {
   rating?: number;
   featured: boolean;
   hidden?: boolean;
+  maxGuests?: number;
 }
 
 const YachtAdventuresPage: React.FC = () => {
@@ -52,7 +53,100 @@ const YachtAdventuresPage: React.FC = () => {
           adventure.category === 'yacht' && !adventure.hidden
         );
         
-        setYachtAdventures(yachtData);
+        // Add Express Bay Liner 35ft yacht
+        const expressBayLiner = {
+          id: 9999, // Use a high ID to avoid conflicts
+          title: "EXPRESS BAY LINER 35FT",
+          slug: "express-bay-liner-35ft",
+          description: `Step aboard the Express Bay Liner 35ft, a luxurious yacht cruiser in Cabo designed for relaxation and adventure. This 35-foot beauty features spacious front bed seating, a stylish dining area, a fully equipped kitchen, bedroom, and bathroom, everything you need for a perfect day on the water. With an open bar and gourmet dining included, you can indulge while taking in the breathtaking views of Cabo San Lucas.`,
+          currentPrice: "$990",
+          originalPrice: "$1,100",
+          duration: "3 Hours",
+          imageUrl: "/yachts/express-bay-liner/main.jpg",
+          imageUrls: [
+            "/yachts/express-bay-liner/image-1.jpg",
+            "/yachts/express-bay-liner/image-2.jpg",
+            "/yachts/express-bay-liner/image-3.jpg"
+          ],
+          minAge: "All Ages",
+          provider: "Papillon Yachts",
+          category: "yacht",
+          keyFeatures: [
+            "One bedroom",
+            "One bathroom",
+            "Interior dining table",
+            "Shaded back seating with table",
+            "Front seating/sun bathing area",
+            "Unlimited open bar",
+            "Food included",
+            "Private transportation",
+            "Certified crew",
+            "Snorkel equipment"
+          ],
+          thingsToBring: [
+            "Towels",
+            "Sunscreen",
+            "Swimsuits",
+            "Hats",
+            "Sunglasses"
+          ],
+          topRecommended: true,
+          rating: 4.9,
+          featured: true,
+          hidden: false,
+          maxGuests: 8
+        };
+        
+        // Add Silverton Sport Bridge 42 yacht
+        const silvertonSportBridge = {
+          id: 9998, // Use a high ID to avoid conflicts
+          title: "SILVERTON SPORT BRIDGE 42",
+          slug: "silverton-sport-bridge-42",
+          description: `Experience the yacht "PURA VIDA", a luxury vessel designed for comfort, style, and unforgettable adventures on the pristine waters of Los Cabos.`,
+          currentPrice: "$1,750",
+          duration: "3 Hours",
+          imageUrl: "/yachts/silverton-42/main.jpg",
+          imageUrls: [
+            "/yachts/silverton-42/image-1.jpg",
+            "/yachts/silverton-42/image-2.jpg",
+            "/yachts/silverton-42/image-3.jpg",
+            "/yachts/silverton-42/image-4.jpg",
+            "/yachts/silverton-42/image-5.jpg"
+          ],
+          minAge: "All Ages",
+          provider: "Papillon Yachts",
+          category: "yacht",
+          keyFeatures: [
+            "Air conditioned",
+            "Main cabin",
+            "Bathroom",
+            "Interior living room",
+            "Shaded back seating",
+            "Sunbathing area",
+            "Dining table",
+            "Fly bridge",
+            "Unlimited open bar",
+            "Gourmet food included",
+            "Private transportation",
+            "Bilingual crew"
+          ],
+          thingsToBring: [
+            "Towels",
+            "Sunscreen",
+            "Swimsuits",
+            "Hats",
+            "Sunglasses",
+            "Phone to play music (optional)"
+          ],
+          topRecommended: true,
+          rating: 5.0,
+          featured: true,
+          hidden: false,
+          maxGuests: 16
+        };
+        
+        // Add our custom yachts to the beginning of the array
+        setYachtAdventures([expressBayLiner, silvertonSportBridge, ...yachtData]);
       } catch (error) {
         console.error('Error fetching yacht adventures:', error);
       } finally {
@@ -128,9 +222,9 @@ const YachtAdventuresPage: React.FC = () => {
 
       {/* Main content */}
       <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main yacht listings (2/3 width) */}
-          <div className="lg:col-span-2">
+        <div className="space-y-12">
+          {/* Main yacht listings (full width) */}
+          <div>
             <h2 className="text-3xl font-bold mb-6">Available Yacht Charters</h2>
             
             {loading ? (
@@ -140,131 +234,113 @@ const YachtAdventuresPage: React.FC = () => {
             ) : yachtAdventures.length === 0 ? (
               <p className="text-gray-600 py-8">No yacht adventures available at this time.</p>
             ) : (
-              <div className="space-y-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {yachtAdventures.map((adventure) => (
                   <div key={adventure.id} className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow">
-                    <div className="grid grid-cols-1 md:grid-cols-3">
-                      {/* Yacht Image */}
-                      <div className="md:col-span-1 relative h-64 md:h-full cursor-pointer" onClick={() => openImageModal(adventure.imageUrl, adventure)}>
-                        <img 
-                          src={adventure.imageUrl} 
-                          alt={adventure.title} 
-                          className="w-full h-full object-cover"
-                        />
-                        {adventure.topRecommended && (
-                          <div className="absolute top-2 left-2 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full">
-                            Top Rated
+                    {/* Yacht Image - Larger, full-width image */}
+                    <div className="relative h-80 md:h-96 w-full cursor-pointer" onClick={() => openImageModal(adventure.imageUrl, adventure)}>
+                      <img 
+                        src={adventure.imageUrl} 
+                        alt={adventure.title} 
+                        className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                      />
+                      {adventure.topRecommended && (
+                        <div className="absolute top-3 left-3 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full">
+                          Top Rated
+                        </div>
+                      )}
+                      <div className="absolute bottom-3 right-3 bg-black/70 text-white text-xs px-2 py-1 rounded-md backdrop-blur-sm">
+                        +{adventure.imageUrls?.length || 0} photos
+                      </div>
+                    </div>
+                    
+                    {/* Yacht Details - Now below the image */}
+                    <div className="p-5">
+                      <div className="flex justify-between items-start gap-2 mb-2">
+                        <h3 className="text-xl font-bold text-gray-900">
+                          {adventure.title}
+                        </h3>
+                        {adventure.rating && (
+                          <div className="flex items-center">
+                            {renderRatingStars(adventure.rating)}
+                            <span className="ml-1 text-sm text-gray-600">{adventure.rating.toFixed(1)}</span>
                           </div>
                         )}
-                        {adventure.discount && (
-                          <div className="absolute top-2 right-2 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full">
-                            {adventure.discount}
-                          </div>
+                      </div>
+                      
+                      <div className="flex items-center text-sm text-gray-600 mb-3">
+                        <FaRegCalendarAlt className="mr-2" />
+                        <span>{adventure.duration}</span>
+                        {adventure.provider && (
+                          <>
+                            <span className="mx-2">•</span>
+                            <span>{adventure.provider}</span>
+                          </>
                         )}
-                        <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded">
-                          +{adventure.imageUrls?.length || 0} photos
+                        {adventure.maxGuests && (
+                          <>
+                            <span className="mx-2">•</span>
+                            <FaUsers className="mr-1" />
+                            <span>Up to {adventure.maxGuests} guests</span>
+                          </>
+                        )}
+                      </div>
+                      
+                      {/* Key Features with Icons in a responsive grid */}
+                      <div className="mb-5 mt-4">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                          {adventure.keyFeatures?.slice(0, 4).map((feature, index) => {
+                            // Select appropriate icon based on feature content
+                            let FeatureIcon = GiSailboat; // Default icon
+                            if (feature.toLowerCase().includes('bar') || feature.toLowerCase().includes('drink')) {
+                              FeatureIcon = MdOutlineLocalBar;
+                            } else if (feature.toLowerCase().includes('food') || feature.toLowerCase().includes('meal') || feature.toLowerCase().includes('dining')) {
+                              FeatureIcon = MdOutlineFoodBank;
+                            } else if (feature.toLowerCase().includes('captain') || feature.toLowerCase().includes('crew')) {
+                              FeatureIcon = GiCaptainHatProfile;
+                            } else if (feature.toLowerCase().includes('swim') || feature.toLowerCase().includes('snorkel')) {
+                              FeatureIcon = FaSwimmer;
+                            } else if (feature.toLowerCase().includes('people') || feature.toLowerCase().includes('passenger') || feature.toLowerCase().includes('guest')) {
+                              FeatureIcon = MdOutlinePeopleAlt;
+                            } else if (feature.toLowerCase().includes('wifi')) {
+                              FeatureIcon = FaWifi;
+                            } else if (feature.toLowerCase().includes('air')) {
+                              FeatureIcon = MdAir;
+                            } else if (feature.toLowerCase().includes('fishing')) {
+                              FeatureIcon = IoFishOutline;
+                            } else if (feature.toLowerCase().includes('beach')) {
+                              FeatureIcon = FaUmbrellaBeach;
+                            } 
+                            
+                            return (
+                              <div 
+                                key={index}
+                                className="flex flex-col items-center justify-center bg-gray-50 p-3 rounded-lg border border-gray-100"
+                              >
+                                <FeatureIcon className="text-blue-600 text-xl mb-1" />
+                                <span className="text-xs text-center text-gray-700">{feature}</span>
+                              </div>
+                            );
+                          })}
                         </div>
                       </div>
                       
-                      {/* Yacht Details */}
-                      <div className="md:col-span-2 p-5">
-                        <div className="flex justify-between items-start gap-2">
-                          <h3 className="text-xl font-bold text-gray-900 mb-2">
-                            {adventure.title}
-                          </h3>
-                          {adventure.rating && (
-                            <div className="flex items-center">
-                              {renderRatingStars(adventure.rating)}
-                              <span className="ml-1 text-sm text-gray-600">{adventure.rating.toFixed(1)}</span>
-                            </div>
-                          )}
+                      {/* Price and CTA */}
+                      <div className="flex flex-wrap items-center justify-between mt-4 pt-4 border-t border-gray-100">
+                        <div>
+                          <div className="flex items-baseline">
+                            <span className="text-2xl font-bold text-blue-700">{adventure.currentPrice}</span>
+                          </div>
+                          <p className="text-xs text-gray-500">per charter</p>
                         </div>
                         
-                        <div className="flex items-center text-sm text-gray-600 mb-3">
-                          <FaRegCalendarAlt className="mr-2" />
-                          <span>{adventure.duration}</span>
-                          {adventure.provider && (
-                            <>
-                              <span className="mx-2">•</span>
-                              <span>{adventure.provider}</span>
-                            </>
-                          )}
-                        </div>
-                        
-                        <p className="text-gray-700 mb-4">
-                          {getShortDescription(adventure.description)}
-                        </p>
-                        
-                        {/* Key Features with Icons */}
-                        <div className="mb-4">
-                          <div className="flex flex-wrap gap-2">
-                            {adventure.keyFeatures?.slice(0, 4).map((feature, index) => {
-                              // Select appropriate icon based on feature content
-                              let FeatureIcon = GiSailboat; // Default icon
-                              if (feature.toLowerCase().includes('bar') || feature.toLowerCase().includes('drink')) {
-                                FeatureIcon = MdOutlineLocalBar;
-                              } else if (feature.toLowerCase().includes('food') || feature.toLowerCase().includes('meal') || feature.toLowerCase().includes('dining')) {
-                                FeatureIcon = MdOutlineFoodBank;
-                              } else if (feature.toLowerCase().includes('captain') || feature.toLowerCase().includes('crew')) {
-                                FeatureIcon = GiCaptainHatProfile;
-                              } else if (feature.toLowerCase().includes('swim') || feature.toLowerCase().includes('snorkel')) {
-                                FeatureIcon = FaSwimmer;
-                              } else if (feature.toLowerCase().includes('music') || feature.toLowerCase().includes('sound')) {
-                                FeatureIcon = FaMusic;
-                              } else if (feature.toLowerCase().includes('people') || feature.toLowerCase().includes('passenger') || feature.toLowerCase().includes('guest')) {
-                                FeatureIcon = MdOutlinePeopleAlt;
-                              } else if (feature.toLowerCase().includes('wifi')) {
-                                FeatureIcon = FaWifi;
-                              } else if (feature.toLowerCase().includes('air conditioning') || feature.toLowerCase().includes('climate')) {
-                                FeatureIcon = MdAir;
-                              } else if (feature.toLowerCase().includes('fishing')) {
-                                FeatureIcon = IoFishOutline;
-                              } else if (feature.toLowerCase().includes('champagne') || feature.toLowerCase().includes('wine')) {
-                                FeatureIcon = GiChampagneCork;
-                              } else if (feature.toLowerCase().includes('jacuzzi') || feature.toLowerCase().includes('spa')) {
-                                FeatureIcon = BiSpa;
-                              } else if (feature.toLowerCase().includes('safety') || feature.toLowerCase().includes('life')) {
-                                FeatureIcon = GiLifeJacket;
-                              } else if (feature.toLowerCase().includes('support') || feature.toLowerCase().includes('assistance')) {
-                                FeatureIcon = MdSupportAgent;
-                              } else if (feature.toLowerCase().includes('beach')) {
-                                FeatureIcon = FaUmbrellaBeach;
-                              } else if (feature.toLowerCase().includes('luxury') || feature.toLowerCase().includes('premium')) {
-                                FeatureIcon = FaGlassMartiniAlt;
-                              } else if (feature.toLowerCase().includes('speed') || feature.toLowerCase().includes('fast')) {
-                                FeatureIcon = GiSpeedBoat;
-                              }
-                              
-                              return (
-                                <span key={index} className="bg-blue-50 text-blue-700 text-xs px-3 py-1 rounded-full flex items-center gap-1">
-                                  <FeatureIcon className="h-3.5 w-3.5" />
-                                  {feature}
-                                </span>
-                              );
-                            })}
-                          </div>
-                        </div>
-                        
-                        {/* Price and CTA */}
-                        <div className="flex flex-wrap items-center justify-between mt-4 pt-4 border-t border-gray-100">
-                          <div>
-                            <div className="flex items-baseline">
-                              <span className="text-2xl font-bold text-blue-700">{adventure.currentPrice}</span>
-                              {adventure.originalPrice && (
-                                <span className="ml-2 text-sm text-gray-500 line-through">{adventure.originalPrice}</span>
-                              )}
-                            </div>
-                            <p className="text-xs text-gray-500">per charter</p>
-                          </div>
-                          
-                          <div className="flex gap-2">
-                            <Link to={`/adventures/${adventure.slug}`} className="inline-block bg-white text-blue-600 border border-blue-600 font-medium px-4 py-2 rounded-lg hover:bg-blue-50 transition-colors">
-                              View Details
-                            </Link>
-                            <Link to={`/adventures/${adventure.slug}#book`} className="inline-block bg-blue-600 text-white font-medium px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                              Book Now
-                            </Link>
-                          </div>
+                        <div className="flex gap-2">
+                          <Link to={`/adventures/${adventure.slug}`} className="inline-block bg-white text-blue-600 border border-blue-600 font-medium px-4 py-2 rounded-lg hover:bg-blue-50 transition-colors">
+                            View Details
+                          </Link>
+                          <Link to={`/adventures/${adventure.slug}#book`} className="inline-block bg-blue-600 text-white font-medium px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                            Book Now
+                          </Link>
                         </div>
                       </div>
                     </div>
@@ -274,99 +350,93 @@ const YachtAdventuresPage: React.FC = () => {
             )}
           </div>
           
-          {/* Sidebar (1/3 width) */}
-          <div className="lg:col-span-1">
-            {/* Why Book a Yacht in Cabo */}
-            <div className="bg-blue-50 rounded-xl p-6 mb-8">
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Why Book a Yacht in Cabo</h3>
+          {/* Why Book a Yacht in Cabo - Full Width */}
+          <div className="bg-blue-50 rounded-xl p-8 mb-8">
+            <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">Why Book a Yacht in Cabo</h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="flex flex-col items-center text-center p-4 bg-white rounded-lg shadow-sm">
+                <FaAnchor className="text-blue-600 text-3xl mb-3" />
+                <h4 className="font-bold text-lg text-gray-900 mb-2">Exclusive Experience</h4>
+                <p className="text-gray-700">Enjoy privacy and luxury with your own private yacht charter, away from crowded beaches and tourist spots.</p>
+              </div>
               
-              <div className="space-y-4">
-                <div className="flex items-start">
-                  <FaAnchor className="text-blue-600 mt-1 mr-3 text-lg" />
-                  <div>
-                    <h4 className="font-medium text-gray-900">Exclusive Experience</h4>
-                    <p className="text-sm text-gray-700">Enjoy privacy and luxury with your own private yacht charter, away from crowded beaches and tourist spots.</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start">
-                  <GiSunset className="text-blue-600 mt-1 mr-3 text-lg" />
-                  <div>
-                    <h4 className="font-medium text-gray-900">Spectacular Views</h4>
-                    <p className="text-sm text-gray-700">Witness the famous Arch of Cabo San Lucas, pristine beaches, and dramatic cliff formations from the water.</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start">
-                  <MdOutlineFoodBank className="text-blue-600 mt-1 mr-3 text-lg" />
-                  <div>
-                    <h4 className="font-medium text-gray-900">Gourmet Dining</h4>
-                    <p className="text-sm text-gray-700">Savor fresh, chef-prepared meals and appetizers while enjoying the stunning marine landscape.</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start">
-                  <MdOutlineLocalBar className="text-blue-600 mt-1 mr-3 text-lg" />
-                  <div>
-                    <h4 className="font-medium text-gray-900">Premium Open Bar</h4>
-                    <p className="text-sm text-gray-700">Enjoy unlimited premium drinks and cocktails prepared by your personal bartender onboard.</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start">
-                  <FaSwimmer className="text-blue-600 mt-1 mr-3 text-lg" />
-                  <div>
-                    <h4 className="font-medium text-gray-900">Water Activities</h4>
-                    <p className="text-sm text-gray-700">Access exclusive snorkeling spots, paddle boards, and other water toys for an unforgettable ocean adventure.</p>
-                  </div>
-                </div>
+              <div className="flex flex-col items-center text-center p-4 bg-white rounded-lg shadow-sm">
+                <GiSunset className="text-blue-600 text-3xl mb-3" />
+                <h4 className="font-bold text-lg text-gray-900 mb-2">Spectacular Views</h4>
+                <p className="text-gray-700">Witness the famous Arch of Cabo San Lucas, pristine beaches, and dramatic cliff formations from the water.</p>
+              </div>
+              
+              <div className="flex flex-col items-center text-center p-4 bg-white rounded-lg shadow-sm">
+                <MdOutlineFoodBank className="text-blue-600 text-3xl mb-3" />
+                <h4 className="font-bold text-lg text-gray-900 mb-2">Gourmet Dining</h4>
+                <p className="text-gray-700">Savor fresh, chef-prepared meals and appetizers while enjoying the stunning marine landscape.</p>
+              </div>
+              
+              <div className="flex flex-col items-center text-center p-4 bg-white rounded-lg shadow-sm">
+                <MdOutlineLocalBar className="text-blue-600 text-3xl mb-3" />
+                <h4 className="font-bold text-lg text-gray-900 mb-2">Premium Open Bar</h4>
+                <p className="text-gray-700">Enjoy unlimited premium drinks and cocktails prepared by your personal bartender onboard.</p>
+              </div>
+              
+              <div className="flex flex-col items-center text-center p-4 bg-white rounded-lg shadow-sm">
+                <FaSwimmer className="text-blue-600 text-3xl mb-3" />
+                <h4 className="font-bold text-lg text-gray-900 mb-2">Water Activities</h4>
+                <p className="text-gray-700">Access exclusive snorkeling spots, paddle boards, and other water toys for an unforgettable ocean adventure.</p>
+              </div>
+              
+              <div className="flex flex-col items-center text-center p-4 bg-white rounded-lg shadow-sm">
+                <MdSupportAgent className="text-blue-600 text-3xl mb-3" />
+                <h4 className="font-bold text-lg text-gray-900 mb-2">Professional Crew</h4>
+                <p className="text-gray-700">Our certified, bilingual crew ensures your experience is safe, comfortable, and tailored to your preferences.</p>
               </div>
             </div>
+          </div>
+          
+          {/* Customer Testimonials - Full Width */}
+          <div className="bg-white border border-gray-200 rounded-xl p-8 mb-8">
+            <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">What Our Customers Say</h3>
             
-            {/* Customer Testimonials */}
-            <div className="bg-white border border-gray-200 rounded-xl p-6 mb-8">
-              <h3 className="text-xl font-bold text-gray-900 mb-4">What Our Customers Say</h3>
-              
-              <div className="space-y-5">
-                {yachtTestimonials.map((testimonial) => (
-                  <div key={testimonial.id} className="pb-5 border-b border-gray-100 last:border-0 last:pb-0">
-                    <div className="flex items-center mb-2">
-                      {renderRatingStars(testimonial.rating)}
-                    </div>
-                    <p className="text-sm text-gray-700 italic mb-2">"{testimonial.comment}"</p>
-                    <div className="flex items-center justify-between">
-                      <div className="text-sm">
-                        <p className="font-medium text-gray-900">{testimonial.name}</p>
-                        <p className="text-gray-500 text-xs">{testimonial.location}</p>
-                      </div>
-                      <span className="text-xs text-gray-500">{testimonial.date}</span>
-                    </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {yachtTestimonials.map((testimonial) => (
+                <div key={testimonial.id} className="bg-gray-50 p-5 rounded-lg border border-gray-100">
+                  <div className="flex items-center mb-3">
+                    {renderRatingStars(testimonial.rating)}
                   </div>
-                ))}
-              </div>
+                  <p className="text-gray-700 italic mb-4">"{testimonial.comment}"</p>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium text-gray-900">{testimonial.name}</p>
+                      <p className="text-gray-500 text-xs">{testimonial.location}</p>
+                    </div>
+                    <span className="text-xs text-gray-500">{testimonial.date}</span>
+                  </div>
+                </div>
+              ))}
             </div>
+          </div>
+          
+          {/* Best Time to Visit - Full Width */}
+          <div className="bg-white border border-gray-200 rounded-xl p-8">
+            <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">Best Time for Yacht Charter</h3>
             
-            {/* Best Time to Visit */}
-            <div className="bg-white border border-gray-200 rounded-xl p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Best Time for Yacht Charter</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="flex flex-col items-center text-center p-4 bg-gray-50 rounded-lg border border-gray-100">
+                <h4 className="font-bold text-lg text-gray-900 mb-2">December - April</h4>
+                <span className="text-green-600 font-medium">Whale Season</span>
+                <p className="text-gray-700 mt-2">Experience humpback whales in their natural habitat during your yacht charter.</p>
+              </div>
               
-              <div className="space-y-4">
-                <div className="flex items-center justify-between pb-3 border-b border-gray-100">
-                  <span className="font-medium">December - April</span>
-                  <span className="text-sm text-green-600 font-medium">Whale Season</span>
-                </div>
-                <div className="flex items-center justify-between pb-3 border-b border-gray-100">
-                  <span className="font-medium">May - July</span>
-                  <span className="text-sm text-blue-600 font-medium">Perfect Weather</span>
-                </div>
-                <div className="flex items-center justify-between pb-3 border-b border-gray-100">
-                  <span className="font-medium">August - November</span>
-                  <span className="text-sm text-orange-600 font-medium">Less Crowded</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="font-medium">Year-round</span>
-                  <span className="text-sm text-purple-600 font-medium">Sunset Cruises</span>
-                </div>
+              <div className="flex flex-col items-center text-center p-4 bg-gray-50 rounded-lg border border-gray-100">
+                <h4 className="font-bold text-lg text-gray-900 mb-2">May - July</h4>
+                <span className="text-blue-600 font-medium">Perfect Weather</span>
+                <p className="text-gray-700 mt-2">Enjoy warm temperatures, clear skies, and calm waters for the ultimate yacht experience.</p>
+              </div>
+              
+              <div className="flex flex-col items-center text-center p-4 bg-gray-50 rounded-lg border border-gray-100">
+                <h4 className="font-bold text-lg text-gray-900 mb-2">August - November</h4>
+                <span className="text-orange-600 font-medium">Less Crowded</span>
+                <p className="text-gray-700 mt-2">Experience fewer tourists and more availability while still enjoying pleasant conditions.</p>
               </div>
             </div>
           </div>

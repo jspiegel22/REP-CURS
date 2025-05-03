@@ -15,6 +15,10 @@ import VillaExamplePage from "@/pages/villa-example";
 import AdventuresLanding from "@/pages/adventures-landing";
 import AdventureDetail from "@/pages/adventure-detail";
 import YachtAdventuresPage from "@/pages/adventures/private-yachts";
+import ExpressYachtDetailPage from "@/pages/adventures/express-bay-liner-35ft";
+import SilvertonYachtDetailPage from "@/pages/adventures/silverton-sport-bridge-42";
+import SeaRaySundancerPage from "@/pages/adventures/sea-ray-sundancer-45";
+import Sunseeker80SaviPage from "@/pages/adventures/sunseeker-80-savi";
 import BlogIndex from "@/pages/blog";
 import BlogDetail from "@/pages/blog/[slug]";
 import RestaurantsPage from "@/pages/restaurants";
@@ -93,6 +97,10 @@ function Router() {
           <Route path="/villa-example" component={VillaExamplePage} />
           <Route path="/adventures" component={AdventuresLanding} />
           <Route path="/adventures/private-yachts" component={YachtAdventuresPage} />
+          <Route path="/adventures/express-bay-liner-35ft" component={ExpressYachtDetailPage} />
+          <Route path="/adventures/silverton-sport-bridge-42" component={SilvertonYachtDetailPage} />
+          <Route path="/adventures/sea-ray-sundancer-45" component={SeaRaySundancerPage} />
+          <Route path="/adventures/sunseeker-80-savi" component={Sunseeker80SaviPage} />
           <Route path="/adventures/:slug" component={AdventureDetail} />
           <Route path="/restaurants" component={RestaurantsPage} />
           <Route path="/restaurants/:id" component={RestaurantDetails} />
