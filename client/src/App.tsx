@@ -11,6 +11,7 @@ import ResortDetail from "@/pages/resort-detail";
 import VillasLanding from "@/pages/villas-landing";
 import VillaDetail from "@/pages/villa-detail";
 import VillaDetailPage from "@/pages/villa/[slug]";
+import VillaExamplePage from "@/pages/villa-example";
 import AdventuresLanding from "@/pages/adventures-landing";
 import AdventureDetail from "@/pages/adventure-detail";
 import YachtAdventuresPage from "@/pages/adventures/private-yachts";
@@ -89,6 +90,7 @@ function Router() {
           <Route path="/villas/:slug" component={VillaDetail} />
           {/* Our new individual villa page route */}
           <Route path="/villa/:slug" component={VillaDetailPage} />
+          <Route path="/villa-example" component={VillaExamplePage} />
           <Route path="/adventures" component={AdventuresLanding} />
           <Route path="/adventures/private-yachts" component={YachtAdventuresPage} />
           <Route path="/adventures/:slug" component={AdventureDetail} />

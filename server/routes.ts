@@ -16,6 +16,7 @@ import {
 } from './services/webhookClient.enhanced';
 
 import { registerStripeRoutes } from './routes/stripe';
+import { registerBookingRoutes } from './routes/bookings';
 import itineraryRoutes from './routes/itinerary';
 import imageRoutes from './routes/image';
 import notificationsRouter from './routes/notifications';
@@ -63,6 +64,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Register Stripe routes for direct bookings
   registerStripeRoutes(app);
+  
+  // Register booking routes
+  registerBookingRoutes(app);
   
   // Register itinerary routes
   app.use('/api', itineraryRoutes);

@@ -34,6 +34,7 @@ interface IStorage {
   getAllBookings(): Promise<Booking[]>;
   getAllLeads(): Promise<Lead[]>;
   getBookingByPaymentIntentId(paymentIntentId: string): Promise<Booking | undefined>;
+  getBookingById(id: number): Promise<Booking | undefined>;
   updateBookingStatus(bookingId: number, status: string): Promise<Booking>;
   createBlogPost(blogPost: any): Promise<any>;
   getBlogPostBySlug(slug: string): Promise<any>;
@@ -586,6 +587,20 @@ export class DatabaseStorage implements IStorage {
       return undefined;
     }
   }
+  
+  async getBookingById(id: number): Promise<Booking | undefined> {
+    try {
+      const [booking] = await db
+        .select()
+        .from(bookings)
+        .where(eq(bookings.id, id));
+      
+      return booking;
+    } catch (error) {
+      console.error("Error fetching booking by ID:", error);
+      return undefined;
+    }
+  }
 
   async updateBookingStatus(bookingId: number, status: string): Promise<Booking> {
     try {
@@ -866,11 +881,13 @@ export class DatabaseStorage implements IStorage {
     try {
       let query = db.select().from(restaurants);
       
+      // Filter by category if provided
       if (category) {
         query = query.where(eq(restaurants.category, category));
       }
       
-      const results = await query.where(eq(restaurants.hidden, false));
+      // Execute the query
+      const results = await query;
       
       // Ensure imageUrl and imageUrls have default values
       return results.map(restaurant => ({
