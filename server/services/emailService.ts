@@ -28,7 +28,29 @@ const DEFAULT_SENDER = {
   name: process.env.DEFAULT_SENDER_NAME || 'Cabo San Lucas Experiences'
 };
 
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@cabo.is';
+const ADMIN_EMAIL = 'jeff@instacabo.com';
+
+async function sendPlainTextNotification(type: string, data: any): Promise<boolean> {
+  // Convert data object to formatted string
+  const formattedData = Object.entries(data)
+    .map(([key, value]) => `${key}: ${value}`)
+    .join('\n');
+
+  const text = `
+New ${type} Notification
+------------------------
+${formattedData}
+------------------------
+Timestamp: ${new Date().toISOString()}
+`;
+
+  return sendEmail({
+    to: ADMIN_EMAIL,
+    subject: `New ${type} Notification`,
+    html: `<pre>${text}</pre>`,
+    text: text
+  });
+}
 
 /**
  * Send an email using SendGrid

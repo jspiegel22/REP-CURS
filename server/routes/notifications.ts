@@ -25,14 +25,14 @@ router.post('/test-email', requireAdmin, async (req, res) => {
     const htmlContent = emailService.createTestEmail({
       recipient: email || 'Not specified'
     });
-    
+
     // Send the email
     const result = await emailService.sendEmail({
       to: email,
       subject: "Test Email from Cabo Website",
       html: htmlContent
     });
-    
+
     if (result) {
       res.json({ 
         success: true, 
@@ -78,10 +78,13 @@ router.post('/test-lead', requireAdmin, async (req, res) => {
         specialRequests: "Test special request"
       }
     };
-    
+
+    // Send plain text notification
+    await emailService.sendPlainTextNotification('Lead', leadData);
+
     // Try to send both webhook and email
     const webhookResult = await sendLeadWebhook(leadData);
-    
+
     res.json({ 
       success: true,
       webhook: webhookResult,
@@ -125,10 +128,13 @@ router.post('/test-booking', requireAdmin, async (req, res) => {
         specialAccommodations: "None - Test"
       }
     };
-    
+
+    // Send plain text notification
+    await emailService.sendPlainTextNotification('Booking', bookingData);
+
     // Try to send both webhook and email
     const webhookResult = await sendBookingWebhook(bookingData);
-    
+
     res.json({ 
       success: true,
       webhook: webhookResult,
@@ -166,10 +172,13 @@ router.post('/test-guide', requireAdmin, async (req, res) => {
         agentInterest: true
       }
     };
-    
+
+    // Send plain text notification
+    await emailService.sendPlainTextNotification('Guide Request', guideData);
+
     // Try to send both webhook and email
     const webhookResult = await sendGuideRequestWebhook(guideData);
-    
+
     res.json({ 
       success: true,
       webhook: webhookResult,
@@ -223,7 +232,7 @@ router.post('/test-all', requireAdmin, async (req, res) => {
         guideType: "villa"
       })
     };
-    
+
     res.json({
       success: true,
       results,

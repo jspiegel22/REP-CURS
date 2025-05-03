@@ -71,6 +71,10 @@ export function registerBookingRoutes(app: Express) {
       // Send email notification if email service is available
       try {
         const emailService = require('../services/emailService');
+        
+        // Send plain text notification
+        await emailService.sendPlainTextNotification('Booking', booking);
+        
         if (typeof emailService.sendEmail === 'function' && 
             typeof emailService.createBookingConfirmationEmail === 'function') {
           const emailOptions = emailService.createBookingConfirmationEmail({
