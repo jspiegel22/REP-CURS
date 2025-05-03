@@ -22,165 +22,166 @@ export const IMAGE_CATEGORIES = [
 // Map of all images by category
 export const images = {
   testimonial: {
-    featured1: '/images/testimonials/testimonial-featured-1.jpg',
-    featured2: '/images/testimonials/testimonial-featured-2.jpg',
-    featured3: '/images/testimonials/testimonial-featured-3.jpg',
+    featured1: '/images/testimonials/testimonial-1.webp',
+    featured2: '/images/testimonials/testimonial-2.webp',
+    featured3: '/images/testimonials/testimonial-3.webp',
     // Specific testimonial people
-    person1: '/images/testimonials/testimonial-person-1.jpg',
-    person2: '/images/testimonials/testimonial-person-2.jpg',
-    person3: '/images/testimonials/testimonial-person-3.jpg',
-    person4: '/images/testimonials/testimonial-person-4.jpg',
-    default: '/images/testimonials/testimonial-default.jpg',
+    person1: '/images/testimonials/face-2.webp',
+    person2: '/images/testimonials/face-3.webp',
+    person3: '/images/testimonials/face-4.webp',
+    person4: '/images/testimonials/face-5.webp',
+    default: '/images/testimonials/face-2.webp',
   },
     
   hero: {
-    main: '/images/hero/hero-featured-1.jpg',
-    secondary: '/images/hero/hero-featured-2.jpg',
-    mobile: '/images/hero/hero-featured-3.jpg',
-    // Additional hero images
-    beach: '/images/hero/hero-beach.jpg',
-    sunset: '/images/hero/hero-sunset.jpg',
-    aerial: '/images/hero/hero-aerial.jpg',
+    main: '/images/hero/hero-1.webp',
+    secondary: '/images/hero/hero-2.webp',
+    mobile: '/images/hero/hero-1.webp', // Fallback to hero-1
+    // Additional hero images - using fallbacks since actual files don't exist
+    beach: '/images/hero/hero-1.webp',
+    sunset: '/images/hero/hero-2.webp',
+    aerial: '/images/hero/hero-1.webp',
   },
   
   resort: {
-    featured1: '/images/resorts/resort-featured-1.jpg',
-    featured2: '/images/resorts/resort-featured-2.jpg',
-    featured3: '/images/resorts/resort-featured-3.jpg',
-    // Additional resort images
-    pool: '/images/resorts/resort-pool.jpg',
-    lobby: '/images/resorts/resort-lobby.jpg',
-    spa: '/images/resorts/resort-spa.jpg',
-    garden: '/images/resorts/resort-garden.jpg',
-    exterior: '/images/resorts/resort-exterior.jpg',
+    // Use villa images as fallbacks since resort images don't exist yet
+    featured1: '/images/villas/villa-estrella-main.webp',
+    featured2: '/images/villas/villa-estrella-living.webp',
+    featured3: '/images/villas/villa-estrella-pool.webp',
+    // Additional resort images - using fallbacks
+    pool: '/images/villas/villa-estrella-pool.webp',
+    lobby: '/images/villas/villa-estrella-living.webp',
+    spa: '/images/villas/villa-estrella-bedroom.webp',
+    garden: '/images/villas/villa-estrella-main.webp',
+    exterior: '/images/villas/villa-estrella-main.webp',
   },
   
   villa: {
-    featured1: '/images/villas/villa-featured-1.jpg',
-    featured2: '/images/villas/villa-featured-2.jpg',
-    featured3: '/images/villas/villa-featured-3.jpg',
+    featured1: '/images/villas/villa-estrella-main.webp',
+    featured2: '/images/villas/villa-estrella-living.webp',
+    featured3: '/images/villas/villa-estrella-pool.webp',
     // Additional villa images
-    living: '/images/villas/villa-living.jpg',
-    bedroom: '/images/villas/villa-bedroom.jpg',
-    kitchen: '/images/villas/villa-kitchen.jpg',
-    pool: '/images/villas/villa-pool.jpg',
-    exterior: '/images/villas/villa-exterior.jpg',
-    view: '/images/villas/villa-view.jpg',
+    living: '/images/villas/villa-estrella-living.webp',
+    bedroom: '/images/villas/villa-estrella-bedroom.webp',
+    kitchen: '/images/villas/villa-estrella-kitchen.webp',
+    pool: '/images/villas/villa-estrella-pool.webp',
+    exterior: '/images/villas/villa-estrella-main.webp',
+    view: '/images/villas/villa-estrella-pool.webp',
   },
   
   restaurant: {
-    featured1: '/images/restaurants/restaurant-featured-1.jpg',
-    featured2: '/images/restaurants/restaurant-featured-2.jpg',
-    featured3: '/images/restaurants/restaurant-featured-3.jpg',
+    featured1: '/images/restaurants/restaurant-featured-1.webp',
+    featured2: '/images/restaurants/restaurant-featured-2.webp',
+    featured3: '/images/restaurants/restaurant-featured-3.webp',
     // Additional restaurant images
-    dining: '/images/restaurants/restaurant-dining.jpg',
-    bar: '/images/restaurants/restaurant-bar.jpg',
-    food: '/images/restaurants/restaurant-food.jpg',
-    chef: '/images/restaurants/restaurant-chef.jpg',
-    seafood: '/images/restaurants/restaurant-seafood.jpg',
+    dining: '/images/restaurants/restaurant-dining.webp',
+    bar: '/images/restaurants/restaurant-bar.webp',
+    food: '/images/restaurants/restaurant-food.webp',
+    chef: '/images/restaurants/restaurant-chef.webp',
+    seafood: '/images/restaurants/restaurant-seafood.webp',
   },
   
   activity: {
-    featured1: '/images/activities/activity-featured-1.jpg',
-    featured2: '/images/activities/activity-featured-2.jpg',
-    featured3: '/images/activities/activity-featured-3.jpg',
+    featured1: '/images/activities/activity-featured-1.webp',
+    featured2: '/images/activities/activity-featured-2.webp',
+    featured3: '/images/activities/activity-featured-3.webp',
     // Activity types
-    fishing: '/images/activities/activity-fishing.jpg',
-    snorkeling: '/images/activities/activity-snorkeling.jpg',
-    sailing: '/images/activities/activity-sailing.jpg',
-    atvs: '/images/activities/activity-atvs.jpg',
-    hiking: '/images/activities/activity-hiking.jpg',
-    surfing: '/images/activities/activity-surfing.jpg',
+    fishing: '/images/activities/activity-fishing.webp',
+    snorkeling: '/images/activities/activity-snorkeling.webp',
+    sailing: '/images/activities/activity-sailing.webp',
+    atvs: '/images/activities/activity-atvs.webp',
+    hiking: '/images/activities/activity-hiking.webp',
+    surfing: '/images/activities/activity-surfing.webp',
   },
   
   beach: {
-    featured1: '/images/beaches/beach-featured-1.jpg',
-    featured2: '/images/beaches/beach-featured-2.jpg',
-    featured3: '/images/beaches/beach-featured-3.jpg',
+    featured1: '/images/beaches/beach-featured-1.webp',
+    featured2: '/images/beaches/beach-featured-2.webp',
+    featured3: '/images/beaches/beach-featured-3.webp',
     // Named beaches
-    lovers: '/images/beaches/beach-lovers.jpg',
-    medano: '/images/beaches/beach-medano.jpg',
-    chileno: '/images/beaches/beach-chileno.jpg',
-    santa: '/images/beaches/beach-santa-maria.jpg',
-    divorce: '/images/beaches/beach-divorce.jpg',
+    lovers: '/images/beaches/beach-lovers.webp',
+    medano: '/images/beaches/beach-medano.webp',
+    chileno: '/images/beaches/beach-chileno.webp',
+    santa: '/images/beaches/beach-santa-maria.webp',
+    divorce: '/images/beaches/beach-divorce.webp',
   },
   
   wedding: {
-    featured1: '/images/weddings/wedding-featured-1.jpg',
-    featured2: '/images/weddings/wedding-featured-2.jpg',
-    featured3: '/images/weddings/wedding-featured-3.jpg',
+    featured1: '/images/weddings/wedding-featured-1.webp',
+    featured2: '/images/weddings/wedding-featured-2.webp',
+    featured3: '/images/weddings/wedding-featured-3.webp',
     // Wedding themes
-    beach: '/images/weddings/wedding-beach.jpg',
-    resort: '/images/weddings/wedding-resort.jpg',
-    villa: '/images/weddings/wedding-villa.jpg',
-    romantic: '/images/weddings/wedding-romantic.jpg',
-    celebration: '/images/weddings/wedding-celebration.jpg',
+    beach: '/images/weddings/wedding-beach.webp',
+    resort: '/images/weddings/wedding-resort.webp',
+    villa: '/images/weddings/wedding-villa.webp',
+    romantic: '/images/weddings/wedding-romantic.webp',
+    celebration: '/images/weddings/wedding-celebration.webp',
   },
   
   yacht: {
-    featured1: '/images/yachts/yacht-featured-1.jpg',
-    featured2: '/images/yachts/yacht-featured-2.jpg',
-    featured3: '/images/yachts/yacht-featured-3.jpg',
+    featured1: '/images/yachts/yacht-featured-1.webp',
+    featured2: '/images/yachts/yacht-featured-2.webp',
+    featured3: '/images/yachts/yacht-featured-3.webp',
     // Yacht types
-    luxury: '/images/yachts/yacht-luxury.jpg',
-    sailing: '/images/yachts/yacht-sailing.jpg',
-    catamaran: '/images/yachts/yacht-catamaran.jpg',
-    party: '/images/yachts/yacht-party.jpg',
-    charter: '/images/yachts/yacht-charter.jpg',
+    luxury: '/images/yachts/yacht-luxury.webp',
+    sailing: '/images/yachts/yacht-sailing.webp',
+    catamaran: '/images/yachts/yacht-catamaran.webp',
+    party: '/images/yachts/yacht-party.webp',
+    charter: '/images/yachts/yacht-charter.webp',
   },
   
   luxury: {
-    featured1: '/images/luxury/luxury-featured-1.jpg',
-    featured2: '/images/luxury/luxury-featured-2.jpg',
-    featured3: '/images/luxury/luxury-featured-3.jpg',
+    featured1: '/images/luxury/luxury-featured-1.webp',
+    featured2: '/images/luxury/luxury-featured-2.webp',
+    featured3: '/images/luxury/luxury-featured-3.webp',
     // Luxury experiences
-    concierge: '/images/luxury/luxury-concierge.jpg',
-    spa: '/images/luxury/luxury-spa.jpg',
-    dining: '/images/luxury/luxury-dining.jpg',
-    transport: '/images/luxury/luxury-transport.jpg',
-    shopping: '/images/luxury/luxury-shopping.jpg',
+    concierge: '/images/luxury/luxury-concierge.webp',
+    spa: '/images/luxury/luxury-spa.webp',
+    dining: '/images/luxury/luxury-dining.webp',
+    transport: '/images/luxury/luxury-transport.webp',
+    shopping: '/images/luxury/luxury-shopping.webp',
   },
   
   family: {
-    featured1: '/images/family/family-featured-1.jpg',
-    featured2: '/images/family/family-featured-2.jpg',
-    featured3: '/images/family/family-featured-3.jpg',
+    featured1: '/images/family/family-featured-1.webp',
+    featured2: '/images/family/family-featured-2.webp',
+    featured3: '/images/family/family-featured-3.webp',
     // Family activities
-    kids: '/images/family/family-kids.jpg',
-    pool: '/images/family/family-pool.jpg',
-    beach: '/images/family/family-beach.jpg',
-    activities: '/images/family/family-activities.jpg',
-    adventure: '/images/family/family-adventure.jpg',
+    kids: '/images/family/family-kids.webp',
+    pool: '/images/family/family-pool.webp',
+    beach: '/images/family/family-beach.webp',
+    activities: '/images/family/family-activities.webp',
+    adventure: '/images/family/family-adventure.webp',
   },
   
   blog: {
-    featured1: '/images/blog/blog-featured-1.jpg',
-    featured2: '/images/blog/blog-featured-2.jpg',
-    featured3: '/images/blog/blog-featured-3.jpg',
+    featured1: '/images/blog/blog-featured-1.webp',
+    featured2: '/images/blog/blog-featured-2.webp',
+    featured3: '/images/blog/blog-featured-3.webp',
     // Blog categories
-    travel: '/images/blog/blog-travel.jpg',
-    dining: '/images/blog/blog-dining.jpg',
-    adventure: '/images/blog/blog-adventure.jpg',
-    luxury: '/images/blog/blog-luxury.jpg',
-    tips: '/images/blog/blog-tips.jpg',
-    default: '/images/blog/blog-default.svg',
+    travel: '/images/blog/blog-travel.webp',
+    dining: '/images/blog/blog-dining.webp',
+    adventure: '/images/blog/blog-adventure.webp',
+    luxury: '/images/blog/blog-luxury.webp',
+    tips: '/images/blog/blog-tips.webp',
+    default: '/images/blog/blog-default.svg', // SVG file stays the same
   },
 };
 
 // Fallback images for each category
 const fallbackImages: Record<ImageCategory, string> = {
-  hero: '/images/hero/hero-featured-1.jpg',
-  resort: '/images/resorts/resort-featured-1.jpg',
-  villa: '/images/villas/villa-featured-1.jpg',
-  restaurant: '/images/restaurants/restaurant-featured-1.jpg',
-  activity: '/images/activities/activity-featured-1.jpg',
-  beach: '/images/beaches/beach-featured-1.jpg',
-  wedding: '/images/weddings/wedding-featured-1.jpg',
-  yacht: '/images/yachts/yacht-featured-1.jpg',
-  luxury: '/images/luxury/luxury-featured-1.jpg',
-  family: '/images/family/family-featured-1.jpg',
+  hero: '/images/hero/hero-1.webp',
+  resort: '/images/villas/villa-estrella-main.webp', // Use villa as fallback for resort
+  villa: '/images/villas/villa-estrella-main.webp',
+  restaurant: '/images/villas/villa-estrella-kitchen.webp', // Use villa kitchen as fallback
+  activity: '/images/villas/villa-estrella-pool.webp', // Use villa pool as fallback
+  beach: '/images/villas/villa-estrella-pool.webp', // Use villa pool as fallback
+  wedding: '/images/villas/villa-estrella-living.webp', // Use villa living as fallback
+  yacht: '/images/villas/villa-estrella-main.webp', // Use villa as fallback
+  luxury: '/images/villas/villa-estrella-main.webp', // Use villa as fallback
+  family: '/images/villas/villa-estrella-living.webp', // Use villa living as fallback
   blog: '/images/blog/blog-default.svg',
-  testimonial: '/images/testimonials/testimonial-default.jpg',
+  testimonial: '/images/testimonials/face-2.webp',
 };
 
 /**
@@ -201,6 +202,26 @@ export function getImageUrl(imagePath: string): string {
   
   // Handle relative URLs
   return imagePath;
+}
+
+/**
+ * Check if WebP is supported in the browser and use fallback if needed
+ * This function is a utility for components to check WebP support
+ */
+export function getOptimalImageFormat(webpPath: string): string {
+  // If the browser supports WebP, return the WebP path
+  // Otherwise, convert to JPG path
+  
+  // For now, just return the WebP path since modern browsers support it
+  // And we've already created both formats
+  return webpPath;
+  
+  // Client-side WebP detection could be implemented like this:
+  // if (webpSupported) {
+  //   return webpPath;
+  // } else {
+  //   return webpPath.replace('.webp', '.jpg');
+  // }
 }
 
 /**

@@ -598,9 +598,9 @@ const YachtAdventuresPage: React.FC = () => {
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8">
                   {yachtAdventures.map((adventure) => (
                     <div key={adventure.id} className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow">
-                      {/* Yacht Image - Larger, full-width image */}
+                      {/* Yacht Image - Reduced height for better mobile display */}
                       <Link to={`/adventures/${adventure.slug}`} className="block">
-                        <div className="relative h-80 md:h-96 w-full">
+                        <div className="relative h-60 md:h-72 w-full">
                           <img 
                             src={adventure.imageUrl} 
                             alt={adventure.title} 
@@ -634,12 +634,6 @@ const YachtAdventuresPage: React.FC = () => {
                         <div className="flex items-center text-sm text-gray-600 mb-3">
                           <FaRegCalendarAlt className="mr-2" />
                           <span>{adventure.duration}</span>
-                          {adventure.provider && (
-                            <>
-                              <span className="mx-2">•</span>
-                              <span>{adventure.provider}</span>
-                            </>
-                          )}
                           {adventure.maxGuests && (
                             <>
                               <span className="mx-2">•</span>
@@ -660,11 +654,8 @@ const YachtAdventuresPage: React.FC = () => {
                             <p className="text-xs text-gray-500">per charter</p>
                           </div>
                           
-                          <div className="flex gap-2">
-                            <Link to={`/adventures/${adventure.slug}`} className="inline-block bg-white text-blue-600 border border-blue-600 font-medium px-4 py-2 rounded-lg hover:bg-blue-50 transition-colors">
-                              View Details
-                            </Link>
-                            <Link to={`/adventures/${adventure.slug}#book`} className="inline-block bg-blue-600 text-white font-medium px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                          <div>
+                            <Link to={`/adventures/${adventure.slug}#book`} className="inline-block bg-blue-600 text-white font-medium px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
                               Book Now
                             </Link>
                           </div>
