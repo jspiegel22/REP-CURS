@@ -145,8 +145,101 @@ const YachtAdventuresPage: React.FC = () => {
           maxGuests: 16
         };
         
+        // Add Sea Ray Sundancer 45 yacht
+        const seaRaySundancer = {
+          id: 9997, // Use a high ID to avoid conflicts
+          title: "SEA RAY SUNDANCER 45",
+          slug: "sea-ray-sundancer-45",
+          description: `The Sea Ray Sundancer 45ft yacht is the ideal vessel for your next adventure in Cabo San Lucas, with its sleek design, spacious deck areas, and luxurious air-conditioned interior.`,
+          currentPrice: "$990",
+          originalPrice: "$1,100",
+          duration: "3 Hours",
+          imageUrl: "/yachts/sea-ray-45/main.jpg",
+          imageUrls: [
+            "/yachts/sea-ray-45/image-1.jpg",
+            "/yachts/sea-ray-45/image-2.jpg",
+            "/yachts/sea-ray-45/image-3.jpg",
+            "/yachts/sea-ray-45/image-4.jpg"
+          ],
+          minAge: "All Ages",
+          provider: "Papillon Yachts",
+          category: "yacht",
+          keyFeatures: [
+            "Air conditioned",
+            "One bedroom",
+            "Bathroom",
+            "Interior living room",
+            "Shaded back seating",
+            "Front sun bathing area",
+            "Premium open bar",
+            "Food included",
+            "14 guests capacity",
+            "Professional bilingual crew",
+            "Snorkeling gear included"
+          ],
+          thingsToBring: [
+            "Towels",
+            "Sunscreen",
+            "Swimsuits",
+            "Hats",
+            "Sunglasses"
+          ],
+          topRecommended: true,
+          rating: 5.0,
+          featured: true,
+          hidden: false,
+          maxGuests: 14
+        };
+        
+        // Add Sunseeker 80ft Black Yacht (Savi)
+        const sunseeker80 = {
+          id: 9996, // Use a high ID to avoid conflicts
+          title: "SUNSEEKER 80FT BLACK YACHT (SAVI)",
+          slug: "sunseeker-80-savi",
+          description: `Explore Cabo like never before with comfort and luxury on board this black Sunseeker Manhattan 80ft yacht, part of the premium fleet of Papillon Yachts Rental in Los Cabos, Mexico.`,
+          currentPrice: "$5,400",
+          duration: "3 Hours",
+          imageUrl: "/yachts/sunseeker-80/main.jpg",
+          imageUrls: [
+            "/yachts/sunseeker-80/image-1.jpg",
+            "/yachts/sunseeker-80/image-2.jpg",
+            "/yachts/sunseeker-80/image-3.jpg",
+            "/yachts/sunseeker-80/image-4.jpg"
+          ],
+          minAge: "All Ages",
+          provider: "Papillon Yachts",
+          category: "yacht",
+          keyFeatures: [
+            "4 bedrooms (2 master suites)",
+            "4 bathrooms",
+            "Luxury salon",
+            "Air conditioned interior",
+            "Indoor & outdoor kitchen",
+            "Seating on teak deck",
+            "WiFi, 5 TVs, PlayStation",
+            "JBL sound system",
+            "Snorkeling gear",
+            "Professional chef on board",
+            "Premium open bar",
+            "Up to 35 guests capacity"
+          ],
+          thingsToBring: [
+            "Towels",
+            "Sunscreen",
+            "Swimsuits",
+            "Hats",
+            "Sunglasses",
+            "Camera"
+          ],
+          topRecommended: true,
+          rating: 5.0,
+          featured: true,
+          hidden: false,
+          maxGuests: 35
+        };
+
         // Add our custom yachts to the beginning of the array
-        setYachtAdventures([expressBayLiner, silvertonSportBridge, ...yachtData]);
+        setYachtAdventures([expressBayLiner, silvertonSportBridge, seaRaySundancer, sunseeker80, ...yachtData]);
       } catch (error) {
         console.error('Error fetching yacht adventures:', error);
       } finally {

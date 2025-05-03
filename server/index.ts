@@ -199,7 +199,7 @@ app.use((req, res, next) => {
     }
   });
 
-  const port = process.env.NODE_ENV === 'production' ? 5000 : 3000;
+  const port = process.env.PORT || (process.env.NODE_ENV === 'production' ? 5000 : 3000);
   server.listen({
     port,
     host: "0.0.0.0",
